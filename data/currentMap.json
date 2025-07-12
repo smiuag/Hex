@@ -1,0 +1,307 @@
+[
+  {
+    "q": -4,
+    "r": 0,
+    "terrain": "forest"
+  },
+  {
+    "q": -4,
+    "r": 1,
+    "terrain": "desert"
+  },
+  {
+    "q": -4,
+    "r": 2,
+    "terrain": "mountain"
+  },
+  {
+    "q": -4,
+    "r": 3,
+    "terrain": "plains"
+  },
+  {
+    "q": -4,
+    "r": 4,
+    "terrain": "water"
+  },
+  {
+    "q": -3,
+    "r": -1,
+    "terrain": "forest"
+  },
+  {
+    "q": -3,
+    "r": 0,
+    "terrain": "desert"
+  },
+  {
+    "q": -3,
+    "r": 1,
+    "terrain": "mountain"
+  },
+  {
+    "q": -3,
+    "r": 2,
+    "terrain": "plains"
+  },
+  {
+    "q": -3,
+    "r": 3,
+    "terrain": "water"
+  },
+  {
+    "q": -3,
+    "r": 4,
+    "terrain": "forest"
+  },
+  {
+    "q": -2,
+    "r": -2,
+    "terrain": "desert"
+  },
+  {
+    "q": -2,
+    "r": -1,
+    "terrain": "mountain"
+  },
+  {
+    "q": -2,
+    "r": 0,
+    "terrain": "plains"
+  },
+  {
+    "q": -2,
+    "r": 1,
+    "terrain": "water"
+  },
+  {
+    "q": -2,
+    "r": 2,
+    "terrain": "forest"
+  },
+  {
+    "q": -2,
+    "r": 3,
+    "terrain": "desert"
+  },
+  {
+    "q": -2,
+    "r": 4,
+    "terrain": "mountain"
+  },
+  {
+    "q": -1,
+    "r": -3,
+    "terrain": "plains"
+  },
+  {
+    "q": -1,
+    "r": -2,
+    "terrain": "water"
+  },
+  {
+    "q": -1,
+    "r": -1,
+    "terrain": "forest"
+  },
+  {
+    "q": -1,
+    "r": 0,
+    "terrain": "desert"
+  },
+  {
+    "q": -1,
+    "r": 1,
+    "terrain": "mountain"
+  },
+  {
+    "q": -1,
+    "r": 2,
+    "terrain": "plains"
+  },
+  {
+    "q": -1,
+    "r": 3,
+    "terrain": "water"
+  },
+  {
+    "q": -1,
+    "r": 4,
+    "terrain": "forest"
+  },
+  {
+    "q": 0,
+    "r": -4,
+    "terrain": "desert"
+  },
+  {
+    "q": 0,
+    "r": -3,
+    "terrain": "mountain"
+  },
+  {
+    "q": 0,
+    "r": -2,
+    "terrain": "plains"
+  },
+  {
+    "q": 0,
+    "r": -1,
+    "terrain": "water"
+  },
+  {
+    "q": 0,
+    "r": 0,
+    "terrain": "base"
+  },
+  {
+    "q": 0,
+    "r": 1,
+    "terrain": "desert"
+  },
+  {
+    "q": 0,
+    "r": 2,
+    "terrain": "mountain"
+  },
+  {
+    "q": 0,
+    "r": 3,
+    "terrain": "plains"
+  },
+  {
+    "q": 0,
+    "r": 4,
+    "terrain": "water"
+  },
+  {
+    "q": 1,
+    "r": -4,
+    "terrain": "forest"
+  },
+  {
+    "q": 1,
+    "r": -3,
+    "terrain": "desert"
+  },
+  {
+    "q": 1,
+    "r": -2,
+    "terrain": "mountain"
+  },
+  {
+    "q": 1,
+    "r": -1,
+    "terrain": "plains"
+  },
+  {
+    "q": 1,
+    "r": 0,
+    "terrain": "water"
+  },
+  {
+    "q": 1,
+    "r": 1,
+    "terrain": "forest"
+  },
+  {
+    "q": 1,
+    "r": 2,
+    "terrain": "desert"
+  },
+  {
+    "q": 1,
+    "r": 3,
+    "terrain": "mountain"
+  },
+  {
+    "q": 2,
+    "r": -4,
+    "terrain": "plains"
+  },
+  {
+    "q": 2,
+    "r": -3,
+    "terrain": "water"
+  },
+  {
+    "q": 2,
+    "r": -2,
+    "terrain": "forest"
+  },
+  {
+    "q": 2,
+    "r": -1,
+    "terrain": "desert"
+  },
+  {
+    "q": 2,
+    "r": 0,
+    "terrain": "mountain"
+  },
+  {
+    "q": 2,
+    "r": 1,
+    "terrain": "plains"
+  },
+  {
+    "q": 2,
+    "r": 2,
+    "terrain": "water"
+  },
+  {
+    "q": 3,
+    "r": -4,
+    "terrain": "forest"
+  },
+  {
+    "q": 3,
+    "r": -3,
+    "terrain": "desert"
+  },
+  {
+    "q": 3,
+    "r": -2,
+    "terrain": "mountain"
+  },
+  {
+    "q": 3,
+    "r": -1,
+    "terrain": "plains"
+  },
+  {
+    "q": 3,
+    "r": 0,
+    "terrain": "water"
+  },
+  {
+    "q": 3,
+    "r": 1,
+    "terrain": "forest"
+  },
+  {
+    "q": 4,
+    "r": -4,
+    "terrain": "desert"
+  },
+  {
+    "q": 4,
+    "r": -3,
+    "terrain": "mountain"
+  },
+  {
+    "q": 4,
+    "r": -2,
+    "terrain": "plains"
+  },
+  {
+    "q": 4,
+    "r": -1,
+    "terrain": "water"
+  },
+  {
+    "q": 4,
+    "r": 0,
+    "terrain": "forest"
+  }
+]
