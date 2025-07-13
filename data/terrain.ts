@@ -29,7 +29,7 @@ export const terrainConfig: Record<TerrainType, TerrainConfig> = {
     label: 'Montaña',
   },
   base: {
-    image: require('../assets/images/Mini/MainBase.png'),
+    image: require('../assets/images/mini/MainBase.png'),
     fallbackColor: '#fff',
     label: 'Base Principal',
   },
