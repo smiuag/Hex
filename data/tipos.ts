@@ -10,6 +10,16 @@ export type TerrainType =
   | "plains";
 
 export type BuildingType = "base" | "factory" | "lab";
+export type ResourceType = "metal" | "crystal" | "energy";
+
+export type Resources = {
+  [key in ResourceType]: number;
+};
+
+export type StoredResources = {
+  resources: Resources;
+  lastUpdate: number;
+};
 
 export type BuildingData = {
   type: BuildingType;

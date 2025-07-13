@@ -1,4 +1,3 @@
-// src/screens/StartScreen.tsx
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -9,20 +8,27 @@ import {
   Text,
   View,
 } from "react-native";
-import { TerrainType } from "../../data/tipos";
-import { deleteMap, loadMap, saveMap } from "../../src/services/storage";
-import { generateHexGrid } from "../../utils/mapGenerator"; // asumiendo que ya existe
+
+import ResourceBar from "../../components/ResourceBar";
+import { BuildingType, TerrainType } from "../../data/tipos";
+import { useMap } from "../../src/context/MapContext";
+import { useResources } from "../../src/context/ResourceContext";
+import { generateHexGrid, initialResources } from "../../utils/mapGenerator";
 
 export default function MenuScreen() {
   const [checking, setChecking] = useState(true);
   const [hasMap, setHasMap] = useState(false);
   const router = useRouter();
 
+  const { setHexes, saveMapToStorage } = useMap();
+  const { setResources } = useResources();
+
   useEffect(() => {
     const checkMap = async () => {
-      const map = await loadMap();
-
-      setHasMap(!!map?.length);
+      const savedMap = await import("../../src/services/storage").then((mod) =>
+        mod.loadMap()
+      );
+      setHasMap(!!savedMap?.length);
       setChecking(false);
     };
     checkMap();
@@ -38,13 +44,21 @@ export default function MenuScreen() {
       return {
         ...hex,
         terrain,
-        building: isBase ? { type: "base", level: 1 } : null,
+        building: isBase ? { type: "base" as BuildingType, level: 1 } : null,
         construction: undefined,
         previousBuilding: null,
       };
     });
 
+    const { saveMap, saveResources } = await import(
+      "../../src/services/storage"
+    );
     await saveMap(newMap);
+    await saveResources(initialResources);
+
+    setHexes(newMap);
+    setResources(initialResources);
+
     setHasMap(true);
     router.replace("/planeta");
   };
@@ -59,6 +73,7 @@ export default function MenuScreen() {
           text: "Sí, borrar",
           style: "destructive",
           onPress: async () => {
+            const { deleteMap } = await import("../../src/services/storage");
             await deleteMap();
             setHasMap(false);
           },
@@ -78,6 +93,7 @@ export default function MenuScreen() {
 
   return (
     <View style={styles.center}>
+      <ResourceBar />
       <Text style={styles.title}>Bienvenido a tu mundo</Text>
       {!hasMap && <Button title="Iniciar partida" onPress={handleStartGame} />}
       {hasMap && (

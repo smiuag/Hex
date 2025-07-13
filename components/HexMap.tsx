@@ -1,5 +1,5 @@
 import { useFocusEffect } from "@react-navigation/native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Dimensions } from "react-native";
 import {
   Gesture,
@@ -19,9 +19,8 @@ import {
 import { buildingConfig } from "../data/buildings";
 import { terrainConfig } from "../data/terrain";
 import { BuildingType, Hex } from "../data/tipos";
-import { loadMap, saveMap } from "../src/services/storage";
+import { useMap } from "../src/context/MapContext";
 import { getBuildTime } from "../utils/helpers";
-import { normalizeHexMap } from "../utils/mapNormalizer";
 import HexModal from "./HexModal";
 
 const HEX_SIZE = 60;
@@ -32,7 +31,13 @@ const CENTER_X = SVG_WIDTH / 2;
 const CENTER_Y = SVG_HEIGHT / 2;
 
 export default function HexMap() {
-  const [hexes, setHexes] = useState<Hex[]>([]);
+  const {
+    hexes,
+    setHexes,
+    reloadMap,
+    saveMapToStorage,
+    processConstructionTick,
+  } = useMap();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedHex, setSelectedHex] = useState<Hex | null>(null);
   const [touchStartTime, setTouchStartTime] = useState<number | null>(null);
@@ -40,9 +45,6 @@ export default function HexMap() {
     x: number;
     y: number;
   } | null>(null);
-
-  const [tick, setTick] = useState(0);
-  const hexesRef = useRef<Hex[]>([]);
 
   const handleBuild = (type: BuildingType) => {
     if (!selectedHex) return;
@@ -66,8 +68,7 @@ export default function HexMap() {
     });
 
     setHexes(updated);
-    hexesRef.current = updated;
-    saveMap(updated);
+    saveMapToStorage(updated);
     setModalVisible(false);
   };
 
@@ -88,98 +89,22 @@ export default function HexMap() {
     });
 
     setHexes(updated);
-    hexesRef.current = updated;
-    await saveMap(updated);
+    await saveMapToStorage(updated);
     setModalVisible(false);
   };
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const now = Date.now();
-      let changed = false;
-
-      const updated = hexesRef.current.map((hex) => {
-        if (hex.construction) {
-          const { building, startedAt, targetLevel } = hex.construction;
-          const buildTime = getBuildTime(building, targetLevel);
-          const timePassed = now - startedAt;
-
-          if (timePassed >= buildTime) {
-            changed = true;
-            return {
-              ...hex,
-              construction: undefined,
-              building: {
-                type: building,
-                level: targetLevel,
-              },
-            };
-          }
-        }
-        return { ...hex };
-      });
-
-      if (changed) {
-        hexesRef.current = updated;
-        setHexes([...updated]);
-        setTick((prev) => prev + 1);
-        saveMap(updated);
-      }
+      processConstructionTick();
     }, 1000);
-
     return () => clearInterval(interval);
-  }, []);
+  }, [processConstructionTick]);
 
   useFocusEffect(
-    React.useCallback(() => {
-      const fetch = async () => {
-        const savedMap = await loadMap();
-        if (savedMap) {
-          let normalized = normalizeHexMap(savedMap);
-          const now = Date.now();
-          let changed = false;
-
-          normalized = normalized.map((hex) => {
-            if (hex.construction) {
-              const { building, startedAt, targetLevel } = hex.construction;
-              const buildTime = getBuildTime(building, targetLevel);
-
-              if (now - startedAt >= buildTime) {
-                changed = true;
-                return {
-                  ...hex,
-                  building: {
-                    type: building,
-                    level: targetLevel,
-                  },
-                  construction: undefined,
-                };
-              }
-            }
-            return hex;
-          });
-
-          setHexes(normalized);
-          hexesRef.current = normalized;
-
-          if (changed) {
-            await saveMap(normalized);
-          }
-        } else {
-          setHexes([]);
-          hexesRef.current = [];
-        }
-      };
-      fetch();
-    }, [])
+    useCallback(() => {
+      reloadMap();
+    }, [reloadMap])
   );
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTick((prev) => prev + 1);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
 
   const offsetX = useSharedValue(SCREEN_WIDTH / 2 - CENTER_X);
   const offsetY = useSharedValue(SCREEN_HEIGHT / 2 - CENTER_Y);
