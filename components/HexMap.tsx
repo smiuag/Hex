@@ -33,10 +33,10 @@ const CENTER_Y = SVG_HEIGHT / 2;
 export default function HexMap() {
   const {
     hexes,
-    setHexes,
     reloadMap,
-    saveMapToStorage,
     processConstructionTick,
+    handleBuild,
+    handleCancelBuild,
   } = useMap();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedHex, setSelectedHex] = useState<Hex | null>(null);
@@ -45,53 +45,6 @@ export default function HexMap() {
     x: number;
     y: number;
   } | null>(null);
-
-  const handleBuild = (type: BuildingType) => {
-    if (!selectedHex) return;
-
-    const updated = hexes.map((hex) => {
-      if (hex.q === selectedHex.q && hex.r === selectedHex.r) {
-        const currentLevel =
-          hex.building?.type === type ? hex.building.level : 0;
-        return {
-          ...hex,
-          previousBuilding: hex.building ?? null,
-          construction: {
-            building: type,
-            startedAt: Date.now(),
-            targetLevel: currentLevel + 1,
-          },
-          building: null,
-        };
-      }
-      return hex;
-    });
-
-    setHexes(updated);
-    saveMapToStorage(updated);
-    setModalVisible(false);
-  };
-
-  const handleCancelBuild = async () => {
-    if (!selectedHex) return;
-
-    const updated = hexes.map((hex) => {
-      if (hex.q === selectedHex.q && hex.r === selectedHex.r) {
-        const { construction, previousBuilding, ...rest } = hex;
-        return {
-          ...rest,
-          construction: undefined,
-          building: previousBuilding ?? null,
-          previousBuilding: undefined,
-        };
-      }
-      return hex;
-    });
-
-    setHexes(updated);
-    await saveMapToStorage(updated);
-    setModalVisible(false);
-  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -146,6 +99,19 @@ export default function HexMap() {
       points.push(`${px},${py}`);
     }
     return points.join(" ");
+  };
+
+  const onBuild = (type: BuildingType) => {
+    if (!selectedHex) return;
+    handleBuild(selectedHex.q, selectedHex.r, type);
+    setModalVisible(false);
+  };
+
+  const onCancel = () => {
+    if (selectedHex) {
+      handleCancelBuild(selectedHex.q, selectedHex.r);
+      setModalVisible(false);
+    }
   };
 
   return (
@@ -245,8 +211,8 @@ export default function HexMap() {
               visible={modalVisible}
               onClose={() => setModalVisible(false)}
               data={selectedHex}
-              onBuild={handleBuild}
-              onCancelBuild={handleCancelBuild}
+              onBuild={onBuild}
+              onCancelBuild={onCancel}
             />
           </Svg>
         </Animated.View>

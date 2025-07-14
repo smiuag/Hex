@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Hex } from "../../data/tipos";
+import { BuildingType, Hex } from "../../data/tipos";
 import { getBuildTime } from "../../utils/helpers";
 import { normalizeHexMap } from "../../utils/mapNormalizer";
 import { loadMap, saveMap } from "../services/storage";
@@ -17,6 +17,8 @@ type MapContextType = {
   reloadMap: () => Promise<void>;
   saveMapToStorage: (map: Hex[]) => Promise<void>;
   processConstructionTick: () => void;
+  handleBuild: (q: number, r: number, type: BuildingType) => void;
+  handleCancelBuild: (q: number, r: number) => void;
 };
 
 const MapContext = createContext<MapContextType | undefined>(undefined);
@@ -76,6 +78,47 @@ export const MapProvider = ({ children }: { children: React.ReactNode }) => {
     return () => clearInterval(interval);
   }, []);
 
+  const handleBuild = (q: number, r: number, type: BuildingType) => {
+    const updated = hexes.map((hex) => {
+      if (hex.q === q && hex.r === r) {
+        const currentLevel =
+          hex.building?.type === type ? hex.building.level : 0;
+        return {
+          ...hex,
+          previousBuilding: hex.building ?? null,
+          construction: {
+            building: type,
+            startedAt: Date.now(),
+            targetLevel: currentLevel + 1,
+          },
+          building: null,
+        };
+      }
+      return hex;
+    });
+
+    setHexes(updated);
+    saveMapToStorage(updated);
+  };
+
+  const handleCancelBuild = async (q: number, r: number) => {
+    const updated = hexes.map((hex) => {
+      if (hex.q === q && hex.r === r) {
+        const { construction, previousBuilding, ...rest } = hex;
+        return {
+          ...rest,
+          construction: undefined,
+          building: previousBuilding ?? null,
+          previousBuilding: undefined,
+        };
+      }
+      return hex;
+    });
+
+    setHexes(updated);
+    await saveMapToStorage(updated);
+  };
+
   return (
     <MapContext.Provider
       value={{
@@ -83,7 +126,9 @@ export const MapProvider = ({ children }: { children: React.ReactNode }) => {
         setHexes,
         reloadMap,
         saveMapToStorage,
-        processConstructionTick, // ← aquí también
+        processConstructionTick,
+        handleBuild,
+        handleCancelBuild,
       }}
     >
       {children}
