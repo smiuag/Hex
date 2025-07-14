@@ -6,8 +6,11 @@ import React, {
   useState,
 } from "react";
 import { StoredResources } from "../../data/tipos";
-import { initialResources } from "../../utils/mapGenerator";
-import { accumulateResources } from "../../utils/resourceUtils";
+import { getInitialResources } from "../../utils/mapGenerator";
+import {
+  accumulateResources,
+  resourcesAreEqual,
+} from "../../utils/resourceUtils";
 import { loadResources, saveResources } from "../services/storage";
 import { useMap } from "./MapContext";
 
@@ -27,9 +30,11 @@ export const ResourceProvider = ({
   children: React.ReactNode;
 }) => {
   const [ready, setReady] = useState(false);
-  const [resources, setResources] = useState<StoredResources>(initialResources);
+  const [resources, setResources] = useState<StoredResources>(
+    getInitialResources()
+  );
   const { hexes } = useMap();
-  const resourcesRef = useRef<StoredResources>(initialResources);
+  const resourcesRef = useRef<StoredResources>(getInitialResources());
 
   useEffect(() => {
     resourcesRef.current = resources;
@@ -37,9 +42,12 @@ export const ResourceProvider = ({
 
   const updateNow = () => {
     const updated = accumulateResources(hexes, resourcesRef.current);
-    setResources(updated);
-    resourcesRef.current = updated;
-    saveResources(updated);
+
+    if (!resourcesAreEqual(updated, resourcesRef.current)) {
+      setResources(updated);
+      resourcesRef.current = updated;
+      saveResources(updated); // solo se guarda si cambió
+    }
   };
 
   // Carga inicial
@@ -53,26 +61,29 @@ export const ResourceProvider = ({
         const now = Date.now();
         const diff = now - saved.lastUpdate;
 
+        const updated =
+          diff > 1000 ? accumulateResources(hexes, saved, diff) : saved;
+
+        setResources(updated);
+        resourcesRef.current = updated;
         if (diff > 1000) {
-          const updated = accumulateResources(hexes, saved, diff);
-          setResources(updated);
-          await saveResources(updated);
-        } else {
-          setResources(saved);
+          await saveResources(updated); // solo guarda si se recalculó
         }
       } else {
-        setResources(initialResources);
-        await saveResources(initialResources);
+        const initial = getInitialResources();
+        setResources(initial);
+        resourcesRef.current = initial;
+        await saveResources(initial);
       }
 
-      setReady(true); // todo cargado, activamos el ticker
+      setReady(true);
     };
 
     load();
   }, [hexes]);
 
   useEffect(() => {
-    if (!ready) return; //Para esperar que la carga inicial esté completada
+    if (!ready) return;
 
     const interval = setInterval(() => {
       updateNow();

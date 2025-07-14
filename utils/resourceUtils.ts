@@ -59,3 +59,13 @@ export function getProduction(hexes: Hex[]): Resources {
 
   return result;
 }
+
+export function resourcesAreEqual(a: StoredResources, b: StoredResources) {
+  const ra = a.resources;
+  const rb = b.resources;
+  return (
+    ra.metal === rb.metal &&
+    ra.energy === rb.energy &&
+    ra.crystal === rb.crystal
+  );
+}

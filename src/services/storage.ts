@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Hex, StoredResources } from "../../data/tipos";
-import { initialResources } from "../../utils/mapGenerator";
+import { getInitialResources } from "../../utils/mapGenerator";
 
 const MAP_KEY = "currentMap";
 const STORAGE_KEY = "player_resources";
@@ -21,11 +21,11 @@ export const deleteMap = async () => {
 export async function loadResources(): Promise<StoredResources> {
   const raw = await AsyncStorage.getItem(STORAGE_KEY);
   console.log(raw);
-  if (!raw) return initialResources;
+  if (!raw) return getInitialResources();
   try {
     return JSON.parse(raw);
   } catch {
-    return initialResources;
+    return getInitialResources();
   }
 }
 

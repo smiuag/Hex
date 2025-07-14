@@ -12,11 +12,11 @@ export const generateHexGrid = (radius: number) => {
   return hexes;
 };
 
-export const initialResources: StoredResources = {
+export const getInitialResources = (): StoredResources => ({
   resources: {
     metal: 1000,
     energy: 50,
     crystal: 0,
   },
   lastUpdate: Date.now(),
-};
+});

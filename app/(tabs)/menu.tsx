@@ -13,7 +13,7 @@ import ResourceBar from "../../components/ResourceBar";
 import { BuildingType, TerrainType } from "../../data/tipos";
 import { useMap } from "../../src/context/MapContext";
 import { useResources } from "../../src/context/ResourceContext";
-import { generateHexGrid, initialResources } from "../../utils/mapGenerator";
+import { generateHexGrid, getInitialResources } from "../../utils/mapGenerator";
 
 export default function MenuScreen() {
   const [checking, setChecking] = useState(true);
@@ -54,10 +54,10 @@ export default function MenuScreen() {
       "../../src/services/storage"
     );
     await saveMap(newMap);
-    await saveResources(initialResources);
+    await saveResources(getInitialResources());
 
     setHexes(newMap);
-    setResources(initialResources);
+    setResources(getInitialResources());
 
     setHasMap(true);
     router.replace("/planeta");
