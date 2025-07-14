@@ -19,7 +19,7 @@ import {
 import { buildingConfig } from "../data/buildings";
 import { terrainConfig } from "../data/terrain";
 import { BuildingType, Hex } from "../data/tipos";
-import { useMap } from "../src/context/MapContext";
+import { useGameContext } from "../src/context/GameContext";
 import { getBuildTime } from "../utils/helpers";
 import HexModal from "./HexModal";
 
@@ -37,7 +37,7 @@ export default function HexMap() {
     processConstructionTick,
     handleBuild,
     handleCancelBuild,
-  } = useMap();
+  } = useGameContext();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedHex, setSelectedHex] = useState<Hex | null>(null);
   const [touchStartTime, setTouchStartTime] = useState<number | null>(null);

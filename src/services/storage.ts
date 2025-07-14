@@ -20,7 +20,7 @@ export const deleteMap = async () => {
 
 export async function loadResources(): Promise<StoredResources> {
   const raw = await AsyncStorage.getItem(STORAGE_KEY);
-  console.log(raw);
+
   if (!raw) return getInitialResources();
   try {
     return JSON.parse(raw);

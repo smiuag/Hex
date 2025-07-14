@@ -11,8 +11,7 @@ import {
 
 import ResourceBar from "../../components/ResourceBar";
 import { BuildingType, TerrainType } from "../../data/tipos";
-import { useMap } from "../../src/context/MapContext";
-import { useResources } from "../../src/context/ResourceContext";
+import { useGameContext } from "../../src/context/GameContext";
 import { generateHexGrid, getInitialResources } from "../../utils/mapGenerator";
 
 export default function MenuScreen() {
@@ -20,8 +19,7 @@ export default function MenuScreen() {
   const [hasMap, setHasMap] = useState(false);
   const router = useRouter();
 
-  const { setHexes, saveMapToStorage } = useMap();
-  const { setResources } = useResources();
+  const { setHexes, setResources } = useGameContext();
 
   useEffect(() => {
     const checkMap = async () => {

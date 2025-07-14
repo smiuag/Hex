@@ -1,4 +1,3 @@
-// MapContext.tsx
 import React, {
   createContext,
   useContext,
@@ -6,12 +5,25 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { BuildingType, Hex } from "../../data/tipos";
+import { BuildingType, Hex, StoredResources } from "../../data/tipos";
 import { getBuildTime } from "../../utils/helpers";
+import { getInitialResources } from "../../utils/mapGenerator";
 import { normalizeHexMap } from "../../utils/mapNormalizer";
-import { loadMap, saveMap } from "../services/storage";
+import {
+  accumulateResources,
+  resourcesAreEqual,
+} from "../../utils/resourceUtils";
+import {
+  loadMap,
+  loadResources,
+  saveMap,
+  saveResources,
+} from "../services/storage";
 
-type MapContextType = {
+type ResourceContextType = {
+  resources: StoredResources;
+  updateNow: () => void;
+  setResources: React.Dispatch<React.SetStateAction<StoredResources>>;
   hexes: Hex[];
   setHexes: React.Dispatch<React.SetStateAction<Hex[]>>;
   reloadMap: () => Promise<void>;
@@ -21,19 +33,19 @@ type MapContextType = {
   handleCancelBuild: (q: number, r: number) => void;
 };
 
-const MapContext = createContext<MapContextType | undefined>(undefined);
+const ResourceContext = createContext<ResourceContextType | undefined>(
+  undefined
+);
 
-export const MapProvider = ({ children }: { children: React.ReactNode }) => {
+export const Provider = ({ children }: { children: React.ReactNode }) => {
   const [hexes, setHexes] = useState<Hex[]>([]);
   const hexesRef = useRef<Hex[]>([]);
 
-  const reloadMap = async () => {
-    const saved = await loadMap();
-    const normalized = saved ? normalizeHexMap(saved) : [];
-    setHexes(normalized);
-    hexesRef.current = normalized;
-  };
-
+  const [ready, setReady] = useState(false);
+  const [resources, setResources] = useState<StoredResources>(
+    getInitialResources()
+  );
+  const resourcesRef = useRef<StoredResources>(getInitialResources());
   const saveMapToStorage = async (map: Hex[]) => {
     setHexes(map);
     hexesRef.current = map;
@@ -68,6 +80,12 @@ export const MapProvider = ({ children }: { children: React.ReactNode }) => {
       hexesRef.current = updated;
       saveMap(updated);
     }
+  };
+  const reloadMap = async () => {
+    const saved = await loadMap();
+    const normalized = saved ? normalizeHexMap(saved) : [];
+    setHexes(normalized);
+    hexesRef.current = normalized;
   };
 
   useEffect(() => {
@@ -119,9 +137,68 @@ export const MapProvider = ({ children }: { children: React.ReactNode }) => {
     await saveMapToStorage(updated);
   };
 
+  useEffect(() => {
+    resourcesRef.current = resources;
+  }, [resources]);
+
+  const updateNow = () => {
+    const updated = accumulateResources(hexes, resourcesRef.current);
+
+    if (!resourcesAreEqual(updated, resourcesRef.current)) {
+      setResources(updated);
+      resourcesRef.current = updated;
+      saveResources(updated); // solo se guarda si cambió
+    }
+  };
+
+  // Carga inicial
+  useEffect(() => {
+    if (hexes.length === 0) return;
+
+    const load = async () => {
+      const saved = await loadResources();
+
+      if (saved) {
+        const now = Date.now();
+        const diff = now - saved.lastUpdate;
+
+        const updated =
+          diff > 1000 ? accumulateResources(hexes, saved, diff) : saved;
+
+        setResources(updated);
+        resourcesRef.current = updated;
+        if (diff > 1000) {
+          await saveResources(updated); // solo guarda si se recalculó
+        }
+      } else {
+        const initial = getInitialResources();
+        setResources(initial);
+        resourcesRef.current = initial;
+        await saveResources(initial);
+      }
+
+      setReady(true);
+    };
+
+    load();
+  }, [hexes]);
+
+  useEffect(() => {
+    if (!ready) return;
+
+    const interval = setInterval(() => {
+      updateNow();
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [ready, hexes]);
+
   return (
-    <MapContext.Provider
+    <ResourceContext.Provider
       value={{
+        resources,
+        updateNow,
+        setResources,
         hexes,
         setHexes,
         reloadMap,
@@ -132,12 +209,13 @@ export const MapProvider = ({ children }: { children: React.ReactNode }) => {
       }}
     >
       {children}
-    </MapContext.Provider>
+    </ResourceContext.Provider>
   );
 };
 
-export const useMap = () => {
-  const context = useContext(MapContext);
-  if (!context) throw new Error("useMap debe usarse dentro de MapProvider");
+export const useGameContext = () => {
+  const context = useContext(ResourceContext);
+  if (!context)
+    throw new Error("useResources debe usarse dentro de ResourceProvider");
   return context;
 };
