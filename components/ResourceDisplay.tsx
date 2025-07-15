@@ -57,6 +57,6 @@ const styles = StyleSheet.create({
   },
   item: {
     marginRight: 8,
-    color: "#333",
+    color: "white",
   },
 });

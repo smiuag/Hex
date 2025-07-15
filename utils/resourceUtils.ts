@@ -40,8 +40,8 @@ export function accumulateResources(
   };
 }
 
-export function getProduction(hexes: Hex[]): Resources {
-  const result: Resources = { metal: 0, energy: 0, crystal: 0 };
+export function getProduction(hexes: Hex[]): Partial<Resources> {
+  const result: Partial<Resources> = { metal: 0, energy: 0, crystal: 0 };
 
   for (const hex of hexes) {
     const building = hex.building;
@@ -51,7 +51,7 @@ export function getProduction(hexes: Hex[]): Resources {
         for (const key in config.production) {
           const typedKey = key as keyof Resources;
           const perLevel = config.production[typedKey] ?? 0;
-          result[typedKey] += perLevel * building.level;
+          if (result[typedKey]) result[typedKey] += perLevel * building.level;
         }
       }
     }
@@ -85,7 +85,6 @@ export function applyResourceChange(
   change: Partial<Resources>,
   multiplier = 1
 ): Resources {
-  console.log("✏️ Aplicando cambio de recursos:", change, "x", multiplier);
   const updated: Resources = { ...base };
   for (const key in change) {
     const typedKey = key as keyof Resources;

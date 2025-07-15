@@ -16,7 +16,7 @@ export const buildingConfig: Record<
     baseBuildTime: 30000,
     image: require("../assets/images/mini/MainBase.png"),
     underConstructionImage: require("../assets/images/mini/MainBase.png"),
-    baseCost: { metal: 100, energy: 50 },
+    baseCost: { metal: 10000, energy: 500 },
     production: { metal: 3, energy: 1, crystal: 2 },
   },
   factory: {

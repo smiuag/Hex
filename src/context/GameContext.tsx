@@ -128,7 +128,6 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    console.log(resourcesRef.current);
     // Descuenta recursos
     const updatedResources = {
       ...resourcesRef.current,

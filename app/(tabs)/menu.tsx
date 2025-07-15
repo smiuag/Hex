@@ -89,13 +89,17 @@ export default function MenuScreen() {
   }
 
   return (
-    <View style={styles.center}>
+    <View style={styles.container}>
+      <View style={styles.center}>
+        <Text style={styles.title}>Bienvenido a tu mundo</Text>
+        {!hasMap && (
+          <Button title="Iniciar partida" onPress={handleStartGame} />
+        )}
+        {hasMap && (
+          <Button title="Finalizar partida" color="red" onPress={handleReset} />
+        )}
+      </View>
       <ResourceBar />
-      <Text style={styles.title}>Bienvenido a tu mundo</Text>
-      {!hasMap && <Button title="Iniciar partida" onPress={handleStartGame} />}
-      {hasMap && (
-        <Button title="Finalizar partida" color="red" onPress={handleReset} />
-      )}
     </View>
   );
 }
@@ -111,5 +115,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
+  },
+  container: {
+    flex: 1,
   },
 });

@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
-    backgroundColor: "#eee",
+    backgroundColor: "#1C1C1C",
   },
   resourceItem: {
     flexDirection: "row",
@@ -32,6 +32,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontWeight: "bold",
+    color: "white",
     marginRight: 4,
   },
   value: {
