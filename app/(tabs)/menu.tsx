@@ -25,7 +25,7 @@ export default function MenuScreen() {
   const [checking, setChecking] = useState(true);
   const [hasMap, setHasMap] = useState(false);
   const router = useRouter();
-  const { setHexes, setResources, resetResources } = useGameContext();
+  const { setHexes, resetResources } = useGameContext();
 
   useEffect(() => {
     const checkMap = async () => {

@@ -194,6 +194,8 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
   const resetResources = async () => {
     setReady(false);
     setResources(getInitialResources());
+    saveResources(getInitialResources());
+    resources;
   };
 
   const handleCancelBuild = async (q: number, r: number) => {
