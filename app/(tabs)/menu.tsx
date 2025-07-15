@@ -12,19 +12,24 @@ import {
 import ResourceBar from "../../components/ResourceBar";
 import { BuildingType, TerrainType } from "../../data/tipos";
 import { useGameContext } from "../../src/context/GameContext";
+import {
+  deleteMap,
+  loadMap,
+  saveMap,
+  saveResources,
+} from "../../src/services/storage";
 import { generateHexGrid, getInitialResources } from "../../utils/mapGenerator";
+import { NotificationManager } from "../../utils/notificacionManager";
 
 export default function MenuScreen() {
   const [checking, setChecking] = useState(true);
   const [hasMap, setHasMap] = useState(false);
   const router = useRouter();
-  const { setHexes, setResources } = useGameContext();
+  const { setHexes, setResources, resetResources } = useGameContext();
 
   useEffect(() => {
     const checkMap = async () => {
-      const savedMap = await import("../../src/services/storage").then((mod) =>
-        mod.loadMap()
-      );
+      const savedMap = await loadMap();
       setHasMap(!!savedMap?.length);
       setChecking(false);
     };
@@ -46,15 +51,12 @@ export default function MenuScreen() {
         previousBuilding: null,
       };
     });
-
-    const { saveMap, saveResources } = await import(
-      "../../src/services/storage"
-    );
     await saveMap(newMap);
     await saveResources(getInitialResources());
+    await NotificationManager.cancelAllNotifications();
 
     setHexes(newMap);
-    setResources(getInitialResources());
+    resetResources();
 
     setHasMap(true);
     router.replace("/planeta");
@@ -70,9 +72,11 @@ export default function MenuScreen() {
           text: "Sí, borrar",
           style: "destructive",
           onPress: async () => {
-            const { deleteMap } = await import("../../src/services/storage");
             await deleteMap();
             setHasMap(false);
+            await saveResources(getInitialResources());
+            await NotificationManager.cancelAllNotifications();
+            resetResources();
           },
         },
       ]

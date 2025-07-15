@@ -17,6 +17,7 @@ export const getInitialResources = (): StoredResources => ({
     metal: 1000,
     energy: 50,
     crystal: 0,
+    stone: 0,
   },
   lastUpdate: Date.now(),
 });

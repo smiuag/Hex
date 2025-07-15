@@ -1,3 +1,4 @@
+import * as Notifications from "expo-notifications";
 import React, {
   createContext,
   useContext,
@@ -16,6 +17,7 @@ import {
 import { getBuildTime } from "../../utils/helpers";
 import { getInitialResources } from "../../utils/mapGenerator";
 import { normalizeHexMap } from "../../utils/mapNormalizer";
+import { NotificationManager } from "../../utils/notificacionManager";
 import {
   accumulateResources,
   applyResourceChange,
@@ -40,6 +42,7 @@ type ResourceContextType = {
   processConstructionTick: () => void;
   handleBuild: (q: number, r: number, type: BuildingType) => void;
   handleCancelBuild: (q: number, r: number) => void;
+  resetResources: () => void;
 };
 
 const ResourceContext = createContext<ResourceContextType | undefined>(
@@ -53,12 +56,14 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
   const [resources, setResources] = useState<StoredResources>(
     getInitialResources()
   );
+
   const resourcesRef = useRef<StoredResources>(getInitialResources());
   const saveMapToStorage = async (map: Hex[]) => {
     setHexes(map);
     hexesRef.current = map;
     await saveMap(map);
   };
+
   const processConstructionTick = () => {
     const now = Date.now();
     let changed = false;
@@ -70,6 +75,17 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
 
         if (now - startedAt >= buildTime) {
           changed = true;
+
+          // ⚠️ NUEVO: Notificar al usuario
+          Notifications.scheduleNotificationAsync({
+            content: {
+              title: "✅ Construcción terminada",
+              body: `Tu edificio "${building}" ha finalizado su construcción.`,
+              sound: true,
+            },
+            trigger: null, // se muestra inmediatamente
+          });
+
           return {
             ...hex,
             construction: undefined,
@@ -89,6 +105,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
       saveMap(updated);
     }
   };
+
   const reloadMap = async () => {
     const saved = await loadMap();
     const normalized = saved ? normalizeHexMap(saved) : [];
@@ -104,7 +121,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleBuild = (q: number, r: number, type: BuildingType) => {
+  const handleBuild = async (q: number, r: number, type: BuildingType) => {
     const hex = hexesRef.current.find((h) => h.q === q && h.r === r);
     if (!hex) return;
 
@@ -139,6 +156,17 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
       lastUpdate: Date.now(),
     };
 
+    // Obtener duración de construcción
+    const durationMs = getBuildTime(type, nextLevel);
+
+    // Programar notificación si procede
+    const notificationId = await NotificationManager.scheduleNotification({
+      title: "✅ Construcción terminada",
+      body: `Tu edificio "${type}" ha finalizado su construcción.`,
+      delayMs: durationMs,
+    });
+
+    // Actualizar el mapa con la construcción y el notificationId
     const updatedHexes = hexesRef.current.map((h) => {
       if (h.q === q && h.r === r) {
         return {
@@ -148,6 +176,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
             building: type,
             startedAt: Date.now(),
             targetLevel: nextLevel,
+            notificationId: notificationId ?? undefined,
           },
           building: null,
         };
@@ -158,25 +187,30 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     setHexes(updatedHexes);
     setResources(updatedResources);
 
-    saveMap(updatedHexes);
-    saveResources(updatedResources);
+    await saveMap(updatedHexes);
+    await saveResources(updatedResources);
   };
 
-  const handleCancelBuild = (q: number, r: number) => {
+  const resetResources = async () => {
+    setReady(false);
+    setResources(getInitialResources());
+  };
+
+  const handleCancelBuild = async (q: number, r: number) => {
     const hex = hexesRef.current.find((h) => h.q === q && h.r === r);
     if (!hex || !hex.construction) return;
 
-    const { building, targetLevel } = hex.construction;
+    const { building, targetLevel, notificationId } = hex.construction;
     const baseCost = buildingConfig[building].baseCost;
 
     const scaledCost: Partial<Resources> = {};
     for (const key in baseCost) {
-      const typedKey = key as keyof Resources;
-      scaledCost[typedKey] = (baseCost[typedKey] ?? 0) * targetLevel;
+      const k = key as keyof Resources;
+      scaledCost[k] = (baseCost[k] ?? 0) * targetLevel;
     }
 
-    // Reembolso
-    const reimbursedResources = {
+    // Reembolsar recursos
+    const reimbursedResources: StoredResources = {
       ...resourcesRef.current,
       resources: applyResourceChange(
         resourcesRef.current.resources,
@@ -186,6 +220,12 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
       lastUpdate: Date.now(),
     };
 
+    // Cancelar notificación si existe
+    if (notificationId) {
+      await NotificationManager.cancelNotification(notificationId);
+    }
+
+    // Actualizar mapa
     const updatedHexes = hexesRef.current.map((h) => {
       if (h.q === q && h.r === r) {
         const { construction, previousBuilding, ...rest } = h;
@@ -202,8 +242,8 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     setHexes(updatedHexes);
     setResources(reimbursedResources);
 
-    saveMap(updatedHexes);
-    saveResources(reimbursedResources);
+    await saveMap(updatedHexes);
+    await saveResources(reimbursedResources);
   };
 
   useEffect(() => {
@@ -211,6 +251,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
   }, [resources]);
 
   const updateNow = () => {
+    if (!ready) return null;
     const updated = accumulateResources(hexes, resourcesRef.current);
 
     if (!resourcesAreEqual(updated, resourcesRef.current)) {
@@ -275,6 +316,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
         processConstructionTick,
         handleBuild,
         handleCancelBuild,
+        resetResources,
       }}
     >
       {children}

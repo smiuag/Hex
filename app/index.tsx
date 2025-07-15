@@ -1,13 +1,25 @@
-
-import { useRouter } from 'expo-router';
-import { useEffect } from 'react';
+import { useRouter } from "expo-router";
+import { useEffect } from "react";
+import { NotificationManager } from "../utils/notificacionManager";
 
 export default function IndexRedirect() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace('/planeta'); 
+    router.replace("/planeta");
   }, []);
 
+  useEffect(() => {
+    NotificationManager.initializeNotifications(); // ✅ Llamada correcta
+
+    const requestPermissions = async () => {
+      const granted = await NotificationManager.requestPermissions?.();
+      if (!granted) {
+        console.warn("🔕 No se concedieron permisos para notificaciones");
+      }
+    };
+
+    requestPermissions();
+  }, []);
   return null;
 }

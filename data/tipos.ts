@@ -43,5 +43,6 @@ export type Hex = {
     building: BuildingType;
     startedAt: number;
     targetLevel: number;
+    notificationId?: string;
   };
 };

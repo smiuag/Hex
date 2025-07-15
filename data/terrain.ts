@@ -1,4 +1,3 @@
-
 import { TerrainType } from "./tipos";
 
 type TerrainConfig = {
@@ -9,48 +8,48 @@ type TerrainConfig = {
 
 export const terrainConfig: Record<TerrainType, TerrainConfig> = {
   forest: {
-    image: undefined ,
-    fallbackColor: '#228B22',
-    label: 'Bosque',
+    image: undefined,
+    fallbackColor: "#228B22",
+    label: "Bosque",
   },
   desert: {
-    image: undefined ,
-    fallbackColor: '#EDC9Af',
-    label: 'Desierto',
+    image: undefined,
+    fallbackColor: "#EDC9Af",
+    label: "Desierto",
   },
   water: {
-    image: undefined ,
-    fallbackColor: '#1E90FF',
-    label: 'Agua',
+    image: undefined,
+    fallbackColor: "#1E90FF",
+    label: "Agua",
   },
   mountain: {
-    image: undefined ,
-    fallbackColor: '#A9A9A9',
-    label: 'Montaña',
+    image: undefined,
+    fallbackColor: "#A9A9A9",
+    label: "Montaña",
   },
   base: {
-    image: require('../assets/images/mini/MainBase.png'),
-    fallbackColor: '#fff',
-    label: 'Base Principal',
+    image: require("../assets/images/mini/MainBase.png"),
+    fallbackColor: "#fff",
+    label: "Base Principal",
   },
   ice: {
-    image: undefined ,
-    fallbackColor: '#B0E0E6',
-    label: 'Hielo',
+    image: undefined,
+    fallbackColor: "#B0E0E6",
+    label: "Hielo",
   },
   lava: {
-    image: undefined ,
-    fallbackColor: '#FF4500',
-    label: 'Lava',
+    image: undefined,
+    fallbackColor: "#FF4500",
+    label: "Lava",
   },
   swamp: {
-    image: undefined ,
-    fallbackColor: '#556B2F',
-    label: 'Pantano',
+    image: undefined,
+    fallbackColor: "#556B2F",
+    label: "Pantano",
   },
   plains: {
-    image: undefined ,
-    fallbackColor: '#c6e68eff',
-    label: 'Plains',
+    image: undefined,
+    fallbackColor: "#c6e68eff",
+    label: "Plains",
   },
 };
