@@ -5,12 +5,21 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { BuildingType, Hex, StoredResources } from "../../data/tipos";
+import { Alert } from "react-native";
+import { buildingConfig } from "../../data/buildings";
+import {
+  BuildingType,
+  Hex,
+  Resources,
+  StoredResources,
+} from "../../data/tipos";
 import { getBuildTime } from "../../utils/helpers";
 import { getInitialResources } from "../../utils/mapGenerator";
 import { normalizeHexMap } from "../../utils/mapNormalizer";
 import {
   accumulateResources,
+  applyResourceChange,
+  hasEnoughResources,
   resourcesAreEqual,
 } from "../../utils/resourceUtils";
 import {
@@ -40,7 +49,6 @@ const ResourceContext = createContext<ResourceContextType | undefined>(
 export const Provider = ({ children }: { children: React.ReactNode }) => {
   const [hexes, setHexes] = useState<Hex[]>([]);
   const hexesRef = useRef<Hex[]>([]);
-
   const [ready, setReady] = useState(false);
   const [resources, setResources] = useState<StoredResources>(
     getInitialResources()
@@ -97,32 +105,91 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const handleBuild = (q: number, r: number, type: BuildingType) => {
-    const updated = hexes.map((hex) => {
-      if (hex.q === q && hex.r === r) {
-        const currentLevel =
-          hex.building?.type === type ? hex.building.level : 0;
+    const hex = hexesRef.current.find((h) => h.q === q && h.r === r);
+    if (!hex) return;
+
+    const currentLevel = hex.building?.type === type ? hex.building.level : 0;
+    const nextLevel = currentLevel + 1;
+    const cost = buildingConfig[type].baseCost;
+
+    const scaledCost: Partial<Resources> = {};
+    for (const key in cost) {
+      const typedKey = key as keyof Resources;
+      scaledCost[typedKey] = (cost[typedKey] ?? 0) * nextLevel;
+    }
+
+    // Verifica si hay recursos suficientes
+    if (!hasEnoughResources(resourcesRef.current.resources, scaledCost)) {
+      Alert.alert(
+        "Recursos insuficientes",
+        "No tienes suficientes materiales para construir este edificio.",
+        [{ text: "OK" }]
+      );
+      return;
+    }
+
+    console.log(resourcesRef.current);
+    // Descuenta recursos
+    const updatedResources = {
+      ...resourcesRef.current,
+      resources: applyResourceChange(
+        resourcesRef.current.resources,
+        scaledCost,
+        -1
+      ),
+      lastUpdate: Date.now(),
+    };
+
+    const updatedHexes = hexesRef.current.map((h) => {
+      if (h.q === q && h.r === r) {
         return {
-          ...hex,
-          previousBuilding: hex.building ?? null,
+          ...h,
+          previousBuilding: h.building ?? null,
           construction: {
             building: type,
             startedAt: Date.now(),
-            targetLevel: currentLevel + 1,
+            targetLevel: nextLevel,
           },
           building: null,
         };
       }
-      return hex;
+      return h;
     });
 
-    setHexes(updated);
-    saveMapToStorage(updated);
+    setHexes(updatedHexes);
+    setResources(updatedResources);
+
+    saveMap(updatedHexes);
+    saveResources(updatedResources);
   };
 
-  const handleCancelBuild = async (q: number, r: number) => {
-    const updated = hexes.map((hex) => {
-      if (hex.q === q && hex.r === r) {
-        const { construction, previousBuilding, ...rest } = hex;
+  const handleCancelBuild = (q: number, r: number) => {
+    const hex = hexesRef.current.find((h) => h.q === q && h.r === r);
+    if (!hex || !hex.construction) return;
+
+    const { building, targetLevel } = hex.construction;
+    const baseCost = buildingConfig[building].baseCost;
+
+    const scaledCost: Partial<Resources> = {};
+    for (const key in baseCost) {
+      const typedKey = key as keyof Resources;
+      scaledCost[typedKey] = (baseCost[typedKey] ?? 0) * targetLevel;
+    }
+
+    // Reembolso
+    const reimbursedResources = {
+      ...resourcesRef.current,
+      resources: applyResourceChange(
+        resourcesRef.current.resources,
+        scaledCost,
+        1
+      ),
+      lastUpdate: Date.now(),
+    };
+
+    const updatedHexes = hexesRef.current.map((h) => {
+      if (h.q === q && h.r === r) {
+        const { construction, previousBuilding, ...rest } = h;
         return {
           ...rest,
           construction: undefined,
@@ -130,11 +197,14 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
           previousBuilding: undefined,
         };
       }
-      return hex;
+      return h;
     });
 
-    setHexes(updated);
-    await saveMapToStorage(updated);
+    setHexes(updatedHexes);
+    setResources(reimbursedResources);
+
+    saveMap(updatedHexes);
+    saveResources(reimbursedResources);
   };
 
   useEffect(() => {

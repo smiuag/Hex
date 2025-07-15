@@ -69,3 +69,30 @@ export function resourcesAreEqual(a: StoredResources, b: StoredResources) {
     ra.crystal === rb.crystal
   );
 }
+
+export function hasEnoughResources(
+  current: Resources,
+  cost: Partial<Resources>
+): boolean {
+  return Object.entries(cost).every(([key, value]) => {
+    const typedKey = key as keyof Resources;
+    return (current[typedKey] ?? 0) >= (value ?? 0);
+  });
+}
+
+export function applyResourceChange(
+  base: Resources,
+  change: Partial<Resources>,
+  multiplier = 1
+): Resources {
+  console.log("✏️ Aplicando cambio de recursos:", change, "x", multiplier);
+  const updated: Resources = { ...base };
+  for (const key in change) {
+    const typedKey = key as keyof Resources;
+    updated[typedKey] = Math.max(
+      0,
+      updated[typedKey] + (change[typedKey] ?? 0) * multiplier
+    );
+  }
+  return updated;
+}

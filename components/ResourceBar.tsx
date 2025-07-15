@@ -1,6 +1,7 @@
 // components/ResourceBar.tsx
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { ResourceDisplay } from "../components/ResourceDisplay";
 import { useGameContext } from "../src/context/GameContext";
 
 export default function ResourceBar() {
@@ -9,12 +10,9 @@ export default function ResourceBar() {
 
   return (
     <View style={styles.container}>
-      {Object.entries(resources.resources).map(([key, value]) => (
-        <View key={key} style={styles.resourceItem}>
-          <Text style={styles.label}>{key.toUpperCase()}:</Text>
-          <Text style={styles.value}>{value}</Text>
-        </View>
-      ))}
+      <View>
+        <ResourceDisplay resources={resources.resources} fontSize={16} />
+      </View>
     </View>
   );
 }
@@ -24,10 +22,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
-    padding: 8,
     backgroundColor: "#eee",
-    borderRadius: 8,
-    marginBottom: 16,
   },
   resourceItem: {
     flexDirection: "row",

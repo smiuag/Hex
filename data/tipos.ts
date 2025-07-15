@@ -10,10 +10,17 @@ export type TerrainType =
   | "plains";
 
 export type BuildingType = "base" | "factory" | "lab";
-export type ResourceType = "metal" | "crystal" | "energy";
+export type ResourceType = "metal" | "crystal" | "energy" | "stone";
 
 export type Resources = {
   [key in ResourceType]: number;
+};
+
+export const ResourceEmojis: Record<ResourceType, string> = {
+  metal: "🔩", // tornillo
+  stone: "🪨", // roca
+  energy: "⚡", // rayo
+  crystal: "💎", // diamante
 };
 
 export type StoredResources = {

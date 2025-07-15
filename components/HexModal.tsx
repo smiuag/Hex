@@ -80,6 +80,7 @@ export default function HexModal({
         <Text style={styles.label}>Terreno vacío</Text>
         <Text>Tipo: {terrain}</Text>
         <Text style={styles.label}>Construir:</Text>
+
         <View style={styles.buildButtons}>
           <Pressable style={styles.button} onPress={() => onBuild("factory")}>
             <Text style={styles.buttonText}>Fábrica</Text>
