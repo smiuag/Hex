@@ -1,14 +1,13 @@
-import { HapticTab } from '@/components/HapticTab';
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
+import { HapticTab } from "@/components/HapticTab";
+import { Tabs } from "expo-router";
+import React from "react";
+import { Platform } from "react-native";
+import { MenuIcon, PlanetIcon } from "../../components/MenuIcons";
 
 export default function TabLayout() {
-const originalWarn = console.warn;
+  const originalWarn = console.warn;
 
-console.warn = (...args) => {
-};
-  
+  console.warn = (...args) => {};
 
   return (
     <Tabs
@@ -17,21 +16,26 @@ console.warn = (...args) => {
         tabBarButton: HapticTab,
         tabBarStyle: Platform.select({
           ios: {
-            position: 'absolute',
+            position: "absolute",
           },
           default: {},
         }),
-      }}>
+      }}
+    >
       <Tabs.Screen
         name="menu"
         options={{
-          title: 'Menu',
+          tabBarIcon: ({ color, size }) => (
+            <MenuIcon color={color} size={size} />
+          ),
         }}
       />
       <Tabs.Screen
         name="planeta"
         options={{
-          title: 'Planeta',
+          tabBarIcon: ({ color, size }) => (
+            <PlanetIcon color={color} size={size} />
+          ),
         }}
       />
     </Tabs>
