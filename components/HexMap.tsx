@@ -20,7 +20,7 @@ import { buildingConfig } from "../data/buildings";
 import { terrainConfig } from "../data/terrain";
 import { BuildingType, Hex } from "../data/tipos";
 import { useGameContext } from "../src/context/GameContext";
-import { getBuildTime } from "../utils/helpers";
+import { getBuildTime } from "../utils/buildingUtils";
 import HexModal from "./HexModal";
 
 const HEX_SIZE = 60;
@@ -120,6 +120,7 @@ export default function HexMap() {
         <Animated.View style={[{ flex: 1 }, animatedStyle]}>
           <Svg width={SVG_WIDTH} height={SVG_HEIGHT}>
             {hexes.map((hex, index) => {
+              if (!hex.isVisible) return null;
               const { q, r, terrain, building, construction } = hex;
               const config = terrainConfig[terrain];
               const { x, y } = axialToPixel(q, r);

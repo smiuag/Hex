@@ -18,8 +18,8 @@ import {
   saveMap,
   saveResources,
 } from "../../src/services/storage";
-import { generateHexGrid, getInitialResources } from "../../utils/mapGenerator";
-import { NotificationManager } from "../../utils/notificacionManager";
+import { generateHexGrid, getInitialResources } from "../../utils/mapUtils";
+import { NotificationManager } from "../../utils/notificacionUtils";
 
 export default function MenuScreen() {
   const [checking, setChecking] = useState(true);
@@ -37,7 +37,7 @@ export default function MenuScreen() {
   }, []);
 
   const handleStartGame = async () => {
-    const newMap = generateHexGrid(4).map((hex) => {
+    const newMap = generateHexGrid(5).map((hex) => {
       const isBase = hex.q === 0 && hex.r === 0;
       const terrain = isBase
         ? ("base" as TerrainType)

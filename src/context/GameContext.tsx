@@ -14,10 +14,9 @@ import {
   Resources,
   StoredResources,
 } from "../../data/tipos";
-import { getBuildTime } from "../../utils/helpers";
-import { getInitialResources } from "../../utils/mapGenerator";
-import { normalizeHexMap } from "../../utils/mapNormalizer";
-import { NotificationManager } from "../../utils/notificacionManager";
+import { getBuildTime } from "../../utils/buildingUtils";
+import { getInitialResources, normalizeHexMap } from "../../utils/mapUtils";
+import { NotificationManager } from "../../utils/notificacionUtils";
 import {
   accumulateResources,
   applyResourceChange,

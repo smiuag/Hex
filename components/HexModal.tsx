@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { BuildingType, Hex } from "../data/tipos";
-import { getBuildTime } from "../utils/helpers";
+import { getBuildTime } from "../utils/buildingUtils";
 
 type Props = {
   visible: boolean;

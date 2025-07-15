@@ -36,6 +36,7 @@ export type BuildingData = {
 export type Hex = {
   q: number;
   r: number;
+  isVisible: boolean;
   terrain: TerrainType;
   building?: BuildingData | null;
   previousBuilding?: BuildingData | null;

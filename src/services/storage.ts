@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Hex, StoredResources } from "../../data/tipos";
-import { getInitialResources } from "../../utils/mapGenerator";
+import { getInitialResources } from "../../utils/mapUtils";
 
 const MAP_KEY = "currentMap";
 const STORAGE_KEY = "player_resources";

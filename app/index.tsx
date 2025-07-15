@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
-import { NotificationManager } from "../utils/notificacionManager";
+import { NotificationManager } from "../utils/notificacionUtils";
 
 export default function IndexRedirect() {
   const router = useRouter();
