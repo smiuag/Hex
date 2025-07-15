@@ -44,6 +44,7 @@ type ResourceContextType = {
   resetResources: () => void;
 };
 
+const isBuildingRef = useRef(false);
 const ResourceContext = createContext<ResourceContextType | undefined>(
   undefined
 );
@@ -64,44 +65,50 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const processConstructionTick = () => {
-    const now = Date.now();
-    let changed = false;
+    if (isBuildingRef.current) return;
+    isBuildingRef.current = true;
+    try {
+      const now = Date.now();
+      let changed = false;
 
-    const updated = hexesRef.current.map((hex) => {
-      if (hex.construction) {
-        const { building, startedAt, targetLevel } = hex.construction;
-        const buildTime = getBuildTime(building, targetLevel);
+      const updated = hexesRef.current.map((hex) => {
+        if (hex.construction) {
+          const { building, startedAt, targetLevel } = hex.construction;
+          const buildTime = getBuildTime(building, targetLevel);
 
-        if (now - startedAt >= buildTime) {
-          changed = true;
+          if (now - startedAt >= buildTime) {
+            changed = true;
 
-          // ⚠️ NUEVO: Notificar al usuario
-          Notifications.scheduleNotificationAsync({
-            content: {
-              title: "✅ Construcción terminada",
-              body: `Tu edificio "${building}" ha finalizado su construcción.`,
-              sound: true,
-            },
-            trigger: null, // se muestra inmediatamente
-          });
+            // ⚠️ NUEVO: Notificar al usuario
+            Notifications.scheduleNotificationAsync({
+              content: {
+                title: "✅ Construcción terminada",
+                body: `Tu edificio "${building}" ha finalizado su construcción.`,
+                sound: true,
+              },
+              trigger: null, // se muestra inmediatamente
+            });
 
-          return {
-            ...hex,
-            construction: undefined,
-            building: {
-              type: building,
-              level: targetLevel,
-            },
-          };
+            return {
+              ...hex,
+              construction: undefined,
+              building: {
+                type: building,
+                level: targetLevel,
+              },
+            };
+          }
         }
-      }
-      return hex;
-    });
+        return hex;
+      });
 
-    if (changed) {
-      setHexes(updated);
-      hexesRef.current = updated;
-      saveMap(updated);
+      if (changed) {
+        setHexes(updated);
+        hexesRef.current = updated;
+        saveMap(updated);
+      }
+    } finally {
+      isBuildingRef.current = false;
     }
   };
 
@@ -121,73 +128,76 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const handleBuild = async (q: number, r: number, type: BuildingType) => {
-    const hex = hexesRef.current.find((h) => h.q === q && h.r === r);
-    if (!hex) return;
+    if (isBuildingRef.current) return; // evitar dobles clics simultáneos
+    isBuildingRef.current = true;
 
-    const currentLevel = hex.building?.type === type ? hex.building.level : 0;
-    const nextLevel = currentLevel + 1;
-    const cost = buildingConfig[type].baseCost;
+    try {
+      const hex = hexesRef.current.find((h) => h.q === q && h.r === r);
+      if (!hex) return;
 
-    const scaledCost: Partial<Resources> = {};
-    for (const key in cost) {
-      const typedKey = key as keyof Resources;
-      scaledCost[typedKey] = (cost[typedKey] ?? 0) * nextLevel;
-    }
+      const currentLevel = hex.building?.type === type ? hex.building.level : 0;
+      const nextLevel = currentLevel + 1;
+      const cost = buildingConfig[type].baseCost;
 
-    // Verifica si hay recursos suficientes
-    if (!hasEnoughResources(resourcesRef.current.resources, scaledCost)) {
-      Alert.alert(
-        "Recursos insuficientes",
-        "No tienes suficientes materiales para construir este edificio.",
-        [{ text: "OK" }]
-      );
-      return;
-    }
-
-    // Descuenta recursos
-    const updatedResources = {
-      ...resourcesRef.current,
-      resources: applyResourceChange(
-        resourcesRef.current.resources,
-        scaledCost,
-        -1
-      ),
-      lastUpdate: Date.now(),
-    };
-
-    // Obtener duración de construcción
-    const durationMs = getBuildTime(type, nextLevel);
-
-    // Programar notificación si procede
-    const notificationId = await NotificationManager.scheduleNotification({
-      title: "✅ Construcción terminada",
-      body: `Tu edificio "${type}" ha finalizado su construcción.`,
-      delayMs: durationMs,
-    });
-
-    // Actualizar el mapa con la construcción y el notificationId
-    const updatedHexes = hexesRef.current.map((h) => {
-      if (h.q === q && h.r === r) {
-        return {
-          ...h,
-          previousBuilding: h.building ?? null,
-          construction: {
-            building: type,
-            startedAt: Date.now(),
-            targetLevel: nextLevel,
-            notificationId: notificationId ?? undefined,
-          },
-          building: null,
-        };
+      const scaledCost: Partial<Resources> = {};
+      for (const key in cost) {
+        const typedKey = key as keyof Resources;
+        scaledCost[typedKey] = (cost[typedKey] ?? 0) * nextLevel;
       }
-      return h;
-    });
 
-    setHexes(updatedHexes);
-    setResources(updatedResources);
+      if (!hasEnoughResources(resourcesRef.current.resources, scaledCost)) {
+        Alert.alert(
+          "Recursos insuficientes",
+          "No tienes suficientes materiales para construir este edificio.",
+          [{ text: "OK" }]
+        );
+        return;
+      }
 
-    await saveMap(updatedHexes);
-    await saveResources(updatedResources);
+      const durationMs = getBuildTime(type, nextLevel);
+
+      const notificationId = await NotificationManager.scheduleNotification({
+        title: "✅ Construcción terminada",
+        body: `Tu edificio "${type}" ha finalizado su construcción.`,
+        delayMs: durationMs,
+      });
+
+      // Aplicar cambios usando estado funcional
+      setResources((prev) => {
+        const updated: StoredResources = {
+          ...prev,
+          resources: applyResourceChange(prev.resources, scaledCost, -1),
+          lastUpdate: Date.now(),
+        };
+        resourcesRef.current = updated;
+        saveResources(updated);
+        return updated;
+      });
+
+      setHexes((prev) => {
+        const updated = prev.map((h) => {
+          if (h.q === q && h.r === r) {
+            return {
+              ...h,
+              previousBuilding: h.building ?? null,
+              construction: {
+                building: type,
+                startedAt: Date.now(),
+                targetLevel: nextLevel,
+                notificationId: notificationId ?? undefined,
+              },
+              building: null,
+            };
+          }
+          return h;
+        });
+        hexesRef.current = updated;
+        saveMap(updated);
+        return updated;
+      });
+    } finally {
+      isBuildingRef.current = false;
+    }
   };
 
   const resetResources = async () => {
