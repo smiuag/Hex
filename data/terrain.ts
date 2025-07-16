@@ -28,7 +28,7 @@ export const terrainConfig: Record<TerrainType, TerrainConfig> = {
     label: "Montaña",
   },
   base: {
-    image: require("../assets/images/mini/MainBase.png"),
+    image: undefined,
     fallbackColor: "#fff",
     label: "Base Principal",
   },
@@ -51,5 +51,15 @@ export const terrainConfig: Record<TerrainType, TerrainConfig> = {
     image: undefined,
     fallbackColor: "#c6e68eff",
     label: "Plains",
+  },
+  initial: {
+    image: undefined,
+    fallbackColor: "#3d4465",
+    label: "Sin terraformar",
+  },
+  border: {
+    image: undefined,
+    fallbackColor: "#ffffff14",
+    label: "Borde",
   },
 };

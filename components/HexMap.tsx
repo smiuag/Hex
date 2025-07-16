@@ -1,6 +1,6 @@
 import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useEffect, useState } from "react";
-import { Dimensions } from "react-native";
+import { Dimensions, ImageBackground } from "react-native";
 import {
   Gesture,
   GestureDetector,
@@ -115,108 +115,163 @@ export default function HexMap() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: "white" }}>
-      <GestureDetector gesture={panGesture}>
-        <Animated.View style={[{ flex: 1 }, animatedStyle]}>
-          <Svg width={SVG_WIDTH} height={SVG_HEIGHT}>
-            {hexes.map((hex, index) => {
-              if (!hex.isVisible) return null;
-              const { q, r, terrain, building, construction } = hex;
-              const config = terrainConfig[terrain];
-              const { x, y } = axialToPixel(q, r);
-              const px = x + CENTER_X;
-              const py = y + CENTER_Y;
-              const points = getHexPoints(px, py);
-              const buildingImage = construction
-                ? buildingConfig[construction.building].underConstructionImage
-                : building
-                ? buildingConfig[building.type].image
-                : undefined;
+      <ImageBackground
+        source={require("../assets/images/background.jpg")}
+        style={{ flex: 1 }}
+        resizeMode="cover"
+      >
+        <GestureDetector gesture={panGesture}>
+          <Animated.View style={[{ flex: 1 }, animatedStyle]}>
+            <Svg width={SVG_WIDTH} height={SVG_HEIGHT}>
+              {hexes.map((hex, index) => {
+                if (hex.isRadius) {
+                  const { q, r } = hex;
+                  const { x, y } = axialToPixel(q, r);
+                  const px = x + CENTER_X;
+                  const py = y + CENTER_Y;
+                  const points = getHexPoints(px, py);
+                  const config = terrainConfig["border"];
 
-              const onTouchStart = (event: any) => {
-                setTouchStartTime(Date.now());
-                setTouchStartPosition({
-                  x: event.nativeEvent.locationX,
-                  y: event.nativeEvent.locationY,
-                });
-              };
+                  const onTouchStart = (event: any) => {
+                    setTouchStartTime(Date.now());
+                    setTouchStartPosition({
+                      x: event.nativeEvent.locationX,
+                      y: event.nativeEvent.locationY,
+                    });
+                  };
 
-              const onTouchEnd = (event: any) => {
-                const time = Date.now();
-                const duration = time - (touchStartTime ?? 0);
-                const endPos = {
-                  x: event.nativeEvent.locationX,
-                  y: event.nativeEvent.locationY,
-                };
-                const dist = Math.sqrt(
-                  Math.pow(endPos.x - (touchStartPosition?.x ?? 0), 2) +
-                    Math.pow(endPos.y - (touchStartPosition?.y ?? 0), 2)
-                );
-                if (duration < 200 && dist < 10) {
-                  setSelectedHex(hex);
-                  setModalVisible(true);
-                }
-              };
+                  const onTouchEnd = (event: any) => {
+                    const time = Date.now();
+                    const duration = time - (touchStartTime ?? 0);
+                    const endPos = {
+                      x: event.nativeEvent.locationX,
+                      y: event.nativeEvent.locationY,
+                    };
+                    const dist = Math.sqrt(
+                      Math.pow(endPos.x - (touchStartPosition?.x ?? 0), 2) +
+                        Math.pow(endPos.y - (touchStartPosition?.y ?? 0), 2)
+                    );
+                    if (duration < 200 && dist < 10) {
+                      // Puedes mostrar otro modal aquí si lo deseas
+                      alert(
+                        "Necesitas subir de nivel tu base para explorar esta zona."
+                      );
+                    }
+                  };
 
-              return (
-                <React.Fragment key={index}>
-                  {buildingImage ? (
-                    <SvgImage
-                      href={buildingImage}
-                      x={px - (HEX_SIZE * Math.sqrt(3) * 1.14) / 2}
-                      y={py - HEX_SIZE * 1.14}
-                      width={HEX_SIZE * Math.sqrt(3) * 1.14}
-                      height={HEX_SIZE * 2 * 1.14}
-                      preserveAspectRatio="xMidYMid meet"
-                      onPressIn={onTouchStart}
-                      onPressOut={onTouchEnd}
-                    />
-                  ) : (
+                  return (
                     <Polygon
+                      key={`border-${index}`}
                       points={points}
                       fill={config.fallbackColor}
-                      stroke="#333"
+                      stroke="#444"
                       strokeWidth="1"
                       onPressIn={onTouchStart}
                       onPressOut={onTouchEnd}
                     />
-                  )}
-                  {construction && (
-                    <SvgText
-                      x={px}
-                      y={py + HEX_SIZE * 0.2}
-                      textAnchor="middle"
-                      fontSize="36"
-                      fill="white"
-                      fontWeight="bold"
-                      stroke="black"
-                      strokeWidth={0.5}
-                    >
-                      {Math.max(
-                        0,
-                        Math.ceil(
-                          (getBuildTime(
-                            construction.building,
-                            construction.targetLevel
-                          ) -
-                            (Date.now() - construction.startedAt)) /
-                            1000
-                        )
-                      )}
-                    </SvgText>
-                  )}
-                </React.Fragment>
-              );
-            })}
-            <HexModal
-              visible={modalVisible}
-              onClose={() => setModalVisible(false)}
-              data={selectedHex}
-              onBuild={onBuild}
-              onCancelBuild={onCancel}
-            />
-          </Svg>
-        </Animated.View>
-      </GestureDetector>
+                  );
+                }
+
+                if (!hex.isVisible) return null;
+
+                const { q, r, terrain, building, construction } = hex;
+                const config = terrainConfig[terrain];
+                const { x, y } = axialToPixel(q, r);
+                const px = x + CENTER_X;
+                const py = y + CENTER_Y;
+                const points = getHexPoints(px, py);
+                const buildingImage = construction
+                  ? buildingConfig[construction.building].underConstructionImage
+                  : building
+                  ? buildingConfig[building.type].image
+                  : undefined;
+
+                const onTouchStart = (event: any) => {
+                  setTouchStartTime(Date.now());
+                  setTouchStartPosition({
+                    x: event.nativeEvent.locationX,
+                    y: event.nativeEvent.locationY,
+                  });
+                };
+
+                const onTouchEnd = (event: any) => {
+                  const time = Date.now();
+                  const duration = time - (touchStartTime ?? 0);
+                  const endPos = {
+                    x: event.nativeEvent.locationX,
+                    y: event.nativeEvent.locationY,
+                  };
+                  const dist = Math.sqrt(
+                    Math.pow(endPos.x - (touchStartPosition?.x ?? 0), 2) +
+                      Math.pow(endPos.y - (touchStartPosition?.y ?? 0), 2)
+                  );
+                  if (duration < 200 && dist < 10) {
+                    setSelectedHex(hex);
+                    setModalVisible(true);
+                  }
+                };
+
+                return (
+                  <React.Fragment key={index}>
+                    {buildingImage ? (
+                      <SvgImage
+                        href={buildingImage}
+                        x={px - (HEX_SIZE * Math.sqrt(3) * 1.14) / 2}
+                        y={py - HEX_SIZE * 1.14}
+                        width={HEX_SIZE * Math.sqrt(3) * 1.14}
+                        height={HEX_SIZE * 2 * 1.14}
+                        preserveAspectRatio="xMidYMid meet"
+                        onPressIn={onTouchStart}
+                        onPressOut={onTouchEnd}
+                      />
+                    ) : (
+                      <Polygon
+                        points={points}
+                        fill={config.fallbackColor}
+                        stroke="#333"
+                        strokeWidth="1"
+                        onPressIn={onTouchStart}
+                        onPressOut={onTouchEnd}
+                      />
+                    )}
+                    {construction && (
+                      <SvgText
+                        x={px}
+                        y={py + HEX_SIZE * 0.2}
+                        textAnchor="middle"
+                        fontSize="36"
+                        fill="white"
+                        fontWeight="bold"
+                        stroke="black"
+                        strokeWidth={0.5}
+                      >
+                        {Math.max(
+                          0,
+                          Math.ceil(
+                            (getBuildTime(
+                              construction.building,
+                              construction.targetLevel
+                            ) -
+                              (Date.now() - construction.startedAt)) /
+                              1000
+                          )
+                        )}
+                      </SvgText>
+                    )}
+                  </React.Fragment>
+                );
+              })}
+              <HexModal
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                data={selectedHex}
+                onBuild={onBuild}
+                onCancelBuild={onCancel}
+              />
+            </Svg>
+          </Animated.View>
+        </GestureDetector>
+      </ImageBackground>
     </GestureHandlerRootView>
   );
 }

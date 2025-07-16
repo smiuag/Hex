@@ -41,7 +41,7 @@ export default function MenuScreen() {
       const isBase = hex.q === 0 && hex.r === 0;
       const terrain = isBase
         ? ("base" as TerrainType)
-        : ("forest" as TerrainType);
+        : ("initial" as TerrainType);
 
       return {
         ...hex,

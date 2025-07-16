@@ -6,7 +6,13 @@ export const generateHexGrid = (radius: number) => {
     const r1 = Math.max(-radius, -q - radius);
     const r2 = Math.min(radius, -q + radius);
     for (let r = r1; r <= r2; r++) {
-      hexes.push({ q, r, isVisible: false, terrain: "forest" });
+      hexes.push({
+        q,
+        r,
+        isVisible: false,
+        isRadius: false,
+        terrain: "initial",
+      });
     }
   }
   return hexes;
@@ -65,11 +71,15 @@ export function normalizeHexMap(map: any[]): Hex[] {
 
     const isVisible =
       axialDistance({ q: 0, r: 0 }, { q: hex.q, r: hex.r }) <= visibleRadius;
+    const isRadius =
+      axialDistance({ q: 0, r: 0 }, { q: hex.q, r: hex.r }) ==
+      visibleRadius + 1;
 
     return {
       q: hex.q,
       r: hex.r,
       isVisible: isVisible,
+      isRadius: isRadius,
       terrain: terrain,
       building,
       construction,
