@@ -1,7 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { ResourceDisplay } from "../components/ResourceDisplay";
 import { BuildingType, Hex } from "../data/tipos";
-import { getBuildTime } from "../utils/buildingUtils";
+
+import {
+  formatDuration,
+  getAvailableBuildings,
+  getBuildCost,
+  getBuildTime,
+} from "../utils/buildingUtils";
 
 type Props = {
   visible: boolean;
@@ -28,7 +42,12 @@ export default function HexModal({
 
     const updateRemaining = () => {
       const elapsed = Date.now() - startedAt;
-      setRemainingTime(Math.max(0, totalBuildTime - elapsed));
+      const remaining = Math.max(0, totalBuildTime - elapsed);
+      setRemainingTime(remaining);
+
+      if (remaining <= 1) {
+        onClose();
+      }
     };
 
     updateRemaining();
@@ -44,32 +63,60 @@ export default function HexModal({
     if (construction && remainingTime !== null) {
       return (
         <>
-          <Text style={styles.label}>Construcción en curso:</Text>
-          <Text>Edificio: {construction.building}</Text>
-          <Text>Nivel: {construction.targetLevel}</Text>
-          <Text>
-            Tiempo restante: {Math.ceil(remainingTime / 1000)} segundos
+          <Text style={styles.title}>
+            {construction.building.toUpperCase()}{" "}
+            <Text style={styles.level}>Nv: {construction.targetLevel}</Text>
           </Text>
-          <Pressable style={styles.button} onPress={onCancelBuild}>
-            <Text style={styles.buttonText}>Cancelar construcción</Text>
+
+          <Pressable
+            style={styles.box}
+            android_disableSound={true}
+            onPress={() => {}}
+          >
+            <Text style={styles.subTitle}>Construcción en curso</Text>
+            <Text style={styles.timeText}>
+              Tiempo restante: {formatDuration(remainingTime)}
+            </Text>
+
+            <Pressable
+              style={[styles.button, { backgroundColor: "#e53935" }]}
+              onPress={onCancelBuild}
+            >
+              <Text style={styles.upgradeButtonText}>
+                Cancelar construcción
+              </Text>
+            </Pressable>
           </Pressable>
         </>
       );
     }
 
     if (building && !construction) {
+      const cost = getBuildCost(building.type, building.level + 1);
+      const time = getBuildTime(building.type, building.level + 1);
+
       return (
         <>
-          <Text style={styles.label}>Edificio construido:</Text>
-          <Text>Tipo: {building.type}</Text>
-          <Text>Nivel actual: {building.level}</Text>
+          <Text style={styles.title}>
+            {building.type.toUpperCase()}{" "}
+            <Text style={styles.level}>Nv: {building.level}</Text>
+          </Text>
+
           <Pressable
-            style={styles.button}
-            onPress={() => onBuild(building.type)}
+            style={styles.box}
+            android_disableSound={true}
+            onPress={() => {}}
           >
-            <Text style={styles.buttonText}>
-              Mejorar a nivel {building.level + 1}
-            </Text>
+            <ResourceDisplay resources={cost} fontSize={16} fontColor="#333" />
+
+            <Pressable
+              style={styles.button}
+              onPress={() => onBuild(building.type)}
+            >
+              <Text style={styles.upgradeButtonText}>
+                Mejorar a nivel {building.level + 1} ({formatDuration(time)})
+              </Text>
+            </Pressable>
           </Pressable>
         </>
       );
@@ -77,18 +124,32 @@ export default function HexModal({
 
     return (
       <>
-        <Text style={styles.label}>Terreno vacío</Text>
-        <Text>Tipo: {terrain}</Text>
-        <Text style={styles.label}>Construir:</Text>
-
-        <View style={styles.buildButtons}>
-          <Pressable style={styles.button} onPress={() => onBuild("factory")}>
-            <Text style={styles.buttonText}>Fábrica</Text>
-          </Pressable>
-          <Pressable style={styles.button} onPress={() => onBuild("lab")}>
-            <Text style={styles.buttonText}>Laboratorio</Text>
-          </Pressable>
-        </View>
+        <Pressable
+          style={styles.buttons}
+          android_disableSound={true}
+          onPress={() => {}}
+        >
+          {getAvailableBuildings().map((building) => {
+            return (
+              <View key={building.type} style={styles.box}>
+                <ResourceDisplay
+                  resources={building.baseCost}
+                  fontSize={16}
+                  fontColor="#333"
+                />
+                <Pressable
+                  style={styles.button}
+                  onPress={() => onBuild(building.type)}
+                >
+                  <Text style={styles.upgradeButtonText}>
+                    Construir {building.name}({" "}
+                    {formatDuration(building.baseBuildTime)})
+                  </Text>
+                </Pressable>
+              </View>
+            );
+          })}
+        </Pressable>
       </>
     );
   };
@@ -100,55 +161,112 @@ export default function HexModal({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <View style={styles.overlay}>
-        <View style={styles.modal}>
-          {renderContent()}
-          <Pressable
-            onPress={onClose}
-            style={[styles.button, { backgroundColor: "#aaa" }]}
+      <Pressable style={styles.overlay} onPress={onClose}>
+        <Pressable
+          style={styles.modalWrapper}
+          onPress={(e) => e.stopPropagation()}
+        >
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
+            scrollEventThrottle={16}
           >
-            <Text style={styles.buttonText}>Cerrar</Text>
-          </Pressable>
-        </View>
-      </View>
+            <Pressable onPress={() => {}}>{renderContent()}</Pressable>
+          </ScrollView>
+        </Pressable>
+      </Pressable>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
+  modalWrapper: {
+    maxHeight: "80%",
+    width: 350,
+    backgroundColor: "white",
+    borderRadius: 12,
+    overflow: "hidden",
+  },
+
+  scrollContent: {
+    paddingVertical: 24,
+    paddingHorizontal: 20,
+    alignItems: "center",
+    gap: 16,
+    flexGrow: 1,
+  },
   overlay: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0,0,0,0.4)",
+    height: 350,
   },
   modal: {
-    backgroundColor: "white",
-    padding: 24,
-    borderRadius: 10,
-    width: 300,
-    gap: 12,
+    paddingVertical: 24,
+    paddingHorizontal: 20,
     alignItems: "center",
+    gap: 16,
   },
-  label: {
-    fontWeight: "600",
-    marginTop: 8,
-  },
-  buildButtons: {
+  buttons: {
+    width: 300,
     flexDirection: "column",
     gap: 8,
-    marginTop: 4,
-  },
-  button: {
-    backgroundColor: "#2196F3",
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 6,
-    minWidth: 200,
-    alignItems: "center",
   },
   buttonText: {
     color: "white",
     fontWeight: "bold",
+  },
+  label: {
+    fontWeight: "600",
+    marginTop: 8,
+    color: "#444",
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#222",
+    textAlign: "center",
+  },
+  level: {
+    fontSize: 18,
+    fontWeight: "normal",
+    color: "#777",
+  },
+  subTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#444",
+    marginBottom: 4,
+  },
+  timeText: {
+    fontSize: 14,
+    color: "#666",
+    marginBottom: 8,
+  },
+  box: {
+    width: "100%",
+    backgroundColor: "#f1f5f9",
+    padding: 12,
+    borderRadius: 12,
+    gap: 6,
+    alignSelf: "stretch",
+    flexShrink: 1,
+    alignItems: "center",
+    marginTop: 10,
+  },
+  button: {
+    backgroundColor: "#2196F3",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginTop: 8,
+    minWidth: 250,
+    alignItems: "center",
+  },
+  upgradeButtonText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });

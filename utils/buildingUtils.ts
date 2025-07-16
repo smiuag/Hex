@@ -1,12 +1,11 @@
-import { buildingConfig } from "../data/buildings";
-import { BuildingType, Resources } from "../data/tipos";
+import { BuildingType, Resources, buildingConfig } from "../data/tipos";
 
 export function getBuildTime(building: BuildingType, level: number) {
   const baseTime = buildingConfig[building].baseBuildTime;
   return Math.round(baseTime * Math.pow(1.5, level - 1));
 }
 
-export function getCost(building: BuildingType, level: number): Resources {
+export function getBuildCost(building: BuildingType, level: number): Resources {
   const config = buildingConfig[building];
   const base = config.baseCost;
   const result: Resources = {} as Resources;
@@ -23,3 +22,31 @@ export function getCost(building: BuildingType, level: number): Resources {
 
   return result;
 }
+
+export const formatDuration = (timestamp: number): string => {
+  let diff = Math.abs(timestamp / 1000); // diferencia en segundos
+
+  const days = Math.floor(diff / (60 * 60 * 24));
+  diff %= 60 * 60 * 24;
+
+  const hours = Math.floor(diff / (60 * 60));
+  diff %= 60 * 60;
+
+  const minutes = Math.floor(diff / 60);
+  const seconds = Math.floor(diff % 60);
+
+  const parts = [];
+  if (days > 0) parts.push(`${days}d`);
+  if (hours > 0) parts.push(`${hours}h`);
+  if (minutes > 0) parts.push(`${minutes}m`);
+  if (seconds > 0 || parts.length === 0) parts.push(`${seconds}s`);
+
+  return parts.join(" ");
+};
+
+export const getAvailableBuildings = () => {
+  return (Object.keys(buildingConfig) as BuildingType[]).map((type) => ({
+    type,
+    ...buildingConfig[type],
+  }));
+};

@@ -16,9 +16,8 @@ import {
   Image as SvgImage,
   Text as SvgText,
 } from "react-native-svg";
-import { buildingConfig } from "../data/buildings";
 import { terrainConfig } from "../data/terrain";
-import { BuildingType, Hex } from "../data/tipos";
+import { BuildingType, Hex, buildingConfig } from "../data/tipos";
 import { useGameContext } from "../src/context/GameContext";
 import { getBuildTime } from "../utils/buildingUtils";
 import HexModal from "./HexModal";

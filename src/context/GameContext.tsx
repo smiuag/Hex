@@ -7,12 +7,12 @@ import React, {
   useState,
 } from "react";
 import { Alert } from "react-native";
-import { buildingConfig } from "../../data/buildings";
 import {
   BuildingType,
   Hex,
   Resources,
   StoredResources,
+  buildingConfig,
 } from "../../data/tipos";
 import { getBuildTime } from "../../utils/buildingUtils";
 import { getInitialResources, normalizeHexMap } from "../../utils/mapUtils";

@@ -1,5 +1,4 @@
-import { buildingConfig } from "../data/buildings";
-import { Hex, Resources, StoredResources } from "../data/tipos";
+import { Hex, Resources, StoredResources, buildingConfig } from "../data/tipos";
 
 export function accumulateResources(
   hexes: Hex[],
@@ -95,3 +94,24 @@ export function applyResourceChange(
   }
   return updated;
 }
+
+export const getFormatedValue = (value: number): string => {
+  const format = (val: number, suffix: string): string => {
+    const truncated = Math.floor(val * 10) / 10;
+    return (
+      (truncated % 1 === 0 ? truncated.toFixed(0) : truncated.toFixed(1)) +
+      suffix
+    );
+  };
+
+  if (value >= 1_000_000_000) {
+    return format(value / 1_000_000_000, "B");
+  }
+  if (value >= 1_000_000) {
+    return format(value / 1_000_000, "M");
+  }
+  if (value >= 1_000) {
+    return format(value / 1_000, "K");
+  }
+  return value.toString();
+};
