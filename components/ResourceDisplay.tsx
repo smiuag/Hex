@@ -18,15 +18,12 @@ export const ResourceDisplay = ({
 }: Props) => {
   return (
     <View style={[styles.container, { gap }]}>
-      {Object.entries(resources).map(([key, value]) => {
+      {[...Object.entries(resources)].reverse().map(([key, value]) => {
         const emoji = ResourceEmojis[key as ResourceType];
-        if (!emoji || value === undefined) return null;
+        if (!emoji || value == null || value == 0) return null;
 
         return (
-          <Text
-            key={key}
-            style={[styles.item, { fontSize, color: fontColor }, { fontSize }]}
-          >
+          <Text key={key} style={[styles.item, { fontSize, color: fontColor }]}>
             {emoji} {getFormatedValue(value)}
           </Text>
         );

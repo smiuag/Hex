@@ -87,3 +87,49 @@ export function normalizeHexMap(map: any[]): Hex[] {
     };
   });
 }
+
+export function expandMapAroundBase(
+  currentMap: Hex[],
+  newBaseLevel: number
+): Hex[] {
+  const radius = Math.floor(newBaseLevel / 2) + 1;
+  const borderRadius = radius + 1;
+
+  const updatedMap = currentMap.map((hex) => {
+    const dist = axialDistance({ q: 0, r: 0 }, { q: hex.q, r: hex.r });
+    // Convertir los que eran frontera a terreno inicial
+    if (dist <= radius && hex.terrain === "border") {
+      return { ...hex, terrain: "initial" as TerrainType };
+    }
+    return hex;
+  });
+
+  const existingCoords = new Set(updatedMap.map((h) => `${h.q},${h.r}`));
+
+  const newBorders: Hex[] = [];
+
+  for (let q = -borderRadius; q <= borderRadius; q++) {
+    for (let r = -borderRadius; r <= borderRadius; r++) {
+      const s = -q - r;
+      if (Math.abs(s) > borderRadius) continue;
+
+      const dist = axialDistance({ q: 0, r: 0 }, { q, r });
+      const key = `${q},${r}`;
+
+      if (dist === borderRadius && !existingCoords.has(key)) {
+        newBorders.push({
+          q,
+          r,
+          terrain: "border" as TerrainType,
+          building: null,
+          construction: undefined,
+          isVisible: false,
+          isRadius: true,
+          previousBuilding: null,
+        });
+      }
+    }
+  }
+
+  return [...updatedMap, ...newBorders];
+}

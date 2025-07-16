@@ -31,7 +31,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="planeta"
+        name="planet"
         options={{
           tabBarIcon: ({ color, size }) => (
             <PlanetIcon color={color} size={size} />

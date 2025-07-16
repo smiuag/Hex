@@ -25,7 +25,7 @@ export type Resources = {
 
 export const ResourceEmojis: Record<ResourceType, string> = {
   metal: "🔩", // tornillo
-  stone: "🪨", // roca
+  stone: "⛏️", // roca
   energy: "⚡", // rayo
   crystal: "💎", // diamante
 };
@@ -69,7 +69,7 @@ export const buildingConfig: Record<
 > = {
   base: {
     name: "Base",
-    baseBuildTime: 30000,
+    baseBuildTime: 1000,
     image: require("../assets/images/mini/MainBase.png"),
     underConstructionImage: require("../assets/images/mini/MainBase.png"),
     baseCost: { metal: 10000, energy: 500 },

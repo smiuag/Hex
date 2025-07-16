@@ -15,7 +15,11 @@ import {
   buildingConfig,
 } from "../../data/tipos";
 import { getBuildTime } from "../../utils/buildingUtils";
-import { getInitialResources, normalizeHexMap } from "../../utils/mapUtils";
+import {
+  expandMapAroundBase,
+  getInitialResources,
+  normalizeHexMap,
+} from "../../utils/mapUtils";
 import { NotificationManager } from "../../utils/notificacionUtils";
 import {
   accumulateResources,
@@ -68,6 +72,8 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     if (isBuildingRef.current) return;
     isBuildingRef.current = true;
     try {
+      let baseLeveledUp = false;
+      let updatedBaseLevel = 0;
       const now = Date.now();
       let changed = false;
 
@@ -78,6 +84,11 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
 
           if (now - startedAt >= buildTime) {
             changed = true;
+
+            if (building === "base" && hex.q === 0 && hex.r === 0) {
+              baseLeveledUp = true;
+              updatedBaseLevel = targetLevel;
+            }
 
             // ⚠️ NUEVO: Notificar al usuario
             Notifications.scheduleNotificationAsync({
@@ -102,10 +113,15 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
         return hex;
       });
 
+      let finalMap = updated;
+
+      if (baseLeveledUp) {
+        finalMap = expandMapAroundBase(updated, updatedBaseLevel);
+      }
       if (changed) {
-        setHexes(updated);
-        hexesRef.current = updated;
-        saveMap(updated);
+        setHexes(finalMap);
+        hexesRef.current = finalMap;
+        saveMap(finalMap);
       }
     } finally {
       isBuildingRef.current = false;
