@@ -1,8 +1,14 @@
-import { HapticTab } from "@/components/HapticTab";
+import { HapticTab } from "@/components/secondary/HapticTab";
 import { Tabs } from "expo-router";
 import React from "react";
 import { Platform } from "react-native";
-import { MenuIcon, PlanetIcon } from "../../components/MenuIcons";
+import {
+  FleetIcon,
+  GalaxyIcon,
+  MenuIcon,
+  PlanetIcon,
+  ResearchIcon,
+} from "../../components/secondary/MenuIcons";
 
 export default function TabLayout() {
   const originalWarn = console.warn;
@@ -28,6 +34,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <MenuIcon color={color} size={size} />
           ),
+          tabBarLabel: "Menu",
         }}
       />
       <Tabs.Screen
@@ -36,6 +43,34 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <PlanetIcon color={color} size={size} />
           ),
+          tabBarLabel: "Planeta",
+        }}
+      />
+      <Tabs.Screen
+        name="research"
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <ResearchIcon color={color} size={size} />
+          ),
+          tabBarLabel: "Investigación",
+        }}
+      />
+      <Tabs.Screen
+        name="galaxy"
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <GalaxyIcon color={color} size={size} />
+          ),
+          tabBarLabel: "Galaxia",
+        }}
+      />
+      <Tabs.Screen
+        name="fleet"
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <FleetIcon color={color} size={size} />
+          ),
+          tabBarLabel: "Naves",
         }}
       />
     </Tabs>

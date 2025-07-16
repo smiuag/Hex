@@ -1,12 +1,12 @@
 import React from "react";
 import { SafeAreaView, StyleSheet } from "react-native";
-import MenuComponent from "../../components/main/MenuComponent";
+import ResearchComponent from "../../components/main/ResearchComponent";
 import ResourceBar from "../../components/secondary/ResourceBar";
 
 export default function MenuScreen() {
   return (
     <SafeAreaView style={styles.container}>
-      <MenuComponent />
+      <ResearchComponent />
       <ResourceBar />
     </SafeAreaView>
   );

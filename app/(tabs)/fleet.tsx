@@ -1,12 +1,12 @@
 import React from "react";
 import { SafeAreaView, StyleSheet } from "react-native";
-import MenuComponent from "../../components/main/MenuComponent";
+import FleetComponent from "../../components/main/FleetComponent";
 import ResourceBar from "../../components/secondary/ResourceBar";
 
-export default function MenuScreen() {
+export default function GalaxyScreen() {
   return (
     <SafeAreaView style={styles.container}>
-      <MenuComponent />
+      <FleetComponent />
       <ResourceBar />
     </SafeAreaView>
   );

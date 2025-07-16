@@ -12,16 +12,16 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 import Svg from "react-native-svg";
-import { BuildingType, Hex } from "../data/tipos";
-import { useGameContext } from "../src/context/GameContext";
+import { BuildingType, Hex } from "../../data/tipos";
+import { useGameContext } from "../../src/context/GameContext";
 import {
   axialToPixel,
   getHexPoints,
   SCREEN_DIMENSIONS,
-} from "../utils/hexUtils";
-import BorderHexTile from "./BorderHexTile";
-import HexModal from "./HexModal";
-import HexTile from "./HexTile";
+} from "../../utils/hexUtils";
+import BorderHexTile from "../secondary/BorderHexTile";
+import HexModal from "../secondary/HexModal";
+import HexTile from "../secondary/HexTile";
 
 export default function PlanetComponent() {
   const {

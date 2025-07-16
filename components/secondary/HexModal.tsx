@@ -7,15 +7,15 @@ import {
   Text,
   View,
 } from "react-native";
-import { ResourceDisplay } from "../components/ResourceDisplay";
-import { BuildingType, Hex } from "../data/tipos";
+import { BuildingType, Hex } from "../../data/tipos";
+import { ResourceDisplay } from "./ResourceDisplay";
 
 import {
   formatDuration,
   getAvailableBuildings,
   getBuildCost,
   getBuildTime,
-} from "../utils/buildingUtils";
+} from "../../utils/buildingUtils";
 
 type Props = {
   visible: boolean;

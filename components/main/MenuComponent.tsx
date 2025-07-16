@@ -9,16 +9,16 @@ import {
   View,
 } from "react-native";
 
-import { BuildingType, TerrainType } from "../data/tipos";
-import { useGameContext } from "../src/context/GameContext";
+import { BuildingType, TerrainType } from "../../data/tipos";
+import { useGameContext } from "../../src/context/GameContext";
 import {
   deleteMap,
   loadMap,
   saveMap,
   saveResources,
-} from "../src/services/storage";
-import { generateHexGrid, getInitialResources } from "../utils/mapUtils";
-import { NotificationManager } from "../utils/notificacionUtils";
+} from "../../src/services/storage";
+import { generateHexGrid, getInitialResources } from "../../utils/mapUtils";
+import { NotificationManager } from "../../utils/notificacionUtils";
 
 export default function MenuComponent() {
   const [checking, setChecking] = useState(true);

@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { ResourceEmojis, ResourceType, Resources } from "../data/tipos";
-import { getFormatedValue } from "../utils/resourceUtils";
+import { ResourceEmojis, ResourceType, Resources } from "../../data/tipos";
+import { getFormatedValue } from "../../utils/resourceUtils";
 
 interface Props {
   resources: Partial<Resources>;

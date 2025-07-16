@@ -1,8 +1,8 @@
 // components/ResourceBar.tsx
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import { ResourceDisplay } from "../components/ResourceDisplay";
-import { useGameContext } from "../src/context/GameContext";
+import { useGameContext } from "../../src/context/GameContext";
+import { ResourceDisplay } from "./ResourceDisplay";
 
 export default function ResourceBar() {
   const { resources } = useGameContext();
