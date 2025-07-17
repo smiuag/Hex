@@ -12,6 +12,7 @@ import {
 import { useGameContext } from "../../src/context/GameContext";
 import {
   deleteMap,
+  deleteResearchs,
   loadMap,
   saveMap,
   saveResources,
@@ -54,6 +55,7 @@ export default function MenuComponent() {
     await saveMap(newMap);
     await saveResources(getInitialResources());
     await NotificationManager.cancelAllNotifications();
+    await deleteResearchs();
 
     setHexes(newMap);
     resetResources();
@@ -75,6 +77,7 @@ export default function MenuComponent() {
             setHasMap(false);
             await saveResources(getInitialResources());
             await NotificationManager.cancelAllNotifications();
+            await deleteResearchs();
             resetResources();
           },
         },

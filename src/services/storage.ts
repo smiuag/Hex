@@ -6,7 +6,7 @@ import { getInitialResources } from "../../utils/mapUtils";
 
 const MAP_KEY = "player_map";
 const STORAGE_KEY = "player_resources";
-const RESEARCH_KEY = "player_resources";
+const RESEARCH_KEY = "player_researchs";
 
 export const saveMap = async (hexes: Hex[]) => {
   await AsyncStorage.setItem(MAP_KEY, JSON.stringify(hexes));

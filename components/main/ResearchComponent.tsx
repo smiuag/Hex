@@ -9,48 +9,33 @@ import {
   View,
 } from "react-native";
 import { researchTechnologies } from "../../src/config/researchConfig";
-import {
-  Research,
-  ResearchData,
-  ResearchType,
-} from "../../src/types/researchTypes";
+import { useGameContext } from "../../src/context/GameContext";
+import { ResearchType } from "../../src/types/researchTypes";
 import { formatDuration, getResearchTime } from "../../utils/buildingUtils";
 import { ResourceDisplay } from "../secondary/ResourceDisplay";
 
 const { width } = Dimensions.get("window");
 
-type Props = {
-  userResearchData: ResearchData[];
-  researchInProgress: Research | null;
-  labLevel: number;
-  onResearchPress?: (type: ResearchType) => void;
-};
+export default function ResearchComponent() {
+  const { research, labLevel, handleResearch, cancelResearch } =
+    useGameContext();
 
-export default function ResearchComponent({
-  userResearchData = [],
-  researchInProgress = null,
-  labLevel = 0,
-  onResearchPress = () => {},
-}: Partial<Props>) {
   const researchItems = Object.entries(researchTechnologies)
     .map(([key, config]) => {
       const type = key as ResearchType;
-
-      const currentLevel =
-        userResearchData.find((r) => r.type === type)?.level ?? 0;
-      const isAvailable = labLevel >= config.labLevelRequired;
-      const inProgress = researchInProgress?.type.type === type;
-      const time = formatDuration(getResearchTime(type, currentLevel + 1));
-
+      const data = (research || []).find((r) => r.type.type === type);
+      const currentLevel = data?.type.level ?? 0;
+      const inProgress = !!data?.progress;
       const remainingTime = inProgress
         ? Math.max(
             0,
-            Math.floor(
-              config.baseResearchTime -
-                (Date.now() / 1000 - researchInProgress.progress!.startedAt)
-            )
+            config.baseResearchTime -
+              (Date.now() - (data?.progress?.startedAt ?? 0))
           )
         : 0;
+
+      const isAvailable = labLevel >= config.labLevelRequired;
+      const time = formatDuration(getResearchTime(type, currentLevel + 1));
 
       return {
         key: type,
@@ -95,13 +80,21 @@ export default function ResearchComponent({
               <Text style={styles.description}>{item.description}</Text>
 
               {item.inProgress ? (
-                <Text style={styles.inProgressText}>
-                  ⏳ En curso: {item.remainingTime}s restantes
-                </Text>
+                <View style={styles.inProgressContainer}>
+                  <Text style={styles.inProgressText}>
+                    ⏳ En curso: {formatDuration(item.remainingTime)}
+                  </Text>
+                  <TouchableOpacity
+                    style={styles.cancelButton}
+                    onPress={() => cancelResearch()}
+                  >
+                    <Text style={styles.cancelButtonText}>Cancelar</Text>
+                  </TouchableOpacity>
+                </View>
               ) : item.isAvailable ? (
                 <TouchableOpacity
                   style={styles.button}
-                  onPress={() => onResearchPress?.(item.type)}
+                  onPress={() => handleResearch(item.type)}
                 >
                   <Text style={styles.buttonText}>
                     Investigar ({item.time})
@@ -122,11 +115,11 @@ export default function ResearchComponent({
 
 const styles = StyleSheet.create({
   list: {
-    padding: 12,
-    paddingTop: 40,
+    paddingTop: 35,
+    textAlign: "center",
   },
   cardContainer: {
-    marginBottom: 16,
+    marginBottom: 8,
     alignItems: "center",
   },
   card: {
@@ -192,13 +185,34 @@ const styles = StyleSheet.create({
     marginTop: 8,
     backgroundColor: "#2196F3",
     paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingHorizontal: 22,
     borderRadius: 8,
-    alignSelf: "flex-start",
-    textAlign: "center",
+    alignSelf: "center",
   },
   buttonText: {
     color: "#fff",
     fontWeight: "bold",
+  },
+  inProgressContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 8,
+    backgroundColor: "rgba(255,255,255,0.1)",
+    padding: 6,
+    borderRadius: 6,
+  },
+
+  cancelButton: {
+    backgroundColor: "#f87171", // rojo claro
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 6,
+  },
+
+  cancelButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 13,
   },
 });

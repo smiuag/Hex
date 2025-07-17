@@ -11,7 +11,11 @@ import { buildingConfig } from "../../src/config/buildingConfig";
 import { BuildingType } from "../../src/types/buildingTypes";
 import { Hex } from "../../src/types/hexTypes";
 import { Resources, StoredResources } from "../../src/types/resourceTypes";
-import { getBuildTime } from "../../utils/buildingUtils";
+import {
+  getBuildTime,
+  getLabLevel,
+  getResearchTime,
+} from "../../utils/buildingUtils";
 import {
   expandMapAroundBase,
   getInitialResources,
@@ -24,12 +28,16 @@ import {
   hasEnoughResources,
   resourcesAreEqual,
 } from "../../utils/resourceUtils";
+import { researchTechnologies } from "../config/researchConfig";
 import {
   loadMap,
+  loadResearchs,
   loadResources,
   saveMap,
+  saveResearchs,
   saveResources,
 } from "../services/storage";
+import { Research, ResearchType } from "../types/researchTypes";
 
 type ResourceContextType = {
   resources: StoredResources;
@@ -43,6 +51,11 @@ type ResourceContextType = {
   handleBuild: (q: number, r: number, type: BuildingType) => void;
   handleCancelBuild: (q: number, r: number) => void;
   resetResources: () => void;
+  handleResearch: (type: ResearchType) => void;
+  processResearchTick: () => void;
+  cancelResearch: () => void;
+  research: Research[];
+  labLevel: number;
 };
 
 const isBuildingRef = useRef(false);
@@ -57,8 +70,128 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
   const [resources, setResources] = useState<StoredResources>(
     getInitialResources()
   );
-
+  const [research, setResearch] = useState<Research[]>([]);
   const resourcesRef = useRef<StoredResources>(getInitialResources());
+  const researchRef = useRef<Research[]>([]);
+
+  const handleResearch = async (type: ResearchType) => {
+    const existing = research.find((r) => r.type.type === type);
+
+    // Si ya hay una investigación en curso, no se puede iniciar otra
+    const researchInProgress = research.find((r) => r.progress);
+    if (researchInProgress) return;
+
+    const currentLevel = existing?.type.level ?? 0;
+    const nextLevel = currentLevel + 1;
+    const config = researchTechnologies[type];
+
+    // Coste escalado
+    const scaledCost: Partial<Resources> = {};
+    for (const key in config.baseCost) {
+      const k = key as keyof Resources;
+      scaledCost[k] = (config.baseCost[k] ?? 0) * nextLevel;
+    }
+
+    if (!hasEnoughResources(resourcesRef.current.resources, scaledCost)) {
+      Alert.alert(
+        "Recursos insuficientes",
+        "No puedes iniciar esta investigación."
+      );
+      return;
+    }
+
+    const durationMs = getResearchTime(type, nextLevel);
+
+    const notificationId = await NotificationManager.scheduleNotification({
+      title: "🧪 Investigación terminada",
+      body: `Has completado "${type}" nivel ${nextLevel}.`,
+      delayMs: durationMs,
+    });
+
+    const updatedResearch: Research[] = research.map((r) =>
+      r.type.type === type
+        ? {
+            ...r,
+            progress: {
+              startedAt: Date.now(),
+              targetLevel: nextLevel,
+              notificationId: notificationId ?? undefined,
+            },
+          }
+        : r
+    );
+
+    // Si no existe, añadir
+    if (!existing) {
+      updatedResearch.push({
+        type: { type, level: 0 },
+        progress: {
+          startedAt: Date.now(),
+          targetLevel: nextLevel,
+          notificationId: notificationId ?? undefined,
+        },
+      });
+    }
+
+    setResearch(updatedResearch);
+    researchRef.current = updatedResearch;
+    await saveResearchs(updatedResearch);
+
+    const updatedResources = {
+      ...resourcesRef.current,
+      resources: applyResourceChange(
+        resourcesRef.current.resources,
+        scaledCost,
+        -1
+      ),
+      lastUpdate: Date.now(),
+    };
+
+    setResources(updatedResources);
+    resourcesRef.current = updatedResources;
+    await saveResources(updatedResources);
+  };
+
+  const cancelResearch = async () => {
+    const inProgress = research.find((r) => r.progress);
+    if (!inProgress) return;
+
+    const { type, progress } = inProgress;
+    const config = researchTechnologies[type.type];
+    const baseCost = config.baseCost;
+
+    const scaledCost: Partial<Resources> = {};
+    for (const key in baseCost) {
+      const k = key as keyof Resources;
+      scaledCost[k] = (baseCost[k] ?? 0) * progress!.targetLevel;
+    }
+
+    const refunded = {
+      ...resourcesRef.current,
+      resources: applyResourceChange(
+        resourcesRef.current.resources,
+        scaledCost,
+        1
+      ),
+      lastUpdate: Date.now(),
+    };
+
+    setResources(refunded);
+    resourcesRef.current = refunded;
+    await saveResources(refunded);
+
+    if (progress!.notificationId) {
+      await NotificationManager.cancelNotification(progress!.notificationId);
+    }
+
+    const updatedResearch = research.map((r) =>
+      r.type.type === type.type ? { ...r, progress: undefined } : r
+    );
+
+    setResearch(updatedResearch);
+    await saveResearchs(updatedResearch);
+  };
+
   const saveMapToStorage = async (map: Hex[]) => {
     setHexes(map);
     hexesRef.current = map;
@@ -131,14 +264,6 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     setHexes(normalized);
     hexesRef.current = normalized;
   };
-
-  useEffect(() => {
-    reloadMap();
-    const interval = setInterval(() => {
-      processConstructionTick();
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
 
   const handleBuild = async (q: number, r: number, type: BuildingType) => {
     if (isBuildingRef.current) return; // evitar dobles clics simultáneos
@@ -270,6 +395,49 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     await saveResources(reimbursedResources);
   };
 
+  const processResearchTick = () => {
+    const now = Date.now();
+    let changed = false;
+
+    const updatedResearch = researchRef.current.map((item) => {
+      if (item.progress) {
+        const config = researchTechnologies[item.type.type];
+        const totalTime = config.baseResearchTime;
+        const elapsed = now - item.progress.startedAt;
+
+        if (elapsed >= totalTime) {
+          // Investigación completada
+          changed = true;
+
+          // Notificar al usuario
+          Notifications.scheduleNotificationAsync({
+            content: {
+              title: "🧠 Investigación completada",
+              body: `Has finalizado la investigación "${config.name}".`,
+              sound: true,
+            },
+            trigger: null,
+          });
+
+          return {
+            type: {
+              type: item.type.type,
+              level: item.progress.targetLevel,
+            },
+          };
+        }
+      }
+
+      return item;
+    });
+
+    if (changed) {
+      setResearch(updatedResearch);
+      researchRef.current = updatedResearch;
+      saveResearchs(updatedResearch);
+    }
+  };
+
   useEffect(() => {
     resourcesRef.current = resources;
   }, [resources]);
@@ -321,11 +489,37 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     if (!ready) return;
 
     const interval = setInterval(() => {
-      updateNow();
+      updateNow(); // Acumula recursos pasivos
+      processConstructionTick(); // Finaliza construcciones si es necesario
+      processResearchTick(); // Finaliza investigaciones si es necesario
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [ready, hexes]);
+  }, [ready]);
+
+  useEffect(() => {
+    const load = async () => {
+      const savedResearch = await loadResearchs();
+      if (savedResearch) {
+        setResearch(savedResearch);
+      }
+    };
+    load();
+  }, [hexes]);
+
+  useEffect(() => {
+    const load = async () => {
+      const saved = await loadResearchs();
+      if (saved) {
+        setResearch(saved);
+        researchRef.current = saved;
+      } else {
+        setResearch([]);
+        researchRef.current = [];
+      }
+    };
+    load();
+  }, []);
 
   return (
     <ResourceContext.Provider
@@ -341,6 +535,11 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
         handleBuild,
         handleCancelBuild,
         resetResources,
+        handleResearch,
+        cancelResearch,
+        processResearchTick,
+        research,
+        labLevel: getLabLevel(hexes),
       }}
     >
       {children}
