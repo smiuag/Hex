@@ -1,4 +1,6 @@
-import { Hex, Resources, StoredResources, buildingConfig } from "../data/tipos";
+import { buildingConfig } from "../src/config/buildingConfig";
+import { Hex } from "../src/types/hexTypes";
+import { Resources, StoredResources } from "../src/types/resourceTypes";
 
 export function accumulateResources(
   hexes: Hex[],

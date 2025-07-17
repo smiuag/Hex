@@ -1,7 +1,7 @@
 // components/BorderHexTile.tsx
 import React from "react";
 import { Polygon } from "react-native-svg";
-import { terrainConfig } from "../../data/terrain";
+import { terrainConfig } from "../../src/config/terrainConfig";
 
 interface Props {
   points: string;

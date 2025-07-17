@@ -1,10 +1,4 @@
-import { TerrainType } from "./tipos";
-
-type TerrainConfig = {
-  image?: number; // require(...) devuelve un número
-  fallbackColor: string;
-  label?: string;
-};
+import { TerrainConfig, TerrainType } from "../types/terrainTypes";
 
 export const terrainConfig: Record<TerrainType, TerrainConfig> = {
   forest: {

@@ -1,4 +1,6 @@
-import { Hex, StoredResources, TerrainType } from "../data/tipos";
+import { Hex } from "../src/types/hexTypes";
+import { StoredResources } from "../src/types/resourceTypes";
+import { TerrainType } from "../src/types/terrainTypes";
 
 export const generateHexGrid = (radius: number) => {
   const hexes = [];

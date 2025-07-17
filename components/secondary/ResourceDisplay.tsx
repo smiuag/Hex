@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { ResourceEmojis, ResourceType, Resources } from "../../data/tipos";
+import { resourceEmojis } from "../../src/config/resourceConfig";
+import { ResourceType, Resources } from "../../src/types/resourceTypes";
 import { getFormatedValue } from "../../utils/resourceUtils";
 
 interface Props {
@@ -19,7 +20,7 @@ export const ResourceDisplay = ({
   return (
     <View style={[styles.container, { gap }]}>
       {[...Object.entries(resources)].reverse().map(([key, value]) => {
-        const emoji = ResourceEmojis[key as ResourceType];
+        const emoji = resourceEmojis[key as ResourceType];
         if (!emoji || value == null || value == 0) return null;
 
         return (

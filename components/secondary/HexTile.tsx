@@ -1,8 +1,9 @@
 // components/HexTile.tsx
 import React from "react";
 import { Polygon, Image as SvgImage, Text as SvgText } from "react-native-svg";
-import { terrainConfig } from "../../data/terrain";
-import { buildingConfig, Hex } from "../../data/tipos";
+import { buildingConfig } from "../../src/config/buildingConfig";
+import { terrainConfig } from "../../src/config/terrainConfig";
+import { Hex } from "../../src/types/hexTypes";
 import { getBuildTime } from "../../utils/buildingUtils";
 
 interface Props {

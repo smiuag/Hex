@@ -1,4 +1,6 @@
-import { BuildingType, Resources, buildingConfig } from "../data/tipos";
+import { buildingConfig } from "../src/config/buildingConfig";
+import { BuildingType } from "../src/types/buildingTypes";
+import { Resources } from "../src/types/resourceTypes";
 
 export function getBuildTime(building: BuildingType, level: number) {
   const baseTime = buildingConfig[building].baseBuildTime;

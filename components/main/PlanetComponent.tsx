@@ -12,8 +12,10 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 import Svg from "react-native-svg";
-import { BuildingType, Hex } from "../../data/tipos";
 import { useGameContext } from "../../src/context/GameContext";
+import { BuildingType } from "../../src/types/buildingTypes";
+import { Hex } from "../../src/types/hexTypes";
+import { IMAGES } from "../../src/types/imageTypes";
 import {
   axialToPixel,
   getHexPoints,
@@ -126,7 +128,7 @@ export default function PlanetComponent() {
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: "white" }}>
       <ImageBackground
-        source={require("../assets/images/background.jpg")}
+        source={IMAGES.BACKGROUND_IMAGE}
         style={{ flex: 1 }}
         resizeMode="cover"
       >

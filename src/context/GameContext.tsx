@@ -7,13 +7,10 @@ import React, {
   useState,
 } from "react";
 import { Alert } from "react-native";
-import {
-  BuildingType,
-  Hex,
-  Resources,
-  StoredResources,
-  buildingConfig,
-} from "../../data/tipos";
+import { buildingConfig } from "../../src/config/buildingConfig";
+import { BuildingType } from "../../src/types/buildingTypes";
+import { Hex } from "../../src/types/hexTypes";
+import { Resources, StoredResources } from "../../src/types/resourceTypes";
 import { getBuildTime } from "../../utils/buildingUtils";
 import {
   expandMapAroundBase,

@@ -7,7 +7,8 @@ import {
   Text,
   View,
 } from "react-native";
-import { BuildingType, Hex } from "../../data/tipos";
+import { BuildingType } from "../../src/types/buildingTypes";
+import { Hex } from "../../src/types/hexTypes";
 import { ResourceDisplay } from "./ResourceDisplay";
 
 import {
