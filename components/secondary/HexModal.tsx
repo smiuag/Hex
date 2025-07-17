@@ -143,7 +143,7 @@ export default function HexModal({
                   onPress={() => onBuild(building.type)}
                 >
                   <Text style={styles.upgradeButtonText}>
-                    Construir {building.name}({" "}
+                    Construir {building.name} (
                     {formatDuration(building.baseBuildTime)})
                   </Text>
                 </Pressable>

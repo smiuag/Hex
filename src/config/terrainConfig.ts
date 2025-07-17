@@ -1,6 +1,6 @@
-import { TerrainConfig, TerrainType } from "../types/terrainTypes";
+import { TerrainData, TerrainType } from "../types/terrainTypes";
 
-export const terrainConfig: Record<TerrainType, TerrainConfig> = {
+export const terrainConfig: Record<TerrainType, TerrainData> = {
   forest: {
     image: undefined,
     fallbackColor: "#228B22",

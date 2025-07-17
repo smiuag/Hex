@@ -1,5 +1,7 @@
 import { buildingConfig } from "../src/config/buildingConfig";
+import { researchTechnologies } from "../src/config/researchConfig";
 import { BuildingType } from "../src/types/buildingTypes";
+import { ResearchType } from "../src/types/researchTypes";
 import { Resources } from "../src/types/resourceTypes";
 
 export function getBuildTime(building: BuildingType, level: number) {
@@ -52,3 +54,8 @@ export const getAvailableBuildings = () => {
     ...buildingConfig[type],
   }));
 };
+
+export function getResearchTime(research: ResearchType, level: number) {
+  const baseTime = researchTechnologies[research].baseResearchTime;
+  return Math.round(baseTime * Math.pow(1.5, level - 1));
+}

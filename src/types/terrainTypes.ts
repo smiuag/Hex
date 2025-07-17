@@ -11,7 +11,7 @@ export type TerrainType =
   | "initial"
   | "border";
 
-export type TerrainConfig = {
+export type TerrainData = {
   image?: number;
   fallbackColor: string;
   label?: string;
