@@ -26,11 +26,12 @@ export default function ResearchComponent() {
       const data = (research || []).find((r) => r.type.type === type);
       const currentLevel = data?.type.level ?? 0;
       const inProgress = !!data?.progress;
+      const targetLevel = data?.progress?.targetLevel ?? currentLevel + 1;
+      const totalTime = getResearchTime(type, targetLevel);
       const remainingTime = inProgress
         ? Math.max(
             0,
-            config.baseResearchTime -
-              (Date.now() - (data?.progress?.startedAt ?? 0))
+            totalTime - (Date.now() - (data?.progress?.startedAt ?? 0))
           )
         : 0;
 

@@ -1,6 +1,6 @@
 // components/HexMap.tsx
 import { useFocusEffect } from "@react-navigation/native";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { ImageBackground } from "react-native";
 import {
   Gesture,
@@ -26,13 +26,7 @@ import HexModal from "../secondary/HexModal";
 import HexTile from "../secondary/HexTile";
 
 export default function PlanetComponent() {
-  const {
-    hexes,
-    reloadMap,
-    processConstructionTick,
-    handleBuild,
-    handleCancelBuild,
-  } = useGameContext();
+  const { hexes, reloadMap, handleBuild, handleCancelBuild } = useGameContext();
 
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedHex, setSelectedHex] = useState<Hex | null>(null);
@@ -49,11 +43,6 @@ export default function PlanetComponent() {
     CENTER_X,
     CENTER_Y,
   } = SCREEN_DIMENSIONS;
-
-  useEffect(() => {
-    const interval = setInterval(() => processConstructionTick(), 1000);
-    return () => clearInterval(interval);
-  }, [processConstructionTick]);
 
   useFocusEffect(
     useCallback(() => {
