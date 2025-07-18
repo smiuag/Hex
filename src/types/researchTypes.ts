@@ -1,4 +1,10 @@
-export type ResearchType = "terraforming" | "mining";
+export type ResearchType =
+  | "terraforming"
+  | "mining"
+  | "shipEngineering"
+  | "waterPurification"
+  | "fuelRefinement"
+  | "energyEfficiency";
 
 export type ResearchData = {
   type: ResearchType;

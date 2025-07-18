@@ -29,7 +29,9 @@ export default function HexTile({
   const buildingImage = construction
     ? buildingConfig[construction.building].underConstructionImage
     : building
-    ? buildingConfig[building.type].image
+    ? buildingConfig[building.type].images.find(
+        (img) => img.level === building.level
+      )?.image
     : undefined;
 
   return (
@@ -37,10 +39,10 @@ export default function HexTile({
       {buildingImage ? (
         <SvgImage
           href={buildingImage}
-          x={px - (60 * Math.sqrt(3) * 1.14) / 2}
-          y={py - 60 * 1.14}
-          width={60 * Math.sqrt(3) * 1.14}
-          height={60 * 2 * 1.14}
+          x={px - (60 * Math.sqrt(3) * 1.25) / 2}
+          y={py - 60 * 1.25}
+          width={60 * Math.sqrt(3) * 1.25}
+          height={60 * 2 * 1.25}
           preserveAspectRatio="xMidYMid meet"
           onPressIn={onTouchStart}
           onPressOut={onTouchEnd}
@@ -50,7 +52,7 @@ export default function HexTile({
           points={points}
           fill={config.fallbackColor}
           stroke="#333"
-          strokeWidth="1"
+          strokeWidth="3"
           onPressIn={onTouchStart}
           onPressOut={onTouchEnd}
         />

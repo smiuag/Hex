@@ -36,6 +36,7 @@ export default function ResearchComponent() {
 
       const isAvailable = labLevel >= config.labLevelRequired;
       const time = formatDuration(getResearchTime(type, currentLevel + 1));
+      const isMaxed = currentLevel >= config.maxLevel;
 
       return {
         key: type,
@@ -46,6 +47,7 @@ export default function ResearchComponent() {
         inProgress,
         remainingTime,
         time,
+        isMaxed,
       };
     })
     .sort((a, b) => a.labLevelRequired - b.labLevelRequired);
@@ -73,15 +75,11 @@ export default function ResearchComponent() {
                 </Text>
               </View>
 
-              <View style={styles.row}>
-                <ResourceDisplay resources={item.baseCost} fontSize={13} />
-              </View>
-
-              <Text style={styles.description}>{item.description}</Text>
-
-              {item.inProgress ? (
-                <View style={styles.inProgressContainer}>
-                  <Text style={styles.inProgressText}>
+              {item.isMaxed ? (
+                <></>
+              ) : item.inProgress ? (
+                <View style={styles.actionContainer}>
+                  <Text style={styles.statusText}>
                     ⏳ En curso: {formatDuration(item.remainingTime)}
                   </Text>
                   <TouchableOpacity
@@ -92,14 +90,21 @@ export default function ResearchComponent() {
                   </TouchableOpacity>
                 </View>
               ) : item.isAvailable ? (
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={() => handleResearch(item.type)}
-                >
-                  <Text style={styles.buttonText}>
-                    Investigar ({item.time})
-                  </Text>
-                </TouchableOpacity>
+                <>
+                  <View style={styles.row}>
+                    <ResourceDisplay resources={item.baseCost} fontSize={13} />
+                  </View>
+                  <Text style={styles.description}>{item.description}</Text>
+                  <View style={styles.actionContainer}>
+                    <Text style={styles.statusText}>⏱️ {item.time}</Text>
+                    <TouchableOpacity
+                      style={styles.investButton}
+                      onPress={() => handleResearch(item.type)}
+                    >
+                      <Text style={styles.investButtonText}>Investigar</Text>
+                    </TouchableOpacity>
+                  </View>
+                </>
               ) : (
                 <Text style={styles.lockedText}>
                   🔒 Requiere laboratorio nivel {item.labLevelRequired}
@@ -193,20 +198,40 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
   },
-  inProgressContainer: {
+  actionContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginTop: 8,
-    backgroundColor: "rgba(255,255,255,0.1)",
-    padding: 6,
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+  },
+
+  statusText: {
+    color: "#facc15",
+    fontWeight: "bold",
+    fontSize: 13,
+  },
+
+  investButton: {
+    backgroundColor: "#2196F3",
+    paddingVertical: 4,
+    paddingHorizontal: 12,
     borderRadius: 6,
   },
 
+  investButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 13,
+  },
+
   cancelButton: {
-    backgroundColor: "#f87171", // rojo claro
+    backgroundColor: "#f87171",
     paddingVertical: 4,
-    paddingHorizontal: 10,
+    paddingHorizontal: 12,
     borderRadius: 6,
   },
 

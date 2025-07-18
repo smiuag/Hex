@@ -58,7 +58,7 @@ export default function HexModal({
 
   if (!data) return null;
 
-  const { terrain, building, construction } = data;
+  const { building, construction } = data;
 
   const renderContent = () => {
     if (construction && remainingTime !== null) {
