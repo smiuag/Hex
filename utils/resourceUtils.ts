@@ -1,6 +1,31 @@
 import { buildingConfig } from "../src/config/buildingConfig";
+import { GENERAL_FACTOR, PRODUCTION_INCREMENT } from "../src/constants/general";
 import { Hex } from "../src/types/hexTypes";
 import { Resources, StoredResources } from "../src/types/resourceTypes";
+
+export function getProductionForBuilding(
+  type: keyof typeof buildingConfig,
+  level: number
+): Partial<Resources> {
+  const config = buildingConfig[type];
+  const baseProduction = config.production;
+
+  const result: Partial<Resources> = {};
+
+  if (!baseProduction) return result;
+
+  for (const key in baseProduction) {
+    const resource = key as keyof Resources;
+    const baseValue = baseProduction[resource] ?? 0;
+    const scaled =
+      baseValue *
+      Math.pow(PRODUCTION_INCREMENT, Math.max(0, level - 1)) *
+      GENERAL_FACTOR;
+    result[resource] = scaled;
+  }
+
+  return result;
+}
 
 export function accumulateResources(
   hexes: Hex[],
@@ -12,16 +37,14 @@ export function accumulateResources(
   hexes.forEach((hex) => {
     const building = hex.building;
     if (building) {
-      const config = buildingConfig[building.type];
-      const level = building.level;
-      const production = config.production;
-
-      if (production) {
-        for (const key in production) {
-          const type = key as keyof Resources;
-          const perSecond = production[type]! * level;
-          produced[type] = (produced[type] || 0) + perSecond;
-        }
+      const production = getProductionForBuilding(
+        building.type,
+        building.level
+      );
+      for (const key in production) {
+        const typedKey = key as keyof Resources;
+        produced[typedKey] =
+          (produced[typedKey] || 0) + (production[typedKey] || 0);
       }
     }
   });
@@ -47,13 +70,14 @@ export function getProduction(hexes: Hex[]): Partial<Resources> {
   for (const hex of hexes) {
     const building = hex.building;
     if (building) {
-      const config = buildingConfig[building.type];
-      if (config.production) {
-        for (const key in config.production) {
-          const typedKey = key as keyof Resources;
-          const perLevel = config.production[typedKey] ?? 0;
-          if (result[typedKey]) result[typedKey] += perLevel * building.level;
-        }
+      const production = getProductionForBuilding(
+        building.type,
+        building.level
+      );
+      for (const key in production) {
+        const typedKey = key as keyof Resources;
+        result[typedKey] =
+          (result[typedKey] ?? 0) + (production[typedKey] ?? 0);
       }
     }
   }
@@ -96,24 +120,3 @@ export function applyResourceChange(
   }
   return updated;
 }
-
-export const getFormatedValue = (value: number): string => {
-  const format = (val: number, suffix: string): string => {
-    const truncated = Math.floor(val * 10) / 10;
-    return (
-      (truncated % 1 === 0 ? truncated.toFixed(0) : truncated.toFixed(1)) +
-      suffix
-    );
-  };
-
-  if (value >= 1_000_000_000) {
-    return format(value / 1_000_000_000, "B");
-  }
-  if (value >= 1_000_000) {
-    return format(value / 1_000_000, "M");
-  }
-  if (value >= 1_000) {
-    return format(value / 1_000, "K");
-  }
-  return value.toString();
-};

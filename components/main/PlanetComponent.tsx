@@ -12,10 +12,10 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 import Svg from "react-native-svg";
+import { IMAGES } from "../../src/constants/images";
 import { useGameContext } from "../../src/context/GameContext";
 import { BuildingType } from "../../src/types/buildingTypes";
 import { Hex } from "../../src/types/hexTypes";
-import { IMAGES } from "../../src/types/imageTypes";
 import {
   axialToPixel,
   getHexPoints,

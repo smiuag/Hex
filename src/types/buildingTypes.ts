@@ -2,17 +2,17 @@ import { ImageSourcePropType } from "react-native";
 
 export type BuildingType =
   | "base"
-  | "metallurgie"
+  | "metallurgy"
   | "lab"
-  | "steinbruch"
-  | "kristallmine";
+  | "quarry"
+  | "krystalmine";
 
 export type BuildingData = {
   type: BuildingType;
   level: number;
 };
 
-type BuildingImageLevel = {
+export type BuildingImageLevel = {
   level: number;
   image: ImageSourcePropType;
 };

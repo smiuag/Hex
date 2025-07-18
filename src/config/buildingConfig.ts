@@ -1,6 +1,11 @@
 import { ImageSourcePropType } from "react-native";
+import {
+  BUILDING_COST,
+  BUILDING_PRODUCTION,
+  BUILDING_TIME,
+} from "../constants/building";
+import { IMAGES } from "../constants/images";
 import { BuildingImageLevel, BuildingType } from "../types/buildingTypes";
-import { IMAGES } from "../types/imageTypes";
 import { Resources } from "../types/resourceTypes";
 
 export const buildingConfig: Record<
@@ -16,7 +21,7 @@ export const buildingConfig: Record<
 > = {
   base: {
     name: "Base",
-    baseBuildTime: 1000,
+    baseBuildTime: BUILDING_TIME.BASE,
     images: [
       { level: 1, image: IMAGES.BUILDING_BASE_1 },
       { level: 2, image: IMAGES.BUILDING_BASE_2 },
@@ -25,12 +30,12 @@ export const buildingConfig: Record<
       { level: 5, image: IMAGES.BUILDING_BASE_5 },
     ],
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
-    baseCost: { metal: 10000, energy: 500 },
-    production: { metal: 3000, energy: 100, crystal: 200, stone: 3000 },
+    baseCost: BUILDING_COST.BASE,
+    production: BUILDING_PRODUCTION.BASE,
   },
   lab: {
     name: "Laboratorio",
-    baseBuildTime: 45000,
+    baseBuildTime: BUILDING_TIME.LAB,
     images: [
       { level: 1, image: IMAGES.BUILDING_LAB_1 },
       { level: 2, image: IMAGES.BUILDING_LAB_2 },
@@ -39,12 +44,12 @@ export const buildingConfig: Record<
       { level: 5, image: IMAGES.BUILDING_LAB_5 },
     ],
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
-    baseCost: { stone: 600, metal: 600, energy: 50 },
-    production: {},
+    baseCost: BUILDING_COST.LAB,
+    production: BUILDING_PRODUCTION.LAB,
   },
-  metallurgie: {
+  metallurgy: {
     name: "Metalurgia",
-    baseBuildTime: 60000,
+    baseBuildTime: BUILDING_TIME.METALLURGY,
     images: [
       { level: 1, image: IMAGES.BUILDING_METAL_1 },
       { level: 2, image: IMAGES.BUILDING_METAL_2 },
@@ -53,12 +58,12 @@ export const buildingConfig: Record<
       { level: 5, image: IMAGES.BUILDING_METAL_5 },
     ],
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
-    baseCost: { metal: 1000, energy: 50 },
-    production: { metal: 15 },
+    baseCost: BUILDING_COST.METALLURGY,
+    production: BUILDING_PRODUCTION.METALLURGY,
   },
-  steinbruch: {
+  quarry: {
     name: "Cantera",
-    baseBuildTime: 45000,
+    baseBuildTime: BUILDING_TIME.QUARRY,
     images: [
       { level: 1, image: IMAGES.BUILDING_MINING_1 },
       { level: 2, image: IMAGES.BUILDING_MINING_2 },
@@ -67,12 +72,12 @@ export const buildingConfig: Record<
       { level: 5, image: IMAGES.BUILDING_MINING_5 },
     ],
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
-    baseCost: { stone: 600, metal: 600, energy: 50 },
-    production: { stone: 7 },
+    baseCost: BUILDING_COST.QUARRY,
+    production: BUILDING_PRODUCTION.QUARRY,
   },
-  kristallmine: {
+  krystalmine: {
     name: "Mina de cristal",
-    baseBuildTime: 45000,
+    baseBuildTime: BUILDING_TIME.KRYSTALMINE,
     images: [
       { level: 1, image: IMAGES.BUILDING_MINING_1 },
       { level: 2, image: IMAGES.BUILDING_MINING_2 },
@@ -81,7 +86,7 @@ export const buildingConfig: Record<
       { level: 5, image: IMAGES.BUILDING_MINING_5 },
     ],
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
-    baseCost: { metal: 1000, energy: 50 },
-    production: { crystal: 3 },
+    baseCost: BUILDING_COST.KRYSTALMINE,
+    production: BUILDING_PRODUCTION.KRYSTALMINE,
   },
 };

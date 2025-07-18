@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { resourceEmojis } from "../../src/config/resourceConfig";
 import { ResourceType, Resources } from "../../src/types/resourceTypes";
-import { getFormatedValue } from "../../utils/resourceUtils";
+import { formatAmount } from "../../utils/formatUtils";
 
 interface Props {
   resources: Partial<Resources>;
@@ -25,7 +25,7 @@ export const ResourceDisplay = ({
 
         return (
           <Text key={key} style={[styles.item, { fontSize, color: fontColor }]}>
-            {emoji} {getFormatedValue(value)}
+            {emoji} {formatAmount(value)}
           </Text>
         );
       })}

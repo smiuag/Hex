@@ -12,11 +12,12 @@ import { Hex } from "../../src/types/hexTypes";
 import { ResourceDisplay } from "./ResourceDisplay";
 
 import {
-  formatDuration,
   getAvailableBuildings,
   getBuildCost,
   getBuildTime,
 } from "../../utils/buildingUtils";
+
+import { formatDuration } from "../../utils/formatUtils";
 
 type Props = {
   visible: boolean;
@@ -131,10 +132,14 @@ export default function HexModal({
           onPress={() => {}}
         >
           {getAvailableBuildings().map((building) => {
+            const level = 1;
+            const cost = getBuildCost(building.type, level);
+            const time = getBuildTime(building.type, level);
+
             return (
               <View key={building.type} style={styles.box}>
                 <ResourceDisplay
-                  resources={building.baseCost}
+                  resources={cost}
                   fontSize={16}
                   fontColor="#333"
                 />
@@ -143,8 +148,7 @@ export default function HexModal({
                   onPress={() => onBuild(building.type)}
                 >
                   <Text style={styles.upgradeButtonText}>
-                    Construir {building.name} (
-                    {formatDuration(building.baseBuildTime)})
+                    Construir {building.name} ({formatDuration(time)})
                   </Text>
                 </Pressable>
               </View>

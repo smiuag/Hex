@@ -9,9 +9,9 @@ import {
   saveResources,
 } from "../src/services/storage";
 import { Research, ResearchType } from "../src/types/researchTypes";
-import { Resources, StoredResources } from "../src/types/resourceTypes";
-import { getResearchTime } from "../utils/buildingUtils";
+import { StoredResources } from "../src/types/resourceTypes";
 import { NotificationManager } from "../utils/notificacionUtils";
+import { getResearchCost, getResearchTime } from "../utils/researchUtils";
 import {
   applyResourceChange,
   hasEnoughResources,
@@ -24,20 +24,24 @@ export const useResearch = (
   const [research, setResearch] = useState<Research[]>([]);
   const researchRef = useRef<Research[]>([]);
 
+  const updateResearchState = async (newResearch: Research[]) => {
+    setResearch(newResearch);
+    researchRef.current = newResearch;
+    await saveResearchs(newResearch);
+  };
+
   const handleResearch = async (type: ResearchType) => {
     const existing = researchRef.current.find((r) => r.type.type === type);
 
-    if (researchRef.current.find((r) => r.progress)) return;
+    if (researchRef.current.some((r) => r.progress)) {
+      Alert.alert("Ya hay una investigación en curso");
+      return;
+    }
 
     const currentLevel = existing?.type.level ?? 0;
     const nextLevel = currentLevel + 1;
-    const config = researchTechnologies[type];
-
-    const scaledCost: Partial<Resources> = {};
-    for (const key in config.baseCost) {
-      const k = key as keyof Resources;
-      scaledCost[k] = (config.baseCost[k] ?? 0) * nextLevel;
-    }
+    const scaledCost = getResearchCost(type, nextLevel ?? 1);
+    const durationMs = getResearchTime(type, nextLevel);
 
     if (!hasEnoughResources(resourcesRef.current.resources, scaledCost)) {
       Alert.alert(
@@ -46,8 +50,6 @@ export const useResearch = (
       );
       return;
     }
-
-    const durationMs = getResearchTime(type, nextLevel);
 
     const notificationId = await NotificationManager.scheduleNotification({
       title: "🧪 Investigación terminada",
@@ -79,9 +81,7 @@ export const useResearch = (
       });
     }
 
-    setResearch(updatedResearch);
-    researchRef.current = updatedResearch;
-    await saveResearchs(updatedResearch);
+    await updateResearchState(updatedResearch);
 
     const updatedResources = {
       ...resourcesRef.current,
@@ -103,14 +103,7 @@ export const useResearch = (
     if (!inProgress) return;
 
     const { type, progress } = inProgress;
-    const config = researchTechnologies[type.type];
-    const baseCost = config.baseCost;
-
-    const scaledCost: Partial<Resources> = {};
-    for (const key in baseCost) {
-      const k = key as keyof Resources;
-      scaledCost[k] = (baseCost[k] ?? 0) * progress!.targetLevel;
-    }
+    const scaledCost = getResearchCost(type.type, progress?.targetLevel ?? 1);
 
     const refunded = {
       ...resourcesRef.current,
@@ -126,21 +119,18 @@ export const useResearch = (
     resourcesRef.current = refunded;
     await saveResources(refunded);
 
-    if (progress!.notificationId) {
-      await NotificationManager.cancelNotification(progress!.notificationId);
+    if (progress?.notificationId) {
+      await NotificationManager.cancelNotification(progress.notificationId);
     }
 
     const updatedResearch = researchRef.current.map((r) =>
       r.type.type === type.type ? { ...r, progress: undefined } : r
     );
 
-    setResearch(updatedResearch);
-    researchRef.current = updatedResearch;
-    await saveResearchs(updatedResearch);
+    await updateResearchState(updatedResearch);
   };
 
   const processResearchTick = () => {
-    console.log("tickResearch");
     const now = Date.now();
     let changed = false;
 
@@ -175,9 +165,7 @@ export const useResearch = (
     });
 
     if (changed) {
-      setResearch(updatedResearch);
-      researchRef.current = updatedResearch;
-      saveResearchs(updatedResearch);
+      updateResearchState(updatedResearch);
     }
   };
 

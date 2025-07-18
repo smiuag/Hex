@@ -11,8 +11,8 @@ import { useResources } from "../../hooks/useResources";
 import { BuildingType } from "../../src/types/buildingTypes";
 import { Hex } from "../../src/types/hexTypes";
 import { StoredResources } from "../../src/types/resourceTypes";
-import { getLabLevel } from "../../utils/buildingUtils";
 import { normalizeHexMap } from "../../utils/mapUtils";
+import { getLabLevel } from "../../utils/researchUtils";
 import { loadMap, saveMap } from "../services/storage";
 import { Research, ResearchType } from "../types/researchTypes";
 

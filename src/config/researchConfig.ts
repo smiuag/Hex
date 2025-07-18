@@ -1,5 +1,11 @@
 import { ImageSourcePropType } from "react-native";
-import { IMAGES } from "../types/imageTypes";
+import { IMAGES } from "../constants/images";
+import {
+  LAB_LVL_REQUIRED,
+  MAX_LVL,
+  RESEARCH_COST,
+  RESEARCH_TIME,
+} from "../constants/research";
 import { ResearchType } from "../types/researchTypes";
 import { Resources } from "../types/resourceTypes";
 
@@ -17,60 +23,60 @@ export const researchTechnologies: Record<
 > = {
   terraforming: {
     name: "Terraformación",
-    labLevelRequired: 0,
+    labLevelRequired: LAB_LVL_REQUIRED.TERRAFORMING,
     image: IMAGES.RESEARCH_TERRAFORMING,
-    baseCost: { metal: 1000, energy: 5000, crystal: 1000 },
-    baseResearchTime: 50000,
-    maxLevel: 4,
+    baseCost: RESEARCH_COST.TERRAFORMING,
+    baseResearchTime: RESEARCH_TIME.TERRAFORMING,
+    maxLevel: MAX_LVL.TERRAFORMING,
     description:
       "Permite mejorar la base, algo necesario para ampliar su alcance y conseguir más area construible",
   },
   mining: {
     name: "Minería",
-    labLevelRequired: 1,
+    labLevelRequired: LAB_LVL_REQUIRED.MINING,
     image: IMAGES.RESEARCH_MINING,
-    baseCost: { metal: 1000, energy: 5000, crystal: 1000 },
-    baseResearchTime: 160000,
-    maxLevel: 4,
+    baseCost: RESEARCH_COST.MINING,
+    baseResearchTime: RESEARCH_TIME.MINING,
+    maxLevel: MAX_LVL.MINING,
     description: "Permite mejorar las minas de piedra, cristal y metal ",
   },
   waterPurification: {
     name: "Purificación de Agua",
-    labLevelRequired: 2,
+    labLevelRequired: LAB_LVL_REQUIRED.WATERPURIFICATION,
     image: IMAGES.RESEARCH_WATER,
-    baseCost: { metal: 800, energy: 3000, crystal: 1200 },
-    baseResearchTime: 60000,
-    maxLevel: 3,
+    baseCost: RESEARCH_COST.WATERPURIFICATION,
+    baseResearchTime: RESEARCH_TIME.WATERPURIFICATION,
+    maxLevel: MAX_LVL.WATERPURIFICATION,
     description:
       "Desbloquea sistemas de filtrado y recolección de agua, vital para mantener la vida y expandir tu colonia.",
   },
   fuelRefinement: {
     name: "Refinamiento de Combustible",
-    labLevelRequired: 3,
+    labLevelRequired: LAB_LVL_REQUIRED.FUELREFINEMENT,
     image: IMAGES.RESEARCH_FUEL,
-    baseCost: { metal: 2000, energy: 6000, crystal: 2000 },
-    baseResearchTime: 90000,
-    maxLevel: 4,
+    baseCost: RESEARCH_COST.FUELREFINEMENT,
+    baseResearchTime: RESEARCH_TIME.FUELREFINEMENT,
+    maxLevel: MAX_LVL.FUELREFINEMENT,
     description:
       "Permite producir combustible más eficiente para los vehículos y sistemas avanzados de la base.",
   },
   energyEfficiency: {
     name: "Eficiencia Energética",
-    labLevelRequired: 2,
+    labLevelRequired: LAB_LVL_REQUIRED.ENERGYEFFICIENCY,
     image: IMAGES.RESEARCH_ENERGY,
-    baseCost: { metal: 1200, energy: 3000, crystal: 1500 },
-    baseResearchTime: 70000,
-    maxLevel: 3,
+    baseCost: RESEARCH_COST.ENERGYEFFICIENCY,
+    baseResearchTime: RESEARCH_TIME.ENERGYEFFICIENCY,
+    maxLevel: MAX_LVL.ENERGYEFFICIENCY,
     description:
       "Optimiza el consumo energético de todas tus estructuras, reduciendo los costes de mantenimiento.",
   },
   shipEngineering: {
     name: "Ingeniería de Naves",
-    labLevelRequired: 4,
+    labLevelRequired: LAB_LVL_REQUIRED.SHIPENGINEERING,
     image: IMAGES.RESEARCH_SHIPS,
-    baseCost: { metal: 5000, energy: 8000, crystal: 4000 },
-    baseResearchTime: 150000,
-    maxLevel: 3,
+    baseCost: RESEARCH_COST.SHIPENGINEERING,
+    baseResearchTime: RESEARCH_TIME.SHIPENGINEERING,
+    maxLevel: MAX_LVL.SHIPENGINEERING,
     description:
       "Permite construir naves exploradoras y cargueros, esenciales para la expansión y el comercio interestelar.",
   },

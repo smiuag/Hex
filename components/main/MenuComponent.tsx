@@ -1,4 +1,3 @@
-import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -25,7 +24,6 @@ import { NotificationManager } from "../../utils/notificacionUtils";
 export default function MenuComponent() {
   const [checking, setChecking] = useState(true);
   const [hasMap, setHasMap] = useState(false);
-  const router = useRouter();
   const { setHexes, resetResources } = useGameContext();
 
   useEffect(() => {

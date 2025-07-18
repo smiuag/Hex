@@ -1,13 +1,17 @@
 import { buildingConfig } from "../src/config/buildingConfig";
-import { researchTechnologies } from "../src/config/researchConfig";
+import {
+  BUILD_COST_INCREMENT,
+  BUILD_TIME_INCREMENT,
+  GENERAL_FACTOR,
+} from "../src/constants/general";
 import { BuildingType } from "../src/types/buildingTypes";
-import { Hex } from "../src/types/hexTypes";
-import { ResearchType } from "../src/types/researchTypes";
 import { Resources } from "../src/types/resourceTypes";
 
 export function getBuildTime(building: BuildingType, level: number) {
   const baseTime = buildingConfig[building].baseBuildTime;
-  return Math.round(baseTime * Math.pow(1.5, level - 1));
+  return Math.round(
+    (baseTime * Math.pow(BUILD_TIME_INCREMENT, level - 1)) / GENERAL_FACTOR
+  );
 }
 
 export function getBuildCost(building: BuildingType, level: number): Resources {
@@ -15,39 +19,16 @@ export function getBuildCost(building: BuildingType, level: number): Resources {
   const base = config.baseCost;
   const result: Resources = {} as Resources;
 
-  const multiplierPerLevel = 1.5;
-
   for (const key in base) {
     const resource = key as keyof Resources;
     const baseValue = base[resource]!;
     result[resource] = Math.ceil(
-      baseValue * Math.pow(multiplierPerLevel, level - 1)
+      baseValue * Math.pow(BUILD_COST_INCREMENT, level - 1)
     );
   }
 
   return result;
 }
-
-export const formatDuration = (timestamp: number): string => {
-  let diff = Math.abs(timestamp / 1000); // diferencia en segundos
-
-  const days = Math.floor(diff / (60 * 60 * 24));
-  diff %= 60 * 60 * 24;
-
-  const hours = Math.floor(diff / (60 * 60));
-  diff %= 60 * 60;
-
-  const minutes = Math.floor(diff / 60);
-  const seconds = Math.floor(diff % 60);
-
-  const parts = [];
-  if (days > 0) parts.push(`${days}d`);
-  if (hours > 0) parts.push(`${hours}h`);
-  if (minutes > 0) parts.push(`${minutes}m`);
-  if (seconds > 0 || parts.length === 0) parts.push(`${seconds}s`);
-
-  return parts.join(" ");
-};
 
 export const getAvailableBuildings = () => {
   return (Object.keys(buildingConfig) as BuildingType[]).map((type) => ({
@@ -55,13 +36,3 @@ export const getAvailableBuildings = () => {
     ...buildingConfig[type],
   }));
 };
-
-export function getResearchTime(research: ResearchType, level: number) {
-  const baseTime = researchTechnologies[research].baseResearchTime;
-  return Math.round(baseTime * Math.pow(1.5, level - 1));
-}
-
-export function getLabLevel(hexes: Hex[]): number {
-  const labHex = hexes.find((hex) => hex.building?.type === "lab");
-  return labHex?.building?.level ?? 0;
-}

@@ -11,7 +11,8 @@ import {
 import { researchTechnologies } from "../../src/config/researchConfig";
 import { useGameContext } from "../../src/context/GameContext";
 import { ResearchType } from "../../src/types/researchTypes";
-import { formatDuration, getResearchTime } from "../../utils/buildingUtils";
+import { formatDuration } from "../../utils/formatUtils";
+import { getResearchTime } from "../../utils/researchUtils";
 import { ResourceDisplay } from "../secondary/ResourceDisplay";
 
 const { width } = Dimensions.get("window");

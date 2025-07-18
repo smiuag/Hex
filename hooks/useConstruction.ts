@@ -6,7 +6,7 @@ import { saveMap, saveResources } from "../src/services/storage";
 import { BuildingType } from "../src/types/buildingTypes";
 import { Hex } from "../src/types/hexTypes";
 import { Resources, StoredResources } from "../src/types/resourceTypes";
-import { getBuildTime } from "../utils/buildingUtils";
+import { getBuildCost, getBuildTime } from "../utils/buildingUtils";
 import { expandMapAroundBase } from "../utils/mapUtils";
 import { NotificationManager } from "../utils/notificacionUtils";
 
@@ -34,13 +34,8 @@ export const useConstruction = (
 
       const currentLevel = hex.building?.type === type ? hex.building.level : 0;
       const nextLevel = currentLevel + 1;
-      const cost = buildingConfig[type].baseCost;
-
-      const scaledCost: Partial<Resources> = {};
-      for (const key in cost) {
-        const typedKey = key as keyof Resources;
-        scaledCost[typedKey] = (cost[typedKey] ?? 0) * nextLevel;
-      }
+      const scaledCost = getBuildCost(type, nextLevel);
+      const durationMs = getBuildTime(type, nextLevel);
 
       if (!hasEnoughResources(resourcesRef.current.resources, scaledCost)) {
         Alert.alert(
@@ -49,8 +44,6 @@ export const useConstruction = (
         );
         return;
       }
-
-      const durationMs = getBuildTime(type, nextLevel);
 
       const notificationId = await NotificationManager.scheduleNotification({
         title: "✅ Construcción terminada",
@@ -148,7 +141,6 @@ export const useConstruction = (
   };
 
   const processConstructionTick = () => {
-    console.log("tickConstruction");
     if (isBuildingRef.current) return;
     isBuildingRef.current = true;
 
