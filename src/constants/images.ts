@@ -1,4 +1,9 @@
 import background from "../../assets/images/background.jpg";
+import baseBackground from "../../assets/images/buildings/base.png";
+import krystalmineBackground from "../../assets/images/buildings/cristal.png";
+import labBackground from "../../assets/images/buildings/lab.png";
+import metallurgyBackground from "../../assets/images/buildings/metal.png";
+import quarryBackground from "../../assets/images/buildings/mining.png";
 import base1 from "../../assets/images/mini/base1.png";
 import base2 from "../../assets/images/mini/base2.png";
 import base3 from "../../assets/images/mini/base3.png";
@@ -24,14 +29,7 @@ import energy from "../../assets/images/researchs/Energy.png";
 import fuel from "../../assets/images/researchs/Fuel.png";
 import mining from "../../assets/images/researchs/Mining.png";
 import ships from "../../assets/images/researchs/Ships.png";
-import {
-  default as baseBackground,
-  default as krystalmineBackground,
-  default as labBackground,
-  default as metallurgyBackground,
-  default as quarryBackground,
-  default as terraforming,
-} from "../../assets/images/researchs/Terraforming.png";
+import terraforming from "../../assets/images/researchs/Terraforming.png";
 import water from "../../assets/images/researchs/Water.png";
 
 export const IMAGES = {

@@ -56,27 +56,39 @@ export default function ConstructionComponent() {
     router.replace("/(tabs)/planet");
   };
 
-  const buildings = Object.entries(buildingConfig).map(([type, config]) => {
-    const buildingType = type as BuildingType;
-    const cost: Partial<Resources> = config.baseCost;
-    const time = getBuildTime(buildingType, 1);
-    const lockedByMax = isAtMaxCount(buildingType, hexes);
-    const unlockedByResearch = isUnlocked(config.requiredResearchs, research);
-    const available = unlockedByResearch && !lockedByMax;
+  const buildings = Object.entries(buildingConfig)
+    .map(([type, config]) => {
+      const buildingType = type as BuildingType;
+      const cost: Partial<Resources> = config.baseCost;
+      const time = getBuildTime(buildingType, 1);
+      const lockedByMax = isAtMaxCount(buildingType, hexes);
+      const unlockedByResearch = isUnlocked(config.requiredResearchs, research);
+      const available = unlockedByResearch && !lockedByMax;
 
-    return {
-      type: buildingType,
-      name: config.name,
-      image: config.imageBackground,
-      cost,
-      time,
-      available,
-      lockedByMax,
-      unlockedByResearch,
-      description: config.description,
-      requirements: config.requiredResearchs,
-    };
-  });
+      return {
+        type: buildingType,
+        name: config.name,
+        image: config.imageBackground,
+        cost,
+        time,
+        available,
+        lockedByMax,
+        unlockedByResearch,
+        description: config.description,
+        requirements: config.requiredResearchs,
+      };
+    })
+    .sort((a, b) => {
+      // Prioridad: disponibles (0), luego bloqueados por investigación (1), luego al máximo (2)
+      const getPriority = (building: typeof a) => {
+        if (building.available) return 0;
+        if (!building.unlockedByResearch) return 1;
+        if (building.lockedByMax) return 2;
+        return 3; // fallback
+      };
+
+      return getPriority(a) - getPriority(b);
+    });
 
   return (
     <View style={{ flex: 1 }}>
