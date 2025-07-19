@@ -5,6 +5,7 @@ import { buildingConfig } from "../../src/config/buildingConfig";
 import { terrainConfig } from "../../src/config/terrainConfig";
 import { Hex } from "../../src/types/hexTypes";
 import { getBuildTime } from "../../utils/buildingUtils";
+import { formatDuration } from "../../utils/formatUtils";
 
 interface Props {
   hex: Hex;
@@ -69,13 +70,15 @@ export default function HexTile({
           stroke="black"
           strokeWidth={0.5}
         >
-          {Math.max(
-            0,
-            Math.ceil(
-              (getBuildTime(construction.building, construction.targetLevel) -
-                (Date.now() - construction.startedAt)) /
-                1000
-            )
+          {formatDuration(
+            Math.max(
+              0,
+              Math.ceil(
+                getBuildTime(construction.building, construction.targetLevel) -
+                  (Date.now() - construction.startedAt)
+              )
+            ),
+            true
           )}
         </SvgText>
       )}

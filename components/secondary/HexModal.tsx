@@ -235,6 +235,17 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 12,
     overflow: "hidden",
+
+    // 👇 Contorno sutil
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.5)",
+
+    // 👇 Sombra (opcional para más profundidad)
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 4, // Android
   },
   scrollContent: {
     paddingVertical: 24,

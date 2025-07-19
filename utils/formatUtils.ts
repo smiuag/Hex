@@ -1,4 +1,7 @@
-export const formatDuration = (timestamp: number): string => {
+export const formatDuration = (
+  timestamp: number,
+  onlyMostSignificant?: boolean
+): string => {
   let diff = Math.abs(timestamp / 1000); // diferencia en segundos
 
   const days = Math.floor(diff / (60 * 60 * 24));
@@ -15,6 +18,10 @@ export const formatDuration = (timestamp: number): string => {
   if (hours > 0) parts.push(`${hours}h`);
   if (minutes > 0) parts.push(`${minutes}m`);
   if (seconds > 0 || parts.length === 0) parts.push(`${seconds}s`);
+
+  if (onlyMostSignificant) {
+    return parts[0]; // Solo el más significativo
+  }
 
   return parts.join(" ");
 };
