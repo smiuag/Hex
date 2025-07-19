@@ -83,9 +83,6 @@ export default function HexModal({
     const nextProduction = getProductionAtLevel(building.type, nextLevel);
     const hasProduction = Object.values(nextProduction).some((v) => v > 0);
 
-    console.log(currentProduction);
-    console.log(nextProduction);
-
     return (
       <ImageBackground
         source={config.imageBackground}
@@ -183,29 +180,91 @@ export default function HexModal({
 
   const renderConstructionView = () => {
     if (!data?.construction || remainingTime === null) return null;
-    const { building, targetLevel } = data.construction;
+
+    const typeUnderConstrucion = data.construction.building;
+
+    const config = buildingConfig[typeUnderConstrucion];
+    const targetLevel = data.construction.targetLevel;
+    const currentProduction = getProductionAtLevel(
+      typeUnderConstrucion,
+      targetLevel
+    );
+    const nextProduction = getProductionAtLevel(
+      typeUnderConstrucion,
+      targetLevel + 1
+    );
+    const hasProduction = Object.values(nextProduction).some((v) => v > 0);
 
     return (
-      <View style={styles.scrollContent}>
-        <Text style={styles.title}>
-          {building.toUpperCase()}{" "}
-          <Text style={styles.level}>Nv: {targetLevel}</Text>
-        </Text>
+      <ImageBackground
+        source={config.imageBackground}
+        style={{
+          width: "100%",
+          borderRadius: 12,
+          overflow: "hidden",
+          backgroundColor: "rgba(0,0,0,0.6)",
+        }}
+        // imageStyle={{
+        //   resizeMode: "cover",
+        //   opacity: canUpgrade ? 1 : 0.4,
+        // }}
+      >
+        <View style={{ padding: 16, backgroundColor: "rgba(0,0,0,0.55)" }}>
+          <Text style={[styles.title, { color: "white" }]}>{config.name}</Text>
 
-        <View style={styles.box}>
-          <Text style={styles.subTitle}>Construcción en curso</Text>
-          <Text style={styles.timeText}>
-            Tiempo restante: {formatDuration(remainingTime)}
+          <Text style={[styles.description, { color: "#ccc" }]}>
+            {config.description}
           </Text>
+          {hasProduction && targetLevel > 1 && (
+            <>
+              <Text style={[styles.subTitle, { color: "#eee" }]}>
+                Nivel actual: {targetLevel - 1}
+              </Text>
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
+              >
+                <Text style={[styles.label, { color: "#ddd", lineHeight: 18 }]}>
+                  Producción (Nv {targetLevel - 1}):
+                </Text>
+                <View style={{ marginTop: 1 }}>
+                  <ResourceDisplay
+                    resources={currentProduction}
+                    fontSize={14}
+                    fontColor="white"
+                  />
+                </View>
+              </View>
+            </>
+          )}
 
-          <Pressable
-            style={[styles.button, { backgroundColor: "#e53935" }]}
-            onPress={onCancelBuild}
-          >
-            <Text style={styles.upgradeButtonText}>Cancelar construcción</Text>
-          </Pressable>
+          {hasProduction && (
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
+            >
+              <Text style={[styles.label, { color: "#ddd", lineHeight: 18 }]}>
+                Producción (Nv {targetLevel}):
+              </Text>
+              <View style={{ marginTop: 1 }}>
+                <ResourceDisplay
+                  resources={nextProduction}
+                  fontSize={14}
+                  fontColor="white"
+                />
+              </View>
+            </View>
+          )}
+
+          <View style={styles.actionContainer}>
+            <Text style={styles.statusText}>
+              ⏱️ {formatDuration(remainingTime)}
+            </Text>
+
+            <Pressable style={styles.cancelButton} onPress={onCancelBuild}>
+              <Text style={styles.cancelButtonText}>Cancelar</Text>
+            </Pressable>
+          </View>
         </View>
-      </View>
+      </ImageBackground>
     );
   };
 
@@ -345,6 +404,19 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 14,
     borderRadius: 6,
+  },
+
+  cancelButton: {
+    backgroundColor: "#f87171",
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+  },
+
+  cancelButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 13,
   },
 
   buildButtonText: {

@@ -13,11 +13,6 @@ export function useResources(hexesRef: React.RefObject<Hex[]>) {
   const resourcesRef = useRef<StoredResources>(resources);
   const hexCount = hexesRef.current.length;
 
-  // 🔍 Log de montaje
-  useEffect(() => {
-    console.log("[useResources] Hook montado");
-  }, []);
-
   // 🔄 Mantener actualizado el ref de recursos
   useEffect(() => {
     resourcesRef.current = resources;
@@ -26,13 +21,8 @@ export function useResources(hexesRef: React.RefObject<Hex[]>) {
   // 🚀 Cargar recursos al arrancar
   useEffect(() => {
     if (hexCount === 0 || ready) {
-      console.log(
-        "[useResources] ⛔ hexes vacíos o ya listos, no se carga nada"
-      );
       return;
     }
-
-    console.log("[useResources] ⏳ Cargando recursos...");
 
     const load = async () => {
       const saved = await loadResources();
@@ -40,9 +30,6 @@ export function useResources(hexesRef: React.RefObject<Hex[]>) {
       if (saved) {
         const now = Date.now();
         const diff = now - saved.lastUpdate;
-
-        console.log("[useResources] 📦 Recursos guardados encontrados");
-        console.log("[useResources] ⏱️ Tiempo transcurrido:", diff, "ms");
 
         const updated =
           diff > 1000
@@ -53,11 +40,9 @@ export function useResources(hexesRef: React.RefObject<Hex[]>) {
         resourcesRef.current = updated;
 
         if (diff > 1000) {
-          console.log("[useResources] 💾 Guardando recursos actualizados");
           await saveResources(updated);
         }
       } else {
-        console.log("[useResources] 🆕 Inicializando nuevos recursos");
         const initial = getInitialResources();
         setResources(initial);
         resourcesRef.current = initial;
@@ -65,7 +50,6 @@ export function useResources(hexesRef: React.RefObject<Hex[]>) {
       }
 
       setReady(true);
-      console.log("[useResources] ✅ Hook listo");
     };
 
     load();
@@ -75,21 +59,17 @@ export function useResources(hexesRef: React.RefObject<Hex[]>) {
   useEffect(() => {
     if (!ready) return;
 
-    console.log("[useResources] ⏱️ Iniciando intervalo");
-
     const interval = setInterval(() => {
       updateNow();
     }, 1000);
 
     return () => {
-      console.log("[useResources] ⏹️ Limpiando intervalo");
       clearInterval(interval);
     };
   }, [ready]);
 
   const updateNow = () => {
     if (!ready) {
-      console.log("[useResources] ⛔ updateNow ignorado (no está listo)");
       return;
     }
 
@@ -103,17 +83,13 @@ export function useResources(hexesRef: React.RefObject<Hex[]>) {
     });
 
     if (hasChanged) {
-      console.log("[useResources] 🔄 Recursos actualizados:", next);
       setResources(updated);
       resourcesRef.current = updated;
       saveResources(updated);
-    } else {
-      console.log("[useResources] ✅ Recursos sin cambios");
     }
   };
 
   const resetResources = () => {
-    console.log("[useResources] ♻️ Reiniciando recursos");
     const initial = getInitialResources();
     setResources(initial);
     resourcesRef.current = initial;

@@ -72,8 +72,6 @@ export default function MenuComponent() {
           text: "Sí, borrar",
           style: "destructive",
           onPress: async () => {
-            console.log("[Menu] 🚨 Reiniciando partida");
-
             await deleteMap();
             await saveResources(getInitialResources());
             await NotificationManager.cancelAllNotifications();
@@ -83,8 +81,6 @@ export default function MenuComponent() {
             setHexes([]);
             resetResources();
             setHasMap(false);
-
-            console.log("[Menu] ✅ Estado reiniciado");
           },
         },
       ]

@@ -29,6 +29,9 @@ import BorderHexTile from "../secondary/BorderHexTile";
 import HexModal from "../secondary/HexModal";
 import HexTile from "../secondary/HexTile";
 
+// PlanetComponent.tsx
+// ... (importaciones iguales)
+
 export default function PlanetComponent() {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedHex, setSelectedHex] = useState<Hex | null>(null);
@@ -48,7 +51,6 @@ export default function PlanetComponent() {
   } = SCREEN_DIMENSIONS;
 
   useEffect(() => {
-    // Primera carga del mapa
     reloadMap();
   }, []);
   useFocusEffect(
@@ -57,7 +59,7 @@ export default function PlanetComponent() {
     }, [reloadMap])
   );
 
-  // ✅ Cámara / desplazamiento
+  // Cámara / desplazamiento
   const offsetX = useSharedValue(SCREEN_WIDTH / 2 - CENTER_X);
   const offsetY = useSharedValue(SCREEN_HEIGHT / 2 - CENTER_Y);
   const lastOffsetX = useSharedValue(0);
@@ -77,26 +79,26 @@ export default function PlanetComponent() {
     transform: [{ translateX: offsetX.value }, { translateY: offsetY.value }],
   }));
 
-  // ✅ Eventos
+  // Eventos
   const handlePressIn = (event: any) => {
+    const x = event.nativeEvent.pageX - offsetX.value;
+    const y = event.nativeEvent.pageY - offsetY.value;
+
     touchStartTime.current = Date.now();
-    touchStartPosition.current = {
-      x: event.nativeEvent.locationX,
-      y: event.nativeEvent.locationY,
-    };
+    touchStartPosition.current = { x, y };
   };
 
   const handlePressOut =
     (hex: Hex | null, fallbackAction?: () => void) => (event: any) => {
       const time = Date.now();
       const duration = time - (touchStartTime.current ?? 0);
-      const endPos = {
-        x: event.nativeEvent.locationX,
-        y: event.nativeEvent.locationY,
-      };
+
+      const x = event.nativeEvent.pageX - offsetX.value;
+      const y = event.nativeEvent.pageY - offsetY.value;
+
       const dist = Math.sqrt(
-        Math.pow(endPos.x - (touchStartPosition.current?.x ?? 0), 2) +
-          Math.pow(endPos.y - (touchStartPosition.current?.y ?? 0), 2)
+        Math.pow(x - (touchStartPosition.current?.x ?? 0), 2) +
+          Math.pow(y - (touchStartPosition.current?.y ?? 0), 2)
       );
 
       if (duration < 200 && dist < 10) {
@@ -128,7 +130,7 @@ export default function PlanetComponent() {
     }
   };
 
-  // ✅ Render
+  // Render
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: "white" }}>
       <ImageBackground

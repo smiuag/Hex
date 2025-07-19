@@ -53,8 +53,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     resetResources,
     resourcesRef,
     ready,
-  } = useResources(hexesRef); // ya actualiza cada segundo por sí solo
-  console.log("[Provider] estado ready:", ready);
+  } = useResources(hexesRef);
 
   const reloadMap = useCallback(async () => {
     const saved = await loadMap();
@@ -88,15 +87,12 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (!ready) return;
 
-    console.log("[Provider] ⏱️ Iniciando construcción/investigación");
-
     const interval = setInterval(() => {
       processConstructionTick();
       processResearchTick();
     }, 1000);
 
     return () => {
-      console.log("[Provider] ⏹️ Limpieza de intervalos");
       clearInterval(interval);
     };
   }, [ready, processConstructionTick, processResearchTick]);
@@ -106,7 +102,6 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const contextValue = useMemo(() => {
-    console.log("[Provider] 💾 Context value recalculado");
     return {
       resources,
       updateNow,

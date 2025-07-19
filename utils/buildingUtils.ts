@@ -61,7 +61,9 @@ export const isUnlocked = (
 export const isAtMaxCount = (type: BuildingType, hexes: Hex[]): boolean => {
   const maxAllowed = buildingConfig[type]?.maxNumberInPlanet;
   if (maxAllowed === undefined) return false;
-  const count = hexes.filter((h) => h.building?.type === type).length;
+  const count = hexes.filter(
+    (h) => h.building?.type === type || h.construction?.building === type
+  ).length;
   return count >= maxAllowed;
 };
 

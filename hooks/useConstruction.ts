@@ -140,7 +140,6 @@ export const useConstruction = (
   };
 
   const processConstructionTick = () => {
-    console.log("tickConstruccion");
     if (isBuildingRef.current) return;
     isBuildingRef.current = true;
 
