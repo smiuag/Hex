@@ -45,7 +45,7 @@ export default function MenuComponent() {
       return {
         ...hex,
         terrain,
-        building: isBase ? { type: "base" as BuildingType, level: 1 } : null,
+        building: isBase ? { type: "BASE" as BuildingType, level: 1 } : null,
         construction: undefined,
         previousBuilding: null,
       };

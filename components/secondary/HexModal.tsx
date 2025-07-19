@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { BuildingType } from "../../src/types/buildingTypes";
 import { Hex } from "../../src/types/hexTypes";
+import { Research } from "../../src/types/researchTypes";
 import { ResourceDisplay } from "./ResourceDisplay";
 
 import {
@@ -21,6 +22,7 @@ import { formatDuration } from "../../utils/formatUtils";
 
 type Props = {
   visible: boolean;
+  research: Research[];
   onClose: () => void;
   data: Hex | null;
   onBuild: (type: BuildingType) => void;
@@ -29,6 +31,7 @@ type Props = {
 
 export default function HexModal({
   visible,
+  research,
   onClose,
   data,
   onBuild,
@@ -131,7 +134,7 @@ export default function HexModal({
           android_disableSound={true}
           onPress={() => {}}
         >
-          {getAvailableBuildings().map((building) => {
+          {getAvailableBuildings(research).map((building) => {
             const level = 1;
             const cost = getBuildCost(building.type, level);
             const time = getBuildTime(building.type, level);

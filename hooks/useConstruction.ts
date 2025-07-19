@@ -158,7 +158,7 @@ export const useConstruction = (
           if (now - startedAt >= buildTime) {
             changed = true;
 
-            if (building === "base" && hex.q === 0 && hex.r === 0) {
+            if (building === "BASE" && hex.q === 0 && hex.r === 0) {
               baseLeveledUp = true;
               updatedBaseLevel = targetLevel;
             }

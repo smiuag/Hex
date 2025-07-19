@@ -1,15 +1,17 @@
 export type ResearchType =
-  | "terraforming"
-  | "mining"
-  | "shipEngineering"
-  | "waterPurification"
-  | "fuelRefinement"
-  | "energyEfficiency";
+  | "TERRAFORMING"
+  | "MINING"
+  | "SHIPENGINEERING"
+  | "WATERPURIFICATION"
+  | "FUELREFINEMENT"
+  | "ENERGIEFFICIENCY";
 
 export type ResearchData = {
   type: ResearchType;
   level: number;
 };
+
+export type RequiredResearchs = [ResearchData];
 
 export type Research = {
   type: ResearchData;

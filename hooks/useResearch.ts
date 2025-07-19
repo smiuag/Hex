@@ -130,14 +130,14 @@ export const useResearch = (
     await updateResearchState(updatedResearch);
   };
 
-  const processResearchTick = () => {
+  const processResearchTick = async () => {
     const now = Date.now();
     let changed = false;
 
     const updatedResearch = researchRef.current.map((item) => {
       if (item.progress) {
         const config = researchTechnologies[item.type.type];
-        const totalTime = config.baseResearchTime;
+        const totalTime = getResearchTime(item.type.type, item.type.level + 1);
         const elapsed = now - item.progress.startedAt;
 
         if (elapsed >= totalTime) {
@@ -165,7 +165,7 @@ export const useResearch = (
     });
 
     if (changed) {
-      updateResearchState(updatedResearch);
+      await updateResearchState(updatedResearch);
     }
   };
 

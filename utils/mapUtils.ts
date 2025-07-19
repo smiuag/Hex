@@ -46,9 +46,9 @@ export function normalizeHexMap(map: any[]): Hex[] {
   const baseHex = map.find((h) => h.q === 0 && h.r === 0);
   let baseLevel = 0;
 
-  if (baseHex?.building?.type === "base") {
+  if (baseHex?.building?.type === "BASE") {
     baseLevel = baseHex.building.level;
-  } else if (baseHex?.construction?.building === "base") {
+  } else if (baseHex?.construction?.building === "BASE") {
     baseLevel = baseHex.construction.targetLevel - 1;
   }
 

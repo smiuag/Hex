@@ -1,11 +1,14 @@
 import { ImageSourcePropType } from "react-native";
 import {
   BUILDING_COST,
+  BUILDING_IMAGES,
   BUILDING_PRODUCTION,
+  BUILDING_REQUIRED_RESEARCHS,
   BUILDING_TIME,
 } from "../constants/building";
 import { IMAGES } from "../constants/images";
 import { BuildingImageLevel, BuildingType } from "../types/buildingTypes";
+import { RequiredResearchs } from "../types/researchTypes";
 import { Resources } from "../types/resourceTypes";
 
 export const buildingConfig: Record<
@@ -17,76 +20,52 @@ export const buildingConfig: Record<
     underConstructionImage: ImageSourcePropType;
     baseCost: Partial<Resources>;
     production: Partial<Resources>;
+    requiredResearchs: RequiredResearchs;
   }
 > = {
-  base: {
+  BASE: {
     name: "Base",
     baseBuildTime: BUILDING_TIME.BASE,
-    images: [
-      { level: 1, image: IMAGES.BUILDING_BASE_1 },
-      { level: 2, image: IMAGES.BUILDING_BASE_2 },
-      { level: 3, image: IMAGES.BUILDING_BASE_3 },
-      { level: 4, image: IMAGES.BUILDING_BASE_4 },
-      { level: 5, image: IMAGES.BUILDING_BASE_5 },
-    ],
+    images: BUILDING_IMAGES.BASE,
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
     baseCost: BUILDING_COST.BASE,
     production: BUILDING_PRODUCTION.BASE,
+    requiredResearchs: BUILDING_REQUIRED_RESEARCHS.BASE,
   },
-  lab: {
+  LAB: {
     name: "Laboratorio",
     baseBuildTime: BUILDING_TIME.LAB,
-    images: [
-      { level: 1, image: IMAGES.BUILDING_LAB_1 },
-      { level: 2, image: IMAGES.BUILDING_LAB_2 },
-      { level: 3, image: IMAGES.BUILDING_LAB_3 },
-      { level: 4, image: IMAGES.BUILDING_LAB_4 },
-      { level: 5, image: IMAGES.BUILDING_LAB_5 },
-    ],
+    images: BUILDING_IMAGES.LAB,
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
     baseCost: BUILDING_COST.LAB,
     production: BUILDING_PRODUCTION.LAB,
+    requiredResearchs: BUILDING_REQUIRED_RESEARCHS.LAB,
   },
-  metallurgy: {
+  METALLURGY: {
     name: "Metalurgia",
     baseBuildTime: BUILDING_TIME.METALLURGY,
-    images: [
-      { level: 1, image: IMAGES.BUILDING_METAL_1 },
-      { level: 2, image: IMAGES.BUILDING_METAL_2 },
-      { level: 3, image: IMAGES.BUILDING_METAL_3 },
-      { level: 4, image: IMAGES.BUILDING_METAL_4 },
-      { level: 5, image: IMAGES.BUILDING_METAL_5 },
-    ],
+    images: BUILDING_IMAGES.METALLURGY,
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
     baseCost: BUILDING_COST.METALLURGY,
     production: BUILDING_PRODUCTION.METALLURGY,
+    requiredResearchs: BUILDING_REQUIRED_RESEARCHS.METALLURGY,
   },
-  quarry: {
+  QUARRY: {
     name: "Cantera",
     baseBuildTime: BUILDING_TIME.QUARRY,
-    images: [
-      { level: 1, image: IMAGES.BUILDING_MINING_1 },
-      { level: 2, image: IMAGES.BUILDING_MINING_2 },
-      { level: 3, image: IMAGES.BUILDING_MINING_3 },
-      { level: 4, image: IMAGES.BUILDING_MINING_4 },
-      { level: 5, image: IMAGES.BUILDING_MINING_5 },
-    ],
+    images: BUILDING_IMAGES.QUARRY,
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
     baseCost: BUILDING_COST.QUARRY,
     production: BUILDING_PRODUCTION.QUARRY,
+    requiredResearchs: BUILDING_REQUIRED_RESEARCHS.QUARRY,
   },
-  krystalmine: {
+  KRYSTALMINE: {
     name: "Mina de cristal",
     baseBuildTime: BUILDING_TIME.KRYSTALMINE,
-    images: [
-      { level: 1, image: IMAGES.BUILDING_MINING_1 },
-      { level: 2, image: IMAGES.BUILDING_MINING_2 },
-      { level: 3, image: IMAGES.BUILDING_MINING_3 },
-      { level: 4, image: IMAGES.BUILDING_MINING_4 },
-      { level: 5, image: IMAGES.BUILDING_MINING_5 },
-    ],
+    images: BUILDING_IMAGES.KRYSTALMINE,
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
     baseCost: BUILDING_COST.KRYSTALMINE,
     production: BUILDING_PRODUCTION.KRYSTALMINE,
+    requiredResearchs: BUILDING_REQUIRED_RESEARCHS.KRYSTALMINE,
   },
 };

@@ -21,7 +21,7 @@ export const researchTechnologies: Record<
     baseResearchTime: number;
   }
 > = {
-  terraforming: {
+  TERRAFORMING: {
     name: "Terraformación",
     labLevelRequired: LAB_LVL_REQUIRED.TERRAFORMING,
     image: IMAGES.RESEARCH_TERRAFORMING,
@@ -31,7 +31,7 @@ export const researchTechnologies: Record<
     description:
       "Permite mejorar la base, algo necesario para ampliar su alcance y conseguir más area construible",
   },
-  mining: {
+  MINING: {
     name: "Minería",
     labLevelRequired: LAB_LVL_REQUIRED.MINING,
     image: IMAGES.RESEARCH_MINING,
@@ -40,7 +40,7 @@ export const researchTechnologies: Record<
     maxLevel: MAX_LVL.MINING,
     description: "Permite mejorar las minas de piedra, cristal y metal ",
   },
-  waterPurification: {
+  WATERPURIFICATION: {
     name: "Purificación de Agua",
     labLevelRequired: LAB_LVL_REQUIRED.WATERPURIFICATION,
     image: IMAGES.RESEARCH_WATER,
@@ -50,7 +50,7 @@ export const researchTechnologies: Record<
     description:
       "Desbloquea sistemas de filtrado y recolección de agua, vital para mantener la vida y expandir tu colonia.",
   },
-  fuelRefinement: {
+  FUELREFINEMENT: {
     name: "Refinamiento de Combustible",
     labLevelRequired: LAB_LVL_REQUIRED.FUELREFINEMENT,
     image: IMAGES.RESEARCH_FUEL,
@@ -60,7 +60,7 @@ export const researchTechnologies: Record<
     description:
       "Permite producir combustible más eficiente para los vehículos y sistemas avanzados de la base.",
   },
-  energyEfficiency: {
+  ENERGIEFFICIENCY: {
     name: "Eficiencia Energética",
     labLevelRequired: LAB_LVL_REQUIRED.ENERGYEFFICIENCY,
     image: IMAGES.RESEARCH_ENERGY,
@@ -70,7 +70,7 @@ export const researchTechnologies: Record<
     description:
       "Optimiza el consumo energético de todas tus estructuras, reduciendo los costes de mantenimiento.",
   },
-  shipEngineering: {
+  SHIPENGINEERING: {
     name: "Ingeniería de Naves",
     labLevelRequired: LAB_LVL_REQUIRED.SHIPENGINEERING,
     image: IMAGES.RESEARCH_SHIPS,

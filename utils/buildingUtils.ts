@@ -5,6 +5,7 @@ import {
   GENERAL_FACTOR,
 } from "../src/constants/general";
 import { BuildingType } from "../src/types/buildingTypes";
+import { Research } from "../src/types/researchTypes";
 import { Resources } from "../src/types/resourceTypes";
 
 export function getBuildTime(building: BuildingType, level: number) {
@@ -30,9 +31,18 @@ export function getBuildCost(building: BuildingType, level: number): Resources {
   return result;
 }
 
-export const getAvailableBuildings = () => {
-  return (Object.keys(buildingConfig) as BuildingType[]).map((type) => ({
-    type,
-    ...buildingConfig[type],
-  }));
+export const getAvailableBuildings = (researches: Research[]) => {
+  return (Object.keys(buildingConfig) as BuildingType[])
+    .filter((type) => {
+      const requirements = buildingConfig[type].requiredResearchs;
+
+      return requirements.every((req) => {
+        const researchFound = researches.find((r) => r.type.type === req.type);
+        return researchFound && researchFound.type.level >= req.level;
+      });
+    })
+    .map((type) => ({
+      type,
+      ...buildingConfig[type],
+    }));
 };

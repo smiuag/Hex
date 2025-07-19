@@ -16,7 +16,7 @@ export function getResearchTime(research: ResearchType, level: number) {
 }
 
 export function getLabLevel(hexes: Hex[]): number {
-  const labHex = hexes.find((hex) => hex.building?.type === "lab");
+  const labHex = hexes.find((hex) => hex.building?.type === "LAB");
   return labHex?.building?.level ?? 0;
 }
 

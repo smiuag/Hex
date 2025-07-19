@@ -26,7 +26,8 @@ import HexModal from "../secondary/HexModal";
 import HexTile from "../secondary/HexTile";
 
 export default function PlanetComponent() {
-  const { hexes, reloadMap, handleBuild, handleCancelBuild } = useGameContext();
+  const { hexes, research, reloadMap, handleBuild, handleCancelBuild } =
+    useGameContext();
 
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedHex, setSelectedHex] = useState<Hex | null>(null);
@@ -163,6 +164,7 @@ export default function PlanetComponent() {
               })}
               <HexModal
                 visible={modalVisible}
+                research={research}
                 onClose={() => setModalVisible(false)}
                 data={selectedHex}
                 onBuild={onBuild}

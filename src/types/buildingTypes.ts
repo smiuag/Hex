@@ -1,11 +1,11 @@
 import { ImageSourcePropType } from "react-native";
 
 export type BuildingType =
-  | "base"
-  | "metallurgy"
-  | "lab"
-  | "quarry"
-  | "krystalmine";
+  | "BASE"
+  | "METALLURGY"
+  | "LAB"
+  | "QUARRY"
+  | "KRYSTALMINE";
 
 export type BuildingData = {
   type: BuildingType;
