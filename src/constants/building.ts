@@ -18,7 +18,7 @@ export const BUILDING_PRODUCTION = {
   KRYSTALMINE: { crystal: 400 },
   METALLURGY: { metal: 500 },
   QUARRY: { stone: 600 },
-  BASE: { stone: 100, metal: 100, energy: 50 },
+  BASE: { stone: 10, metal: 10, energy: 5 },
   ANTENNA: {},
   ROCKET: {},
   HANGAR: {},
@@ -81,22 +81,37 @@ export const BUILDING_REQUIRED_RESEARCHS: Record<
   ANTENNA: [
     {
       researchType: "TERRAFORMING",
-      researchLevelRequired: 1,
+      researchLevelRequired: 2,
       builddingLevel: 1,
+    },
+    {
+      researchType: "ENERGIEFFICIENCY",
+      researchLevelRequired: 2,
+      builddingLevel: 2,
     },
   ],
   ROCKET: [
     {
       researchType: "TERRAFORMING",
-      researchLevelRequired: 1,
+      researchLevelRequired: 2,
       builddingLevel: 1,
+    },
+    {
+      researchType: "FUELREFINEMENT",
+      researchLevelRequired: 2,
+      builddingLevel: 2,
     },
   ],
   HANGAR: [
     {
       researchType: "TERRAFORMING",
-      researchLevelRequired: 1,
+      researchLevelRequired: 2,
       builddingLevel: 1,
+    },
+    {
+      researchType: "FUELREFINEMENT",
+      researchLevelRequired: 2,
+      builddingLevel: 2,
     },
   ],
 };

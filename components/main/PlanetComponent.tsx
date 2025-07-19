@@ -2,7 +2,7 @@
 import { useFocusEffect } from "@react-navigation/native";
 
 import { useRouter } from "expo-router";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ImageBackground } from "react-native";
 import {
   Gesture,
@@ -47,7 +47,10 @@ export default function PlanetComponent() {
     CENTER_Y,
   } = SCREEN_DIMENSIONS;
 
-  // ✅ Setup inicial
+  useEffect(() => {
+    // Primera carga del mapa
+    reloadMap();
+  }, []);
   useFocusEffect(
     useCallback(() => {
       reloadMap();
@@ -111,9 +114,9 @@ export default function PlanetComponent() {
       }
     };
 
-  const onBuild = (type: BuildingType) => {
+  const onBuild = async (type: BuildingType) => {
     if (selectedHex) {
-      handleBuild(selectedHex.q, selectedHex.r, type);
+      await handleBuild(selectedHex.q, selectedHex.r, type);
       setModalVisible(false);
     }
   };

@@ -28,10 +28,10 @@ export default function ConstructionComponent() {
   const { research, hexes, handleBuild } = useGameContext();
   const router = useRouter();
 
-  const onBuild = (type: BuildingType) => {
+  const onBuild = async (type: BuildingType) => {
     const qNum = parseInt(q as string, 10);
     const rNum = parseInt(r as string, 10);
-    handleBuild(qNum, rNum, type);
+    await handleBuild(qNum, rNum, type);
     router.replace("/(tabs)/planet");
   };
 

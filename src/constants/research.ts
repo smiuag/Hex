@@ -1,5 +1,5 @@
 export const RESEARCH_COST = {
-  TERRAFORMING: { stone: 100, metal: 100, energy: 500 },
+  TERRAFORMING: { stone: 100, metal: 100, energy: 50 },
   MINING: { stone: 10000, metal: 10000, energy: 1000 },
   WATERPURIFICATION: { stone: 15000, metal: 15000, energy: 1000 },
   FUELREFINEMENT: { stone: 50000, metal: 30000, energy: 2000 },

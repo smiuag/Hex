@@ -1,7 +1,9 @@
 import React, {
   createContext,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -28,6 +30,7 @@ type ResourceContextType = {
   handleBuild: (q: number, r: number, type: BuildingType) => void;
   handleCancelBuild: (q: number, r: number) => void;
   resetResources: () => void;
+  resetResearch: () => void;
   handleResearch: (type: ResearchType) => void;
   processResearchTick: () => void;
   cancelResearch: () => void;
@@ -40,8 +43,8 @@ const ResourceContext = createContext<ResourceContextType | undefined>(
 );
 
 export const Provider = ({ children }: { children: React.ReactNode }) => {
-  const [hexes, setHexes] = useState<Hex[]>([]);
   const hexesRef = useRef<Hex[]>([]);
+  const [hexes, setHexes] = useState<Hex[]>([]);
 
   const {
     resources,
@@ -50,61 +53,100 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     resetResources,
     resourcesRef,
     ready,
-  } = useResources(hexes);
+  } = useResources(hexesRef); // ya actualiza cada segundo por sí solo
+  console.log("[Provider] estado ready:", ready);
 
-  const reloadMap = async () => {
+  const reloadMap = useCallback(async () => {
     const saved = await loadMap();
     const normalized = saved ? normalizeHexMap(saved) : [];
     setHexes(normalized);
     hexesRef.current = normalized;
-  };
+  }, []);
+
+  const saveMapToStorage = useCallback(async (map: Hex[]) => {
+    setHexes(map);
+    hexesRef.current = map;
+    await saveMap(map);
+  }, []);
 
   const { handleBuild, handleCancelBuild, processConstructionTick } =
     useConstruction(hexesRef, setHexes, resourcesRef, setResources);
 
-  const { research, handleResearch, cancelResearch, processResearchTick } =
-    useResearch(resourcesRef, setResources);
+  const {
+    research,
+    handleResearch,
+    cancelResearch,
+    processResearchTick,
+    resetResearch,
+  } = useResearch(resourcesRef, setResources);
 
-  const saveMapToStorage = async (map: Hex[]) => {
-    setHexes(map);
-    hexesRef.current = map;
-    await saveMap(map);
-  };
+  useEffect(() => {
+    hexesRef.current = hexes;
+  }, [hexes]);
 
+  // ✅ Solo procesamos construcción/investigación, no updateNow
   useEffect(() => {
     if (!ready) return;
 
-    console.log("dentro");
+    console.log("[Provider] ⏱️ Iniciando construcción/investigación");
+
     const interval = setInterval(() => {
-      updateNow();
       processConstructionTick();
       processResearchTick();
     }, 1000);
 
-    return () => clearInterval(interval);
-  }, [ready]);
+    return () => {
+      console.log("[Provider] ⏹️ Limpieza de intervalos");
+      clearInterval(interval);
+    };
+  }, [ready, processConstructionTick, processResearchTick]);
+
+  useEffect(() => {
+    reloadMap();
+  }, []);
+
+  const contextValue = useMemo(() => {
+    console.log("[Provider] 💾 Context value recalculado");
+    return {
+      resources,
+      updateNow,
+      setResources,
+      hexes,
+      setHexes,
+      reloadMap,
+      saveMapToStorage,
+      processConstructionTick,
+      handleBuild,
+      handleCancelBuild,
+      resetResources,
+      handleResearch,
+      cancelResearch,
+      processResearchTick,
+      resetResearch, // ✅ incluido en el objeto
+      research,
+      labLevel: getLabLevel(hexes),
+    };
+  }, [
+    resources,
+    updateNow,
+    setResources,
+    hexes,
+    setHexes,
+    reloadMap,
+    saveMapToStorage,
+    processConstructionTick,
+    handleBuild,
+    handleCancelBuild,
+    resetResources,
+    handleResearch,
+    cancelResearch,
+    processResearchTick,
+    resetResearch, // ✅ incluido en dependencias
+    research,
+  ]);
 
   return (
-    <ResourceContext.Provider
-      value={{
-        resources,
-        updateNow,
-        setResources,
-        hexes,
-        setHexes,
-        reloadMap,
-        saveMapToStorage,
-        processConstructionTick,
-        handleBuild,
-        handleCancelBuild,
-        resetResources,
-        handleResearch,
-        cancelResearch,
-        processResearchTick,
-        research,
-        labLevel: getLabLevel(hexes),
-      }}
-    >
+    <ResourceContext.Provider value={contextValue}>
       {children}
     </ResourceContext.Provider>
   );

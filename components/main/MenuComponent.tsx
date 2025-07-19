@@ -24,7 +24,7 @@ import { NotificationManager } from "../../utils/notificacionUtils";
 export default function MenuComponent() {
   const [checking, setChecking] = useState(true);
   const [hasMap, setHasMap] = useState(false);
-  const { setHexes, resetResources } = useGameContext();
+  const { setHexes, resetResources, resetResearch } = useGameContext();
 
   useEffect(() => {
     const checkMap = async () => {
@@ -50,14 +50,15 @@ export default function MenuComponent() {
         previousBuilding: null,
       };
     });
+
     await saveMap(newMap);
     await saveResources(getInitialResources());
     await NotificationManager.cancelAllNotifications();
     await deleteResearchs();
+    resetResearch();
 
     setHexes(newMap);
     resetResources();
-
     setHasMap(true);
   };
 
@@ -71,12 +72,19 @@ export default function MenuComponent() {
           text: "Sí, borrar",
           style: "destructive",
           onPress: async () => {
+            console.log("[Menu] 🚨 Reiniciando partida");
+
             await deleteMap();
-            setHasMap(false);
             await saveResources(getInitialResources());
             await NotificationManager.cancelAllNotifications();
             await deleteResearchs();
+            resetResearch();
+
+            setHexes([]);
             resetResources();
+            setHasMap(false);
+
+            console.log("[Menu] ✅ Estado reiniciado");
           },
         },
       ]

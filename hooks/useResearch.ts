@@ -30,6 +30,12 @@ export const useResearch = (
     await saveResearchs(newResearch);
   };
 
+  const resetResearch = async () => {
+    setResearch([]);
+    researchRef.current = [];
+    await saveResearchs([]);
+  };
+
   const handleResearch = async (type: ResearchType) => {
     const existing = researchRef.current.find((r) => r.type.type === type);
 
@@ -40,7 +46,7 @@ export const useResearch = (
 
     const currentLevel = existing?.type.level ?? 0;
     const nextLevel = currentLevel + 1;
-    const scaledCost = getResearchCost(type, nextLevel ?? 1);
+    const scaledCost = getResearchCost(type, nextLevel);
     const durationMs = getResearchTime(type, nextLevel);
 
     if (!hasEnoughResources(resourcesRef.current.resources, scaledCost)) {
@@ -137,7 +143,10 @@ export const useResearch = (
     const updatedResearch = researchRef.current.map((item) => {
       if (item.progress) {
         const config = researchTechnologies[item.type.type];
-        const totalTime = getResearchTime(item.type.type, item.type.level + 1);
+        const totalTime = getResearchTime(
+          item.type.type,
+          item.progress.targetLevel
+        );
         const elapsed = now - item.progress.startedAt;
 
         if (elapsed >= totalTime) {
@@ -186,5 +195,6 @@ export const useResearch = (
     handleResearch,
     cancelResearch,
     processResearchTick,
+    resetResearch,
   };
 };

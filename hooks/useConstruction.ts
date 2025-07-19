@@ -52,7 +52,6 @@ export const useConstruction = (
         delayMs: durationMs,
       });
 
-      // Actualizar recursos
       const updatedResources: StoredResources = {
         ...resourcesRef.current,
         resources: applyResourceChange(
@@ -63,11 +62,10 @@ export const useConstruction = (
         lastUpdate: Date.now(),
       };
 
-      setResources(updatedResources);
-      resourcesRef.current = updatedResources;
+      resourcesRef.current = { ...updatedResources };
+      setResources({ ...updatedResources });
       await saveResources(updatedResources);
 
-      // Actualizar mapa
       const updatedHexes = hexesRef.current.map((h) =>
         h.q === q && h.r === r
           ? {
@@ -84,9 +82,9 @@ export const useConstruction = (
           : h
       );
 
-      setHexes(updatedHexes);
-      hexesRef.current = updatedHexes;
-      await saveMap(updatedHexes);
+      hexesRef.current = [...updatedHexes];
+      setHexes([...updatedHexes]);
+      saveMap(updatedHexes);
     } finally {
       isBuildingRef.current = false;
     }
@@ -115,8 +113,8 @@ export const useConstruction = (
       lastUpdate: Date.now(),
     };
 
-    setResources(reimbursedResources);
-    resourcesRef.current = reimbursedResources;
+    resourcesRef.current = { ...reimbursedResources };
+    setResources({ ...reimbursedResources });
     await saveResources(reimbursedResources);
 
     if (notificationId) {
@@ -136,12 +134,13 @@ export const useConstruction = (
       return h;
     });
 
-    setHexes(updatedHexes);
-    hexesRef.current = updatedHexes;
+    hexesRef.current = [...updatedHexes];
+    setHexes([...updatedHexes]);
     await saveMap(updatedHexes);
   };
 
   const processConstructionTick = () => {
+    console.log("tickConstruccion");
     if (isBuildingRef.current) return;
     isBuildingRef.current = true;
 
@@ -192,8 +191,8 @@ export const useConstruction = (
       }
 
       if (changed) {
-        setHexes(finalMap);
-        hexesRef.current = finalMap;
+        hexesRef.current = [...finalMap];
+        setHexes([...finalMap]);
         saveMap(finalMap);
       }
     } finally {
