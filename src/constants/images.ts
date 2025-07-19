@@ -24,7 +24,14 @@ import energy from "../../assets/images/researchs/Energy.png";
 import fuel from "../../assets/images/researchs/Fuel.png";
 import mining from "../../assets/images/researchs/Mining.png";
 import ships from "../../assets/images/researchs/Ships.png";
-import terraforming from "../../assets/images/researchs/Terraforming.png";
+import {
+  default as baseBackground,
+  default as krystalmineBackground,
+  default as labBackground,
+  default as metallurgyBackground,
+  default as quarryBackground,
+  default as terraforming,
+} from "../../assets/images/researchs/Terraforming.png";
 import water from "../../assets/images/researchs/Water.png";
 
 export const IMAGES = {
@@ -59,4 +66,9 @@ export const IMAGES = {
   RESEARCH_FUEL: fuel,
   RESEARCH_ENERGY: energy,
   RESEARCH_SHIPS: ships,
+  LAB_BACKGROUND: labBackground,
+  METALLURGY_BACKGROUND: metallurgyBackground,
+  QUARRY_BACKGROUND: quarryBackground,
+  KRYSTALMINE_BACKGROUND: krystalmineBackground,
+  BASE_BACKGROUND: baseBackground,
 };

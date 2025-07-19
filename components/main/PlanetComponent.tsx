@@ -1,6 +1,8 @@
 // components/HexMap.tsx
 import { useFocusEffect } from "@react-navigation/native";
-import React, { useCallback, useState } from "react";
+
+import { useRouter } from "expo-router";
+import React, { useCallback, useRef, useState } from "react";
 import { ImageBackground } from "react-native";
 import {
   Gesture,
@@ -12,6 +14,7 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 import Svg from "react-native-svg";
+
 import { IMAGES } from "../../src/constants/images";
 import { useGameContext } from "../../src/context/GameContext";
 import { BuildingType } from "../../src/types/buildingTypes";
@@ -21,21 +24,20 @@ import {
   getHexPoints,
   SCREEN_DIMENSIONS,
 } from "../../utils/hexUtils";
+
 import BorderHexTile from "../secondary/BorderHexTile";
 import HexModal from "../secondary/HexModal";
 import HexTile from "../secondary/HexTile";
 
 export default function PlanetComponent() {
-  const { hexes, research, reloadMap, handleBuild, handleCancelBuild } =
-    useGameContext();
-
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedHex, setSelectedHex] = useState<Hex | null>(null);
-  const [touchStartTime, setTouchStartTime] = useState<number | null>(null);
-  const [touchStartPosition, setTouchStartPosition] = useState<{
-    x: number;
-    y: number;
-  } | null>(null);
+  const touchStartTime = useRef<number | null>(null);
+  const touchStartPosition = useRef<{ x: number; y: number } | null>(null);
+
+  const router = useRouter();
+  const { hexes, research, reloadMap, handleBuild, handleCancelBuild } =
+    useGameContext();
   const {
     SCREEN_WIDTH,
     SCREEN_HEIGHT,
@@ -45,12 +47,14 @@ export default function PlanetComponent() {
     CENTER_Y,
   } = SCREEN_DIMENSIONS;
 
+  // ✅ Setup inicial
   useFocusEffect(
     useCallback(() => {
       reloadMap();
     }, [reloadMap])
   );
 
+  // ✅ Cámara / desplazamiento
   const offsetX = useSharedValue(SCREEN_WIDTH / 2 - CENTER_X);
   const offsetY = useSharedValue(SCREEN_HEIGHT / 2 - CENTER_Y);
   const lastOffsetX = useSharedValue(offsetX.value);
@@ -70,31 +74,37 @@ export default function PlanetComponent() {
     transform: [{ translateX: offsetX.value }, { translateY: offsetY.value }],
   }));
 
+  // ✅ Eventos
   const handlePressIn = (event: any) => {
-    setTouchStartTime(Date.now());
-    setTouchStartPosition({
+    touchStartTime.current = Date.now();
+    touchStartPosition.current = {
       x: event.nativeEvent.locationX,
       y: event.nativeEvent.locationY,
-    });
+    };
   };
 
   const handlePressOut =
     (hex: Hex | null, fallbackAction?: () => void) => (event: any) => {
       const time = Date.now();
-      const duration = time - (touchStartTime ?? 0);
+      const duration = time - (touchStartTime.current ?? 0);
       const endPos = {
         x: event.nativeEvent.locationX,
         y: event.nativeEvent.locationY,
       };
       const dist = Math.sqrt(
-        Math.pow(endPos.x - (touchStartPosition?.x ?? 0), 2) +
-          Math.pow(endPos.y - (touchStartPosition?.y ?? 0), 2)
+        Math.pow(endPos.x - (touchStartPosition.current?.x ?? 0), 2) +
+          Math.pow(endPos.y - (touchStartPosition.current?.y ?? 0), 2)
       );
 
       if (duration < 200 && dist < 10) {
         if (hex) {
-          setSelectedHex(hex);
-          setModalVisible(true);
+          const isEmpty = !hex.building && !hex.construction;
+          if (isEmpty) {
+            router.replace(`/(tabs)/planet/construction?q=${hex.q}&r=${hex.r}`);
+          } else {
+            setSelectedHex(hex);
+            setModalVisible(true);
+          }
         } else {
           fallbackAction?.();
         }
@@ -115,6 +125,7 @@ export default function PlanetComponent() {
     }
   };
 
+  // ✅ Render
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: "white" }}>
       <ImageBackground
@@ -162,6 +173,7 @@ export default function PlanetComponent() {
                   />
                 );
               })}
+
               <HexModal
                 visible={modalVisible}
                 research={research}

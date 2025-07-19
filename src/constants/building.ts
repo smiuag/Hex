@@ -26,6 +26,14 @@ export const BUILDING_TIME = {
   BASE: 1000 * 60 * 30,
 };
 
+export const BUILDING_MAX_IN_PLANET = {
+  LAB: 1,
+  KRYSTALMINE: 3,
+  METALLURGY: 7,
+  QUARRY: 7,
+  BASE: 1,
+};
+
 export const BUILDING_REQUIRED_RESEARCHS: Record<
   BuildingType,
   RequiredResearchs

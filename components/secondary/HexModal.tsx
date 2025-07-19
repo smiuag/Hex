@@ -1,22 +1,10 @@
 import React, { useEffect, useState } from "react";
-import {
-  Modal,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Modal, Pressable, StyleSheet, Text } from "react-native";
 import { BuildingType } from "../../src/types/buildingTypes";
 import { Hex } from "../../src/types/hexTypes";
 import { Research } from "../../src/types/researchTypes";
+import { getBuildCost, getBuildTime } from "../../utils/buildingUtils";
 import { ResourceDisplay } from "./ResourceDisplay";
-
-import {
-  getAvailableBuildings,
-  getBuildCost,
-  getBuildTime,
-} from "../../utils/buildingUtils";
 
 import { formatDuration } from "../../utils/formatUtils";
 
@@ -126,40 +114,7 @@ export default function HexModal({
         </>
       );
     }
-
-    return (
-      <>
-        <Pressable
-          style={styles.buttons}
-          android_disableSound={true}
-          onPress={() => {}}
-        >
-          {getAvailableBuildings(research).map((building) => {
-            const level = 1;
-            const cost = getBuildCost(building.type, level);
-            const time = getBuildTime(building.type, level);
-
-            return (
-              <View key={building.type} style={styles.box}>
-                <ResourceDisplay
-                  resources={cost}
-                  fontSize={16}
-                  fontColor="#333"
-                />
-                <Pressable
-                  style={styles.button}
-                  onPress={() => onBuild(building.type)}
-                >
-                  <Text style={styles.upgradeButtonText}>
-                    Construir {building.name} ({formatDuration(time)})
-                  </Text>
-                </Pressable>
-              </View>
-            );
-          })}
-        </Pressable>
-      </>
-    );
+    return null;
   };
 
   return (
@@ -174,13 +129,7 @@ export default function HexModal({
           style={styles.modalWrapper}
           onPress={(e) => e.stopPropagation()}
         >
-          <ScrollView
-            contentContainerStyle={styles.scrollContent}
-            keyboardShouldPersistTaps="handled"
-            scrollEventThrottle={16}
-          >
-            <Pressable onPress={() => {}}>{renderContent()}</Pressable>
-          </ScrollView>
+          <Pressable onPress={() => {}}>{renderContent()}</Pressable>
         </Pressable>
       </Pressable>
     </Modal>

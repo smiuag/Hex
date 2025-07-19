@@ -1,7 +1,7 @@
 import React from "react";
 import { SafeAreaView, StyleSheet } from "react-native";
-import PlanetComponent from "../../components/main/PlanetComponent";
-import ResourceBar from "../../components/secondary/ResourceBar";
+import PlanetComponent from "../../../components/main/PlanetComponent";
+import ResourceBar from "../../../components/secondary/ResourceBar";
 
 export default function PlanetScreen() {
   return (

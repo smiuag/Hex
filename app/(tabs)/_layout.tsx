@@ -19,6 +19,7 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
+        lazy: false,
         tabBarButton: HapticTab,
         tabBarStyle: Platform.select({
           ios: {
