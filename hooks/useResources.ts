@@ -12,12 +12,10 @@ export function useResources(hexes: Hex[]) {
   const [ready, setReady] = useState(false);
   const resourcesRef = useRef<StoredResources>(resources);
 
-  // Mantener actualizado el ref con los últimos recursos
   useEffect(() => {
     resourcesRef.current = resources;
   }, [resources]);
 
-  // Carga inicial de recursos
   useEffect(() => {
     if (hexes.length === 0 || ready) return;
 

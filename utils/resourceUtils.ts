@@ -3,10 +3,10 @@ import { GENERAL_FACTOR, PRODUCTION_INCREMENT } from "../src/constants/general";
 import { Hex } from "../src/types/hexTypes";
 import { Resources, StoredResources } from "../src/types/resourceTypes";
 
-export function getProductionForBuilding(
+export const getProductionForBuilding = (
   type: keyof typeof buildingConfig,
   level: number
-): Partial<Resources> {
+): Partial<Resources> => {
   const config = buildingConfig[type];
   const baseProduction = config.production;
 
@@ -25,13 +25,13 @@ export function getProductionForBuilding(
   }
 
   return result;
-}
+};
 
-export function accumulateResources(
+export const accumulateResources = (
   hexes: Hex[],
   stored: StoredResources,
   diffMs: number = 1000
-): StoredResources {
+): StoredResources => {
   const produced: Partial<Resources> = {};
 
   hexes.forEach((hex) => {
@@ -62,9 +62,9 @@ export function accumulateResources(
     resources: newResources,
     lastUpdate: Date.now(),
   };
-}
+};
 
-export function getProduction(hexes: Hex[]): Partial<Resources> {
+export const getProduction = (hexes: Hex[]): Partial<Resources> => {
   const result: Partial<Resources> = { metal: 0, energy: 0, crystal: 0 };
 
   for (const hex of hexes) {
@@ -83,9 +83,12 @@ export function getProduction(hexes: Hex[]): Partial<Resources> {
   }
 
   return result;
-}
+};
 
-export function resourcesAreEqual(a: StoredResources, b: StoredResources) {
+export const resourcesAreEqual = (
+  a: StoredResources,
+  b: StoredResources
+): boolean => {
   const ra = a.resources;
   const rb = b.resources;
   return (
@@ -93,23 +96,23 @@ export function resourcesAreEqual(a: StoredResources, b: StoredResources) {
     ra.energy === rb.energy &&
     ra.crystal === rb.crystal
   );
-}
+};
 
-export function hasEnoughResources(
+export const hasEnoughResources = (
   current: Resources,
   cost: Partial<Resources>
-): boolean {
+): boolean => {
   return Object.entries(cost).every(([key, value]) => {
     const typedKey = key as keyof Resources;
     return (current[typedKey] ?? 0) >= (value ?? 0);
   });
-}
+};
 
-export function applyResourceChange(
+export const applyResourceChange = (
   base: Resources,
   change: Partial<Resources>,
   multiplier = 1
-): Resources {
+): Resources => {
   const updated: Resources = { ...base };
   for (const key in change) {
     const typedKey = key as keyof Resources;
@@ -119,4 +122,4 @@ export function applyResourceChange(
     );
   }
   return updated;
-}
+};

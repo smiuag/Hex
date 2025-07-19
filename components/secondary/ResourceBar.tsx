@@ -24,18 +24,4 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "#1C1C1C",
   },
-  resourceItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginHorizontal: 8,
-    marginVertical: 4,
-  },
-  label: {
-    fontWeight: "bold",
-    color: "white",
-    marginRight: 4,
-  },
-  value: {
-    fontSize: 16,
-  },
 });

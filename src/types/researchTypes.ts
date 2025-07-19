@@ -11,7 +11,13 @@ export type ResearchData = {
   level: number;
 };
 
-export type RequiredResearchs = [ResearchData];
+export type ResearchRequiredData = {
+  researchType: ResearchType;
+  researchLevelRequired: number;
+  builddingLevel: number;
+};
+
+export type RequiredResearchs = ResearchRequiredData[];
 
 export type Research = {
   type: ResearchData;

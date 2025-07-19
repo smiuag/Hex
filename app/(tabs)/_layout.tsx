@@ -11,10 +11,6 @@ import {
 } from "../../components/secondary/MenuIcons";
 
 export default function TabLayout() {
-  const originalWarn = console.warn;
-
-  console.warn = (...args) => {};
-
   return (
     <Tabs
       screenOptions={{

@@ -52,6 +52,13 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     ready,
   } = useResources(hexes);
 
+  const reloadMap = async () => {
+    const saved = await loadMap();
+    const normalized = saved ? normalizeHexMap(saved) : [];
+    setHexes(normalized);
+    hexesRef.current = normalized;
+  };
+
   const { handleBuild, handleCancelBuild, processConstructionTick } =
     useConstruction(hexesRef, setHexes, resourcesRef, setResources);
 
@@ -64,16 +71,10 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     await saveMap(map);
   };
 
-  const reloadMap = async () => {
-    const saved = await loadMap();
-    const normalized = saved ? normalizeHexMap(saved) : [];
-    setHexes(normalized);
-    hexesRef.current = normalized;
-  };
-
   useEffect(() => {
     if (!ready) return;
 
+    console.log("dentro");
     const interval = setInterval(() => {
       updateNow();
       processConstructionTick();

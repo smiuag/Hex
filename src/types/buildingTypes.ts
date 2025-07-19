@@ -5,7 +5,10 @@ export type BuildingType =
   | "METALLURGY"
   | "LAB"
   | "QUARRY"
-  | "KRYSTALMINE";
+  | "KRYSTALMINE"
+  | "HANGAR"
+  | "ANTENNA"
+  | "ROCKET";
 
 export type BuildingData = {
   type: BuildingType;

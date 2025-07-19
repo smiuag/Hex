@@ -13,10 +13,12 @@ import { ResourceDisplay } from "../../../components/secondary/ResourceDisplay";
 import { buildingConfig } from "../../../src/config/buildingConfig";
 import { useGameContext } from "../../../src/context/GameContext";
 import { BuildingType } from "../../../src/types/buildingTypes";
-import { Hex } from "../../../src/types/hexTypes";
-import { Research } from "../../../src/types/researchTypes";
 import { Resources } from "../../../src/types/resourceTypes";
-import { getBuildTime } from "../../../utils/buildingUtils";
+import {
+  getBuildTime,
+  isAtMaxCount,
+  isUnlocked,
+} from "../../../utils/buildingUtils";
 import { formatDuration } from "../../../utils/formatUtils";
 
 const { width } = Dimensions.get("window");
@@ -25,25 +27,6 @@ export default function ConstructionComponent() {
   const { q, r } = useLocalSearchParams();
   const { research, hexes, handleBuild } = useGameContext();
   const router = useRouter();
-
-  const isUnlocked = (
-    requiredResearchs: { type: string; level: number }[],
-    playerResearch: Research[] = []
-  ) => {
-    if (!requiredResearchs || requiredResearchs.length === 0) return true;
-
-    return requiredResearchs.every((req) => {
-      const found = playerResearch.find((r) => r.type.type === req.type);
-      return found && found.type.level >= req.level;
-    });
-  };
-
-  const isAtMaxCount = (type: BuildingType, hexes: Hex[]): boolean => {
-    const maxAllowed = buildingConfig[type]?.maxNumberInPlanet;
-    if (maxAllowed === undefined) return false;
-    const count = hexes.filter((h) => h.building?.type === type).length;
-    return count >= maxAllowed;
-  };
 
   const onBuild = (type: BuildingType) => {
     const qNum = parseInt(q as string, 10);
@@ -62,7 +45,7 @@ export default function ConstructionComponent() {
       const cost: Partial<Resources> = config.baseCost;
       const time = getBuildTime(buildingType, 1);
       const lockedByMax = isAtMaxCount(buildingType, hexes);
-      const unlockedByResearch = isUnlocked(config.requiredResearchs, research);
+      const unlockedByResearch = isUnlocked(buildingType, 1, research);
       const available = unlockedByResearch && !lockedByMax;
 
       return {
@@ -149,7 +132,10 @@ export default function ConstructionComponent() {
                     <Text style={styles.lockedText}>
                       🔒 Requiere{" "}
                       {item.requirements
-                        .map((r) => `${r.type} Nv ${r.level}`)
+                        .map(
+                          (r) =>
+                            `${r.researchType} Nv ${r.researchLevelRequired}`
+                        )
                         .join(", ")}
                     </Text>
                   )}

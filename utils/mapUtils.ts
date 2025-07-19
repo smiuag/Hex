@@ -2,7 +2,7 @@ import { Hex } from "../src/types/hexTypes";
 import { StoredResources } from "../src/types/resourceTypes";
 import { TerrainType } from "../src/types/terrainTypes";
 
-export const generateHexGrid = (radius: number) => {
+export const generateHexGrid = (radius: number): Hex[] => {
   const hexes = [];
   for (let q = -radius; q <= radius; q++) {
     const r1 = Math.max(-radius, -q - radius);
@@ -13,7 +13,7 @@ export const generateHexGrid = (radius: number) => {
         r,
         isVisible: false,
         isRadius: false,
-        terrain: "initial",
+        terrain: "initial" as TerrainType,
       });
     }
   }
@@ -30,19 +30,19 @@ export const getInitialResources = (): StoredResources => ({
   lastUpdate: Date.now(),
 });
 
-function axialDistance(
+export const axialDistance = (
   a: { q: number; r: number },
   b: { q: number; r: number }
-): number {
+): number => {
   return (
     (Math.abs(a.q - b.q) +
       Math.abs(a.q + a.r - b.q - b.r) +
       Math.abs(a.r - b.r)) /
     2
   );
-}
+};
 
-export function normalizeHexMap(map: any[]): Hex[] {
+export const normalizeHexMap = (map: any[]): Hex[] => {
   const baseHex = map.find((h) => h.q === 0 && h.r === 0);
   let baseLevel = 0;
 
@@ -53,6 +53,7 @@ export function normalizeHexMap(map: any[]): Hex[] {
   }
 
   const visibleRadius = Math.floor(baseLevel / 2) + 1;
+
   return map.map((hex) => {
     const terrain = hex.terrain as TerrainType;
 
@@ -74,40 +75,40 @@ export function normalizeHexMap(map: any[]): Hex[] {
     const isVisible =
       axialDistance({ q: 0, r: 0 }, { q: hex.q, r: hex.r }) <= visibleRadius;
     const isRadius =
-      axialDistance({ q: 0, r: 0 }, { q: hex.q, r: hex.r }) ==
+      axialDistance({ q: 0, r: 0 }, { q: hex.q, r: hex.r }) ===
       visibleRadius + 1;
 
     return {
       q: hex.q,
       r: hex.r,
-      isVisible: isVisible,
-      isRadius: isRadius,
-      terrain: terrain,
+      isVisible,
+      isRadius,
+      terrain,
       building,
       construction,
       previousBuilding: hex.previousBuilding ?? null,
     };
   });
-}
+};
 
-export function expandMapAroundBase(
+export const expandMapAroundBase = (
   currentMap: Hex[],
   newBaseLevel: number
-): Hex[] {
+): Hex[] => {
   const radius = Math.floor(newBaseLevel / 2) + 1;
   const borderRadius = radius + 1;
 
   const updatedMap = currentMap.map((hex) => {
     const dist = axialDistance({ q: 0, r: 0 }, { q: hex.q, r: hex.r });
-    // Convertir los que eran frontera a terreno inicial
+
     if (dist <= radius && hex.terrain === "border") {
       return { ...hex, terrain: "initial" as TerrainType };
     }
+
     return hex;
   });
 
   const existingCoords = new Set(updatedMap.map((h) => `${h.q},${h.r}`));
-
   const newBorders: Hex[] = [];
 
   for (let q = -borderRadius; q <= borderRadius; q++) {
@@ -134,4 +135,4 @@ export function expandMapAroundBase(
   }
 
   return [...updatedMap, ...newBorders];
-}
+};

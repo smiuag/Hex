@@ -21,7 +21,7 @@ export const ResourceDisplay = ({
     <View style={[styles.container, { gap }]}>
       {[...Object.entries(resources)].reverse().map(([key, value]) => {
         const emoji = resourceEmojis[key as ResourceType];
-        if (!emoji || value == null || value == 0) return null;
+        if (!emoji || value === null || value === 0) return null;
 
         return (
           <Text key={key} style={[styles.item, { fontSize, color: fontColor }]}>

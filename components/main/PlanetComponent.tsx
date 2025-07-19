@@ -57,8 +57,8 @@ export default function PlanetComponent() {
   // ✅ Cámara / desplazamiento
   const offsetX = useSharedValue(SCREEN_WIDTH / 2 - CENTER_X);
   const offsetY = useSharedValue(SCREEN_HEIGHT / 2 - CENTER_Y);
-  const lastOffsetX = useSharedValue(offsetX.value);
-  const lastOffsetY = useSharedValue(offsetY.value);
+  const lastOffsetX = useSharedValue(0);
+  const lastOffsetY = useSharedValue(0);
 
   const panGesture = Gesture.Pan()
     .onStart(() => {

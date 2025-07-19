@@ -1,5 +1,6 @@
 // hooks/useConstruction.ts
-import { useRef } from "react";
+
+import React, { useRef } from "react";
 import { Alert } from "react-native";
 import { buildingConfig } from "../src/config/buildingConfig";
 import { saveMap, saveResources } from "../src/services/storage";

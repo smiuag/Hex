@@ -8,19 +8,25 @@ import { Hex } from "../src/types/hexTypes";
 import { ResearchType } from "../src/types/researchTypes";
 import { Resources } from "../src/types/resourceTypes";
 
-export function getResearchTime(research: ResearchType, level: number) {
+export const getResearchTime = (
+  research: ResearchType,
+  level: number
+): number => {
   const baseTime = researchTechnologies[research].baseResearchTime;
   return Math.round(
     (baseTime * Math.pow(RESEARCH_TIME_INCREMENT, level - 1)) / GENERAL_FACTOR
   );
-}
+};
 
-export function getLabLevel(hexes: Hex[]): number {
+export const getLabLevel = (hexes: Hex[]): number => {
   const labHex = hexes.find((hex) => hex.building?.type === "LAB");
   return labHex?.building?.level ?? 0;
-}
+};
 
-export function getResearchCost(type: ResearchType, level: number): Resources {
+export const getResearchCost = (
+  type: ResearchType,
+  level: number
+): Resources => {
   const config = researchTechnologies[type];
   const base = config.baseCost;
   const result: Resources = {} as Resources;
@@ -34,4 +40,4 @@ export function getResearchCost(type: ResearchType, level: number): Resources {
   }
 
   return result;
-}
+};
