@@ -1,5 +1,3 @@
-// hooks/useConstruction.ts
-
 import React, { useRef } from "react";
 import { Alert } from "react-native";
 import { buildingConfig } from "../src/config/buildingConfig";
@@ -21,7 +19,8 @@ export const useConstruction = (
   hexesRef: React.RefObject<Hex[]>,
   setHexes: React.Dispatch<React.SetStateAction<Hex[]>>,
   resourcesRef: React.RefObject<StoredResources>,
-  setResources: React.Dispatch<React.SetStateAction<StoredResources>>
+  setResources: React.Dispatch<React.SetStateAction<StoredResources>>,
+  reloadMap: () => Promise<void>
 ) => {
   const isBuildingRef = useRef(false);
 
@@ -193,6 +192,10 @@ export const useConstruction = (
         hexesRef.current = [...finalMap];
         setHexes([...finalMap]);
         saveMap(finalMap);
+
+        if (baseLeveledUp) {
+          reloadMap();
+        }
       }
     } finally {
       isBuildingRef.current = false;

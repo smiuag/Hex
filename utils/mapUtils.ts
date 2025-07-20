@@ -1,6 +1,9 @@
+import { MAP_SIZES, MapSizeKey } from "../src/constants/general";
 import { Hex } from "../src/types/hexTypes";
 import { StoredResources } from "../src/types/resourceTypes";
 import { TerrainType } from "../src/types/terrainTypes";
+
+export let CURRENT_MAP_SIZE: MapSizeKey = "MEDIUM";
 
 export const generateHexGrid = (radius: number): Hex[] => {
   const hexes = [];
@@ -51,7 +54,7 @@ export const normalizeHexMap = (map: any[]): Hex[] => {
   } else if (baseHex?.construction?.building === "BASE") {
     baseLevel = baseHex.construction.targetLevel - 1;
   }
-
+  calculateMapSize(baseLevel);
   const visibleRadius = Math.floor(baseLevel / 2) + 1;
 
   return map.map((hex) => {
@@ -135,4 +138,19 @@ export const expandMapAroundBase = (
   }
 
   return [...updatedMap, ...newBorders];
+};
+
+export const getCurrentMapSize = () => {
+  return MAP_SIZES[CURRENT_MAP_SIZE];
+};
+
+const setCurrentMapSize = (size: MapSizeKey) => {
+  CURRENT_MAP_SIZE = size;
+};
+
+const calculateMapSize = (baseLevel: number) => {
+  console.log(baseLevel);
+  if (baseLevel > 3) setCurrentMapSize("SMALL");
+  else if (baseLevel > 1) setCurrentMapSize("MEDIUM");
+  else setCurrentMapSize("LARGE");
 };

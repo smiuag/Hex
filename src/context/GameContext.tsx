@@ -69,7 +69,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const { handleBuild, handleCancelBuild, processConstructionTick } =
-    useConstruction(hexesRef, setHexes, resourcesRef, setResources);
+    useConstruction(hexesRef, setHexes, resourcesRef, setResources, reloadMap);
 
   const {
     research,
@@ -83,7 +83,6 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     hexesRef.current = hexes;
   }, [hexes]);
 
-  // ✅ Solo procesamos construcción/investigación, no updateNow
   useEffect(() => {
     if (!ready) return;
 
