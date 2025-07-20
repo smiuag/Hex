@@ -5,7 +5,7 @@ import { buildingConfig } from "../../src/config/buildingConfig";
 import { terrainConfig } from "../../src/config/terrainConfig";
 import { Hex } from "../../src/types/hexTypes";
 import { getBuildTime } from "../../utils/buildingUtils";
-import { formatDuration } from "../../utils/formatUtils";
+import { formatDuration } from "../../utils/generalUtils";
 
 interface Props {
   hex: Hex;

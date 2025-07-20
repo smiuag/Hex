@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { Alert } from "react-native";
 import { researchTechnologies } from "../src/config/researchConfig";
 import {
-  loadResearchs,
-  saveResearchs,
+  loadResearch,
+  saveResearch,
   saveResources,
 } from "../src/services/storage";
 import { Research, ResearchType } from "../src/types/researchTypes";
@@ -27,24 +27,24 @@ export const useResearch = (
   const updateResearchState = async (newResearch: Research[]) => {
     setResearch(newResearch);
     researchRef.current = newResearch;
-    await saveResearchs(newResearch);
+    await saveResearch(newResearch);
   };
 
   const resetResearch = async () => {
     setResearch([]);
     researchRef.current = [];
-    await saveResearchs([]);
+    await saveResearch([]);
   };
 
   const handleResearch = async (type: ResearchType) => {
-    const existing = researchRef.current.find((r) => r.type.type === type);
+    const existing = researchRef.current.find((r) => r.data.type === type);
 
     if (researchRef.current.some((r) => r.progress)) {
       Alert.alert("Ya hay una investigación en curso");
       return;
     }
 
-    const currentLevel = existing?.type.level ?? 0;
+    const currentLevel = existing?.data.level ?? 0;
     const nextLevel = currentLevel + 1;
     const scaledCost = getResearchCost(type, nextLevel);
     const durationMs = getResearchTime(type, nextLevel);
@@ -64,7 +64,7 @@ export const useResearch = (
     });
 
     const updatedResearch = [...researchRef.current].map((r) =>
-      r.type.type === type
+      r.data.type === type
         ? {
             ...r,
             progress: {
@@ -78,7 +78,7 @@ export const useResearch = (
 
     if (!existing) {
       updatedResearch.push({
-        type: { type, level: 0 },
+        data: { type, level: 0 },
         progress: {
           startedAt: Date.now(),
           targetLevel: nextLevel,
@@ -104,12 +104,14 @@ export const useResearch = (
     await saveResources(updatedResources);
   };
 
-  const cancelResearch = async () => {
-    const inProgress = researchRef.current.find((r) => r.progress);
+  const handleCancelResearch = async (type: ResearchType) => {
+    const inProgress = researchRef.current.find(
+      (r) => r.progress && r.data.type == type
+    );
     if (!inProgress) return;
 
-    const { type, progress } = inProgress;
-    const scaledCost = getResearchCost(type.type, progress?.targetLevel ?? 1);
+    const { data, progress } = inProgress;
+    const scaledCost = getResearchCost(data.type, progress?.targetLevel ?? 1);
 
     const refunded = {
       ...resourcesRef.current,
@@ -130,7 +132,7 @@ export const useResearch = (
     }
 
     const updatedResearch = researchRef.current.map((r) =>
-      r.type.type === type.type ? { ...r, progress: undefined } : r
+      r.data.type === data.type ? { ...r, progress: undefined } : r
     );
 
     await updateResearchState(updatedResearch);
@@ -142,9 +144,9 @@ export const useResearch = (
 
     const updatedResearch = researchRef.current.map((item) => {
       if (item.progress) {
-        const config = researchTechnologies[item.type.type];
+        const config = researchTechnologies[item.data.type];
         const totalTime = getResearchTime(
-          item.type.type,
+          item.data.type,
           item.progress.targetLevel
         );
         const elapsed = now - item.progress.startedAt;
@@ -162,8 +164,8 @@ export const useResearch = (
           });
 
           return {
-            type: {
-              type: item.type.type,
+            data: {
+              type: item.data.type,
               level: item.progress.targetLevel,
             },
           };
@@ -178,8 +180,8 @@ export const useResearch = (
     }
   };
 
-  const loadResearch = async () => {
-    const saved = await loadResearchs();
+  const loadData = async () => {
+    const saved = await loadResearch();
     if (saved) {
       setResearch(saved);
       researchRef.current = saved;
@@ -187,13 +189,13 @@ export const useResearch = (
   };
 
   useEffect(() => {
-    loadResearch();
+    loadData();
   }, []);
 
   return {
     research,
     handleResearch,
-    cancelResearch,
+    handleCancelResearch,
     processResearchTick,
     resetResearch,
   };

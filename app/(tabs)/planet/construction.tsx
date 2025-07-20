@@ -19,7 +19,7 @@ import {
   isAtMaxCount,
   isUnlocked,
 } from "../../../utils/buildingUtils";
-import { formatDuration } from "../../../utils/formatUtils";
+import { formatDuration } from "../../../utils/generalUtils";
 
 const { width } = Dimensions.get("window");
 
@@ -58,7 +58,7 @@ export default function ConstructionComponent() {
         lockedByMax,
         unlockedByResearch,
         description: config.description,
-        requirements: config.requiredResearchs,
+        requirements: config.requiredResearch,
       };
     })
     .sort((a, b) => {

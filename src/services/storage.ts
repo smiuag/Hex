@@ -6,7 +6,7 @@ import { getInitialResources } from "../../utils/mapUtils";
 
 const MAP_KEY = "player_map";
 const STORAGE_KEY = "player_resources";
-const RESEARCH_KEY = "player_researchs";
+const RESEARCH_KEY = "player_research";
 
 export const saveMap = async (hexes: Hex[]) => {
   await AsyncStorage.setItem(MAP_KEY, JSON.stringify(hexes));
@@ -40,15 +40,15 @@ export async function resetResources(): Promise<void> {
   await AsyncStorage.removeItem(STORAGE_KEY);
 }
 
-export const saveResearchs = async (researchs: Research[]) => {
-  await AsyncStorage.setItem(RESEARCH_KEY, JSON.stringify(researchs));
+export const saveResearch = async (researchList: Research[]) => {
+  await AsyncStorage.setItem(RESEARCH_KEY, JSON.stringify(researchList));
 };
 
-export const loadResearchs = async (): Promise<Research[] | null> => {
+export const loadResearch = async (): Promise<Research[] | null> => {
   const data = await AsyncStorage.getItem(RESEARCH_KEY);
   return data ? JSON.parse(data) : null;
 };
 
-export const deleteResearchs = async () => {
+export const deleteResearch = async () => {
   await AsyncStorage.removeItem(RESEARCH_KEY);
 };

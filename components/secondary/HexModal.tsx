@@ -14,10 +14,10 @@ import { Research } from "../../src/types/researchTypes";
 import {
   getBuildCost,
   getBuildTime,
-  getProductionAtLevel,
+  getProductionPerHour,
   isUnlocked,
 } from "../../utils/buildingUtils";
-import { formatDuration } from "../../utils/formatUtils";
+import { formatDuration } from "../../utils/generalUtils";
 import { ResourceDisplay } from "./ResourceDisplay";
 
 type Props = {
@@ -76,11 +76,11 @@ export default function HexModal({
     const canUpgrade = isUnlocked(building.type, nextLevel, research);
     const cost = getBuildCost(building.type, nextLevel);
     const time = getBuildTime(building.type, nextLevel);
-    const currentProduction = getProductionAtLevel(
+    const currentProduction = getProductionPerHour(
       building.type,
       building.level
     );
-    const nextProduction = getProductionAtLevel(building.type, nextLevel);
+    const nextProduction = getProductionPerHour(building.type, nextLevel);
     const hasProduction = Object.values(nextProduction).some((v) => v > 0);
 
     return (
@@ -185,11 +185,11 @@ export default function HexModal({
 
     const config = buildingConfig[typeUnderConstrucion];
     const targetLevel = data.construction.targetLevel;
-    const currentProduction = getProductionAtLevel(
+    const currentProduction = getProductionPerHour(
       typeUnderConstrucion,
       targetLevel
     );
-    const nextProduction = getProductionAtLevel(
+    const nextProduction = getProductionPerHour(
       typeUnderConstrucion,
       targetLevel + 1
     );

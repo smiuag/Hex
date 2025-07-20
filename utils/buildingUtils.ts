@@ -44,17 +44,17 @@ export const isUnlocked = (
   const config = buildingConfig[type as BuildingType];
   if (!config) return false;
 
-  const requiredResearchs = config.requiredResearchs;
+  const requiredResearch = config.requiredResearch;
 
-  if (!requiredResearchs || requiredResearchs.length === 0) return true;
+  if (!requiredResearch || requiredResearch.length === 0) return true;
 
-  const applicableRequirements = requiredResearchs.filter(
+  const applicableRequirements = requiredResearch.filter(
     (req) => req.builddingLevel <= level
   );
 
   return applicableRequirements.every((req) => {
-    const found = playerResearch.find((r) => r.type.type === req.researchType);
-    return found && found.type.level >= req.researchLevelRequired;
+    const found = playerResearch.find((r) => r.data.type === req.researchType);
+    return found && found.data.level >= req.researchLevelRequired;
   });
 };
 
@@ -67,7 +67,7 @@ export const isAtMaxCount = (type: BuildingType, hexes: Hex[]): boolean => {
   return count >= maxAllowed;
 };
 
-export const getProductionAtLevel = (
+export const getProductionPerSecond = (
   building: BuildingType,
   level: number
 ): Resources => {
@@ -84,4 +84,38 @@ export const getProductionAtLevel = (
   }
 
   return result;
+};
+
+export const getProductionPerHour = (
+  building: BuildingType,
+  level: number
+): Resources => {
+  const productionPerSecond = getProductionPerSecond(building, level);
+  const productionPerHour: Resources = {} as Resources;
+
+  for (const key in productionPerSecond) {
+    const resource = key as keyof Resources;
+    productionPerHour[resource] = productionPerSecond[resource] * 3600;
+  }
+
+  return productionPerHour;
+};
+
+export const getTotalProductionPerHour = (hexes: Hex[]): Partial<Resources> => {
+  const productionTotal: Partial<Resources> = {};
+
+  hexes.forEach((hex) => {
+    if (hex.building) {
+      const prodAtLevel = getProductionPerHour(
+        hex.building.type,
+        hex.building.level
+      );
+      Object.entries(prodAtLevel).forEach(([res, val]) => {
+        productionTotal[res as keyof Resources] =
+          (productionTotal[res as keyof Resources] || 0) + val;
+      });
+    }
+  });
+
+  return productionTotal;
 };

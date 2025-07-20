@@ -46,3 +46,10 @@ export const formatAmount = (value: number): string => {
   }
   return value.toString();
 };
+
+export const getTimeRemaining = (
+  duration: number,
+  startedAt: number
+): number => {
+  return Math.max(0, duration - (Date.now() - startedAt));
+};

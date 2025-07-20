@@ -11,21 +11,21 @@ import {
 import { researchTechnologies } from "../../src/config/researchConfig";
 import { useGameContext } from "../../src/context/GameContext";
 import { ResearchType } from "../../src/types/researchTypes";
-import { formatDuration } from "../../utils/formatUtils";
+import { formatDuration } from "../../utils/generalUtils";
 import { getResearchTime } from "../../utils/researchUtils";
 import { ResourceDisplay } from "../secondary/ResourceDisplay";
 
 const { width } = Dimensions.get("window");
 
 export default function ResearchComponent() {
-  const { research, labLevel, handleResearch, cancelResearch } =
+  const { research, labLevel, handleResearch, handleCancelResearch } =
     useGameContext();
 
   const researchItems = Object.entries(researchTechnologies)
     .map(([key, config]) => {
       const type = key as ResearchType;
-      const data = (research || []).find((r) => r.type.type === type);
-      const currentLevel = data?.type.level ?? 0;
+      const data = (research || []).find((r) => r.data.type === type);
+      const currentLevel = data?.data.level ?? 0;
       const inProgress = !!data?.progress;
       const targetLevel = data?.progress?.targetLevel ?? currentLevel + 1;
       const totalTime = getResearchTime(type, targetLevel);
@@ -86,7 +86,7 @@ export default function ResearchComponent() {
                   </Text>
                   <TouchableOpacity
                     style={styles.cancelButton}
-                    onPress={() => cancelResearch()}
+                    onPress={() => handleCancelResearch(item.type)}
                   >
                     <Text style={styles.cancelButtonText}>Cancelar</Text>
                   </TouchableOpacity>

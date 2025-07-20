@@ -17,10 +17,10 @@ export type ResearchRequiredData = {
   builddingLevel: number;
 };
 
-export type RequiredResearchs = ResearchRequiredData[];
+export type RequiredResearch = ResearchRequiredData[];
 
 export type Research = {
-  type: ResearchData;
+  data: ResearchData;
   progress?: {
     startedAt: number;
     targetLevel: number;

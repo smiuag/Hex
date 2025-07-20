@@ -4,12 +4,12 @@ import {
   BUILDING_IMAGES,
   BUILDING_MAX_IN_PLANET,
   BUILDING_PRODUCTION,
-  BUILDING_REQUIRED_RESEARCHS,
+  BUILDING_REQUIRED_RESEARCH,
   BUILDING_TIME,
 } from "../constants/building";
 import { IMAGES } from "../constants/images";
 import { BuildingImageLevel, BuildingType } from "../types/buildingTypes";
-import { RequiredResearchs } from "../types/researchTypes";
+import { RequiredResearch } from "../types/researchTypes";
 import { Resources } from "../types/resourceTypes";
 
 export const buildingConfig: Record<
@@ -22,7 +22,7 @@ export const buildingConfig: Record<
     underConstructionImage: ImageSourcePropType;
     baseCost: Partial<Resources>;
     production: Partial<Resources>;
-    requiredResearchs: RequiredResearchs;
+    requiredResearch: RequiredResearch;
     description: string;
     maxNumberInPlanet: number;
   }
@@ -35,7 +35,7 @@ export const buildingConfig: Record<
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
     baseCost: BUILDING_COST.BASE,
     production: BUILDING_PRODUCTION.BASE,
-    requiredResearchs: BUILDING_REQUIRED_RESEARCHS.BASE,
+    requiredResearch: BUILDING_REQUIRED_RESEARCH.BASE,
     description: "Centro de operaciones de la colonia.",
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.BASE,
   },
@@ -47,7 +47,7 @@ export const buildingConfig: Record<
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
     baseCost: BUILDING_COST.LAB,
     production: BUILDING_PRODUCTION.LAB,
-    requiredResearchs: BUILDING_REQUIRED_RESEARCHS.LAB,
+    requiredResearch: BUILDING_REQUIRED_RESEARCH.LAB,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.LAB,
     description:
       "Centro de investigacione de la colonia. Permite hacer investigaciones para desbloquear la construcción de edificios.",
@@ -60,7 +60,7 @@ export const buildingConfig: Record<
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
     baseCost: BUILDING_COST.METALLURGY,
     production: BUILDING_PRODUCTION.METALLURGY,
-    requiredResearchs: BUILDING_REQUIRED_RESEARCHS.METALLURGY,
+    requiredResearch: BUILDING_REQUIRED_RESEARCH.METALLURGY,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.METALLURGY,
     description:
       "Instalación para la extracción de metales del subsuelo del planeta.",
@@ -73,7 +73,7 @@ export const buildingConfig: Record<
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
     baseCost: BUILDING_COST.QUARRY,
     production: BUILDING_PRODUCTION.QUARRY,
-    requiredResearchs: BUILDING_REQUIRED_RESEARCHS.QUARRY,
+    requiredResearch: BUILDING_REQUIRED_RESEARCH.QUARRY,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.QUARRY,
     description:
       "Instalación para la extracción de rocas y sedimentos de la superficie del planeta.",
@@ -86,7 +86,7 @@ export const buildingConfig: Record<
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
     baseCost: BUILDING_COST.KRYSTALMINE,
     production: BUILDING_PRODUCTION.KRYSTALMINE,
-    requiredResearchs: BUILDING_REQUIRED_RESEARCHS.KRYSTALMINE,
+    requiredResearch: BUILDING_REQUIRED_RESEARCH.KRYSTALMINE,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.KRYSTALMINE,
     description:
       "Instalación para la extracción de cristal de las rocas de la superficie.",
@@ -99,7 +99,7 @@ export const buildingConfig: Record<
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
     baseCost: BUILDING_COST.ANTENNA,
     production: BUILDING_PRODUCTION.ANTENNA,
-    requiredResearchs: BUILDING_REQUIRED_RESEARCHS.ANTENNA,
+    requiredResearch: BUILDING_REQUIRED_RESEARCH.ANTENNA,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.ANTENNA,
     description: "Antena de comunicaciones de corto alcance.",
   },
@@ -111,7 +111,7 @@ export const buildingConfig: Record<
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
     baseCost: BUILDING_COST.HANGAR,
     production: BUILDING_PRODUCTION.HANGAR,
-    requiredResearchs: BUILDING_REQUIRED_RESEARCHS.HANGAR,
+    requiredResearch: BUILDING_REQUIRED_RESEARCH.HANGAR,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.HANGAR,
     description: "Hangar de naves de la flota del planeta.",
   },
@@ -123,7 +123,7 @@ export const buildingConfig: Record<
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
     baseCost: BUILDING_COST.ROCKET,
     production: BUILDING_PRODUCTION.ROCKET,
-    requiredResearchs: BUILDING_REQUIRED_RESEARCHS.ROCKET,
+    requiredResearch: BUILDING_REQUIRED_RESEARCH.ROCKET,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.ROCKET,
     description: "Hangar y lanzadera de cohetes y naves interplanetarias.",
   },

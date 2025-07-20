@@ -1,5 +1,5 @@
 import { BuildingType } from "../types/buildingTypes";
-import { RequiredResearchs } from "../types/researchTypes";
+import { RequiredResearch } from "../types/researchTypes";
 import { IMAGES } from "./images";
 
 export const BUILDING_COST = {
@@ -46,9 +46,9 @@ export const BUILDING_MAX_IN_PLANET = {
   HANGAR: 5,
 };
 
-export const BUILDING_REQUIRED_RESEARCHS: Record<
+export const BUILDING_REQUIRED_RESEARCH: Record<
   BuildingType,
-  RequiredResearchs
+  RequiredResearch
 > = {
   LAB: [
     {

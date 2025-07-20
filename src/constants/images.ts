@@ -28,12 +28,12 @@ import mining3 from "../../assets/images/mini/mining3.png";
 import mining4 from "../../assets/images/mini/mining4.png";
 import mining5 from "../../assets/images/mini/mining5.png";
 import underConstruction from "../../assets/images/mini/underConstruction.png";
-import energy from "../../assets/images/researchs/Energy.png";
-import fuel from "../../assets/images/researchs/Fuel.png";
-import mining from "../../assets/images/researchs/Mining.png";
-import ships from "../../assets/images/researchs/Ships.png";
-import terraforming from "../../assets/images/researchs/Terraforming.png";
-import water from "../../assets/images/researchs/Water.png";
+import energy from "../../assets/images/research/Energy.png";
+import fuel from "../../assets/images/research/Fuel.png";
+import mining from "../../assets/images/research/Mining.png";
+import ships from "../../assets/images/research/Ships.png";
+import terraforming from "../../assets/images/research/Terraforming.png";
+import water from "../../assets/images/research/Water.png";
 
 export const IMAGES = {
   //IMAGENES GENERALES

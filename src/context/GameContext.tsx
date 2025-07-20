@@ -33,7 +33,7 @@ type ResourceContextType = {
   resetResearch: () => void;
   handleResearch: (type: ResearchType) => void;
   processResearchTick: () => void;
-  cancelResearch: () => void;
+  handleCancelResearch: (type: ResearchType) => void;
   research: Research[];
   labLevel: number;
 };
@@ -74,7 +74,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
   const {
     research,
     handleResearch,
-    cancelResearch,
+    handleCancelResearch,
     processResearchTick,
     resetResearch,
   } = useResearch(resourcesRef, setResources);
@@ -115,9 +115,9 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
       handleCancelBuild,
       resetResources,
       handleResearch,
-      cancelResearch,
+      handleCancelResearch,
       processResearchTick,
-      resetResearch, // ✅ incluido en el objeto
+      resetResearch,
       research,
       labLevel: getLabLevel(hexes),
     };
@@ -134,9 +134,9 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     handleCancelBuild,
     resetResources,
     handleResearch,
-    cancelResearch,
+    handleCancelResearch,
     processResearchTick,
-    resetResearch, // ✅ incluido en dependencias
+    resetResearch,
     research,
   ]);
 
