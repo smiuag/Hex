@@ -7,7 +7,7 @@ export default function IndexRedirect() {
 
   useEffect(() => {
     router.replace("/planet");
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     NotificationManager.initializeNotifications(); // ✅ Llamada correcta

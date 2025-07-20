@@ -1,15 +1,15 @@
 // components/HexMap.tsx
 import { useFocusEffect } from "@react-navigation/native";
-
 import { useRouter } from "expo-router";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { ImageBackground } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { ImageBackground, View } from "react-native";
 import {
   Gesture,
   GestureDetector,
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import Animated, {
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
 } from "react-native-reanimated";
@@ -22,6 +22,7 @@ import { Hex } from "../../src/types/hexTypes";
 import {
   axialToPixel,
   getHexPoints,
+  pixelToAxial,
   SCREEN_DIMENSIONS,
 } from "../../utils/hexUtils";
 
@@ -29,14 +30,10 @@ import BorderHexTile from "../secondary/BorderHexTile";
 import HexModal from "../secondary/HexModal";
 import HexTile from "../secondary/HexTile";
 
-// PlanetComponent.tsx
-// ... (importaciones iguales)
-
 export default function PlanetComponent() {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedHex, setSelectedHex] = useState<Hex | null>(null);
-  const touchStartTime = useRef<number | null>(null);
-  const touchStartPosition = useRef<{ x: number; y: number } | null>(null);
+  const [cameraOffset, setCameraOffset] = useState({ x: 0, y: 0 });
 
   const router = useRouter();
   const { hexes, research, reloadMap, handleBuild, handleCancelBuild } =
@@ -50,20 +47,21 @@ export default function PlanetComponent() {
     CENTER_Y,
   } = SCREEN_DIMENSIONS;
 
-  useEffect(() => {
-    reloadMap();
-  }, []);
-  useFocusEffect(
-    useCallback(() => {
-      reloadMap();
-    }, [reloadMap])
-  );
-
-  // Cámara / desplazamiento
+  // Cámara
   const offsetX = useSharedValue(SCREEN_WIDTH / 2 - CENTER_X);
   const offsetY = useSharedValue(SCREEN_HEIGHT / 2 - CENTER_Y);
   const lastOffsetX = useSharedValue(0);
   const lastOffsetY = useSharedValue(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setCameraOffset({
+        x: offsetX.value,
+        y: offsetY.value,
+      });
+    }, 100);
+    return () => clearInterval(id);
+  }, []);
 
   const panGesture = Gesture.Pan()
     .onStart(() => {
@@ -79,42 +77,43 @@ export default function PlanetComponent() {
     transform: [{ translateX: offsetX.value }, { translateY: offsetY.value }],
   }));
 
-  // Eventos
-  const handlePressIn = (event: any) => {
-    const x = event.nativeEvent.pageX - offsetX.value;
-    const y = event.nativeEvent.pageY - offsetY.value;
+  const handleTap = (x: number, y: number) => {
+    const axial = pixelToAxial(x - CENTER_X, y - CENTER_Y);
 
-    touchStartTime.current = Date.now();
-    touchStartPosition.current = { x, y };
+    const tappedHex = hexes.find((h) => h.q === axial!.q && h.r === axial!.r);
+
+    if (!tappedHex) {
+      return;
+    }
+
+    if (tappedHex.isRadius) {
+      alert("Mejora la base para acceder a las zonas más alejadas.");
+      return;
+    }
+
+    if (!tappedHex.isVisible) return;
+
+    const isEmpty = !tappedHex.building && !tappedHex.construction;
+    if (isEmpty) {
+      router.replace(
+        `/(tabs)/planet/construction?q=${tappedHex.q}&r=${tappedHex.r}`
+      );
+    } else {
+      setSelectedHex(tappedHex);
+      setModalVisible(true);
+    }
   };
 
-  const handlePressOut =
-    (hex: Hex | null, fallbackAction?: () => void) => (event: any) => {
-      const time = Date.now();
-      const duration = time - (touchStartTime.current ?? 0);
+  const tapGesture = Gesture.Tap()
+    .maxDuration(300)
+    .maxDistance(20)
+    .onEnd((event) => {
+      const x = event.absoluteX - cameraOffset.x;
+      const y = event.absoluteY - cameraOffset.y;
+      runOnJS(handleTap)(x, y);
+    });
 
-      const x = event.nativeEvent.pageX - offsetX.value;
-      const y = event.nativeEvent.pageY - offsetY.value;
-
-      const dist = Math.sqrt(
-        Math.pow(x - (touchStartPosition.current?.x ?? 0), 2) +
-          Math.pow(y - (touchStartPosition.current?.y ?? 0), 2)
-      );
-
-      if (duration < 200 && dist < 10) {
-        if (hex) {
-          const isEmpty = !hex.building && !hex.construction;
-          if (isEmpty) {
-            router.replace(`/(tabs)/planet/construction?q=${hex.q}&r=${hex.r}`);
-          } else {
-            setSelectedHex(hex);
-            setModalVisible(true);
-          }
-        } else {
-          fallbackAction?.();
-        }
-      }
-    };
+  const composedGesture = Gesture.Exclusive(tapGesture, panGesture);
 
   const onBuild = async (type: BuildingType) => {
     if (selectedHex) {
@@ -130,7 +129,16 @@ export default function PlanetComponent() {
     }
   };
 
-  // Render
+  useEffect(() => {
+    reloadMap();
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      reloadMap();
+    }, [reloadMap])
+  );
+
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: "white" }}>
       <ImageBackground
@@ -138,57 +146,56 @@ export default function PlanetComponent() {
         style={{ flex: 1 }}
         resizeMode="cover"
       >
-        <GestureDetector gesture={panGesture}>
-          <Animated.View style={[{ flex: 1 }, animatedStyle]}>
-            <Svg width={SVG_WIDTH} height={SVG_HEIGHT}>
-              {hexes.map((hex, index) => {
-                const { q, r } = hex;
-                const { x, y } = axialToPixel(q, r);
-                const px = x + CENTER_X;
-                const py = y + CENTER_Y;
-                const points = getHexPoints(px, py);
+        <GestureDetector gesture={composedGesture}>
+          <View style={{ flex: 1 }} pointerEvents="box-only">
+            <Animated.View style={[{ flex: 1 }, animatedStyle]}>
+              <Svg
+                width={SVG_WIDTH}
+                height={SVG_HEIGHT}
+                pointerEvents="none"
+                style={{ position: "absolute", top: 0, left: 0 }}
+              >
+                {hexes.map((hex, index) => {
+                  const { q, r } = hex;
+                  const { x, y } = axialToPixel(q, r);
+                  const px = x + CENTER_X;
+                  const py = y + CENTER_Y;
+                  const points = getHexPoints(px, py);
 
-                if (hex.isRadius) {
+                  if (hex.isRadius) {
+                    return (
+                      <BorderHexTile
+                        key={`border-${index}`}
+                        points={points}
+                        index={index}
+                      />
+                    );
+                  }
+
+                  if (!hex.isVisible) return null;
+
                   return (
-                    <BorderHexTile
-                      key={`border-${index}`}
+                    <HexTile
+                      key={index}
+                      hex={hex}
+                      px={px}
+                      py={py}
                       points={points}
-                      index={index}
-                      onTouchStart={handlePressIn}
-                      onTouchEnd={handlePressOut(null, () =>
-                        alert(
-                          "Necesitas subir de nivel tu base para explorar esta zona."
-                        )
-                      )}
                     />
                   );
-                }
+                })}
 
-                if (!hex.isVisible) return null;
-
-                return (
-                  <HexTile
-                    key={index}
-                    hex={hex}
-                    px={px}
-                    py={py}
-                    points={points}
-                    onTouchStart={handlePressIn}
-                    onTouchEnd={handlePressOut(hex)}
-                  />
-                );
-              })}
-
-              <HexModal
-                visible={modalVisible}
-                research={research}
-                onClose={() => setModalVisible(false)}
-                data={selectedHex}
-                onBuild={onBuild}
-                onCancelBuild={onCancel}
-              />
-            </Svg>
-          </Animated.View>
+                <HexModal
+                  visible={modalVisible}
+                  research={research}
+                  onClose={() => setModalVisible(false)}
+                  data={selectedHex}
+                  onBuild={onBuild}
+                  onCancelBuild={onCancel}
+                />
+              </Svg>
+            </Animated.View>
+          </View>
         </GestureDetector>
       </ImageBackground>
     </GestureHandlerRootView>

@@ -12,18 +12,9 @@ interface Props {
   px: number;
   py: number;
   points: string;
-  onTouchStart: (event: any) => void;
-  onTouchEnd: (event: any) => void;
 }
 
-export default function HexTile({
-  hex,
-  px,
-  py,
-  points,
-  onTouchStart,
-  onTouchEnd,
-}: Props) {
+export default function HexTile({ hex, px, py, points }: Props) {
   const { terrain, building, construction } = hex;
   const config = terrainConfig[terrain];
 
@@ -40,13 +31,11 @@ export default function HexTile({
       {buildingImage ? (
         <SvgImage
           href={buildingImage}
-          x={px - (60 * Math.sqrt(3) * 1.25) / 2}
-          y={py - 60 * 1.25}
-          width={60 * Math.sqrt(3) * 1.25}
-          height={60 * 2 * 1.25}
+          x={px - (60 * Math.sqrt(3) * 1.7) / 2}
+          y={py - 60 * 1.7}
+          width={60 * Math.sqrt(3) * 1.7}
+          height={60 * 2 * 1.7}
           preserveAspectRatio="xMidYMid meet"
-          onPressIn={onTouchStart}
-          onPressOut={onTouchEnd}
         />
       ) : (
         <Polygon
@@ -54,8 +43,6 @@ export default function HexTile({
           fill={config.fallbackColor}
           stroke="#333"
           strokeWidth="3"
-          onPressIn={onTouchStart}
-          onPressOut={onTouchEnd}
         />
       )}
 
