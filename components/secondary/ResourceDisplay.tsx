@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   item: {
-    marginRight: 8,
+    marginRight: 2,
     color: "white",
   },
 });

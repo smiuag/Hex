@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import ResourceBar from "../../../components/secondary/ResourceBar";
 import { ResourceDisplay } from "../../../components/secondary/ResourceDisplay";
 import { buildingConfig } from "../../../src/config/buildingConfig";
 import { useGameContext } from "../../../src/context/GameContext";
@@ -20,12 +21,13 @@ import {
   isUnlocked,
 } from "../../../utils/buildingUtils";
 import { formatDuration } from "../../../utils/generalUtils";
+import { hasEnoughResources } from "../../../utils/resourceUtils";
 
 const { width } = Dimensions.get("window");
 
 export default function ConstructionComponent() {
   const { q, r } = useLocalSearchParams();
-  const { research, hexes, handleBuild } = useGameContext();
+  const { research, resources, hexes, handleBuild } = useGameContext();
   const router = useRouter();
 
   const onBuild = async (type: BuildingType) => {
@@ -47,6 +49,7 @@ export default function ConstructionComponent() {
       const lockedByMax = isAtMaxCount(buildingType, hexes);
       const unlockedByResearch = isUnlocked(buildingType, 1, research);
       const available = unlockedByResearch && !lockedByMax;
+      const lockedByResources = !hasEnoughResources(resources.resources, cost);
 
       return {
         type: buildingType,
@@ -59,14 +62,16 @@ export default function ConstructionComponent() {
         unlockedByResearch,
         description: config.description,
         requirements: config.requiredResearch,
+        lockedByResources,
       };
     })
     .sort((a, b) => {
       // Prioridad: disponibles (0), luego bloqueados por investigación (1), luego al máximo (2)
       const getPriority = (building: typeof a) => {
+        if (building.lockedByMax) return 3;
+        if (!building.unlockedByResearch) return 2;
+        if (building.lockedByResources) return 1;
         if (building.available) return 0;
-        if (!building.unlockedByResearch) return 1;
-        if (building.lockedByMax) return 2;
         return 3; // fallback
       };
 
@@ -74,78 +79,88 @@ export default function ConstructionComponent() {
     });
 
   return (
-    <View style={{ flex: 1 }}>
-      {/* Botón flotante de cerrar */}
-      <TouchableOpacity onPress={handleCancel} style={styles.closeButton}>
-        <Text style={styles.closeText}>✕</Text>
-      </TouchableOpacity>
+    <>
+      <View style={{ flex: 1 }}>
+        {/* Botón flotante de cerrar */}
+        <TouchableOpacity onPress={handleCancel} style={styles.closeButton}>
+          <Text style={styles.closeText}>✕</Text>
+        </TouchableOpacity>
 
-      <FlatList
-        data={buildings}
-        keyExtractor={(item) => item.type}
-        contentContainerStyle={styles.list}
-        ListFooterComponent={() => (
-          <TouchableOpacity style={styles.backButton} onPress={handleCancel}>
-            <Text style={styles.backButtonText}>Volver</Text>
-          </TouchableOpacity>
-        )}
-        renderItem={({ item }) => (
-          <View style={styles.cardContainer}>
-            <ImageBackground
-              source={item.image}
-              style={styles.card}
-              imageStyle={[
-                styles.image,
-                !item.available && styles.unavailableImage,
-              ]}
-            >
-              <View style={styles.overlay}>
-                <View style={styles.header}>
-                  <Text style={styles.title}>{item.name}</Text>
-                </View>
+        <FlatList
+          data={buildings}
+          keyExtractor={(item) => item.type}
+          contentContainerStyle={styles.list}
+          ListFooterComponent={() => (
+            <TouchableOpacity style={styles.backButton} onPress={handleCancel}>
+              <Text style={styles.backButtonText}>Volver</Text>
+            </TouchableOpacity>
+          )}
+          renderItem={({ item }) => (
+            <View style={styles.cardContainer}>
+              <ImageBackground
+                source={item.image}
+                style={styles.card}
+                imageStyle={[
+                  styles.image,
+                  !item.available && styles.unavailableImage,
+                ]}
+              >
+                <View style={styles.overlay}>
+                  <View style={styles.header}>
+                    <Text style={styles.title}>{item.name}</Text>
+                  </View>
 
-                <Text style={styles.description}>{item.description}</Text>
+                  <Text style={styles.description}>{item.description}</Text>
 
-                {/* Solo mostrar recursos si no está bloqueado por máximo */}
-                {!item.lockedByMax && (
-                  <ResourceDisplay resources={item.cost} fontSize={13} />
-                )}
-
-                <View style={styles.actionContainer}>
-                  {/* Solo mostrar tiempo si no está bloqueado por máximo */}
                   {!item.lockedByMax && (
-                    <Text style={styles.statusText}>
-                      ⏱️ {formatDuration(item.time)}
-                    </Text>
+                    <ResourceDisplay resources={item.cost} fontSize={13} />
                   )}
 
-                  {item.available ? (
-                    <TouchableOpacity
-                      style={styles.buildButton}
-                      onPress={() => onBuild(item.type)}
-                    >
-                      <Text style={styles.buildButtonText}>Construir</Text>
-                    </TouchableOpacity>
-                  ) : item.lockedByMax ? (
-                    <Text style={styles.lockedText}>🔒 Límite alcanzado</Text>
-                  ) : (
-                    <Text style={styles.lockedText}>
-                      🔒 Requiere{" "}
-                      {item.requirements
-                        .map(
-                          (r) =>
-                            `${r.researchType} Nv ${r.researchLevelRequired}`
-                        )
-                        .join(", ")}
-                    </Text>
-                  )}
+                  <View style={styles.actionContainer}>
+                    {!item.lockedByMax && !item.lockedByResources && (
+                      <Text style={styles.statusText}>
+                        ⏱️ {formatDuration(item.time)}
+                      </Text>
+                    )}
+                    {!item.lockedByMax && item.lockedByResources && (
+                      <Text style={styles.statusText}>
+                        ⚠️ Recursos insuficientes
+                      </Text>
+                    )}
+
+                    {item.available ? (
+                      <TouchableOpacity
+                        style={[
+                          styles.buildButton,
+                          item.lockedByResources && styles.disabledButton,
+                        ]}
+                        onPress={() => onBuild(item.type)}
+                        disabled={item.lockedByResources}
+                      >
+                        <Text style={styles.buildButtonText}>Construir</Text>
+                      </TouchableOpacity>
+                    ) : item.lockedByMax ? (
+                      <Text style={styles.lockedText}>🔒 Límite alcanzado</Text>
+                    ) : (
+                      <Text style={styles.lockedText}>
+                        🔒 Requiere{" "}
+                        {item.requirements
+                          .map(
+                            (r) =>
+                              `${r.researchType} Nv ${r.researchLevelRequired}`
+                          )
+                          .join(", ")}
+                      </Text>
+                    )}
+                  </View>
                 </View>
-              </View>
-            </ImageBackground>
-          </View>
-        )}
-      />
-    </View>
+              </ImageBackground>
+            </View>
+          )}
+        />
+      </View>
+      <ResourceBar />
+    </>
   );
 }
 
@@ -256,5 +271,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     textAlign: "center",
+  },
+  disabledButton: {
+    backgroundColor: "#6b8dc3", // azul apagado para deshabilitado
   },
 });

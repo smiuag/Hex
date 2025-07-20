@@ -1,0 +1,61 @@
+import React, { useMemo } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { useGameContext } from "../../src/context/GameContext";
+import { getTotalProductionPerHour } from "../../utils/buildingUtils";
+import { ResourceDisplay } from "./ResourceDisplay";
+
+type ResourceBarProps = {
+  title?: string;
+  fontSize?: number;
+  titleColor?: string;
+  resourceColor?: string;
+};
+
+export default function ProductionBar({
+  title,
+  fontSize = 14,
+  titleColor = "#fff",
+  resourceColor = "#fff",
+}: ResourceBarProps) {
+  const { hexes } = useGameContext();
+
+  const productionTotal = useMemo(
+    () => getTotalProductionPerHour(hexes),
+    [hexes]
+  );
+
+  return (
+    <View style={styles.container}>
+      {title && (
+        <Text style={[styles.title, { color: titleColor }]}>{title}</Text>
+      )}
+      <View style={styles.resourcesContainer}>
+        <ResourceDisplay
+          resources={productionTotal}
+          fontSize={fontSize}
+          fontColor={resourceColor}
+        />
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: "#1C1C1C",
+    borderRadius: 8,
+    minHeight: 40, // o 44, 48 para que tenga tamaño visible
+  },
+  title: {
+    fontWeight: "bold",
+    fontSize: 14,
+  },
+  resourcesContainer: {
+    flexDirection: "row",
+  },
+});

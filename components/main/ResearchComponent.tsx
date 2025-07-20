@@ -12,14 +12,20 @@ import { researchTechnologies } from "../../src/config/researchConfig";
 import { useGameContext } from "../../src/context/GameContext";
 import { ResearchType } from "../../src/types/researchTypes";
 import { formatDuration } from "../../utils/generalUtils";
-import { getResearchTime } from "../../utils/researchUtils";
+import { getResearchCost, getResearchTime } from "../../utils/researchUtils";
+import { hasEnoughResources } from "../../utils/resourceUtils";
 import { ResourceDisplay } from "../secondary/ResourceDisplay";
 
 const { width } = Dimensions.get("window");
 
 export default function ResearchComponent() {
-  const { research, labLevel, handleResearch, handleCancelResearch } =
-    useGameContext();
+  const {
+    research,
+    labLevel,
+    resources,
+    handleResearch,
+    handleCancelResearch,
+  } = useGameContext();
 
   const researchItems = Object.entries(researchTechnologies)
     .map(([key, config]) => {
@@ -36,6 +42,8 @@ export default function ResearchComponent() {
           )
         : 0;
 
+      const scaledCost = getResearchCost(type, targetLevel);
+      const hasResources = hasEnoughResources(resources.resources, scaledCost);
       const isAvailable = labLevel >= config.labLevelRequired;
       const time = formatDuration(getResearchTime(type, currentLevel + 1));
       const isMaxed = currentLevel >= config.maxLevel;
@@ -50,72 +58,118 @@ export default function ResearchComponent() {
         remainingTime,
         time,
         isMaxed,
+        hasResources,
+        cost: scaledCost,
       };
     })
-    .sort((a, b) => a.labLevelRequired - b.labLevelRequired);
+    .sort((a, b) => {
+      // maxeadas al final (abajo)
+      if (a.isMaxed && !b.isMaxed) return 1;
+      if (!a.isMaxed && b.isMaxed) return -1;
+
+      // luego bloqueadas por lab (antes de maxeadas)
+      if (!a.isAvailable && b.isAvailable) return 1;
+      if (a.isAvailable && !b.isAvailable) return -1;
+
+      // luego sin recursos (antes que bloqueadas)
+      if (!a.hasResources && b.hasResources) return 1;
+      if (a.hasResources && !b.hasResources) return -1;
+
+      // finalmente orden normal ascendente por labLevelRequired
+      return a.labLevelRequired - b.labLevelRequired;
+    });
+
+  const anyInProgress = researchItems.some((item) => item.inProgress);
 
   return (
     <FlatList
       data={researchItems}
       keyExtractor={(item) => item.key}
       contentContainerStyle={styles.list}
-      renderItem={({ item }) => (
-        <View style={styles.cardContainer}>
-          <ImageBackground
-            source={item.image}
-            style={styles.card}
-            imageStyle={[
-              styles.image,
-              !item.isAvailable && styles.unavailableImage,
-            ]}
-          >
-            <View style={styles.overlay}>
-              <View style={styles.header}>
-                <Text style={styles.title}>{item.name}</Text>
-                <Text style={styles.level}>
-                  Nv: {item.currentLevel}/{item.maxLevel}
-                </Text>
-              </View>
+      renderItem={({ item }) => {
+        const isCurrentInProgress = item.inProgress;
+        const disableButton = anyInProgress && !isCurrentInProgress;
 
-              {item.isMaxed ? (
-                <></>
-              ) : item.inProgress ? (
-                <View style={styles.actionContainer}>
-                  <Text style={styles.statusText}>
-                    ⏳ En curso: {formatDuration(item.remainingTime)}
+        return (
+          <View style={styles.cardContainer}>
+            <ImageBackground
+              source={item.image}
+              style={styles.card}
+              imageStyle={[
+                styles.image,
+                (!item.isAvailable || !item.hasResources) &&
+                  styles.unavailableImage,
+              ]}
+            >
+              <View style={styles.overlay}>
+                <View style={styles.header}>
+                  <Text style={styles.title}>{item.name}</Text>
+                  <Text style={styles.level}>
+                    Nv: {item.currentLevel}/{item.maxLevel}
                   </Text>
-                  <TouchableOpacity
-                    style={styles.cancelButton}
-                    onPress={() => handleCancelResearch(item.type)}
-                  >
-                    <Text style={styles.cancelButtonText}>Cancelar</Text>
-                  </TouchableOpacity>
                 </View>
-              ) : item.isAvailable ? (
-                <>
-                  <View style={styles.row}>
-                    <ResourceDisplay resources={item.baseCost} fontSize={13} />
-                  </View>
-                  <Text style={styles.description}>{item.description}</Text>
+
+                {item.isMaxed ? null : isCurrentInProgress ? (
                   <View style={styles.actionContainer}>
-                    <Text style={styles.statusText}>⏱️ {item.time}</Text>
+                    <Text style={styles.statusText}>
+                      ⏳ En curso: {formatDuration(item.remainingTime)}
+                    </Text>
                     <TouchableOpacity
-                      style={styles.investButton}
-                      onPress={() => handleResearch(item.type)}
+                      style={styles.cancelButton} // Siempre activo, sin atenuar
+                      onPress={() => handleCancelResearch(item.type)}
                     >
-                      <Text style={styles.investButtonText}>Investigar</Text>
+                      <Text style={styles.cancelButtonText}>Cancelar</Text>
                     </TouchableOpacity>
                   </View>
-                </>
-              ) : (
-                <Text style={styles.lockedText}>
-                  🔒 Requiere laboratorio nivel {item.labLevelRequired}
-                </Text>
-              )}
-            </View>
-          </ImageBackground>
-        </View>
-      )}
+                ) : (
+                  <>
+                    <View style={styles.row}>
+                      <ResourceDisplay resources={item.cost} fontSize={13} />
+                    </View>
+                    <Text style={styles.description}>{item.description}</Text>
+
+                    <View style={styles.actionContainer}>
+                      {!item.isAvailable ? (
+                        <Text style={styles.lockedText}>
+                          🔒 Requiere laboratorio nivel {item.labLevelRequired}
+                        </Text>
+                      ) : !item.hasResources ? (
+                        <Text style={styles.warningText}>
+                          ⚠️ Recursos insuficientes
+                        </Text>
+                      ) : disableButton ? (
+                        <Text style={styles.warningText}>
+                          🔕 Otra investigación en curso
+                        </Text>
+                      ) : (
+                        <Text style={styles.statusText}>⏱️ {item.time}</Text>
+                      )}
+
+                      <TouchableOpacity
+                        style={[
+                          styles.investButton,
+                          (disableButton ||
+                            !item.isAvailable ||
+                            !item.hasResources) &&
+                            styles.disabledButton,
+                        ]}
+                        disabled={
+                          disableButton ||
+                          !item.isAvailable ||
+                          !item.hasResources
+                        }
+                        onPress={() => handleResearch(item.type)}
+                      >
+                        <Text style={styles.investButtonText}>Investigar</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </>
+                )}
+              </View>
+            </ImageBackground>
+          </View>
+        );
+      }}
     />
   );
 }
@@ -168,37 +222,10 @@ const styles = StyleSheet.create({
     marginTop: 4,
     marginBottom: 8,
   },
-  duration: {
-    color: "#ccc",
-    fontSize: 13,
-    marginLeft: 12,
-  },
   row: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-  },
-  inProgressText: {
-    color: "#facc15",
-    fontWeight: "bold",
-    marginTop: 6,
-  },
-  lockedText: {
-    color: "#f87171",
-    fontSize: 13,
-    marginTop: 6,
-  },
-  button: {
-    marginTop: 8,
-    backgroundColor: "#2196F3",
-    paddingVertical: 6,
-    paddingHorizontal: 22,
-    borderRadius: 8,
-    alignSelf: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
   },
   actionContainer: {
     flexDirection: "row",
@@ -217,11 +244,26 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
 
+  lockedText: {
+    color: "#f87171",
+    fontSize: 13,
+  },
+
+  warningText: {
+    color: "#facc15", // amarillo
+    fontSize: 13,
+    fontWeight: "600",
+  },
+
   investButton: {
     backgroundColor: "#2196F3",
     paddingVertical: 4,
     paddingHorizontal: 12,
     borderRadius: 6,
+  },
+
+  disabledButton: {
+    backgroundColor: "#6b8dc3", // azul apagado para deshabilitado
   },
 
   investButtonText: {

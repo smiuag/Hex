@@ -1,16 +1,17 @@
 import { ResearchType } from "@/src/types/researchTypes";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
   Button,
   FlatList,
+  ImageBackground,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import { ResourceDisplay } from "../../components/secondary/ResourceDisplay";
+import { IMAGES } from "../../src/constants/images";
 import { useGameContext } from "../../src/context/GameContext";
 import {
   deleteMap,
@@ -21,7 +22,6 @@ import {
 } from "../../src/services/storage";
 import { BuildingType } from "../../src/types/buildingTypes";
 import { Process } from "../../src/types/processTypes";
-import { getTotalProductionPerHour } from "../../utils/buildingUtils";
 import { formatDuration } from "../../utils/generalUtils";
 import { generateHexGrid, getInitialResources } from "../../utils/mapUtils";
 import { NotificationManager } from "../../utils/notificacionUtils";
@@ -45,7 +45,6 @@ export default function MenuComponent() {
   } = useGameContext();
 
   useEffect(() => {
-    console.log(research);
     const buildingProcesses = getBuildingProcesses(hexes);
     const researchProcesses = getResearchProcesses(research);
     const allProcesses = [...buildingProcesses, ...researchProcesses];
@@ -57,11 +56,6 @@ export default function MenuComponent() {
     const interval = setInterval(() => setTick((t) => t + 1), 1000);
     return () => clearInterval(interval);
   }, []);
-
-  const productionTotal = useMemo(
-    () => getTotalProductionPerHour(hexes),
-    [hexes]
-  );
 
   useEffect(() => {
     const checkMap = async () => {
@@ -175,47 +169,46 @@ export default function MenuComponent() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Colonia</Text>
+    <ImageBackground
+      source={IMAGES.BACKGROUND_MENU_IMAGE}
+      style={{ flex: 1 }}
+      resizeMode="cover"
+    >
+      <View style={styles.container}>
+        <View style={styles.topContainer}>
+          <Text style={styles.title}>Colonia</Text>
 
-      {!hasMap && <Button title="Iniciar partida" onPress={handleStartGame} />}
-      {hasMap && (
-        <>
-          <Button title="Finalizar partida" color="red" onPress={handleReset} />
+          {hasMap && (
+            <>
+              {processes.length === 0 ? (
+                <Text style={styles.emptyText}>No hay procesos activos.</Text>
+              ) : (
+                <FlatList
+                  data={processes}
+                  keyExtractor={(item) => item.id}
+                  renderItem={renderProcess}
+                  contentContainerStyle={{ paddingBottom: 12 }}
+                  style={styles.list}
+                />
+              )}
+            </>
+          )}
+        </View>
 
-          {/* Producción general */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Producción por hora</Text>
-            {Object.keys(productionTotal).length === 0 ? (
-              <Text style={styles.emptyText}>
-                No hay producción actualmente.
-              </Text>
-            ) : (
-              <ResourceDisplay
-                resources={productionTotal}
-                fontSize={14}
-                fontColor="black"
-              />
-            )}
-          </View>
-
-          {/* Procesos en curso */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Procesos en curso</Text>
-            {processes.length === 0 && (
-              <Text style={styles.emptyText}>No hay procesos activos.</Text>
-            )}
-            <FlatList
-              data={processes}
-              keyExtractor={(item) => item.id}
-              renderItem={renderProcess}
-              style={{ maxHeight: 200 }}
-              contentContainerStyle={{ paddingBottom: 12 }}
+        <View style={styles.buttonContainer}>
+          {!hasMap && (
+            <Button title="Iniciar partida" onPress={handleStartGame} />
+          )}
+          {hasMap && (
+            <Button
+              title="Finalizar partida"
+              color="red"
+              onPress={handleReset}
             />
-          </View>
-        </>
-      )}
-    </View>
+          )}
+        </View>
+      </View>
+    </ImageBackground>
   );
 }
 
@@ -224,7 +217,16 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 24,
     gap: 16,
+    justifyContent: "space-between",
   },
+  topContainer: {
+    flex: 1,
+  },
+  list: {
+    flex: 1,
+    marginTop: 12,
+  },
+  buttonContainer: {},
   center: {
     flex: 1,
     justifyContent: "center",
@@ -237,32 +239,51 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 12,
+    color: "#fff", // para que contraste en fondo oscuro
+    textShadowColor: "rgba(0,0,0,0.75)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 4,
   },
 
   section: {
-    backgroundColor: "rgba(0,0,0,0.1)",
+    backgroundColor: "rgba(0, 0, 0, 0.6)", // fondo negro semitransparente
     borderRadius: 12,
-    padding: 12,
+    padding: 16,
+    marginVertical: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 6,
+    elevation: 8, // para Android shadow
   },
   sectionTitle: {
     fontWeight: "bold",
     fontSize: 18,
-    marginBottom: 8,
+    marginBottom: 12,
+    color: "#fff",
+    textShadowColor: "rgba(0,0,0,0.8)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
   },
 
   emptyText: {
-    color: "#666",
+    color: "#ccc",
     fontStyle: "italic",
   },
 
   processCard: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#222",
-    paddingVertical: 6,
-    paddingHorizontal: 10,
+    backgroundColor: "rgba(30, 30, 30, 0.85)", // más oscuro y semitransparente
+    paddingVertical: 8,
+    paddingHorizontal: 12,
     borderRadius: 10,
-    marginBottom: 8,
+    marginBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.7,
+    shadowRadius: 4,
+    elevation: 6,
   },
   processName: {
     flex: 1,
@@ -274,13 +295,18 @@ const styles = StyleSheet.create({
     color: "#facc15",
     fontWeight: "bold",
     fontSize: 13,
-    marginRight: 10,
+    marginRight: 12,
   },
   cancelButton: {
     backgroundColor: "#e53935",
-    paddingVertical: 4,
-    paddingHorizontal: 10,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
     borderRadius: 8,
+    shadowColor: "#700000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.8,
+    shadowRadius: 3,
+    elevation: 4,
   },
   cancelButtonText: {
     color: "white",

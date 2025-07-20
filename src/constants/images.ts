@@ -1,4 +1,5 @@
 import background from "../../assets/images/background.jpg";
+import backgroundMenu from "../../assets/images/backgroundMenu.jpg";
 import antennaBackground from "../../assets/images/buildings/antenna.png";
 import baseBackground from "../../assets/images/buildings/base.png";
 import krystalmineBackground from "../../assets/images/buildings/cristal.png";
@@ -38,6 +39,7 @@ import water from "../../assets/images/research/Water.png";
 export const IMAGES = {
   //IMAGENES GENERALES
   BACKGROUND_IMAGE: background,
+  BACKGROUND_MENU_IMAGE: backgroundMenu,
   // EDIFICIOS
   BUILDING_BASE_1: base1,
   BUILDING_BASE_2: base2,

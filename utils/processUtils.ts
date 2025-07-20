@@ -1,3 +1,4 @@
+import { buildingConfig } from "../src/config/buildingConfig";
 import { researchTechnologies } from "../src/config/researchConfig";
 import { Hex } from "../src/types/hexTypes";
 import { Process } from "../src/types/processTypes";
@@ -12,14 +13,14 @@ export const getBuildingProcesses = (hexes: Hex[]): Process[] => {
     if (hex.construction) {
       const targetLevel = hex.construction.targetLevel ?? 1;
       const duration = getBuildTime(hex.construction.building, targetLevel);
-
+      const name = buildingConfig[hex.construction.building].name;
       const startedAt = hex.construction.startedAt ?? 0;
 
       const proc: Process = {
         name:
           hex.construction.targetLevel == 1
-            ? `Mejora de ${hex.construction.building} a nivel ${targetLevel}`
-            : `Construcción de ${hex.construction.building}`,
+            ? `${name}`
+            : `${name} (Lvl: ${targetLevel})`,
         type: "BUILDING",
         id: "BUILDING-" + `${hex.q}-${hex.r}`,
         startedAt,
