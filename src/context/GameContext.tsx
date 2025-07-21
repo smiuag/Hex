@@ -8,9 +8,11 @@ import React, {
   useState,
 } from "react";
 import { useConstruction } from "../../hooks/useConstruction";
+import { useFleet } from "../../hooks/useFleet";
 import { useResearch } from "../../hooks/useResearch";
 import { useResources } from "../../hooks/useResources";
 import { BuildingType } from "../../src/types/buildingTypes";
+import { Fleet, FleetType } from "../../src/types/fleetType";
 import { Hex } from "../../src/types/hexTypes";
 import { StoredResources } from "../../src/types/resourceTypes";
 import { normalizeHexMap } from "../../utils/mapUtils";
@@ -18,7 +20,7 @@ import { getLabLevel } from "../../utils/researchUtils";
 import { loadMap, saveMap } from "../services/storage";
 import { Research, ResearchType } from "../types/researchTypes";
 
-type ResourceContextType = {
+type ProviderContextType = {
   resources: StoredResources;
   updateNow: () => void;
   setResources: React.Dispatch<React.SetStateAction<StoredResources>>;
@@ -34,11 +36,14 @@ type ResourceContextType = {
   handleResearch: (type: ResearchType) => void;
   processResearchTick: () => void;
   handleCancelResearch: (type: ResearchType) => void;
+  fleetBuildQueue: Fleet[];
+  handleBuildFleet: (type: FleetType, amount: number) => void;
+  handleCancelFleet: (type: FleetType) => void;
   research: Research[];
   labLevel: number;
 };
 
-const ResourceContext = createContext<ResourceContextType | undefined>(
+const ResourceContext = createContext<ProviderContextType | undefined>(
   undefined
 );
 
@@ -54,6 +59,14 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     resourcesRef,
     ready,
   } = useResources(hexesRef);
+
+  const {
+    fleetBuildQueue,
+    handleBuildFleet,
+    handleCancelFleet,
+    processFleetTick,
+    resetFleet,
+  } = useFleet(resourcesRef, setResources);
 
   const reloadMap = useCallback(async () => {
     const saved = await loadMap();
@@ -103,9 +116,10 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
   const contextValue = useMemo(() => {
     return {
       resources,
+      fleetBuildQueue,
+      hexes,
       updateNow,
       setResources,
-      hexes,
       setHexes,
       reloadMap,
       saveMapToStorage,
@@ -119,12 +133,17 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
       resetResearch,
       research,
       labLevel: getLabLevel(hexes),
+      handleBuildFleet,
+      handleCancelFleet,
+      processFleetTick,
+      resetFleet,
     };
   }, [
     resources,
+    fleetBuildQueue,
+    hexes,
     updateNow,
     setResources,
-    hexes,
     setHexes,
     reloadMap,
     saveMapToStorage,
@@ -137,6 +156,10 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     processResearchTick,
     resetResearch,
     research,
+    handleBuildFleet,
+    handleCancelFleet,
+    processFleetTick,
+    resetFleet,
   ]);
 
   return (

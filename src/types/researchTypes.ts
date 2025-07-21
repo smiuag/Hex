@@ -4,20 +4,30 @@ export type ResearchType =
   | "SHIPENGINEERING"
   | "WATERPURIFICATION"
   | "FUELREFINEMENT"
-  | "ENERGIEFFICIENCY";
+  | "ENERGIEFFICIENCY"
+  | "PLASMA"
+  | "LASER"
+  | "SHIELD"
+  | "GRAVITY";
 
 export type ResearchData = {
   type: ResearchType;
   level: number;
 };
 
-export type ResearchRequiredData = {
+export type BuildingResearchRequiredData = {
   researchType: ResearchType;
   researchLevelRequired: number;
   builddingLevel: number;
 };
 
-export type RequiredResearch = ResearchRequiredData[];
+export type FleetResearchRequiredData = {
+  researchType: ResearchType;
+  researchLevelRequired: number;
+};
+
+export type BuildingRequiredResearch = BuildingResearchRequiredData[];
+export type FleetRequiredResearch = FleetResearchRequiredData[];
 
 export type Research = {
   data: ResearchData;

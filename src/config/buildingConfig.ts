@@ -9,7 +9,7 @@ import {
 } from "../constants/building";
 import { IMAGES } from "../constants/images";
 import { BuildingImageLevel, BuildingType } from "../types/buildingTypes";
-import { RequiredResearch } from "../types/researchTypes";
+import { BuildingRequiredResearch } from "../types/researchTypes";
 import { Resources } from "../types/resourceTypes";
 
 export const buildingConfig: Record<
@@ -22,7 +22,7 @@ export const buildingConfig: Record<
     underConstructionImage: ImageSourcePropType;
     baseCost: Partial<Resources>;
     production: Partial<Resources>;
-    requiredResearch: RequiredResearch;
+    requiredResearch: BuildingRequiredResearch;
     description: string;
     maxNumberInPlanet: number;
   }

@@ -1,23 +1,23 @@
 import { BuildingType } from "../types/buildingTypes";
-import { RequiredResearch } from "../types/researchTypes";
+import { BuildingRequiredResearch } from "../types/researchTypes";
 import { IMAGES } from "./images";
 
 export const BUILDING_COST = {
-  LAB: { stone: 600, metal: 600, energy: 50 },
-  KRYSTALMINE: { stone: 15000, metal: 10000, energy: 500 },
-  METALLURGY: { stone: 7500, metal: 75000, energy: 300 },
-  QUARRY: { stone: 5000, energy: 200 },
-  BASE: { stone: 2000, metal: 500 },
-  ANTENNA: { stone: 75000, metal: 35000, crystal: 7500, energy: 300 },
-  ROCKET: { stone: 150000, metal: 150000, crystal: 5000, energy: 300 },
-  HANGAR: { stone: 150000, metal: 150000, crystal: 5000, energy: 300 },
+  LAB: { stone: 180000, metal: 180000, energy: 1000 },
+  KRYSTALMINE: { stone: 360000, metal: 180000 },
+  METALLURGY: { stone: 180000 },
+  QUARRY: { stone: 180000, metal: 180000 },
+  BASE: { stone: 4000, metal: 5000 },
+  ANTENNA: { stone: 75000, metal: 35000, crystal: 75000, energy: 3000 },
+  ROCKET: { stone: 150000, metal: 150000, crystal: 50000, energy: 3000 },
+  HANGAR: { stone: 150000, metal: 150000, crystal: 50000, energy: 3000 },
 };
 
 export const BUILDING_PRODUCTION = {
   LAB: {},
-  KRYSTALMINE: { crystal: 400 },
-  METALLURGY: { metal: 500 },
-  QUARRY: { stone: 600 },
+  KRYSTALMINE: { crystal: 40 },
+  METALLURGY: { metal: 50 },
+  QUARRY: { stone: 60 },
   BASE: { stone: 10, metal: 10, energy: 5 },
   ANTENNA: {},
   ROCKET: {},
@@ -25,9 +25,9 @@ export const BUILDING_PRODUCTION = {
 };
 
 export const BUILDING_TIME = {
-  LAB: 1000 * 60 * 2,
-  KRYSTALMINE: 1000 * 60 * 15,
-  METALLURGY: 1000 * 60 * 5,
+  LAB: 1000 * 60 * 1,
+  KRYSTALMINE: 1000 * 60 * 3,
+  METALLURGY: 1000 * 60 * 2,
   QUARRY: 1000 * 60 * 2,
   BASE: 1000 * 60 * 30,
   ANTENNA: 1000 * 60 * 60,
@@ -48,7 +48,7 @@ export const BUILDING_MAX_IN_PLANET = {
 
 export const BUILDING_REQUIRED_RESEARCH: Record<
   BuildingType,
-  RequiredResearch
+  BuildingRequiredResearch
 > = {
   LAB: [
     {
@@ -77,6 +77,11 @@ export const BUILDING_REQUIRED_RESEARCH: Record<
       researchLevelRequired: 2,
       builddingLevel: 2,
     },
+    {
+      researchType: "TERRAFORMING",
+      researchLevelRequired: 3,
+      builddingLevel: 4,
+    },
   ],
   ANTENNA: [
     {
@@ -98,7 +103,7 @@ export const BUILDING_REQUIRED_RESEARCH: Record<
     },
     {
       researchType: "FUELREFINEMENT",
-      researchLevelRequired: 2,
+      researchLevelRequired: 3,
       builddingLevel: 2,
     },
   ],

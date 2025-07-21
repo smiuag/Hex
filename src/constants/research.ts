@@ -5,6 +5,10 @@ export const RESEARCH_COST = {
   FUELREFINEMENT: { stone: 50000, metal: 30000, energy: 2000 },
   ENERGYEFFICIENCY: { stone: 20000, metal: 10000, energy: 5000 },
   SHIPENGINEERING: { crystal: 30000, metal: 200000, energy: 100000 },
+  LASER: { crystal: 30000, metal: 200000, energy: 100000 },
+  PLASMA: { crystal: 30000, metal: 150000, energy: 150000 },
+  SHIELD: { crystal: 60000, metal: 200000, energy: 150000 },
+  GRAVITY: { crystal: 300000, metal: 200000, energy: 200000 },
 };
 
 export const RESEARCH_TIME = {
@@ -14,6 +18,10 @@ export const RESEARCH_TIME = {
   FUELREFINEMENT: 1000 * 60 * 60 * 12,
   ENERGYEFFICIENCY: 1000 * 60 * 60 * 12,
   SHIPENGINEERING: 1000 * 60 * 60 * 24 * 1.5,
+  LASER: 1000 * 60 * 60 * 12,
+  PLASMA: 1000 * 60 * 60 * 24,
+  SHIELD: 1000 * 60 * 60 * 24,
+  GRAVITY: 1000 * 60 * 60 * 24 * 7,
 };
 
 export const LAB_LVL_REQUIRED = {
@@ -23,6 +31,10 @@ export const LAB_LVL_REQUIRED = {
   FUELREFINEMENT: 4,
   ENERGYEFFICIENCY: 3,
   SHIPENGINEERING: 4,
+  LASER: 2,
+  PLASMA: 3,
+  SHIELD: 3,
+  GRAVITY: 4,
 };
 
 export const MAX_LVL = {
@@ -32,4 +44,8 @@ export const MAX_LVL = {
   FUELREFINEMENT: 3,
   ENERGYEFFICIENCY: 6,
   SHIPENGINEERING: 5,
+  LASER: 4,
+  PLASMA: 3,
+  SHIELD: 3,
+  GRAVITY: 2,
 };

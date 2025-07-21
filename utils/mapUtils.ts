@@ -149,7 +149,6 @@ const setCurrentMapSize = (size: MapSizeKey) => {
 };
 
 const calculateMapSize = (baseLevel: number) => {
-  console.log(baseLevel);
   if (baseLevel > 3) setCurrentMapSize("SMALL");
   else if (baseLevel > 1) setCurrentMapSize("MEDIUM");
   else setCurrentMapSize("LARGE");

@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Fleet } from "../../src/types/fleetType";
 import { Hex } from "../../src/types/hexTypes";
 import { Research } from "../../src/types/researchTypes";
 import { StoredResources } from "../../src/types/resourceTypes";
@@ -7,6 +8,7 @@ import { getInitialResources } from "../../utils/mapUtils";
 const MAP_KEY = "player_map";
 const STORAGE_KEY = "player_resources";
 const RESEARCH_KEY = "player_research";
+const FLEET_KEY = "player_fleet";
 
 export const saveMap = async (hexes: Hex[]) => {
   await AsyncStorage.setItem(MAP_KEY, JSON.stringify(hexes));
@@ -51,4 +53,17 @@ export const loadResearch = async (): Promise<Research[] | null> => {
 
 export const deleteResearch = async () => {
   await AsyncStorage.removeItem(RESEARCH_KEY);
+};
+
+export const saveFleet = async (researchList: Fleet[]) => {
+  await AsyncStorage.setItem(FLEET_KEY, JSON.stringify(researchList));
+};
+
+export const loadFleet = async (): Promise<Fleet[] | null> => {
+  const data = await AsyncStorage.getItem(FLEET_KEY);
+  return data ? JSON.parse(data) : null;
+};
+
+export const deleteFleet = async () => {
+  await AsyncStorage.removeItem(FLEET_KEY);
 };
