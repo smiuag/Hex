@@ -177,5 +177,6 @@ export const useFleet = (
     handleBuildFleet,
     handleCancelFleet,
     processFleetTick,
+    resetFleet,
   };
 };

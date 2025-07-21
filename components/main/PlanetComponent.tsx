@@ -10,6 +10,7 @@ import {
 } from "react-native-gesture-handler";
 import Animated, {
   runOnJS,
+  useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
 } from "react-native-reanimated";
@@ -34,10 +35,21 @@ export default function PlanetComponent() {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedHex, setSelectedHex] = useState<Hex | null>(null);
   const [cameraOffset, setCameraOffset] = useState({ x: 0, y: 0 });
+  const scale = useSharedValue(1);
+  const savedScale = useSharedValue(1);
+
+  const pinchGesture = Gesture.Pinch()
+    .onStart(() => {
+      savedScale.value = scale.value;
+    })
+    .onUpdate((event) => {
+      scale.value = savedScale.value * event.scale;
+    });
 
   const router = useRouter();
   const { hexes, research, reloadMap, handleBuild, handleCancelBuild } =
     useGameContext();
+
   const {
     SCREEN_WIDTH,
     SCREEN_HEIGHT,
@@ -53,15 +65,15 @@ export default function PlanetComponent() {
   const lastOffsetX = useSharedValue(0);
   const lastOffsetY = useSharedValue(0);
 
-  useEffect(() => {
-    const id = setInterval(() => {
-      setCameraOffset({
-        x: offsetX.value,
-        y: offsetY.value,
-      });
-    }, 100);
-    return () => clearInterval(id);
-  }, []);
+  useAnimatedReaction(
+    () => {
+      return { x: offsetX.value, y: offsetY.value };
+    },
+    (result) => {
+      runOnJS(setCameraOffset)(result);
+    },
+    []
+  );
 
   const panGesture = Gesture.Pan()
     .onStart(() => {
@@ -74,7 +86,11 @@ export default function PlanetComponent() {
     });
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: offsetX.value }, { translateY: offsetY.value }],
+    transform: [
+      { translateX: offsetX.value },
+      { translateY: offsetY.value },
+      { scale: scale.value },
+    ],
   }));
 
   const handleTap = (x: number, y: number) => {
@@ -113,7 +129,10 @@ export default function PlanetComponent() {
       runOnJS(handleTap)(x, y);
     });
 
-  const composedGesture = Gesture.Exclusive(tapGesture, panGesture);
+  const composedGesture = Gesture.Simultaneous(
+    Gesture.Exclusive(tapGesture, panGesture),
+    pinchGesture
+  );
 
   const onBuild = async (type: BuildingType) => {
     if (selectedHex) {
@@ -148,12 +167,23 @@ export default function PlanetComponent() {
       >
         <GestureDetector gesture={composedGesture}>
           <View style={{ flex: 1 }} pointerEvents="box-only">
-            <Animated.View style={[{ flex: 1 }, animatedStyle]}>
+            <Animated.View
+              style={[
+                {
+                  width: SVG_WIDTH,
+                  height: SVG_HEIGHT,
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                },
+                animatedStyle,
+              ]}
+            >
               <Svg
                 width={SVG_WIDTH}
                 height={SVG_HEIGHT}
                 pointerEvents="none"
-                style={{ position: "absolute", top: 0, left: 0 }}
+                style={{ top: 0, left: 0 }}
               >
                 {hexes.map((hex, index) => {
                   const { q, r } = hex;

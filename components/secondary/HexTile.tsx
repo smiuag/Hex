@@ -5,7 +5,6 @@ import { terrainConfig } from "../../src/config/terrainConfig";
 import { Hex } from "../../src/types/hexTypes";
 import { getBuildTime } from "../../utils/buildingUtils";
 import { formatDuration } from "../../utils/generalUtils";
-import { getCurrentMapSize } from "../../utils/mapUtils";
 
 interface Props {
   hex: Hex;
@@ -17,7 +16,6 @@ interface Props {
 export default function HexTile({ hex, px, py, points }: Props) {
   const { terrain, building, construction } = hex;
   const config = terrainConfig[terrain];
-  const MAP = getCurrentMapSize();
 
   const buildingImage = construction
     ? buildingConfig[construction.building].underConstructionImage
@@ -32,10 +30,10 @@ export default function HexTile({ hex, px, py, points }: Props) {
       {buildingImage ? (
         <SvgImage
           href={buildingImage}
-          x={px - (60 * Math.sqrt(3) * MAP.X) / 2}
-          y={py - 60 * MAP.Y}
-          width={60 * Math.sqrt(3) * MAP.WIDTH}
-          height={60 * 2 * MAP.HEIGHT}
+          x={px - (60 * Math.sqrt(3) * 1.7) / 2}
+          y={py - 60 * 1.7}
+          width={60 * Math.sqrt(3) * 1.7}
+          height={60 * 2 * 1.7}
           preserveAspectRatio="xMidYMid meet"
         />
       ) : (
@@ -52,7 +50,7 @@ export default function HexTile({ hex, px, py, points }: Props) {
           x={px}
           y={py + 60 * 0.2}
           textAnchor="middle"
-          fontSize={MAP.FONT_SIZE}
+          fontSize={36}
           fill="white"
           fontWeight="bold"
           stroke="black"
