@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { buildingConfig } from "../../src/config/buildingConfig";
+import { researchTechnologies } from "../../src/config/researchConfig";
 import { BuildingType } from "../../src/types/buildingTypes";
 import { Hex } from "../../src/types/hexTypes";
 import { Research } from "../../src/types/researchTypes";
@@ -82,6 +83,15 @@ export default function HexModal({
     );
     const nextProduction = getProductionPerHour(building.type, nextLevel);
     const hasProduction = Object.values(nextProduction).some((v) => v > 0);
+    const unmetRequirements =
+      config.requiredResearch
+        ?.filter((req) => req.builddingLevel <= nextLevel)
+        .filter((req) => {
+          const playerResearchLevel =
+            research.find((r) => r.data.type === req.researchType)?.data
+              .level ?? 0;
+          return playerResearchLevel < req.researchLevelRequired;
+        }) ?? [];
 
     return (
       <ImageBackground
@@ -160,7 +170,14 @@ export default function HexModal({
               <Text style={styles.statusText}>⏱️ {formatDuration(time)}</Text>
             ) : (
               <Text style={styles.lockedText}>
-                🔒 Requiere más investigación
+                {unmetRequirements
+                  .map(
+                    (r) =>
+                      `🔒 Requiere ${
+                        researchTechnologies[r.researchType].name
+                      } Nv ${r.researchLevelRequired}`
+                  )
+                  .join("\n")}
               </Text>
             )}
 

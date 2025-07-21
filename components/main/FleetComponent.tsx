@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { fleetConfig } from "../../src/config/fleetConfig"; // ajusta la ruta según corresponda
+import { researchTechnologies } from "../../src/config/researchConfig";
 import { useGameContext } from "../../src/context/GameContext";
 import { FleetType } from "../../src/types/fleetType";
 import { isUnlocked } from "../../utils/fleetUtils";
@@ -81,7 +82,8 @@ export default function FleetComponent() {
               style={styles.card}
               imageStyle={[
                 styles.image,
-                (!item.hasRequiredResearch || !item.hasResources) &&
+                !item.inProgress &&
+                  (!item.hasRequiredResearch || !item.hasResources) &&
                   styles.unavailableImage,
               ]}
             >
@@ -115,40 +117,48 @@ export default function FleetComponent() {
 
                     <View style={styles.actionContainer}>
                       {!item.hasRequiredResearch ? (
-                        <Text style={styles.lockedText}>
-                          🔒 Requiere investigación previa
-                        </Text>
-                      ) : !item.hasResources ? (
-                        <Text style={styles.warningText}>
-                          ⚠️ Recursos insuficientes
-                        </Text>
-                      ) : disableButton ? (
-                        <Text style={styles.warningText}>
-                          🔕 Otra construcción en curso
-                        </Text>
+                        <View style={{ flex: 1 }}>
+                          {(item.requiredResearch ?? []).map((req, index) => (
+                            <Text key={index} style={styles.lockedText}>
+                              🔒 Requiere{" "}
+                              {researchTechnologies[req.researchType]?.name ??
+                                req.researchType}{" "}
+                              Nv {req.researchLevelRequired}
+                            </Text>
+                          ))}
+                        </View>
                       ) : (
-                        <Text style={styles.statusText}>
-                          ⏱️ Tiempo base: {formatDuration(item.baseBuildTime)}
-                        </Text>
-                      )}
+                        <>
+                          {!item.hasResources ? (
+                            <Text style={styles.warningText}>
+                              ⚠️ Recursos insuficientes
+                            </Text>
+                          ) : disableButton ? (
+                            <Text style={styles.warningText}>
+                              🔕 Otra construcción en curso
+                            </Text>
+                          ) : (
+                            <Text style={styles.statusText}>
+                              ⏱️ Tiempo base:{" "}
+                              {formatDuration(item.baseBuildTime)}
+                            </Text>
+                          )}
 
-                      <TouchableOpacity
-                        style={[
-                          styles.buildButton,
-                          (disableButton ||
-                            !item.hasRequiredResearch ||
-                            !item.hasResources) &&
-                            styles.disabledButton,
-                        ]}
-                        disabled={
-                          disableButton ||
-                          !item.hasRequiredResearch ||
-                          !item.hasResources
-                        }
-                        onPress={() => handleBuildFleet(item.type, 1)}
-                      >
-                        <Text style={styles.buildButtonText}>Construir</Text>
-                      </TouchableOpacity>
+                          <TouchableOpacity
+                            style={[
+                              styles.buildButton,
+                              (disableButton || !item.hasResources) &&
+                                styles.disabledButton,
+                            ]}
+                            disabled={disableButton || !item.hasResources}
+                            onPress={() => handleBuildFleet(item.type, 1)}
+                          >
+                            <Text style={styles.buildButtonText}>
+                              Construir
+                            </Text>
+                          </TouchableOpacity>
+                        </>
+                      )}
                     </View>
                   </>
                 )}
@@ -171,7 +181,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   card: {
-    height: 180,
+    minHeight: 180,
     width: width - 24,
     borderRadius: 16,
     overflow: "hidden",

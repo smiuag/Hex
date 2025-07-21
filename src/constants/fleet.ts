@@ -34,28 +34,56 @@ export const FLEET_REQUIRED_RESEARCH: Record<
   FleetResearchRequiredData[]
 > = {
   LIGHTFIGHTER: [{ researchType: "SHIPENGINEERING", researchLevelRequired: 1 }],
-  INTERCEPTOR: [{ researchType: "SHIPENGINEERING", researchLevelRequired: 1 }],
+  INTERCEPTOR: [
+    { researchType: "SHIPENGINEERING", researchLevelRequired: 1 },
+    { researchType: "FUELREFINEMENT", researchLevelRequired: 1 },
+  ],
   ESCORTFRIGATE: [
     { researchType: "SHIPENGINEERING", researchLevelRequired: 2 },
+    { researchType: "FUELREFINEMENT", researchLevelRequired: 1 },
   ],
   BATTLECRUISER: [
     { researchType: "SHIPENGINEERING", researchLevelRequired: 2 },
+    { researchType: "FUELREFINEMENT", researchLevelRequired: 1 },
+    { researchType: "LASER", researchLevelRequired: 1 },
   ],
   SPACEDESTROYER: [
     { researchType: "SHIPENGINEERING", researchLevelRequired: 3 },
+    { researchType: "FUELREFINEMENT", researchLevelRequired: 1 },
+    { researchType: "LASER", researchLevelRequired: 2 },
+    { researchType: "SHIELD", researchLevelRequired: 1 },
   ],
   ASSAULTBATTLESHIP: [
     { researchType: "SHIPENGINEERING", researchLevelRequired: 3 },
+    { researchType: "FUELREFINEMENT", researchLevelRequired: 2 },
+    { researchType: "LASER", researchLevelRequired: 3 },
+    { researchType: "SHIELD", researchLevelRequired: 2 },
   ],
-  STARCARRIER: [{ researchType: "SHIPENGINEERING", researchLevelRequired: 4 }],
+  STARCARRIER: [
+    { researchType: "SHIPENGINEERING", researchLevelRequired: 4 },
+    { researchType: "FUELREFINEMENT", researchLevelRequired: 2 },
+    { researchType: "PLASMA", researchLevelRequired: 1 },
+    { researchType: "SHIELD", researchLevelRequired: 2 },
+  ],
   HEAVYASSAULTSHIP: [
     { researchType: "SHIPENGINEERING", researchLevelRequired: 4 },
+    { researchType: "FUELREFINEMENT", researchLevelRequired: 3 },
+    { researchType: "PLASMA", researchLevelRequired: 2 },
+    { researchType: "SHIELD", researchLevelRequired: 3 },
   ],
   ORBITALASSAULTSHIP: [
     { researchType: "SHIPENGINEERING", researchLevelRequired: 5 },
+    { researchType: "FUELREFINEMENT", researchLevelRequired: 3 },
+    { researchType: "PLASMA", researchLevelRequired: 3 },
+    { researchType: "GRAVITY", researchLevelRequired: 1 },
+    { researchType: "SHIELD", researchLevelRequired: 3 },
   ],
   PLANETARYDESTROYER: [
     { researchType: "SHIPENGINEERING", researchLevelRequired: 6 },
+    { researchType: "FUELREFINEMENT", researchLevelRequired: 4 },
+    { researchType: "PLASMA", researchLevelRequired: 3 },
+    { researchType: "GRAVITY", researchLevelRequired: 2 },
+    { researchType: "SHIELD", researchLevelRequired: 3 },
   ],
 };
 

@@ -63,6 +63,9 @@ export default function ResearchComponent() {
       };
     })
     .sort((a, b) => {
+      if (a.inProgress && !b.inProgress) return -1;
+      if (!a.inProgress && b.inProgress) return 1;
+
       // maxeadas al final (abajo)
       if (a.isMaxed && !b.isMaxed) return 1;
       if (!a.isMaxed && b.isMaxed) return -1;
@@ -97,7 +100,8 @@ export default function ResearchComponent() {
               style={styles.card}
               imageStyle={[
                 styles.image,
-                (!item.isAvailable || !item.hasResources) &&
+                !item.inProgress &&
+                  (!item.isAvailable || !item.hasResources) &&
                   styles.unavailableImage,
               ]}
             >

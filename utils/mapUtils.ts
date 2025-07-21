@@ -25,10 +25,10 @@ export const generateHexGrid = (radius: number): Hex[] => {
 
 export const getInitialResources = (): StoredResources => ({
   resources: {
-    metal: 1000,
-    energy: 200,
+    metal: 360000,
+    energy: 1000,
     crystal: 0,
-    stone: 1000,
+    stone: 360000,
   },
   lastUpdate: Date.now(),
 });

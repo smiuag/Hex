@@ -53,21 +53,21 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="galaxy"
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <GalaxyIcon color={color} size={size} />
-          ),
-          tabBarLabel: "Galaxia",
-        }}
-      />
-      <Tabs.Screen
         name="fleet"
         options={{
           tabBarIcon: ({ color, size }) => (
             <FleetIcon color={color} size={size} />
           ),
           tabBarLabel: "Naves",
+        }}
+      />
+      <Tabs.Screen
+        name="galaxy"
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <GalaxyIcon color={color} size={size} />
+          ),
+          tabBarLabel: "Galaxia",
         }}
       />
     </Tabs>

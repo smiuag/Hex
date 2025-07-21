@@ -60,7 +60,7 @@ export const researchTechnologies: Record<
     description:
       "Permite producir combustible más eficiente para los vehículos y sistemas avanzados de la base.",
   },
-  ENERGIEFFICIENCY: {
+  ENERGYEFFICIENCY: {
     name: "Eficiencia Energética",
     labLevelRequired: LAB_LVL_REQUIRED.ENERGYEFFICIENCY,
     image: IMAGES.RESEARCH_ENERGY,
@@ -100,7 +100,7 @@ export const researchTechnologies: Record<
       "Tecnología base para el armamento ligero de naves espaciales.",
   },
   SHIELD: {
-    name: "Tecnología de plasma",
+    name: "Escudos de energía",
     labLevelRequired: LAB_LVL_REQUIRED.SHIELD,
     image: IMAGES.RESEARCH_SHIELD,
     baseCost: RESEARCH_COST.SHIELD,

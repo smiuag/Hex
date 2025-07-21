@@ -6,11 +6,12 @@ export const BUILDING_COST = {
   LAB: { stone: 180000, metal: 180000, energy: 1000 },
   KRYSTALMINE: { stone: 360000, metal: 180000 },
   METALLURGY: { stone: 180000 },
-  QUARRY: { stone: 180000, metal: 180000 },
+  QUARRY: { metal: 180000 },
   BASE: { stone: 4000, metal: 5000 },
   ANTENNA: { stone: 75000, metal: 35000, crystal: 75000, energy: 3000 },
   ROCKET: { stone: 150000, metal: 150000, crystal: 50000, energy: 3000 },
   HANGAR: { stone: 150000, metal: 150000, crystal: 50000, energy: 3000 },
+  ENERGY: { stone: 80000, metal: 120000, crystal: 250000 },
 };
 
 export const BUILDING_PRODUCTION = {
@@ -22,6 +23,7 @@ export const BUILDING_PRODUCTION = {
   ANTENNA: {},
   ROCKET: {},
   HANGAR: {},
+  ENERGY: { energy: 20 },
 };
 
 export const BUILDING_TIME = {
@@ -29,10 +31,11 @@ export const BUILDING_TIME = {
   KRYSTALMINE: 1000 * 60 * 3,
   METALLURGY: 1000 * 60 * 2,
   QUARRY: 1000 * 60 * 2,
-  BASE: 1000 * 60 * 30,
+  BASE: 1000 * 60 * 7, //Ya empieza a nivel 1 así que el primero no es 7 son 12
   ANTENNA: 1000 * 60 * 60,
   ROCKET: 1000 * 60 * 60 * 12,
   HANGAR: 1000 * 60 * 60 * 6,
+  ENERGY: 1000 * 60 * 5,
 };
 
 export const BUILDING_MAX_IN_PLANET = {
@@ -44,42 +47,73 @@ export const BUILDING_MAX_IN_PLANET = {
   ANTENNA: 1,
   ROCKET: 3,
   HANGAR: 5,
+  ENERGY: 7,
 };
 
 export const BUILDING_REQUIRED_RESEARCH: Record<
   BuildingType,
   BuildingRequiredResearch
 > = {
-  LAB: [
+  LAB: [],
+  KRYSTALMINE: [
+    { researchType: "MINING", researchLevelRequired: 1, builddingLevel: 1 },
+    { researchType: "MINING", researchLevelRequired: 2, builddingLevel: 3 },
+    { researchType: "MINING", researchLevelRequired: 3, builddingLevel: 5 },
+    { researchType: "MINING", researchLevelRequired: 4, builddingLevel: 7 },
+  ],
+  METALLURGY: [
+    { researchType: "MINING", researchLevelRequired: 1, builddingLevel: 2 },
+    { researchType: "MINING", researchLevelRequired: 2, builddingLevel: 3 },
+    { researchType: "MINING", researchLevelRequired: 3, builddingLevel: 4 },
+    { researchType: "MINING", researchLevelRequired: 4, builddingLevel: 5 },
+  ],
+  QUARRY: [
+    { researchType: "MINING", researchLevelRequired: 1, builddingLevel: 2 },
+    { researchType: "MINING", researchLevelRequired: 2, builddingLevel: 3 },
+    { researchType: "MINING", researchLevelRequired: 3, builddingLevel: 4 },
+    { researchType: "MINING", researchLevelRequired: 4, builddingLevel: 5 },
+  ],
+  ENERGY: [
     {
-      researchType: "TERRAFORMING",
+      researchType: "ENERGYEFFICIENCY",
       researchLevelRequired: 1,
       builddingLevel: 1,
     },
-  ],
-  KRYSTALMINE: [
-    { researchType: "MINING", researchLevelRequired: 1, builddingLevel: 1 },
-  ],
-  METALLURGY: [
-    { researchType: "MINING", researchLevelRequired: 1, builddingLevel: 1 },
-  ],
-  QUARRY: [
-    { researchType: "MINING", researchLevelRequired: 1, builddingLevel: 1 },
+    {
+      researchType: "ENERGYEFFICIENCY",
+      researchLevelRequired: 2,
+      builddingLevel: 3,
+    },
+    {
+      researchType: "ENERGYEFFICIENCY",
+      researchLevelRequired: 3,
+      builddingLevel: 6,
+    },
   ],
   BASE: [
     {
       researchType: "TERRAFORMING",
       researchLevelRequired: 1,
-      builddingLevel: 1,
-    },
-    {
-      researchType: "TERRAFORMING",
-      researchLevelRequired: 2,
       builddingLevel: 2,
     },
     {
       researchType: "TERRAFORMING",
+      researchLevelRequired: 2,
+      builddingLevel: 3,
+    },
+    {
+      researchType: "WATERPURIFICATION",
+      researchLevelRequired: 1,
+      builddingLevel: 3,
+    },
+    {
+      researchType: "TERRAFORMING",
       researchLevelRequired: 3,
+      builddingLevel: 4,
+    },
+    {
+      researchType: "WATERPURIFICATION",
+      researchLevelRequired: 2,
       builddingLevel: 4,
     },
   ],
@@ -90,7 +124,7 @@ export const BUILDING_REQUIRED_RESEARCH: Record<
       builddingLevel: 1,
     },
     {
-      researchType: "ENERGIEFFICIENCY",
+      researchType: "ENERGYEFFICIENCY",
       researchLevelRequired: 2,
       builddingLevel: 2,
     },
@@ -177,5 +211,12 @@ export const BUILDING_IMAGES = {
     { level: 3, image: IMAGES.BUILDING_MINING_3 },
     { level: 4, image: IMAGES.BUILDING_MINING_4 },
     { level: 5, image: IMAGES.BUILDING_MINING_5 },
+  ],
+  ENERGY: [
+    { level: 1, image: IMAGES.BUILDING_ENERGY_1 },
+    { level: 2, image: IMAGES.BUILDING_ENERGY_2 },
+    { level: 3, image: IMAGES.BUILDING_ENERGY_3 },
+    { level: 4, image: IMAGES.BUILDING_ENERGY_4 },
+    { level: 5, image: IMAGES.BUILDING_ENERGY_5 },
   ],
 };

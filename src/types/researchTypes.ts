@@ -4,7 +4,7 @@ export type ResearchType =
   | "SHIPENGINEERING"
   | "WATERPURIFICATION"
   | "FUELREFINEMENT"
-  | "ENERGIEFFICIENCY"
+  | "ENERGYEFFICIENCY"
   | "PLASMA"
   | "LASER"
   | "SHIELD"

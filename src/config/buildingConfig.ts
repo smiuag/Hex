@@ -127,4 +127,16 @@ export const buildingConfig: Record<
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.ROCKET,
     description: "Hangar y lanzadera de cohetes y naves interplanetarias.",
   },
+  ENERGY: {
+    name: "Central de energía",
+    baseBuildTime: BUILDING_TIME.ENERGY,
+    images: BUILDING_IMAGES.ENERGY,
+    imageBackground: IMAGES.ENERGY_BACKGROUND,
+    underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
+    baseCost: BUILDING_COST.ENERGY,
+    production: BUILDING_PRODUCTION.ENERGY,
+    requiredResearch: BUILDING_REQUIRED_RESEARCH.ENERGY,
+    maxNumberInPlanet: BUILDING_MAX_IN_PLANET.ENERGY,
+    description: "Hangar y lanzadera de cohetes y naves interplanetarias.",
+  },
 };

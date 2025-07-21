@@ -12,6 +12,7 @@ import {
 import ResourceBar from "../../../components/secondary/ResourceBar";
 import { ResourceDisplay } from "../../../components/secondary/ResourceDisplay";
 import { buildingConfig } from "../../../src/config/buildingConfig";
+import { researchTechnologies } from "../../../src/config/researchConfig";
 import { useGameContext } from "../../../src/context/GameContext";
 import { BuildingType } from "../../../src/types/buildingTypes";
 import { Resources } from "../../../src/types/resourceTypes";
@@ -49,6 +50,7 @@ export default function ConstructionComponent() {
       const lockedByMax = isAtMaxCount(buildingType, hexes);
       const unlockedByResearch = isUnlocked(buildingType, 1, research);
       const available = unlockedByResearch && !lockedByMax;
+      //console.log(type, resources.resources, cost);
       const lockedByResources = !hasEnoughResources(resources.resources, cost);
 
       return {
@@ -99,7 +101,7 @@ export default function ConstructionComponent() {
             <View style={styles.cardContainer}>
               <ImageBackground
                 source={item.image}
-                style={styles.card}
+                style={[styles.card]}
                 imageStyle={[
                   styles.image,
                   !item.available && styles.unavailableImage,
@@ -116,19 +118,65 @@ export default function ConstructionComponent() {
                     <ResourceDisplay resources={item.cost} fontSize={13} />
                   )}
 
-                  <View style={styles.actionContainer}>
-                    {!item.lockedByMax && !item.lockedByResources && (
-                      <Text style={styles.statusText}>
-                        ⏱️ {formatDuration(item.time)}
-                      </Text>
-                    )}
-                    {!item.lockedByMax && item.lockedByResources && (
-                      <Text style={styles.statusText}>
-                        ⚠️ Recursos insuficientes
-                      </Text>
-                    )}
+                  {item.lockedByMax ? (
+                    <View
+                      style={[
+                        styles.actionContainer,
+                        { justifyContent: "center" },
+                      ]}
+                    >
+                      <Text style={styles.lockedText}>🔒 Límite alcanzado</Text>
+                    </View>
+                  ) : !item.unlockedByResearch ? (
+                    <View
+                      style={[
+                        styles.actionContainer,
+                        {
+                          flexDirection: "column",
+                          alignItems: "flex-start",
+                          gap: 2,
+                        },
+                      ]}
+                    >
+                      {Object.values(
+                        item.requirements.reduce((acc, req) => {
+                          const existing = acc[req.researchType];
+                          if (
+                            !existing ||
+                            req.researchLevelRequired <
+                              existing.researchLevelRequired
+                          ) {
+                            acc[req.researchType] = req;
+                          }
+                          return acc;
+                        }, {} as Record<string, (typeof item.requirements)[0]>)
+                      ).map((r, i) => (
+                        <Text
+                          key={i}
+                          style={[
+                            styles.lockedText,
+                            { textAlign: "left", maxWidth: "100%" },
+                          ]}
+                        >
+                          🔒 Requiere{" "}
+                          {researchTechnologies[r.researchType]?.name ??
+                            r.researchType}{" "}
+                          Nv {r.researchLevelRequired}
+                        </Text>
+                      ))}
+                    </View>
+                  ) : (
+                    <View style={styles.actionContainer}>
+                      {!item.lockedByResources ? (
+                        <Text style={styles.statusText}>
+                          ⏱️ {formatDuration(item.time)}
+                        </Text>
+                      ) : (
+                        <Text style={styles.statusText}>
+                          ⚠️ Recursos insuficientes
+                        </Text>
+                      )}
 
-                    {item.available ? (
                       <TouchableOpacity
                         style={[
                           styles.buildButton,
@@ -139,20 +187,8 @@ export default function ConstructionComponent() {
                       >
                         <Text style={styles.buildButtonText}>Construir</Text>
                       </TouchableOpacity>
-                    ) : item.lockedByMax ? (
-                      <Text style={styles.lockedText}>🔒 Límite alcanzado</Text>
-                    ) : (
-                      <Text style={styles.lockedText}>
-                        🔒 Requiere{" "}
-                        {item.requirements
-                          .map(
-                            (r) =>
-                              `${r.researchType} Nv ${r.researchLevelRequired}`
-                          )
-                          .join(", ")}
-                      </Text>
-                    )}
-                  </View>
+                    </View>
+                  )}
                 </View>
               </ImageBackground>
             </View>
@@ -174,7 +210,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   card: {
-    height: 200,
+    minHeight: 200,
     width: width - 24,
     borderRadius: 16,
     overflow: "hidden",

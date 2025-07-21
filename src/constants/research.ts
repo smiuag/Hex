@@ -1,5 +1,5 @@
 export const RESEARCH_COST = {
-  TERRAFORMING: { stone: 100, metal: 100, energy: 50 },
+  TERRAFORMING: { stone: 10000, metal: 10000, energy: 5000 },
   MINING: { stone: 10000, metal: 10000, energy: 1000 },
   WATERPURIFICATION: { stone: 15000, metal: 15000, energy: 1000 },
   FUELREFINEMENT: { stone: 50000, metal: 30000, energy: 2000 },
@@ -12,7 +12,7 @@ export const RESEARCH_COST = {
 };
 
 export const RESEARCH_TIME = {
-  TERRAFORMING: 1000 * 30,
+  TERRAFORMING: 1000 * 60 * 1.5,
   MINING: 1000 * 60,
   WATERPURIFICATION: 1000 * 60 * 60 * 2,
   FUELREFINEMENT: 1000 * 60 * 60 * 12,
@@ -25,12 +25,12 @@ export const RESEARCH_TIME = {
 };
 
 export const LAB_LVL_REQUIRED = {
-  TERRAFORMING: 0,
+  TERRAFORMING: 1,
   MINING: 1,
   WATERPURIFICATION: 2,
   FUELREFINEMENT: 4,
   ENERGYEFFICIENCY: 3,
-  SHIPENGINEERING: 4,
+  SHIPENGINEERING: 1,
   LASER: 2,
   PLASMA: 3,
   SHIELD: 3,
@@ -42,9 +42,9 @@ export const MAX_LVL = {
   MINING: 4,
   WATERPURIFICATION: 3,
   FUELREFINEMENT: 3,
-  ENERGYEFFICIENCY: 6,
+  ENERGYEFFICIENCY: 3,
   SHIPENGINEERING: 5,
-  LASER: 4,
+  LASER: 3,
   PLASMA: 3,
   SHIELD: 3,
   GRAVITY: 2,

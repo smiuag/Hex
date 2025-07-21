@@ -8,7 +8,8 @@ export type BuildingType =
   | "KRYSTALMINE"
   | "HANGAR"
   | "ANTENNA"
-  | "ROCKET";
+  | "ROCKET"
+  | "ENERGY";
 
 export type BuildingData = {
   type: BuildingType;

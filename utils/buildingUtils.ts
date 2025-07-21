@@ -54,7 +54,7 @@ export const isUnlocked = (
 
   return applicableRequirements.every((req) => {
     const found = playerResearch.find((r) => r.data.type === req.researchType);
-    return found && found.data.level >= req.researchLevelRequired;
+    return !!found && found.data.level >= req.researchLevelRequired;
   });
 };
 

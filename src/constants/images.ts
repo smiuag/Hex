@@ -3,6 +3,7 @@ import backgroundMenu from "../../assets/images/backgroundMenu.jpg";
 import antennaBackground from "../../assets/images/buildings/antenna.png";
 import baseBackground from "../../assets/images/buildings/base.png";
 import krystalmineBackground from "../../assets/images/buildings/cristal.png";
+import energyBackground from "../../assets/images/buildings/energy.png";
 import hangarBackground from "../../assets/images/buildings/hangar.png";
 import labBackground from "../../assets/images/buildings/lab.png";
 import metallurgyBackground from "../../assets/images/buildings/metal.png";
@@ -23,6 +24,11 @@ import base2 from "../../assets/images/mini/base2.png";
 import base3 from "../../assets/images/mini/base3.png";
 import base4 from "../../assets/images/mini/base4.png";
 import base5 from "../../assets/images/mini/base5.png";
+import energy1 from "../../assets/images/mini/energy1.png";
+import energy2 from "../../assets/images/mini/energy2.png";
+import energy3 from "../../assets/images/mini/energy3.png";
+import energy4 from "../../assets/images/mini/energy4.png";
+import energy5 from "../../assets/images/mini/energy5.png";
 import lab1 from "../../assets/images/mini/lab1.png";
 import lab2 from "../../assets/images/mini/lab2.png";
 import lab3 from "../../assets/images/mini/lab3.png";
@@ -75,6 +81,11 @@ export const IMAGES = {
   BUILDING_METAL_3: metal3,
   BUILDING_METAL_4: metal4,
   BUILDING_METAL_5: metal5,
+  BUILDING_ENERGY_1: energy1,
+  BUILDING_ENERGY_2: energy2,
+  BUILDING_ENERGY_3: energy3,
+  BUILDING_ENERGY_4: energy4,
+  BUILDING_ENERGY_5: energy5,
   BUILDING_UNDER_CONSTRUCTION: underConstruction,
   //INVESTIGACIONIES
   RESEARCH_MINING: mining,
@@ -91,6 +102,7 @@ export const IMAGES = {
   HANGAR_BACKGROUND: hangarBackground,
   ROCKET_BACKGROUND: rocketBackground,
   ANTENNA_BACKGROUND: antennaBackground,
+  ENERGY_BACKGROUND: energyBackground,
   FLEET_BG_LIGHTFIGHTER: lightFighterBackground,
   FLEET_BG_INTERCEPTOR: interceptorBackground,
   FLEET_BG_ESCORTFRIGATE: escrotFrigateBackground,
