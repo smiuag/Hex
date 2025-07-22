@@ -62,13 +62,13 @@ export const BUILDING_REQUIRED_RESEARCH: Record<
     { researchType: "MINING", researchLevelRequired: 4, builddingLevel: 7 },
   ],
   METALLURGY: [
-    { researchType: "MINING", researchLevelRequired: 1, builddingLevel: 2 },
+    { researchType: "MINING", researchLevelRequired: 1, builddingLevel: 1 },
     { researchType: "MINING", researchLevelRequired: 2, builddingLevel: 3 },
     { researchType: "MINING", researchLevelRequired: 3, builddingLevel: 4 },
     { researchType: "MINING", researchLevelRequired: 4, builddingLevel: 5 },
   ],
   QUARRY: [
-    { researchType: "MINING", researchLevelRequired: 1, builddingLevel: 2 },
+    { researchType: "MINING", researchLevelRequired: 1, builddingLevel: 1 },
     { researchType: "MINING", researchLevelRequired: 2, builddingLevel: 3 },
     { researchType: "MINING", researchLevelRequired: 3, builddingLevel: 4 },
     { researchType: "MINING", researchLevelRequired: 4, builddingLevel: 5 },

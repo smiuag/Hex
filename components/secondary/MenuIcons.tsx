@@ -21,6 +21,14 @@ export const ResearchIcon = ({
   size: number;
 }) => <MaterialCommunityIcons name="flask-outline" size={size} color={color} />;
 
+export const QuestIcon = ({ color, size }: { color: string; size: number }) => (
+  <MaterialCommunityIcons
+    name="script-text-outline"
+    size={size}
+    color={color}
+  />
+);
+
 export const GalaxyIcon = ({
   color,
   size,

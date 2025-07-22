@@ -221,10 +221,6 @@ export default function HexModal({
           overflow: "hidden",
           backgroundColor: "rgba(0,0,0,0.6)",
         }}
-        // imageStyle={{
-        //   resizeMode: "cover",
-        //   opacity: canUpgrade ? 1 : 0.4,
-        // }}
       >
         <View style={{ padding: 16, backgroundColor: "rgba(0,0,0,0.55)" }}>
           <Text style={[styles.title, { color: "white" }]}>{config.name}</Text>

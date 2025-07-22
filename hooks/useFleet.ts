@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { Alert } from "react-native";
 import { fleetConfig } from "../src/config/fleetConfig";
 import { loadFleet, saveFleet, saveResources } from "../src/services/storage";
 import { Fleet, FleetType } from "../src/types/fleetType";
@@ -14,10 +13,6 @@ export const useFleet = (
 ) => {
   const [fleetBuildQueue, setFleetBuildQueue] = useState<Fleet[]>([]);
   const fleetBuildQueueRef = useRef<Fleet[]>([]);
-
-  // fleetBuildQueue,
-  // handleBuildFleet,
-  // handleCancelFleet
 
   const updateFleetQueueState = async (newFleetQueue: Fleet[]) => {
     setFleetBuildQueue(newFleetQueue);
@@ -36,10 +31,6 @@ export const useFleet = (
       (r) => r.data.type === type
     );
     const config = fleetConfig[type];
-    if (fleetBuildQueueRef.current.some((r) => r.progress)) {
-      Alert.alert("Ya hay una investigación en curso");
-      return;
-    }
 
     const cost = getTotalFleetCost(type, amount);
     const durationMs = config.baseBuildTime * amount;

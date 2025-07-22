@@ -9,11 +9,13 @@ import React, {
 } from "react";
 import { useConstruction } from "../../hooks/useConstruction";
 import { useFleet } from "../../hooks/useFleet";
+import { useQuest } from "../../hooks/useQuest";
 import { useResearch } from "../../hooks/useResearch";
 import { useResources } from "../../hooks/useResources";
 import { BuildingType } from "../../src/types/buildingTypes";
 import { Fleet, FleetType } from "../../src/types/fleetType";
 import { Hex } from "../../src/types/hexTypes";
+import { PlayerQuest, QuestType } from "../../src/types/questType";
 import { StoredResources } from "../../src/types/resourceTypes";
 import { normalizeHexMap } from "../../utils/mapUtils";
 import { getLabLevel } from "../../utils/researchUtils";
@@ -41,6 +43,9 @@ type ProviderContextType = {
   handleCancelFleet: (type: FleetType) => void;
   research: Research[];
   labLevel: number;
+  playerQuests: PlayerQuest[];
+  completeQuest: (type: QuestType) => void;
+  markQuestsAsViewed: (types: QuestType[]) => void;
 };
 
 const ResourceContext = createContext<ProviderContextType | undefined>(
@@ -59,6 +64,8 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     resourcesRef,
     ready,
   } = useResources(hexesRef);
+
+  const { playerQuests, completeQuest, markQuestsAsViewed } = useQuest();
 
   const {
     fleetBuildQueue,
@@ -137,6 +144,9 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
       handleCancelFleet,
       processFleetTick,
       resetFleet,
+      playerQuests,
+      completeQuest,
+      markQuestsAsViewed,
     };
   }, [
     resources,
@@ -160,6 +170,9 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     handleCancelFleet,
     processFleetTick,
     resetFleet,
+    playerQuests,
+    completeQuest,
+    markQuestsAsViewed,
   ]);
 
   return (

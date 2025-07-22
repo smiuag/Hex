@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import {
   Dimensions,
   FlatList,
@@ -8,11 +8,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { fleetConfig } from "../../src/config/fleetConfig"; // ajusta la ruta según corresponda
-import { researchTechnologies } from "../../src/config/researchConfig";
+import { fleetConfig } from "../../src/config/fleetConfig";
 import { useGameContext } from "../../src/context/GameContext";
 import { FleetType } from "../../src/types/fleetType";
-import { isUnlocked } from "../../utils/fleetUtils";
 import { formatDuration } from "../../utils/generalUtils";
 import { hasEnoughResources } from "../../utils/resourceUtils";
 import { ResourceDisplay } from "../secondary/ResourceDisplay";
@@ -20,252 +18,260 @@ import { ResourceDisplay } from "../secondary/ResourceDisplay";
 const { width } = Dimensions.get("window");
 
 export default function FleetComponent() {
-  const {
-    fleetBuildQueue,
-    handleBuildFleet,
-    handleCancelFleet,
-    resources,
-    research,
-  } = useGameContext();
+  const [queuedAmounts, setQueuedAmounts] = useState<
+    Partial<Record<FleetType, number>>
+  >({});
 
-  // Convierte la configuración en una lista con estado calculado
+  const delayRef = useRef(300);
+  const loopRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const { fleetBuildQueue, handleBuildFleet, handleCancelFleet, resources } =
+    useGameContext();
+
+  const adjustQueue = (type: FleetType, direction: "add" | "remove") => {
+    setQueuedAmounts((prev) => {
+      const current = prev[type] ?? 0;
+      if (direction === "add") {
+        handleBuildFleet(type, 1);
+        return { ...prev, [type]: current + 1 };
+      } else if (direction === "remove" && current > 0) {
+        handleCancelFleet(type);
+        return { ...prev, [type]: current - 1 };
+      }
+      return prev;
+    });
+  };
+
+  const startLoop = (type: FleetType, direction: "add" | "remove") => {
+    delayRef.current = 300;
+
+    const loop = () => {
+      adjustQueue(type, direction);
+      delayRef.current = Math.max(30, delayRef.current * 0.4);
+      loopRef.current = setTimeout(loop, delayRef.current);
+    };
+
+    loop();
+  };
+
+  const stopLoop = () => {
+    if (loopRef.current) clearTimeout(loopRef.current);
+    loopRef.current = null;
+  };
+
+  const handleLongPress =
+    (type: FleetType, direction: "add" | "remove") => () => {
+      startLoop(type, direction);
+    };
+
+  const handlePressOut = () => {
+    stopLoop();
+  };
+
   const fleetItems = Object.entries(fleetConfig)
     .map(([key, config]) => {
       const type = key as FleetType;
+      const owned =
+        fleetBuildQueue.find((f) => f.data.type === type)?.data.amount ?? 0;
 
-      // Detectar si la flota está en construcción
-      const buildData = fleetBuildQueue.find((b) => b.data.type === type);
-      const inProgress = !!buildData?.progress;
-      const targetCount = buildData?.progress?.targetAmount ?? 1;
-      const totalTime = config.baseBuildTime * targetCount;
-      const remainingTime = inProgress
-        ? Math.max(
-            0,
-            totalTime - (Date.now() - (buildData?.progress?.startedAt ?? 0))
-          )
-        : 0;
-
-      const hasResources = hasEnoughResources(
-        resources.resources,
-        config.baseCost
-      );
-
-      const hasRequiredResearch = isUnlocked(type, research);
+      const inQueue = queuedAmounts[type] ?? 0;
+      const totalCost = config.baseCost;
+      const totalTime = config.baseBuildTime * inQueue;
 
       return {
         key: type,
         ...config,
         type,
-        inProgress,
-        remainingTime,
-        hasResources,
-        hasRequiredResearch,
-        targetCount,
+        inQueue,
+        owned,
+        totalCost,
+        totalTime,
+        canBuild: hasEnoughResources(resources.resources, config.baseCost),
       };
     })
     .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0));
-
-  const anyInProgress = fleetItems.some((item) => item.inProgress);
 
   return (
     <FlatList
       data={fleetItems}
       keyExtractor={(item) => item.key}
       contentContainerStyle={styles.list}
-      renderItem={({ item }) => {
-        const disableButton = anyInProgress && !item.inProgress;
-
-        return (
-          <View style={styles.cardContainer}>
-            <ImageBackground
-              source={item.imageBackground}
-              style={styles.card}
-              imageStyle={[
-                styles.image,
-                !item.inProgress &&
-                  (!item.hasRequiredResearch || !item.hasResources) &&
-                  styles.unavailableImage,
-              ]}
-            >
-              <View style={styles.overlay}>
-                <View style={styles.header}>
-                  <Text style={styles.title}>{item.name}</Text>
-                </View>
-
-                {item.inProgress ? (
-                  <View style={styles.actionContainer}>
-                    <Text style={styles.statusText}>
-                      ⏳ Construcción en curso:{" "}
-                      {formatDuration(item.remainingTime)}
-                    </Text>
-                    <TouchableOpacity
-                      style={styles.cancelButton}
-                      onPress={() => handleCancelFleet(item.type)}
-                    >
-                      <Text style={styles.cancelButtonText}>Cancelar</Text>
-                    </TouchableOpacity>
-                  </View>
-                ) : (
-                  <>
-                    <View style={styles.row}>
-                      <ResourceDisplay
-                        resources={item.baseCost}
-                        fontSize={13}
-                      />
-                    </View>
-                    <Text style={styles.description}>{item.description}</Text>
-
-                    <View style={styles.actionContainer}>
-                      {!item.hasRequiredResearch ? (
-                        <View style={{ flex: 1 }}>
-                          {(item.requiredResearch ?? []).map((req, index) => (
-                            <Text key={index} style={styles.lockedText}>
-                              🔒 Requiere{" "}
-                              {researchTechnologies[req.researchType]?.name ??
-                                req.researchType}{" "}
-                              Nv {req.researchLevelRequired}
-                            </Text>
-                          ))}
-                        </View>
-                      ) : (
-                        <>
-                          {!item.hasResources ? (
-                            <Text style={styles.warningText}>
-                              ⚠️ Recursos insuficientes
-                            </Text>
-                          ) : disableButton ? (
-                            <Text style={styles.warningText}>
-                              🔕 Otra construcción en curso
-                            </Text>
-                          ) : (
-                            <Text style={styles.statusText}>
-                              ⏱️ Tiempo base:{" "}
-                              {formatDuration(item.baseBuildTime)}
-                            </Text>
-                          )}
-
-                          <TouchableOpacity
-                            style={[
-                              styles.buildButton,
-                              (disableButton || !item.hasResources) &&
-                                styles.disabledButton,
-                            ]}
-                            disabled={disableButton || !item.hasResources}
-                            onPress={() => handleBuildFleet(item.type, 1)}
-                          >
-                            <Text style={styles.buildButtonText}>
-                              Construir
-                            </Text>
-                          </TouchableOpacity>
-                        </>
-                      )}
-                    </View>
-                  </>
+      renderItem={({ item }) => (
+        <View style={styles.cardContainer}>
+          <ImageBackground
+            source={item.imageBackground}
+            style={styles.card}
+            imageStyle={[
+              styles.image,
+              !item.canBuild && styles.unavailableImage,
+            ]}
+          >
+            <View style={styles.overlay}>
+              <View style={styles.header}>
+                <Text style={styles.title}>
+                  {item.name}{" "}
+                  <Text style={styles.timeUnit}>
+                    ({formatDuration(item.baseBuildTime)})
+                  </Text>
+                </Text>
+                {item.owned > 0 && (
+                  <Text style={styles.owned}>{item.owned}</Text>
                 )}
               </View>
-            </ImageBackground>
-          </View>
-        );
-      }}
+
+              <Text style={styles.description}>{item.description}</Text>
+
+              <View style={styles.row}>
+                <ResourceDisplay resources={item.totalCost} fontSize={13} />
+              </View>
+
+              <Text style={styles.statusText}>
+                ⏱️ Tiempo estimado: {formatDuration(item.totalTime)}
+              </Text>
+
+              <View style={styles.bottomBar}>
+                <TouchableOpacity
+                  style={styles.cancelButton}
+                  onPress={() => adjustQueue(item.type, "remove")}
+                  onLongPress={handleLongPress(item.type, "remove")}
+                  onPressOut={handlePressOut}
+                  disabled={item.inQueue === 0}
+                >
+                  <Text style={styles.buttonText}>Cancelar</Text>
+                </TouchableOpacity>
+
+                <View style={styles.queueCountContainer}>
+                  {item.inQueue > 0 && (
+                    <>
+                      <Text style={styles.queueLabel}>En cola</Text>
+                      <Text style={styles.queueCount}>{item.inQueue}</Text>
+                    </>
+                  )}
+                </View>
+
+                <TouchableOpacity
+                  style={[
+                    styles.buildButton,
+                    !item.canBuild && styles.disabledButton,
+                  ]}
+                  onPress={() => adjustQueue(item.type, "add")}
+                  onLongPress={handleLongPress(item.type, "add")}
+                  onPressOut={handlePressOut}
+                  disabled={!item.canBuild}
+                >
+                  <Text style={styles.buttonText}>Construir</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </ImageBackground>
+        </View>
+      )}
     />
   );
 }
 
 const styles = StyleSheet.create({
   list: {
-    paddingTop: 35,
-    textAlign: "center",
+    paddingTop: 30,
   },
   cardContainer: {
-    marginBottom: 8,
+    marginBottom: 10,
     alignItems: "center",
   },
   card: {
-    minHeight: 180,
-    width: width - 24,
+    width: width - 20,
+    minHeight: 200,
     borderRadius: 16,
     overflow: "hidden",
-    justifyContent: "flex-start",
   },
   image: {
     resizeMode: "cover",
   },
   unavailableImage: {
-    opacity: 0.4,
+    opacity: 0.3,
   },
   overlay: {
     flex: 1,
     padding: 12,
-    backgroundColor: "rgba(0, 0, 0, 0.45)",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "space-between",
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
+    marginBottom: 4,
   },
   title: {
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
   },
-  description: {
+  owned: {
     color: "#ccc",
+    fontWeight: "bold",
+    fontSize: 14,
+  },
+  description: {
+    color: "#ddd",
+    marginBottom: 6,
     fontSize: 13,
-    marginTop: 4,
-    marginBottom: 8,
   },
   row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  actionContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 8,
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 8,
+    marginBottom: 4,
   },
   statusText: {
     color: "#facc15",
+    fontSize: 13,
     fontWeight: "bold",
-    fontSize: 13,
+    textAlign: "center",
   },
-  lockedText: {
-    color: "#f87171",
-    fontSize: 13,
+  timeUnit: {
+    fontWeight: "normal",
+    fontSize: 11,
+    color: "#e2e8f0",
   },
-  warningText: {
-    color: "#facc15",
-    fontSize: 13,
-    fontWeight: "600",
-  },
-  buildButton: {
-    backgroundColor: "#2196F3",
-    paddingVertical: 4,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-  },
-  disabledButton: {
-    backgroundColor: "#6b8dc3",
-  },
-  buildButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 13,
+  bottomBar: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+    marginTop: 12,
   },
   cancelButton: {
     backgroundColor: "#f87171",
-    paddingVertical: 4,
-    paddingHorizontal: 12,
+    padding: 6,
     borderRadius: 6,
+    flex: 1,
+    alignItems: "center",
+    marginRight: 6,
   },
-  cancelButtonText: {
+  buildButton: {
+    backgroundColor: "#3b82f6",
+    padding: 6,
+    borderRadius: 6,
+    flex: 1,
+    alignItems: "center",
+    marginLeft: 6,
+  },
+  disabledButton: {
+    backgroundColor: "#93c5fd",
+  },
+  buttonText: {
     color: "#fff",
     fontWeight: "bold",
-    fontSize: 13,
+  },
+  queueCountContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 60,
+  },
+  queueLabel: {
+    color: "#ccc",
+    fontSize: 11,
+    marginBottom: 2,
+  },
+  queueCount: {
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "bold",
   },
 });

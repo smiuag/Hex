@@ -53,7 +53,7 @@ export const buildingConfig: Record<
       "Centro de investigacione de la colonia. Permite hacer investigaciones para desbloquear la construcción de edificios.",
   },
   METALLURGY: {
-    name: "Metalurgia",
+    name: "Mina de metales",
     baseBuildTime: BUILDING_TIME.METALLURGY,
     images: BUILDING_IMAGES.METALLURGY,
     imageBackground: IMAGES.METALLURGY_BACKGROUND,

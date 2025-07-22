@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Fleet } from "../../src/types/fleetType";
 import { Hex } from "../../src/types/hexTypes";
+import { PlayerQuest } from "../../src/types/questType";
 import { Research } from "../../src/types/researchTypes";
 import { StoredResources } from "../../src/types/resourceTypes";
 import { getInitialResources } from "../../utils/mapUtils";
@@ -9,6 +10,7 @@ const MAP_KEY = "player_map";
 const STORAGE_KEY = "player_resources";
 const RESEARCH_KEY = "player_research";
 const FLEET_KEY = "player_fleet";
+const QUESTS_KEY = "player_quests";
 
 export const saveMap = async (hexes: Hex[]) => {
   await AsyncStorage.setItem(MAP_KEY, JSON.stringify(hexes));
@@ -66,4 +68,30 @@ export const loadFleet = async (): Promise<Fleet[] | null> => {
 
 export const deleteFleet = async () => {
   await AsyncStorage.removeItem(FLEET_KEY);
+};
+
+export const saveQuests = async (quests: PlayerQuest[]): Promise<void> => {
+  try {
+    await AsyncStorage.setItem(QUESTS_KEY, JSON.stringify(quests));
+  } catch (error) {
+    console.error("Error saving quests:", error);
+  }
+};
+
+export const loadQuests = async (): Promise<PlayerQuest[] | null> => {
+  try {
+    const data = await AsyncStorage.getItem(QUESTS_KEY);
+    return data ? JSON.parse(data) : null;
+  } catch (error) {
+    console.error("Error loading quests:", error);
+    return null;
+  }
+};
+
+export const deleteQuests = async (): Promise<void> => {
+  try {
+    await AsyncStorage.removeItem(QUESTS_KEY);
+  } catch (error) {
+    console.error("Error deleting quests:", error);
+  }
 };

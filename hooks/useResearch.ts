@@ -1,4 +1,3 @@
-// hooks/useResearch.ts
 import * as Notifications from "expo-notifications";
 import { useEffect, useRef, useState } from "react";
 import { Alert } from "react-native";
@@ -38,11 +37,6 @@ export const useResearch = (
 
   const handleResearch = async (type: ResearchType) => {
     const existing = researchRef.current.find((r) => r.data.type === type);
-
-    if (researchRef.current.some((r) => r.progress)) {
-      Alert.alert("Ya hay una investigación en curso");
-      return;
-    }
 
     const currentLevel = existing?.data.level ?? 0;
     const nextLevel = currentLevel + 1;
