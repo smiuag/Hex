@@ -5,13 +5,13 @@ import { Resources, ResourceType } from "../../src/types/resourceTypes";
 import { ResourceDisplay } from "./ResourceDisplay";
 
 export default function ResourceBar() {
-  const { resources } = useGameContext();
+  const { resources, hexes } = useGameContext();
   const [displayedResources, setDisplayedResources] = useState<
     Partial<Resources>
   >({});
 
   useEffect(() => {
-    if (!resources) return;
+    if (!resources || !hexes || hexes.length === 0) return;
 
     const updateResources = () => {
       const now = Date.now();

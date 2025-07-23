@@ -172,7 +172,7 @@ export default function FleetComponent() {
 
 const styles = StyleSheet.create({
   list: {
-    paddingTop: 30,
+    paddingTop: 35,
   },
   cardContainer: {
     marginBottom: 10,
