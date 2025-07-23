@@ -11,26 +11,28 @@ export default function ResourceBar() {
   >({});
 
   useEffect(() => {
-    if (!resources || !hexes || hexes.length === 0) return;
+    if (!resources || !hexes || hexes.length === 0) {
+      setDisplayedResources({});
+    } else {
+      const updateResources = () => {
+        const now = Date.now();
+        const elapsedSeconds = Math.floor((now - resources.lastUpdate) / 1000);
 
-    const updateResources = () => {
-      const now = Date.now();
-      const elapsedSeconds = Math.floor((now - resources.lastUpdate) / 1000);
+        const updatedResources: Partial<Resources> = { ...resources.resources };
 
-      const updatedResources: Partial<Resources> = { ...resources.resources };
+        (Object.keys(resources.production) as ResourceType[]).forEach((key) => {
+          const produced = (resources.production[key] ?? 0) * elapsedSeconds;
+          updatedResources[key] = (updatedResources[key] ?? 0) + produced;
+        });
 
-      (Object.keys(resources.production) as ResourceType[]).forEach((key) => {
-        const produced = (resources.production[key] ?? 0) * elapsedSeconds;
-        updatedResources[key] = (updatedResources[key] ?? 0) + produced;
-      });
+        setDisplayedResources(updatedResources);
+      };
 
-      setDisplayedResources(updatedResources);
-    };
+      updateResources(); // initial call
+      const interval = setInterval(updateResources, 1000); // update every second
 
-    updateResources(); // initial call
-    const interval = setInterval(updateResources, 1000); // update every second
-
-    return () => clearInterval(interval);
+      return () => clearInterval(interval);
+    }
   }, [resources]);
 
   if (!resources) return null;

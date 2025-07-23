@@ -36,7 +36,7 @@ export function canCompleteQuest(
     case "BUILDING_LAB1":
       return hexes.some((hex) => hex.building?.type === "LAB");
     case "RESEARCH_MINING1": {
-      return research.some((r) => r.data.type == "MINING");
+      return research.some((r) => r.data.type == "MINING" && !r.progress);
     }
   }
 }

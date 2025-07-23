@@ -10,6 +10,8 @@ export type FleetType =
   | "ORBITALASSAULTSHIP"
   | "PLANETARYDESTROYER";
 
+export type ProductionFacilityType = "HANGAR" | "SPACESTATION";
+
 export type FleetData = {
   type: FleetType;
   amount: number;

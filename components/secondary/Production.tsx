@@ -18,6 +18,13 @@ export default function ProductionBar({
 }: ResourceBarProps) {
   const { resources } = useGameContext();
 
+  const productionPerHour = Object.fromEntries(
+    Object.entries(resources.production).map(([key, value]) => [
+      key,
+      Math.round(value * 3600),
+    ])
+  );
+
   return (
     <View style={styles.container}>
       {title && (
@@ -25,7 +32,7 @@ export default function ProductionBar({
       )}
       <View style={styles.resourcesContainer}>
         <ResourceDisplay
-          resources={resources.production}
+          resources={productionPerHour}
           fontSize={fontSize}
           fontColor={resourceColor}
         />

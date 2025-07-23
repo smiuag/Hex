@@ -51,6 +51,7 @@ export const ResearchCard: React.FC<Props> = ({
   const scale = useRef(new Animated.Value(1)).current;
   const [remaining, setRemaining] = useState(item.totalTime);
   const intervalRef = useRef<number | null>(null);
+  const wasInProgress = useRef(item.inProgress);
 
   useEffect(() => {
     if (item.inProgress && item.progress) {
@@ -80,10 +81,11 @@ export const ResearchCard: React.FC<Props> = ({
   }, [item.inProgress, item.progress?.startedAt, item.totalTime]);
 
   useEffect(() => {
-    if (remaining === 0 && item.inProgress) {
+    // detecta transición de inProgress a false con remaining 0
+    if (wasInProgress.current && !item.inProgress && remaining <= 0) {
       Animated.sequence([
         Animated.timing(scale, {
-          toValue: 1.15,
+          toValue: 1.35,
           duration: 250,
           useNativeDriver: true,
         }),
@@ -94,7 +96,11 @@ export const ResearchCard: React.FC<Props> = ({
         }),
       ]).start();
     }
-  }, [remaining, item.inProgress]);
+
+    // actualiza el estado anterior
+    wasInProgress.current = item.inProgress;
+  }, [item.inProgress, remaining]);
+
   return (
     <Animated.View style={[styles.cardContainer, { transform: [{ scale }] }]}>
       <ImageBackground

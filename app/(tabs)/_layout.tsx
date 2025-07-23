@@ -18,6 +18,9 @@ export default function TabLayout() {
   const { playerQuests, hexes, research } = useGameContext();
   const partidaIniciada = hexes.length > 0;
 
+  const hasHangar =
+    hexes.length > 0 && hexes.some((h) => h.building?.type == "HANGAR");
+
   const completedQuestTypes = playerQuests
     .filter((q) => q.completed)
     .map((q) => q.type);
@@ -93,8 +96,9 @@ export default function TabLayout() {
             <FleetIcon color={color} size={size} />
           ),
           tabBarLabel: "Naves",
-          tabBarButton: partidaIniciada ? undefined : () => null,
-          tabBarItemStyle: partidaIniciada ? {} : { display: "none" },
+          tabBarButton: hasHangar && partidaIniciada ? undefined : () => null,
+          tabBarItemStyle:
+            hasHangar && partidaIniciada ? {} : { display: "none" },
         }}
       />
       <Tabs.Screen

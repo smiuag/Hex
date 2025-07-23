@@ -139,4 +139,16 @@ export const buildingConfig: Record<
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.ENERGY,
     description: "Hangar y lanzadera de cohetes y naves interplanetarias.",
   },
+  SPACESTATION: {
+    name: "Estación espacial",
+    baseBuildTime: BUILDING_TIME.SPACESTATION,
+    images: BUILDING_IMAGES.SPACESTATION,
+    imageBackground: IMAGES.SPACESTATION_BACKGROUND,
+    underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
+    baseCost: BUILDING_COST.SPACESTATION,
+    production: BUILDING_PRODUCTION.SPACESTATION,
+    requiredResearch: BUILDING_REQUIRED_RESEARCH.SPACESTATION,
+    maxNumberInPlanet: BUILDING_MAX_IN_PLANET.SPACESTATION,
+    description: "Hangar y lanzadera de cohetes y naves interplanetarias.",
+  },
 };

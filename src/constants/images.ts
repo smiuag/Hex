@@ -9,6 +9,7 @@ import labBackground from "../../assets/images/buildings/lab.png";
 import metallurgyBackground from "../../assets/images/buildings/metal.png";
 import quarryBackground from "../../assets/images/buildings/mining.png";
 import rocketBackground from "../../assets/images/buildings/rocket.png";
+import spaceStation from "../../assets/images/buildings/spaceStation.png";
 import assaultBattleshipBackground from "../../assets/images/fleet/assaultBattleshipBackground.png";
 import battleCruiserBackground from "../../assets/images/fleet/battleCruiserBackground.png";
 import escrotFrigateBackground from "../../assets/images/fleet/escrotFrigateBackground.png";
@@ -117,4 +118,5 @@ export const IMAGES = {
   RESEARCH_PLASMA: plasma,
   RESEARCH_SHIELD: shield,
   RESEARCH_GRAVITY: gravity,
+  SPACESTATION_BACKGROUND: spaceStation,
 };

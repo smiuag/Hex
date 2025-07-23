@@ -6,7 +6,7 @@ export default function IndexRedirect() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace("/planet");
+    router.replace("/menu");
   }, []);
 
   useEffect(() => {

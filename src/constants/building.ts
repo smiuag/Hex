@@ -12,6 +12,7 @@ export const BUILDING_COST = {
   ROCKET: { stone: 150000, metal: 150000, crystal: 50000, energy: 3000 },
   HANGAR: { stone: 150000, metal: 150000, crystal: 50000, energy: 3000 },
   ENERGY: { stone: 80000, metal: 120000, crystal: 250000 },
+  SPACESTATION: { stone: 180000, metal: 1120000, crystal: 1250000 },
 };
 
 export const BUILDING_PRODUCTION = {
@@ -24,6 +25,7 @@ export const BUILDING_PRODUCTION = {
   ROCKET: {},
   HANGAR: {},
   ENERGY: { energy: 20 },
+  SPACESTATION: {},
 };
 
 export const BUILDING_TIME = {
@@ -36,6 +38,7 @@ export const BUILDING_TIME = {
   ROCKET: 1000 * 60 * 60 * 12,
   HANGAR: 1000 * 60 * 60 * 6,
   ENERGY: 1000 * 60 * 5,
+  SPACESTATION: 1000 * 60 * 60 * 24 * 5,
 };
 
 export const BUILDING_MAX_IN_PLANET = {
@@ -48,6 +51,7 @@ export const BUILDING_MAX_IN_PLANET = {
   ROCKET: 3,
   HANGAR: 5,
   ENERGY: 7,
+  SPACESTATION: 0,
 };
 
 export const BUILDING_REQUIRED_RESEARCH: Record<
@@ -153,6 +157,18 @@ export const BUILDING_REQUIRED_RESEARCH: Record<
       builddingLevel: 2,
     },
   ],
+  SPACESTATION: [
+    {
+      researchType: "SHIPENGINEERING",
+      researchLevelRequired: 5,
+      builddingLevel: 1,
+    },
+    {
+      researchType: "GRAVITY",
+      researchLevelRequired: 2,
+      builddingLevel: 2,
+    },
+  ],
 };
 
 export const BUILDING_IMAGES = {
@@ -219,4 +235,5 @@ export const BUILDING_IMAGES = {
     { level: 4, image: IMAGES.BUILDING_ENERGY_4 },
     { level: 5, image: IMAGES.BUILDING_ENERGY_5 },
   ],
+  SPACESTATION: [{ level: 1, image: IMAGES.SPACESTATION_BACKGROUND }],
 };

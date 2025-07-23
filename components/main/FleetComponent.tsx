@@ -25,8 +25,13 @@ export default function FleetComponent() {
   const delayRef = useRef(300);
   const loopRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { fleetBuildQueue, handleBuildFleet, handleCancelFleet, resources } =
-    useGameContext();
+  const {
+    fleetBuildQueue,
+    handleBuildFleet,
+    handleCancelFleet,
+    resources,
+    hexes,
+  } = useGameContext();
 
   const adjustQueue = (type: FleetType, direction: "add" | "remove") => {
     setQueuedAmounts((prev) => {
@@ -67,6 +72,8 @@ export default function FleetComponent() {
   const handlePressOut = () => {
     stopLoop();
   };
+
+  const hasSpaceStation = hexes.some((h) => h.building?.type == "SPACESTATION");
 
   const fleetItems = Object.entries(fleetConfig)
     .map(([key, config]) => {
@@ -193,7 +200,7 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     padding: 12,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
     justifyContent: "space-between",
   },
   header: {
