@@ -2,23 +2,17 @@ import * as Notifications from "expo-notifications";
 import { useEffect, useRef, useState } from "react";
 import { Alert } from "react-native";
 import { researchTechnologies } from "../src/config/researchConfig";
-import {
-  loadResearch,
-  saveResearch,
-  saveResources,
-} from "../src/services/storage";
+import { loadResearch, saveResearch } from "../src/services/storage";
 import { Research, ResearchType } from "../src/types/researchTypes";
-import { StoredResources } from "../src/types/resourceTypes";
+import { Resources, StoredResources } from "../src/types/resourceTypes";
 import { NotificationManager } from "../utils/notificacionUtils";
 import { getResearchCost, getResearchTime } from "../utils/researchUtils";
-import {
-  applyResourceChange,
-  hasEnoughResources,
-} from "../utils/resourceUtils";
+import { hasEnoughResources } from "../utils/resourceUtils";
 
 export const useResearch = (
-  resourcesRef: React.RefObject<StoredResources>,
-  setResources: React.Dispatch<React.SetStateAction<StoredResources>>
+  resources: StoredResources,
+  addResources: (modifications: Partial<Resources>) => void,
+  subtractResources: (modifications: Partial<Resources>) => void
 ) => {
   const [research, setResearch] = useState<Research[]>([]);
   const researchRef = useRef<Research[]>([]);
@@ -43,7 +37,7 @@ export const useResearch = (
     const scaledCost = getResearchCost(type, nextLevel);
     const durationMs = getResearchTime(type, nextLevel);
 
-    if (!hasEnoughResources(resourcesRef.current.resources, scaledCost)) {
+    if (!hasEnoughResources(resources, scaledCost)) {
       Alert.alert(
         "Recursos insuficientes",
         "No puedes iniciar esta investigación."
@@ -83,19 +77,7 @@ export const useResearch = (
 
     await updateResearchState(updatedResearch);
 
-    const updatedResources = {
-      ...resourcesRef.current,
-      resources: applyResourceChange(
-        resourcesRef.current.resources,
-        scaledCost,
-        -1
-      ),
-      lastUpdate: Date.now(),
-    };
-
-    setResources(updatedResources);
-    resourcesRef.current = updatedResources;
-    await saveResources(updatedResources);
+    subtractResources(scaledCost);
   };
 
   const handleCancelResearch = async (type: ResearchType) => {
@@ -107,19 +89,7 @@ export const useResearch = (
     const { data, progress } = inProgress;
     const scaledCost = getResearchCost(data.type, progress?.targetLevel ?? 1);
 
-    const refunded = {
-      ...resourcesRef.current,
-      resources: applyResourceChange(
-        resourcesRef.current.resources,
-        scaledCost,
-        1
-      ),
-      lastUpdate: Date.now(),
-    };
-
-    setResources(refunded);
-    resourcesRef.current = refunded;
-    await saveResources(refunded);
+    addResources(scaledCost);
 
     if (progress?.notificationId) {
       await NotificationManager.cancelNotification(progress.notificationId);

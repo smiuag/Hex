@@ -44,7 +44,7 @@ export const formatAmount = (value: number): string => {
   if (value >= 1_000) {
     return format(value / 1_000, "K");
   }
-  return value.toString();
+  return Math.ceil(value).toString();
 };
 
 export const getTimeRemaining = (

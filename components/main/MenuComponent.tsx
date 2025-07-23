@@ -42,6 +42,7 @@ export default function MenuComponent() {
     handleCancelResearch,
     hexes,
     research,
+    resetQuests,
   } = useGameContext();
 
   useEffect(() => {
@@ -85,7 +86,7 @@ export default function MenuComponent() {
     await NotificationManager.cancelAllNotifications();
     await deleteResearch();
     resetResearch();
-
+    resetQuests();
     setHexes(newMap);
     resetResources();
     setHasMap(true);
@@ -106,6 +107,7 @@ export default function MenuComponent() {
             await NotificationManager.cancelAllNotifications();
             await deleteResearch();
             resetResearch();
+            resetQuests();
 
             setHexes([]);
             resetResources();

@@ -101,21 +101,21 @@ export const getProductionPerHour = (
   return productionPerHour;
 };
 
-export const getTotalProductionPerHour = (hexes: Hex[]): Partial<Resources> => {
-  const productionTotal: Partial<Resources> = {};
+// export const getTotalProductionPerHour = (hexes: Hex[]): Partial<Resources> => {
+//   const productionTotal: Partial<Resources> = {};
 
-  hexes.forEach((hex) => {
-    if (hex.building) {
-      const prodAtLevel = getProductionPerHour(
-        hex.building.type,
-        hex.building.level
-      );
-      Object.entries(prodAtLevel).forEach(([res, val]) => {
-        productionTotal[res as keyof Resources] =
-          (productionTotal[res as keyof Resources] || 0) + val;
-      });
-    }
-  });
+//   hexes.forEach((hex) => {
+//     if (hex.building) {
+//       const prodAtLevel = getProductionPerHour(
+//         hex.building.type,
+//         hex.building.level
+//       );
+//       Object.entries(prodAtLevel).forEach(([res, val]) => {
+//         productionTotal[res as keyof Resources] =
+//           (productionTotal[res as keyof Resources] || 0) + val;
+//       });
+//     }
+//   });
 
-  return productionTotal;
-};
+//   return productionTotal;
+// };

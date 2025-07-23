@@ -43,7 +43,7 @@ export default function ResearchComponent() {
         : 0;
 
       const scaledCost = getResearchCost(type, targetLevel);
-      const hasResources = hasEnoughResources(resources.resources, scaledCost);
+      const hasResources = hasEnoughResources(resources, scaledCost);
       const isAvailable = labLevel >= config.labLevelRequired;
       const time = formatDuration(getResearchTime(type, currentLevel + 1));
       const isMaxed = currentLevel >= config.maxLevel;
@@ -63,19 +63,17 @@ export default function ResearchComponent() {
       };
     })
     .sort((a, b) => {
-      // maxeadas al final (abajo)
       if (a.isMaxed && !b.isMaxed) return 1;
       if (!a.isMaxed && b.isMaxed) return -1;
 
-      // luego bloqueadas por lab (antes de maxeadas)
       if (!a.isAvailable && b.isAvailable) return 1;
       if (a.isAvailable && !b.isAvailable) return -1;
 
-      // luego sin recursos (antes que bloqueadas)
-      if (!a.hasResources && b.hasResources) return 1;
-      if (a.hasResources && !b.hasResources) return -1;
-
-      // finalmente orden normal ascendente por labLevelRequired
+      // desempate por labLevel y nombre ANTES de recursos
+      if (a.labLevelRequired === b.labLevelRequired) {
+        const nameCompare = a.name.localeCompare(b.name);
+        if (nameCompare !== 0) return nameCompare;
+      }
       return a.labLevelRequired - b.labLevelRequired;
     });
 

@@ -4,7 +4,7 @@ export type QuestType =
   | "BUILDING_METALLURGY1"
   | "BUILDING_QUARRY1"
   | "BUILDING_KRYSTALMINE1"
-  | "RESEARCH_TERRAFORMING1";
+  | "RESEARCH_MINING1";
 
 export type Quest = {
   type: QuestType;

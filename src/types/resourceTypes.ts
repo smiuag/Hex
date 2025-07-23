@@ -3,6 +3,7 @@ export type ResourceType = "metal" | "stone" | "energy" | "crystal";
 export type Resources = Record<ResourceType, number>;
 
 export type StoredResources = {
-  resources: Resources;
+  resources: Partial<Resources>;
   lastUpdate: number;
+  production: Partial<Resources>;
 };

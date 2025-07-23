@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { fleetConfig } from "../src/config/fleetConfig";
-import { loadFleet, saveFleet, saveResources } from "../src/services/storage";
+import { loadFleet, saveFleet } from "../src/services/storage";
 import { Fleet, FleetType } from "../src/types/fleetType";
-import { StoredResources } from "../src/types/resourceTypes";
+import { Resources, StoredResources } from "../src/types/resourceTypes";
 import { getTotalFleetCost } from "../utils/fleetUtils";
 import { NotificationManager } from "../utils/notificacionUtils";
-import { applyResourceChange } from "../utils/resourceUtils";
 
 export const useFleet = (
-  resourcesRef: React.RefObject<StoredResources>,
-  setResources: React.Dispatch<React.SetStateAction<StoredResources>>
+  resources: StoredResources,
+  addResources: (modifications: Partial<Resources>) => void,
+  subtractResources: (modifications: Partial<Resources>) => void
 ) => {
   const [fleetBuildQueue, setFleetBuildQueue] = useState<Fleet[]>([]);
   const fleetBuildQueueRef = useRef<Fleet[]>([]);
@@ -33,8 +33,8 @@ export const useFleet = (
     const config = fleetConfig[type];
 
     const cost = getTotalFleetCost(type, amount);
-    const durationMs = config.baseBuildTime * amount;
 
+    // const durationMs = config.baseBuildTime * amount;
     // const notificationId = await NotificationManager.scheduleNotification({
     //   title: "🧪 Investigación terminada",
     //   body: `Has completado "${type}" nivel ${nextLevel}.`,
@@ -67,15 +67,7 @@ export const useFleet = (
 
     await updateFleetQueueState(updatedFleetQueue);
 
-    const updatedResources = {
-      ...resourcesRef.current,
-      resources: applyResourceChange(resourcesRef.current.resources, cost, -1),
-      lastUpdate: Date.now(),
-    };
-
-    setResources(updatedResources);
-    resourcesRef.current = updatedResources;
-    await saveResources(updatedResources);
+    subtractResources(cost);
   };
 
   const handleCancelFleet = async (type: FleetType) => {
@@ -87,19 +79,7 @@ export const useFleet = (
     const { data, progress } = inProgress;
     const totalCost = getTotalFleetCost(data.type, progress?.targetAmount!);
 
-    const refunded = {
-      ...resourcesRef.current,
-      resources: applyResourceChange(
-        resourcesRef.current.resources,
-        totalCost,
-        1
-      ),
-      lastUpdate: Date.now(),
-    };
-
-    setResources(refunded);
-    resourcesRef.current = refunded;
-    await saveResources(refunded);
+    addResources(totalCost);
 
     if (progress?.notificationId) {
       await NotificationManager.cancelNotification(progress.notificationId);

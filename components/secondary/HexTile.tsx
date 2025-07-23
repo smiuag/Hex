@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Polygon, Image as SvgImage, Text as SvgText } from "react-native-svg";
 import { buildingConfig } from "../../src/config/buildingConfig";
 import { terrainConfig } from "../../src/config/terrainConfig";
@@ -25,6 +25,28 @@ export default function HexTile({ hex, px, py, points }: Props) {
       )?.image
     : undefined;
 
+  const [remainingTime, setRemainingTime] = useState<number>(0);
+
+  useEffect(() => {
+    if (!construction) return;
+
+    const initialTime = Math.max(
+      0,
+      Math.ceil(
+        getBuildTime(construction.building, construction.targetLevel) -
+          (Date.now() - construction.startedAt)
+      )
+    );
+
+    setRemainingTime(initialTime);
+
+    const interval = setInterval(() => {
+      setRemainingTime((prevTime) => Math.max(0, prevTime - 1000));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [construction]);
+
   return (
     <>
       {buildingImage ? (
@@ -45,7 +67,7 @@ export default function HexTile({ hex, px, py, points }: Props) {
         />
       )}
 
-      {construction && (
+      {construction && remainingTime > 0 && (
         <SvgText
           x={px}
           y={py + 60 * 0.2}
@@ -56,16 +78,7 @@ export default function HexTile({ hex, px, py, points }: Props) {
           stroke="black"
           strokeWidth={0.5}
         >
-          {formatDuration(
-            Math.max(
-              0,
-              Math.ceil(
-                getBuildTime(construction.building, construction.targetLevel) -
-                  (Date.now() - construction.startedAt)
-              )
-            ),
-            true
-          )}
+          {formatDuration(remainingTime, true)}
         </SvgText>
       )}
     </>

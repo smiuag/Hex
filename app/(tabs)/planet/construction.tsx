@@ -50,7 +50,7 @@ export default function ConstructionComponent() {
       const lockedByMax = isAtMaxCount(buildingType, hexes);
       const unlockedByResearch = isUnlocked(buildingType, 1, research);
       const available = unlockedByResearch && !lockedByMax;
-      const lockedByResources = !hasEnoughResources(resources.resources, cost);
+      const lockedByResources = !hasEnoughResources(resources, cost);
 
       return {
         type: buildingType,

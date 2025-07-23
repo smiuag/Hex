@@ -28,6 +28,12 @@ export const getInitialResources = (): StoredResources => ({
     stone: 0,
   },
   lastUpdate: Date.now(),
+  production: {
+    metal: 10,
+    energy: 5,
+    crystal: 0,
+    stone: 10,
+  },
 });
 
 export const axialDistance = (

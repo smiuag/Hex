@@ -2,8 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { questConfig } from "../src/config/questConfig";
 import { loadQuests, saveQuests } from "../src/services/storage";
 import { PlayerQuest, QuestType } from "../src/types/questType";
+import { Resources } from "../src/types/resourceTypes";
 
-export const useQuest = () => {
+export const useQuest = (
+  addResources: (modifications: Partial<Resources>) => void
+) => {
   const [playerQuests, setPlayerQuests] = useState<PlayerQuest[]>([]);
   const questsRef = useRef<PlayerQuest[]>([]);
 
@@ -25,6 +28,8 @@ export const useQuest = () => {
     const updated = [...questsRef.current];
     const existing = updated.find((q) => q.type === type);
 
+    const config = questConfig[type];
+
     if (existing) {
       existing.completed = true;
       existing.viewed = true;
@@ -36,17 +41,35 @@ export const useQuest = () => {
       });
     }
 
+    addResources(config.reward);
+
     await updateQuestState(updated);
   };
 
   const markQuestsAsViewed = async (questTypes: QuestType[]) => {
-    const updated = questsRef.current.map((quest) => {
-      if (questTypes.includes(quest.type) && !quest.viewed) {
-        return { ...quest, viewed: true };
-      }
-      return quest;
-    });
+    const updatedMap = new Map<QuestType, PlayerQuest>();
 
+    for (const quest of questsRef.current) {
+      updatedMap.set(quest.type, quest);
+    }
+
+    for (const type of questTypes) {
+      const existing = updatedMap.get(type);
+
+      if (existing) {
+        if (!existing.viewed) {
+          updatedMap.set(type, { ...existing, viewed: true });
+        }
+      } else {
+        updatedMap.set(type, {
+          type,
+          completed: false,
+          viewed: true,
+        });
+      }
+    }
+
+    const updated = Array.from(updatedMap.values());
     await updateQuestState(updated);
   };
 

@@ -1,107 +1,102 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { loadResources, saveResources } from "../src/services/storage";
 import { Hex } from "../src/types/hexTypes";
-import { StoredResources } from "../src/types/resourceTypes";
+import { Resources, StoredResources } from "../src/types/resourceTypes";
 import { getInitialResources } from "../utils/mapUtils";
-import { accumulateResources } from "../utils/resourceUtils";
 
 export function useResources(hexesRef: React.RefObject<Hex[]>) {
   const [resources, setResources] = useState<StoredResources>(
     getInitialResources()
   );
-  const [ready, setReady] = useState(false);
-  const resourcesRef = useRef<StoredResources>(resources);
-  const hexCount = hexesRef.current.length;
 
-  // 🔄 Mantener actualizado el ref de recursos
   useEffect(() => {
-    resourcesRef.current = resources;
-  }, [resources]);
-
-  // 🚀 Cargar recursos al arrancar
-  useEffect(() => {
-    if (hexCount === 0 || ready) {
-      return;
-    }
-
     const load = async () => {
       const saved = await loadResources();
-
-      if (saved) {
-        const now = Date.now();
-        const diff = now - saved.lastUpdate;
-
-        const updated =
-          diff > 1000
-            ? accumulateResources(hexesRef.current, saved, diff)
-            : saved;
-
-        setResources(updated);
-        resourcesRef.current = updated;
-
-        if (diff > 1000) {
-          await saveResources(updated);
-        }
-      } else {
-        const initial = getInitialResources();
-        setResources(initial);
-        resourcesRef.current = initial;
-        await saveResources(initial);
-      }
-
-      setReady(true);
+      setResources(saved);
     };
-
     load();
-  }, [hexCount, ready]);
+  }, []);
 
-  // 🔁 Intervalo para actualizar cada segundo
-  useEffect(() => {
-    if (!ready) return;
-
-    const interval = setInterval(() => {
-      updateNow();
-    }, 1000);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [ready]);
-
-  const updateNow = () => {
-    if (!ready) {
-      return;
-    }
-
-    const updated = accumulateResources(hexesRef.current, resourcesRef.current);
-    const prev = resourcesRef.current.resources;
-    const next = updated.resources;
-
-    const hasChanged = Object.keys(next).some((key) => {
-      const typedKey = key as keyof typeof next;
-      return prev[typedKey] !== next[typedKey];
-    });
-
-    if (hasChanged) {
-      setResources(updated);
-      resourcesRef.current = updated;
-      saveResources(updated);
-    }
-  };
-
-  const resetResources = () => {
+  const resetResources = async () => {
     const initial = getInitialResources();
     setResources(initial);
-    resourcesRef.current = initial;
-    saveResources(initial);
+    await saveResources(initial);
+  };
+
+  const subtractResources = async (modifications: Partial<Resources>) => {
+    const elapsedSeconds = (Date.now() - resources.lastUpdate) / 1000;
+    const updatedResources: Partial<Resources> = { ...resources.resources };
+
+    for (const key in resources.production) {
+      const typedKey = key as keyof Resources;
+      const produced = (resources.production[typedKey] || 0) * elapsedSeconds;
+      updatedResources[typedKey] = (updatedResources[typedKey] || 0) + produced;
+    }
+    for (const key in modifications) {
+      const typedKey = key as keyof Resources;
+      updatedResources[typedKey] =
+        (updatedResources[typedKey] || 0) - (modifications[typedKey] || 0);
+    }
+
+    const updatedStoredResources: StoredResources = {
+      resources: updatedResources as Resources,
+      lastUpdate: Date.now(),
+      production: resources.production,
+    };
+
+    setResources(updatedStoredResources);
+    await saveResources(updatedStoredResources);
+  };
+
+  const addResources = async (modifications: Partial<Resources>) => {
+    const elapsedSeconds = (Date.now() - resources.lastUpdate) / 1000;
+    const updatedResources: Partial<Resources> = { ...resources.resources };
+
+    for (const key in resources.production) {
+      const typedKey = key as keyof Resources;
+      const produced = (resources.production[typedKey] || 0) * elapsedSeconds;
+      updatedResources[typedKey] = (updatedResources[typedKey] || 0) + produced;
+    }
+
+    for (const key in modifications) {
+      const typedKey = key as keyof Resources;
+      updatedResources[typedKey] =
+        (updatedResources[typedKey] || 0) + (modifications[typedKey] || 0);
+    }
+
+    const updatedStoredResources: StoredResources = {
+      resources: updatedResources as Resources,
+      lastUpdate: Date.now(),
+      production: resources.production,
+    };
+
+    setResources(updatedStoredResources);
+    await saveResources(updatedStoredResources);
+  };
+
+  const addProduction = async (extraProduction: Partial<Resources>) => {
+    const updatedProduction: Partial<Resources> = { ...resources.production };
+
+    for (const key in extraProduction) {
+      const typedKey = key as keyof Resources;
+      updatedProduction[typedKey] =
+        (updatedProduction[typedKey] || 0) + (extraProduction[typedKey] || 0);
+    }
+
+    const updatedStoredResources: StoredResources = {
+      ...resources,
+      production: updatedProduction,
+    };
+
+    setResources(updatedStoredResources);
+    await saveResources(updatedStoredResources);
   };
 
   return {
     resources,
-    setResources,
-    updateNow,
     resetResources,
-    resourcesRef,
-    ready,
+    addResources,
+    subtractResources,
+    addProduction,
   };
 }

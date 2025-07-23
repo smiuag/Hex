@@ -1,7 +1,6 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useGameContext } from "../../src/context/GameContext";
-import { getTotalProductionPerHour } from "../../utils/buildingUtils";
 import { ResourceDisplay } from "./ResourceDisplay";
 
 type ResourceBarProps = {
@@ -17,12 +16,7 @@ export default function ProductionBar({
   titleColor = "#fff",
   resourceColor = "#fff",
 }: ResourceBarProps) {
-  const { hexes } = useGameContext();
-
-  const productionTotal = useMemo(
-    () => getTotalProductionPerHour(hexes),
-    [hexes]
-  );
+  const { resources } = useGameContext();
 
   return (
     <View style={styles.container}>
@@ -31,7 +25,7 @@ export default function ProductionBar({
       )}
       <View style={styles.resourcesContainer}>
         <ResourceDisplay
-          resources={productionTotal}
+          resources={resources.production}
           fontSize={fontSize}
           fontColor={resourceColor}
         />

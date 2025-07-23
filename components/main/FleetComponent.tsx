@@ -86,7 +86,7 @@ export default function FleetComponent() {
         owned,
         totalCost,
         totalTime,
-        canBuild: hasEnoughResources(resources.resources, config.baseCost),
+        canBuild: hasEnoughResources(resources, config.baseCost),
       };
     })
     .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0));

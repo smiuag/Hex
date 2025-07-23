@@ -3,7 +3,6 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -16,16 +15,17 @@ import { BuildingType } from "../../src/types/buildingTypes";
 import { Fleet, FleetType } from "../../src/types/fleetType";
 import { Hex } from "../../src/types/hexTypes";
 import { PlayerQuest, QuestType } from "../../src/types/questType";
-import { StoredResources } from "../../src/types/resourceTypes";
+import { Resources, StoredResources } from "../../src/types/resourceTypes";
 import { normalizeHexMap } from "../../utils/mapUtils";
 import { getLabLevel } from "../../utils/researchUtils";
 import { loadMap, saveMap } from "../services/storage";
 import { Research, ResearchType } from "../types/researchTypes";
 
 type ProviderContextType = {
+  addProduction: (modifications: Partial<Resources>) => void;
+  addResources: (modifications: Partial<Resources>) => void;
+  subtractResources: (modifications: Partial<Resources>) => void;
   resources: StoredResources;
-  updateNow: () => void;
-  setResources: React.Dispatch<React.SetStateAction<StoredResources>>;
   hexes: Hex[];
   setHexes: React.Dispatch<React.SetStateAction<Hex[]>>;
   reloadMap: () => Promise<void>;
@@ -46,6 +46,7 @@ type ProviderContextType = {
   playerQuests: PlayerQuest[];
   completeQuest: (type: QuestType) => void;
   markQuestsAsViewed: (types: QuestType[]) => void;
+  resetQuests: () => void;
 };
 
 const ResourceContext = createContext<ProviderContextType | undefined>(
@@ -58,14 +59,14 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
 
   const {
     resources,
-    setResources,
-    updateNow,
     resetResources,
-    resourcesRef,
-    ready,
+    addProduction,
+    addResources,
+    subtractResources,
   } = useResources(hexesRef);
 
-  const { playerQuests, completeQuest, markQuestsAsViewed } = useQuest();
+  const { playerQuests, completeQuest, markQuestsAsViewed, resetQuests } =
+    useQuest(addResources);
 
   const {
     fleetBuildQueue,
@@ -73,7 +74,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     handleCancelFleet,
     processFleetTick,
     resetFleet,
-  } = useFleet(resourcesRef, setResources);
+  } = useFleet(resources, addResources, subtractResources);
 
   const reloadMap = useCallback(async () => {
     const saved = await loadMap();
@@ -89,7 +90,15 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const { handleBuild, handleCancelBuild, processConstructionTick } =
-    useConstruction(hexesRef, setHexes, resourcesRef, setResources, reloadMap);
+    useConstruction(
+      hexesRef,
+      setHexes,
+      resources,
+      addProduction,
+      addResources,
+      subtractResources,
+      reloadMap
+    );
 
   const {
     research,
@@ -97,15 +106,13 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     handleCancelResearch,
     processResearchTick,
     resetResearch,
-  } = useResearch(resourcesRef, setResources);
+  } = useResearch(resources, addResources, subtractResources);
 
   useEffect(() => {
     hexesRef.current = hexes;
   }, [hexes]);
 
   useEffect(() => {
-    if (!ready) return;
-
     const interval = setInterval(() => {
       processConstructionTick();
       processResearchTick();
@@ -114,58 +121,33 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     return () => {
       clearInterval(interval);
     };
-  }, [ready, processConstructionTick, processResearchTick]);
+  }, [processConstructionTick, processResearchTick]);
 
   useEffect(() => {
     reloadMap();
   }, []);
 
-  const contextValue = useMemo(() => {
-    return {
-      resources,
-      fleetBuildQueue,
-      hexes,
-      updateNow,
-      setResources,
-      setHexes,
-      reloadMap,
-      saveMapToStorage,
-      processConstructionTick,
-      handleBuild,
-      handleCancelBuild,
-      resetResources,
-      handleResearch,
-      handleCancelResearch,
-      processResearchTick,
-      resetResearch,
-      research,
-      labLevel: getLabLevel(hexes),
-      handleBuildFleet,
-      handleCancelFleet,
-      processFleetTick,
-      resetFleet,
-      playerQuests,
-      completeQuest,
-      markQuestsAsViewed,
-    };
-  }, [
+  const contextValue = {
     resources,
+    resetResources,
+    resetQuests,
+    addProduction,
+    addResources,
+    subtractResources,
     fleetBuildQueue,
     hexes,
-    updateNow,
-    setResources,
     setHexes,
     reloadMap,
     saveMapToStorage,
     processConstructionTick,
     handleBuild,
     handleCancelBuild,
-    resetResources,
     handleResearch,
     handleCancelResearch,
     processResearchTick,
     resetResearch,
     research,
+    labLevel: getLabLevel(hexes),
     handleBuildFleet,
     handleCancelFleet,
     processFleetTick,
@@ -173,7 +155,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     playerQuests,
     completeQuest,
     markQuestsAsViewed,
-  ]);
+  };
 
   return (
     <ResourceContext.Provider value={contextValue}>
