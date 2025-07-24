@@ -6,7 +6,7 @@ export default function PlanetLayout() {
       screenOptions={{
         headerShown: false,
         lazy: false,
-        tabBarStyle: { display: "none" },
+        tabBarStyle: { display: "none", height: 0 },
       }}
     />
   );

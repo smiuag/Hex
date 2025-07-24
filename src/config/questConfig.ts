@@ -12,19 +12,22 @@ export const questConfig: Record<
     backgroundImage: ImageSourcePropType;
     requiredQuest: QuestType[];
     reward: Partial<Resources>;
+    order: number;
   }
 > = {
   START: {
     type: "START",
+    order: 1,
     description:
       "Visita tu diario de misiones. Completar las misiones te proporcionará beneficios, completalas para conseguir más.",
     name: "Comenzando la colonia",
-    backgroundImage: IMAGES.LAB_BACKGROUND,
+    backgroundImage: IMAGES.BACKGROUND_MENU_IMAGE,
     requiredQuest: [],
     reward: { stone: 18000, metal: 18000, energy: 100 },
   },
   BUILDING_LAB1: {
     type: "BUILDING_LAB1",
+    order: 2,
     description: "Construye un laboratorio de nivel 1 en el planeta.",
     name: "Laboratorio",
     backgroundImage: IMAGES.LAB_BACKGROUND,
@@ -32,6 +35,7 @@ export const questConfig: Record<
     reward: { stone: 1000, metal: 1000, energy: 100 },
   },
   RESEARCH_MINING1: {
+    order: 3,
     type: "RESEARCH_MINING1",
     description: "Investiga la terraformación de nivel 1",
     name: "Primera investigación",
@@ -41,6 +45,7 @@ export const questConfig: Record<
   },
   BUILDING_METALLURGY1: {
     type: "BUILDING_METALLURGY1",
+    order: 4,
     description: "Construye una mina de metales en el planeta.",
     name: "Mina de metales",
     backgroundImage: IMAGES.METALLURGY_BACKGROUND,
@@ -49,6 +54,7 @@ export const questConfig: Record<
   },
   BUILDING_QUARRY1: {
     type: "BUILDING_QUARRY1",
+    order: 5,
     description:
       "Construye una cantera para la extracción de minerales sólidos en el planeta.",
     name: "Cantera",
@@ -58,6 +64,7 @@ export const questConfig: Record<
   },
   BUILDING_KRYSTALMINE1: {
     type: "BUILDING_KRYSTALMINE1",
+    order: 6,
     description: "Construye una mina de cristal en el planeta.",
     name: "Mina de cristal",
     backgroundImage: IMAGES.KRYSTALMINE_BACKGROUND,
@@ -66,6 +73,7 @@ export const questConfig: Record<
   },
   BUILDING_BASE2: {
     type: "BUILDING_BASE2",
+    order: 7,
     description: "Mejora el nivel de la base a nivel 2.",
     name: "Base de nivel 2",
     backgroundImage: IMAGES.BASE_BACKGROUND,
@@ -74,10 +82,20 @@ export const questConfig: Record<
   },
   BUILDING_HANGAR: {
     type: "BUILDING_HANGAR",
+    order: 8,
     description: "Mejora el nivel de la base a nivel 2.",
     name: "Base de nivel 2",
     backgroundImage: IMAGES.BASE_BACKGROUND,
     requiredQuest: ["BUILDING_BASE2"],
+    reward: { stone: 10000, metal: 10000, energy: 10000 },
+  },
+  FLEET_FIRST: {
+    type: "FLEET_FIRST",
+    order: 9,
+    description: "Construye una nave de algún tipo.",
+    name: "Primera flota",
+    backgroundImage: IMAGES.FLEET_BG_HEAVYASSAULTSHIP,
+    requiredQuest: ["BUILDING_HANGAR"],
     reward: { stone: 10000, metal: 10000, energy: 10000 },
   },
 };

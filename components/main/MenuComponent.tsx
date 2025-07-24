@@ -6,7 +6,6 @@ import {
   Button,
   FlatList,
   ImageBackground,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -20,6 +19,8 @@ import {
   saveMap,
   saveResources,
 } from "../../src/services/storage";
+import { commonStyles } from "../../src/styles/commonStyles";
+import { menuStyles } from "../../src/styles/menuStyles";
 import { BuildingType } from "../../src/types/buildingTypes";
 import { Process } from "../../src/types/processTypes";
 import { formatDuration } from "../../utils/generalUtils";
@@ -29,6 +30,7 @@ import {
   getBuildingProcesses,
   getResearchProcesses,
 } from "../../utils/processUtils";
+menuStyles;
 
 export default function MenuComponent() {
   const [checking, setChecking] = useState(true);
@@ -138,13 +140,13 @@ export default function MenuComponent() {
     const timeRemaining = Math.max(0, item.duration - elapsed);
 
     return (
-      <View style={styles.processCard}>
-        <Text style={styles.processName}>{item.name}</Text>
-        <Text style={styles.processTime}>
+      <View style={menuStyles.processCard}>
+        <Text style={menuStyles.processName}>{item.name}</Text>
+        <Text style={menuStyles.processTime}>
           ⏳ {formatDuration(timeRemaining)}
         </Text>
         <TouchableOpacity
-          style={styles.cancelButton}
+          style={commonStyles.cancelButton}
           onPress={async () => {
             if (item.type === "BUILDING") {
               await cancelBuild(item.q!, item.r!);
@@ -155,7 +157,7 @@ export default function MenuComponent() {
             }
           }}
         >
-          <Text style={styles.cancelButtonText}>Cancelar</Text>
+          <Text style={commonStyles.cancelButtonText}>Cancelar</Text>
         </TouchableOpacity>
       </View>
     );
@@ -163,7 +165,7 @@ export default function MenuComponent() {
 
   if (checking) {
     return (
-      <View style={styles.center}>
+      <View style={commonStyles.center}>
         <ActivityIndicator size="large" />
         <Text>Cargando...</Text>
       </View>
@@ -176,28 +178,30 @@ export default function MenuComponent() {
       style={{ flex: 1 }}
       resizeMode="cover"
     >
-      <View style={styles.container}>
-        <View style={styles.topContainer}>
-          <Text style={styles.title}>Colonia</Text>
+      <View style={menuStyles.container}>
+        <View style={menuStyles.topContainer}>
+          <Text style={menuStyles.title}>Colonia</Text>
 
           {hasMap && (
             <>
               {processes.length === 0 ? (
-                <Text style={styles.emptyText}>No hay procesos activos.</Text>
+                <Text style={commonStyles.emptyText}>
+                  No hay procesos activos.
+                </Text>
               ) : (
                 <FlatList
                   data={processes}
                   keyExtractor={(item) => item.id}
                   renderItem={renderProcess}
                   contentContainerStyle={{ paddingBottom: 12 }}
-                  style={styles.list}
+                  style={menuStyles.list}
                 />
               )}
             </>
           )}
         </View>
 
-        <View style={styles.buttonContainer}>
+        <View>
           {!hasMap && (
             <Button title="Iniciar partida" onPress={handleStartGame} />
           )}
@@ -213,106 +217,3 @@ export default function MenuComponent() {
     </ImageBackground>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-    gap: 16,
-    justifyContent: "space-between",
-  },
-  topContainer: {
-    flex: 1,
-  },
-  list: {
-    flex: 1,
-    marginTop: 12,
-  },
-  buttonContainer: {},
-  center: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 20,
-    padding: 24,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 12,
-    color: "#fff", // para que contraste en fondo oscuro
-    textShadowColor: "rgba(0,0,0,0.75)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 4,
-  },
-
-  section: {
-    backgroundColor: "rgba(0, 0, 0, 0.6)", // fondo negro semitransparente
-    borderRadius: 12,
-    padding: 16,
-    marginVertical: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 6,
-    elevation: 8, // para Android shadow
-  },
-  sectionTitle: {
-    fontWeight: "bold",
-    fontSize: 18,
-    marginBottom: 12,
-    color: "#fff",
-    textShadowColor: "rgba(0,0,0,0.8)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 3,
-  },
-
-  emptyText: {
-    color: "#ccc",
-    fontStyle: "italic",
-  },
-
-  processCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "rgba(30, 30, 30, 0.85)", // más oscuro y semitransparente
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-    marginBottom: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.7,
-    shadowRadius: 4,
-    elevation: 6,
-  },
-  processName: {
-    flex: 1,
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 14,
-  },
-  processTime: {
-    color: "#facc15",
-    fontWeight: "bold",
-    fontSize: 13,
-    marginRight: 12,
-  },
-  cancelButton: {
-    backgroundColor: "#e53935",
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 8,
-    shadowColor: "#700000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.8,
-    shadowRadius: 3,
-    elevation: 4,
-  },
-  cancelButtonText: {
-    color: "white",
-    fontWeight: "bold",
-    fontSize: 13,
-  },
-});

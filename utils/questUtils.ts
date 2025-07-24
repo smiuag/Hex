@@ -1,7 +1,7 @@
 import { Research } from "@/src/types/researchTypes";
 import { questConfig } from "../src/config/questConfig";
+import { Fleet } from "../src/types/fleetType";
 import { Hex } from "../src/types/hexTypes";
-
 import { QuestType } from "../src/types/questType";
 
 export function shouldShowQuest(
@@ -11,18 +11,20 @@ export function shouldShowQuest(
   const config = questConfig[questType];
   if (!config) return false;
 
-  const isCompleted = completedQuests.includes(questType);
+  //const isCompleted = completedQuests.includes(questType);
   const hasRequirements = config.requiredQuest.every((req) =>
     completedQuests.includes(req)
   );
 
-  return !isCompleted && hasRequirements;
+  //return !isCompleted && hasRequirements;
+  return hasRequirements;
 }
 
 export function canCompleteQuest(
   type: QuestType,
   hexes: Hex[],
-  research: Research[]
+  research: Research[],
+  fleet: Fleet[]
 ): boolean {
   switch (type) {
     case "START":
@@ -43,5 +45,7 @@ export function canCompleteQuest(
       );
     case "BUILDING_HANGAR":
       return hexes.some((hex) => hex.building?.type === "HANGAR");
+    case "FLEET_FIRST":
+      return fleet.length > 0;
   }
 }

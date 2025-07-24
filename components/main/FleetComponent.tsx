@@ -3,13 +3,13 @@ import {
   Dimensions,
   FlatList,
   ImageBackground,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { fleetConfig } from "../../src/config/fleetConfig";
 import { useGameContext } from "../../src/context/GameContext";
+import { commonStyles } from "../../src/styles/commonStyles";
 import { FleetType } from "../../src/types/fleetType";
 import { formatDuration } from "../../utils/generalUtils";
 import { hasEnoughResources } from "../../utils/resourceUtils";
@@ -102,72 +102,76 @@ export default function FleetComponent() {
     <FlatList
       data={fleetItems}
       keyExtractor={(item) => item.key}
-      contentContainerStyle={styles.list}
+      contentContainerStyle={commonStyles.flatList}
       renderItem={({ item }) => (
-        <View style={styles.cardContainer}>
+        <View style={commonStyles.cardContainer}>
           <ImageBackground
             source={item.imageBackground}
-            style={styles.card}
+            style={commonStyles.card}
             imageStyle={[
-              styles.image,
-              !item.canBuild && styles.unavailableImage,
+              commonStyles.imageCover,
+              !item.canBuild && commonStyles.imageUnavailable,
             ]}
           >
-            <View style={styles.overlay}>
-              <View style={styles.header}>
-                <Text style={styles.title}>
-                  {item.name}{" "}
-                  <Text style={styles.timeUnit}>
-                    ({formatDuration(item.baseBuildTime)})
+            <View style={commonStyles.overlayDark}>
+              <View>
+                <View style={commonStyles.headerRow}>
+                  <Text style={commonStyles.titleText}>
+                    {item.name}{" "}
+                    <Text style={commonStyles.whiteText}>
+                      ({formatDuration(item.baseBuildTime)})
+                    </Text>
                   </Text>
-                </Text>
-                {item.owned > 0 && (
-                  <Text style={styles.owned}>{item.owned}</Text>
-                )}
-              </View>
-
-              <Text style={styles.description}>{item.description}</Text>
-
-              <View style={styles.row}>
-                <ResourceDisplay resources={item.totalCost} fontSize={13} />
-              </View>
-
-              <Text style={styles.statusText}>
-                ⏱️ Tiempo estimado: {formatDuration(item.totalTime)}
-              </Text>
-
-              <View style={styles.bottomBar}>
-                <TouchableOpacity
-                  style={styles.cancelButton}
-                  onPress={() => adjustQueue(item.type, "remove")}
-                  onLongPress={handleLongPress(item.type, "remove")}
-                  onPressOut={handlePressOut}
-                  disabled={item.inQueue === 0}
-                >
-                  <Text style={styles.buttonText}>Cancelar</Text>
-                </TouchableOpacity>
-
-                <View style={styles.queueCountContainer}>
-                  {item.inQueue > 0 && (
-                    <>
-                      <Text style={styles.queueLabel}>En cola</Text>
-                      <Text style={styles.queueCount}>{item.inQueue}</Text>
-                    </>
+                  {item.owned > 0 && (
+                    <Text style={commonStyles.whiteText}>{item.owned}</Text>
                   )}
                 </View>
+                <Text style={commonStyles.subtitleText}>
+                  {item.description}
+                </Text>
+              </View>
 
-                <TouchableOpacity
-                  style={[
-                    styles.buildButton,
-                    !item.canBuild && styles.disabledButton,
-                  ]}
-                  onPress={() => adjustQueue(item.type, "add")}
-                  onLongPress={handleLongPress(item.type, "add")}
-                  onPressOut={handlePressOut}
-                  disabled={!item.canBuild}
-                >
-                  <Text style={styles.buttonText}>Construir</Text>
-                </TouchableOpacity>
+              <View>
+                <View style={commonStyles.rowResources}>
+                  <ResourceDisplay resources={item.totalCost} fontSize={13} />
+                </View>
+
+                <Text style={commonStyles.whiteText}>
+                  ⏱️ Tiempo estimado: {formatDuration(item.totalTime)}
+                </Text>
+
+                <View style={commonStyles.actionBar}>
+                  <TouchableOpacity
+                    style={commonStyles.cancelButton}
+                    onPress={() => adjustQueue(item.type, "remove")}
+                    onLongPress={handleLongPress(item.type, "remove")}
+                    onPressOut={handlePressOut}
+                    disabled={item.inQueue === 0}
+                  >
+                    <Text style={commonStyles.cancelButtonText}>Cancelar</Text>
+                  </TouchableOpacity>
+
+                  <View style={commonStyles.queueCountContainer}>
+                    {item.inQueue > 0 && (
+                      <Text style={commonStyles.queueCount}>
+                        {item.inQueue}
+                      </Text>
+                    )}
+                  </View>
+
+                  <TouchableOpacity
+                    style={[
+                      commonStyles.buttonPrimary,
+                      !item.canBuild && commonStyles.buttonDisabled,
+                    ]}
+                    onPress={() => adjustQueue(item.type, "add")}
+                    onLongPress={handleLongPress(item.type, "add")}
+                    onPressOut={handlePressOut}
+                    disabled={!item.canBuild}
+                  >
+                    <Text style={commonStyles.buttonTextLight}>Construir</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           </ImageBackground>
@@ -176,109 +180,3 @@ export default function FleetComponent() {
     />
   );
 }
-
-const styles = StyleSheet.create({
-  list: {
-    paddingTop: 35,
-  },
-  cardContainer: {
-    marginBottom: 10,
-    alignItems: "center",
-  },
-  card: {
-    width: width - 20,
-    minHeight: 200,
-    borderRadius: 16,
-    overflow: "hidden",
-  },
-  image: {
-    resizeMode: "cover",
-  },
-  unavailableImage: {
-    opacity: 0.3,
-  },
-  overlay: {
-    flex: 1,
-    padding: 12,
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
-    justifyContent: "space-between",
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 4,
-  },
-  title: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  owned: {
-    color: "#ccc",
-    fontWeight: "bold",
-    fontSize: 14,
-  },
-  description: {
-    color: "#ddd",
-    marginBottom: 6,
-    fontSize: 13,
-  },
-  row: {
-    marginBottom: 4,
-  },
-  statusText: {
-    color: "#facc15",
-    fontSize: 13,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  timeUnit: {
-    fontWeight: "normal",
-    fontSize: 11,
-    color: "#e2e8f0",
-  },
-  bottomBar: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-end",
-    marginTop: 12,
-  },
-  cancelButton: {
-    backgroundColor: "#f87171",
-    padding: 6,
-    borderRadius: 6,
-    flex: 1,
-    alignItems: "center",
-    marginRight: 6,
-  },
-  buildButton: {
-    backgroundColor: "#3b82f6",
-    padding: 6,
-    borderRadius: 6,
-    flex: 1,
-    alignItems: "center",
-    marginLeft: 6,
-  },
-  disabledButton: {
-    backgroundColor: "#93c5fd",
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
-  },
-  queueCountContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    width: 60,
-  },
-  queueLabel: {
-    color: "#ccc",
-    fontSize: 11,
-    marginBottom: 2,
-  },
-  queueCount: {
-    color: "#fff",
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-});

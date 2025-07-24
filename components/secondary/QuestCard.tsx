@@ -2,21 +2,27 @@ import React, { useRef } from "react";
 import {
   Animated,
   ImageBackground,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { ResourceDisplay } from "../../components/secondary/ResourceDisplay";
 import { questConfig } from "../../src/config/questConfig";
+import { commonStyles } from "../../src/styles/commonStyles";
 
 type Props = {
   item: (typeof questConfig)[keyof typeof questConfig];
   completed: boolean;
+  isAlreadyClaimed: boolean;
   onComplete: () => void;
 };
 
-export const QuestCard: React.FC<Props> = ({ item, completed, onComplete }) => {
+export const QuestCard: React.FC<Props> = ({
+  item,
+  completed,
+  isAlreadyClaimed,
+  onComplete,
+}) => {
   const scale = useRef(new Animated.Value(1)).current;
 
   const triggerAnimation = () => {
@@ -40,83 +46,37 @@ export const QuestCard: React.FC<Props> = ({ item, completed, onComplete }) => {
   };
 
   return (
-    <Animated.View style={[styles.card, { transform: [{ scale: scale }] }]}>
+    <Animated.View
+      style={[commonStyles.containerCenter, { transform: [{ scale }] }]}
+    >
       <ImageBackground
         source={item.backgroundImage}
-        style={styles.image}
+        style={commonStyles.card}
         imageStyle={{ borderRadius: 10 }}
       >
-        <View style={styles.overlay}>
-          <Text style={styles.title}>{item.name}</Text>
-          <Text style={styles.description}>{item.description}</Text>
-
-          <View style={styles.rewardRow}>
-            <Text style={styles.rewardLabel}>🎁 Recompensa:</Text>
-            <ResourceDisplay resources={item.reward} fontSize={13} />
+        <View style={commonStyles.overlayDark}>
+          <View>
+            <Text style={commonStyles.titleText}>{item.name}</Text>
+            <Text style={commonStyles.subtitleText}>{item.description}</Text>
           </View>
+          {!isAlreadyClaimed && (
+            <View style={commonStyles.actionBar}>
+              <ResourceDisplay resources={item.reward} fontSize={13} />
 
-          <TouchableOpacity
-            onPress={handlePress}
-            disabled={!completed}
-            style={[styles.button, !completed && styles.buttonDisabled]}
-          >
-            <Text style={styles.buttonText}>Completar</Text>
-          </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handlePress}
+                disabled={!completed}
+                style={[
+                  commonStyles.buttonPrimary,
+                  !completed && commonStyles.buttonDisabled,
+                ]}
+              >
+                <Text style={commonStyles.buttonTextLight}>Completar</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </ImageBackground>
     </Animated.View>
   );
 };
-
-const styles = StyleSheet.create({
-  card: {
-    marginBottom: 12,
-    borderRadius: 10,
-    overflow: "hidden",
-  },
-  image: {
-    minHeight: 200,
-    justifyContent: "flex-end",
-  },
-  overlay: {
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    padding: 12,
-    flex: 1,
-    flexDirection: "column",
-    justifyContent: "space-between",
-  },
-  title: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  description: {
-    color: "#ddd",
-    fontSize: 13,
-    marginVertical: 4,
-  },
-  rewardRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  rewardLabel: {
-    color: "#fff",
-    fontSize: 13,
-    fontWeight: "600",
-  },
-  button: {
-    backgroundColor: "#4ade80",
-    padding: 8,
-    borderRadius: 6,
-    alignItems: "center",
-  },
-  buttonDisabled: {
-    backgroundColor: "#6b8dc3",
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
-  },
-});

@@ -1,7 +1,8 @@
 import React from "react";
-import { FlatList, StyleSheet } from "react-native";
+import { FlatList } from "react-native";
 import { researchTechnologies } from "../../src/config/researchConfig";
 import { useGameContext } from "../../src/context/GameContext";
+import { commonStyles } from "../../src/styles/commonStyles";
 import { ResearchType } from "../../src/types/researchTypes";
 import {
   getLabLevel,
@@ -73,7 +74,7 @@ export default function ResearchComponent() {
     <FlatList
       data={researchItems}
       keyExtractor={(item) => item.key}
-      contentContainerStyle={styles.list}
+      contentContainerStyle={commonStyles.flatList}
       renderItem={({ item }) => (
         <ResearchCard
           item={item}
@@ -85,10 +86,3 @@ export default function ResearchComponent() {
     />
   );
 }
-
-const styles = StyleSheet.create({
-  list: {
-    paddingTop: 35,
-    textAlign: "center",
-  },
-});

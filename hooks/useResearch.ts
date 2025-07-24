@@ -99,6 +99,7 @@ export const useResearch = (
       r.data.type === data.type ? { ...r, progress: undefined } : r
     );
 
+    setResearch(updatedResearch);
     await updateResearchState(updatedResearch);
   };
 

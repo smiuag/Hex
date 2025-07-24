@@ -1,6 +1,7 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useGameContext } from "../../src/context/GameContext";
+import { resourceBarStyles } from "../../src/styles/resourceBarStyles";
 import { ResourceDisplay } from "./ResourceDisplay";
 
 type ResourceBarProps = {
@@ -26,11 +27,13 @@ export default function ProductionBar({
   );
 
   return (
-    <View style={styles.container}>
+    <View style={resourceBarStyles.containerTop}>
       {title && (
-        <Text style={[styles.title, { color: titleColor }]}>{title}</Text>
+        <Text style={[resourceBarStyles.title, { color: titleColor }]}>
+          {title}
+        </Text>
       )}
-      <View style={styles.resourcesContainer}>
+      <View style={resourceBarStyles.resourcesContainer}>
         <ResourceDisplay
           resources={productionPerHour}
           fontSize={fontSize}
@@ -40,23 +43,3 @@ export default function ProductionBar({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: "#1C1C1C",
-    borderRadius: 8,
-    minHeight: 40, // o 44, 48 para que tenga tamaño visible
-  },
-  title: {
-    fontWeight: "bold",
-    fontSize: 14,
-  },
-  resourcesContainer: {
-    flexDirection: "row",
-  },
-});

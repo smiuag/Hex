@@ -1,14 +1,21 @@
 import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useEffect, useRef } from "react";
-import { FlatList, StyleSheet } from "react-native";
+import { FlatList } from "react-native";
 import { questConfig } from "../../src/config/questConfig";
 import { useGameContext } from "../../src/context/GameContext";
+import { commonStyles } from "../../src/styles/commonStyles";
 import { canCompleteQuest, shouldShowQuest } from "../../utils/questUtils";
 import { QuestCard } from "../secondary/QuestCard";
 
 export default function QuestComponent() {
-  const { playerQuests, hexes, research, completeQuest, markQuestsAsViewed } =
-    useGameContext();
+  const {
+    playerQuests,
+    hexes,
+    research,
+    fleetBuildQueue,
+    completeQuest,
+    markQuestsAsViewed,
+  } = useGameContext();
 
   const hasViewedOnce = useRef(false);
 
@@ -17,9 +24,9 @@ export default function QuestComponent() {
     .map((q) => q.type)
     .flat();
 
-  const availableQuests = Object.values(questConfig).filter((quest) =>
-    shouldShowQuest(quest.type, completedTypes)
-  );
+  const availableQuests = Object.values(questConfig)
+    .filter((quest) => shouldShowQuest(quest.type, completedTypes))
+    .sort((a, b) => b.order - a.order);
 
   useFocusEffect(
     useCallback(() => {
@@ -48,15 +55,26 @@ export default function QuestComponent() {
 
   return (
     <FlatList
-      contentContainerStyle={styles.container}
+      contentContainerStyle={commonStyles.flatList}
       data={availableQuests}
       keyExtractor={(item) => item.type}
       renderItem={({ item }) => {
-        const completed = canCompleteQuest(item.type, hexes, research);
+        const completed = canCompleteQuest(
+          item.type,
+          hexes,
+          research,
+          fleetBuildQueue
+        );
+
+        const isAlreadyClaimed = playerQuests.some(
+          (pq) => pq.completed && pq.type == item.type
+        );
+
         return (
           <QuestCard
             item={item}
             completed={completed}
+            isAlreadyClaimed={isAlreadyClaimed}
             onComplete={() => completeQuest(item.type)}
           />
         );
@@ -64,11 +82,3 @@ export default function QuestComponent() {
     />
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    paddingTop: 35,
-    paddingVertical: 20,
-    paddingHorizontal: 10,
-  },
-});

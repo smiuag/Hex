@@ -1,7 +1,7 @@
 import { HapticTab } from "@/components/secondary/HapticTab";
 import { Tabs } from "expo-router";
 import React from "react";
-import { Platform, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import {
   FleetIcon,
   GalaxyIcon,
@@ -12,10 +12,11 @@ import {
 } from "../../components/secondary/MenuIcons";
 import { questConfig } from "../../src/config/questConfig";
 import { useGameContext } from "../../src/context/GameContext";
+import { questIconView, tabStyles } from "../../src/styles/tabsStyles";
 import { canCompleteQuest, shouldShowQuest } from "../../utils/questUtils";
 
 export default function TabLayout() {
-  const { playerQuests, hexes, research } = useGameContext();
+  const { playerQuests, hexes, research, fleetBuildQueue } = useGameContext();
   const partidaIniciada = hexes.length > 0;
 
   const hasHangar =
@@ -37,7 +38,12 @@ export default function TabLayout() {
   const hasCompletedQuest = Object.values(questConfig).some((quest) => {
     const pq = playerQuests.find((q) => q.type === quest.type);
     const isAvailable = shouldShowQuest(quest.type, completedQuestTypes);
-    const isCompleted = canCompleteQuest(quest.type, hexes, research);
+    const isCompleted = canCompleteQuest(
+      quest.type,
+      hexes,
+      research,
+      fleetBuildQueue
+    );
 
     return pq && !pq.completed && isAvailable && isCompleted;
   });
@@ -48,12 +54,7 @@ export default function TabLayout() {
         headerShown: false,
         lazy: true,
         tabBarButton: HapticTab,
-        tabBarStyle: Platform.select({
-          ios: {
-            position: "absolute",
-          },
-          default: {},
-        }),
+        tabBarStyle: tabStyles.tabBarStyle,
       }}
     >
       <Tabs.Screen
@@ -74,7 +75,7 @@ export default function TabLayout() {
           ),
           tabBarLabel: "Planeta",
           tabBarButton: partidaIniciada ? undefined : () => null,
-          tabBarItemStyle: partidaIniciada ? {} : { display: "none" },
+          tabBarItemStyle: partidaIniciada ? {} : tabStyles.hidden,
         }}
       />
 
@@ -86,7 +87,7 @@ export default function TabLayout() {
           ),
           tabBarLabel: "Investigación",
           tabBarButton: partidaIniciada ? undefined : () => null,
-          tabBarItemStyle: partidaIniciada ? {} : { display: "none" },
+          tabBarItemStyle: partidaIniciada ? {} : tabStyles.hidden,
         }}
       />
       <Tabs.Screen
@@ -97,51 +98,21 @@ export default function TabLayout() {
           ),
           tabBarLabel: "Naves",
           tabBarButton: hasHangar && partidaIniciada ? undefined : () => null,
-          tabBarItemStyle:
-            hasHangar && partidaIniciada ? {} : { display: "none" },
+          tabBarItemStyle: hasHangar && partidaIniciada ? {} : tabStyles.hidden,
         }}
       />
       <Tabs.Screen
         name="quest"
         options={{
           tabBarIcon: ({ color, size }) => {
-            let showDot = false;
-            let dotColor = "red";
-
-            if (hasCompletedQuest) {
-              showDot = true;
-              dotColor = "green";
-            } else if (hasNewQuest) {
-              showDot = true;
-              dotColor = "red";
-            }
-
             return (
               <View>
                 <QuestIcon color={color} size={size} />
-                {showDot && (
+                {(hasCompletedQuest || hasNewQuest) && (
                   <View
-                    style={{
-                      position: "absolute",
-                      top: -4,
-                      right: -4,
-                      backgroundColor: dotColor,
-                      borderRadius: 10,
-                      width: 16,
-                      height: 16,
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
+                    style={questIconView(hasCompletedQuest ? "green" : "red")}
                   >
-                    <Text
-                      style={{
-                        color: "white",
-                        fontSize: 10,
-                        fontWeight: "bold",
-                      }}
-                    >
-                      !
-                    </Text>
+                    <Text style={tabStyles.questIconText}>!</Text>
                   </View>
                 )}
               </View>
@@ -149,7 +120,7 @@ export default function TabLayout() {
           },
           tabBarLabel: "Misiones",
           tabBarButton: partidaIniciada ? undefined : () => null,
-          tabBarItemStyle: partidaIniciada ? {} : { display: "none" },
+          tabBarItemStyle: partidaIniciada ? {} : tabStyles.hidden,
         }}
       />
 
@@ -161,7 +132,7 @@ export default function TabLayout() {
           ),
           tabBarLabel: "Galaxia",
           tabBarButton: partidaIniciada ? undefined : () => null,
-          tabBarItemStyle: partidaIniciada ? {} : { display: "none" },
+          tabBarItemStyle: partidaIniciada ? {} : tabStyles.hidden,
         }}
       />
     </Tabs>

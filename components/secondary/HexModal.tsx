@@ -1,15 +1,10 @@
 import { StoredResources } from "@/src/types/resourceTypes";
 import React, { useEffect, useState } from "react";
-import {
-  ImageBackground,
-  Modal,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { ImageBackground, Modal, Pressable, Text, View } from "react-native";
 import { buildingConfig } from "../../src/config/buildingConfig";
 import { researchTechnologies } from "../../src/config/researchConfig";
+import { commonStyles } from "../../src/styles/commonStyles";
+import { hexStyles } from "../../src/styles/hexStyles";
 import { BuildingType } from "../../src/types/buildingTypes";
 import { Hex } from "../../src/types/hexTypes";
 import { Research } from "../../src/types/researchTypes";
@@ -99,93 +94,84 @@ export default function HexModal({
         }) ?? [];
 
     const canBuild = canUpgrade && enoughResources;
-    const cardOpacity = canBuild ? 0.2 : 0.4;
 
     return (
       <ImageBackground
         source={config.imageBackground}
-        style={{
-          width: "100%",
-          borderRadius: 12,
-          overflow: "hidden",
-          backgroundColor: "rgba(0,0,0,0.6)",
-        }}
-        imageStyle={{
-          resizeMode: "cover",
-          opacity: cardOpacity,
-        }}
+        style={commonStyles.cardPopUp}
+        imageStyle={commonStyles.imageCoverPopUp}
       >
-        <View style={{ padding: 16, backgroundColor: "rgba(0,0,0,0.55)" }}>
-          <Text style={[styles.title, { color: "white" }]}>{config.name}</Text>
-
-          <Text style={[styles.description, { color: "#ccc" }]}>
-            {config.description}
-          </Text>
-          <Text style={[styles.subTitle, { color: "#eee" }]}>
-            Nivel actual: {building.level}
-          </Text>
-
-          {hasProduction && (
-            <View
-              style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
-            >
-              <Text style={[styles.label, { color: "#ddd", lineHeight: 18 }]}>
-                Producción (Nv {building.level}):
-              </Text>
-              <View style={{ marginTop: 1 }}>
-                <ResourceDisplay
-                  resources={currentProduction}
-                  fontSize={14}
-                  fontColor="white"
-                />
-              </View>
-            </View>
-          )}
-
-          {hasProduction && (
-            <View
-              style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
-            >
-              <Text style={[styles.label, { color: "#ddd", lineHeight: 18 }]}>
-                Producción (Nv {nextLevel}):
-              </Text>
-              <View style={{ marginTop: 1 }}>
-                <ResourceDisplay
-                  resources={nextProduction}
-                  fontSize={14}
-                  fontColor="white"
-                />
-              </View>
-            </View>
-          )}
-
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-            <Text style={[styles.label, { color: "#ddd", lineHeight: 18 }]}>
-              Coste:
-            </Text>
-            <ResourceDisplay resources={cost} fontSize={14} fontColor="white" />
+        <View style={commonStyles.overlayDark}>
+          <View>
+            <Text style={commonStyles.titleText}>{config.name}</Text>
+            <Text style={commonStyles.subtitleText}>{config.description}</Text>
           </View>
+          <View>
+            <Text style={commonStyles.whiteText}>
+              Nivel actual: {building.level}
+            </Text>
 
+            {hasProduction && (
+              <View style={commonStyles.rowResources}>
+                <Text style={commonStyles.whiteText}>
+                  Producción (Nv {building.level}):
+                </Text>
+                <View>
+                  <ResourceDisplay
+                    resources={currentProduction}
+                    fontSize={14}
+                    fontColor="white"
+                  />
+                </View>
+              </View>
+            )}
+
+            {hasProduction && (
+              <View style={commonStyles.rowResources}>
+                <Text style={commonStyles.whiteText}>
+                  Producción (Nv {nextLevel}):
+                </Text>
+                <View>
+                  <ResourceDisplay
+                    resources={nextProduction}
+                    fontSize={14}
+                    fontColor="white"
+                  />
+                </View>
+              </View>
+            )}
+
+            <View style={commonStyles.rowResources}>
+              <Text style={commonStyles.whiteText}>Coste:</Text>
+              <ResourceDisplay
+                resources={cost}
+                fontSize={14}
+                fontColor="white"
+              />
+            </View>
+          </View>
           {!canUpgrade && (
             <>
-              <Text style={[styles.label, { color: "#ddd" }]}>
+              <Text style={commonStyles.whiteText}>
                 Tiempo de construcción:
               </Text>
-              <Text style={{ color: "#fff" }}>{formatDuration(time)}</Text>
+              <Text style={commonStyles.whiteText}>{formatDuration(time)}</Text>
             </>
           )}
 
-          <View style={styles.actionContainer}>
+          <View style={commonStyles.actionBar}>
             {canUpgrade ? (
               !enoughResources ? (
-                <Text style={[styles.lockedByResources]}>
+                <Text style={[commonStyles.warningTextYellow]}>
                   ⚠️ Recursos insuficientes
                 </Text>
               ) : (
-                <Text style={styles.statusText}>⏱️ {formatDuration(time)}</Text>
+                <Text style={commonStyles.warningTextYellow}>
+                  ⏱️ {formatDuration(time)}
+                </Text>
               )
             ) : (
-              <Text style={styles.lockedText}>
+              <Text style={commonStyles.errorTextRed}>
                 {unmetRequirements
                   .map(
                     (r) =>
@@ -198,11 +184,14 @@ export default function HexModal({
             )}
 
             <Pressable
-              style={[styles.buildButton, { opacity: canBuild ? 1 : 0.5 }]}
+              style={[
+                commonStyles.buttonPrimary,
+                !canBuild && commonStyles.buttonDisabled,
+              ]}
               onPress={() => canBuild && onBuild(building.type)}
               disabled={!canBuild}
             >
-              <Text style={styles.buildButtonText}>Mejorar</Text>
+              <Text style={commonStyles.buttonTextLight}>Mejorar</Text>
             </Pressable>
           </View>
         </View>
@@ -230,65 +219,59 @@ export default function HexModal({
     return (
       <ImageBackground
         source={config.imageBackground}
-        style={{
-          width: "100%",
-          borderRadius: 12,
-          overflow: "hidden",
-          backgroundColor: "rgba(0,0,0,0.6)",
-        }}
+        style={commonStyles.cardPopUp}
+        imageStyle={commonStyles.imageCoverPopUp}
       >
-        <View style={{ padding: 16, backgroundColor: "rgba(0,0,0,0.55)" }}>
-          <Text style={[styles.title, { color: "white" }]}>{config.name}</Text>
-
-          <Text style={[styles.description, { color: "#ccc" }]}>
-            {config.description}
-          </Text>
-          {hasProduction && targetLevel > 1 && (
-            <>
-              <Text style={[styles.subTitle, { color: "#eee" }]}>
-                Nivel actual: {targetLevel - 1}
-              </Text>
-              <View
-                style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
-              >
-                <Text style={[styles.label, { color: "#ddd", lineHeight: 18 }]}>
-                  Producción (Nv {targetLevel - 1}):
+        <View style={commonStyles.overlayDark}>
+          <View>
+            <Text style={commonStyles.titleText}>{config.name}</Text>
+            <Text style={commonStyles.subtitleText}>{config.description}</Text>
+          </View>
+          <View>
+            {hasProduction && targetLevel > 1 && (
+              <>
+                <Text style={commonStyles.whiteText}>
+                  Nivel actual: {targetLevel - 1}
                 </Text>
-                <View style={{ marginTop: 1 }}>
+                <View style={commonStyles.rowResources}>
+                  <Text style={commonStyles.whiteText}>
+                    Producción (Nv {targetLevel - 1}):
+                  </Text>
+                  <View>
+                    <ResourceDisplay
+                      resources={currentProduction}
+                      fontSize={14}
+                      fontColor="white"
+                    />
+                  </View>
+                </View>
+              </>
+            )}
+            {hasProduction && (
+              <View style={commonStyles.rowResources}>
+                <Text style={commonStyles.whiteText}>
+                  Producción (Nv {targetLevel}):
+                </Text>
+                <View>
                   <ResourceDisplay
-                    resources={currentProduction}
+                    resources={nextProduction}
                     fontSize={14}
                     fontColor="white"
                   />
                 </View>
               </View>
-            </>
-          )}
-
-          {hasProduction && (
-            <View
-              style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
-            >
-              <Text style={[styles.label, { color: "#ddd", lineHeight: 18 }]}>
-                Producción (Nv {targetLevel}):
-              </Text>
-              <View style={{ marginTop: 1 }}>
-                <ResourceDisplay
-                  resources={nextProduction}
-                  fontSize={14}
-                  fontColor="white"
-                />
-              </View>
-            </View>
-          )}
-
-          <View style={styles.actionContainer}>
-            <Text style={styles.statusText}>
+            )}
+          </View>
+          <View style={commonStyles.actionBar}>
+            <Text style={commonStyles.warningTextYellow}>
               ⏱️ {formatDuration(remainingTime)}
             </Text>
 
-            <Pressable style={styles.cancelButton} onPress={onCancelBuild}>
-              <Text style={styles.cancelButtonText}>Cancelar</Text>
+            <Pressable
+              style={commonStyles.cancelButton}
+              onPress={onCancelBuild}
+            >
+              <Text style={commonStyles.cancelButtonText}>Cancelar</Text>
             </Pressable>
           </View>
         </View>
@@ -303,9 +286,9 @@ export default function HexModal({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <Pressable style={styles.overlay} onPress={onClose}>
+      <Pressable style={hexStyles.overlay} onPress={onClose}>
         <Pressable
-          style={styles.modalWrapper}
+          style={hexStyles.modalWrapper}
           onPress={(e) => e.stopPropagation()}
         >
           {construction ? renderConstructionView() : renderUpgradeView()}
@@ -314,147 +297,3 @@ export default function HexModal({
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  modalWrapper: {
-    maxHeight: "80%",
-    width: 350,
-    backgroundColor: "white",
-    borderRadius: 12,
-    overflow: "hidden",
-
-    // 👇 Contorno sutil
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.5)",
-
-    // 👇 Sombra (opcional para más profundidad)
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 4, // Android
-  },
-  scrollContent: {
-    paddingVertical: 24,
-    paddingHorizontal: 20,
-    gap: 16,
-    alignItems: "flex-start",
-  },
-  overlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.4)",
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#222",
-    textAlign: "center",
-    alignSelf: "center",
-  },
-  subTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#444",
-    marginBottom: 4,
-  },
-  level: {
-    fontSize: 18,
-    fontWeight: "normal",
-    color: "#777",
-  },
-  box: {
-    width: "100%",
-    backgroundColor: "#f1f5f9",
-    padding: 12,
-    borderRadius: 12,
-    gap: 6,
-    alignSelf: "stretch",
-    flexShrink: 1,
-    alignItems: "flex-start",
-  },
-  description: {
-    fontSize: 14,
-    color: "#555",
-    marginBottom: 8,
-  },
-  label: {
-    fontWeight: "600",
-    color: "#444",
-    fontSize: 14,
-    marginTop: 8,
-  },
-  timeText: {
-    fontSize: 14,
-    color: "#666",
-    marginBottom: 8,
-  },
-  button: {
-    backgroundColor: "#2196F3",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    marginTop: 12,
-    minWidth: "100%",
-    alignItems: "center",
-  },
-  upgradeButtonText: {
-    color: "white",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  lockedText: {
-    color: "#b91c1c",
-    verticalAlign: "middle",
-    fontSize: 14,
-  },
-  lockedByResources: {
-    color: "#facc15",
-    verticalAlign: "middle",
-    fontSize: 14,
-  },
-  actionContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 12,
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    width: "100%",
-  },
-
-  statusText: {
-    color: "#facc15",
-    fontWeight: "bold",
-    fontSize: 13,
-  },
-
-  buildButton: {
-    backgroundColor: "#2196F3",
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 6,
-  },
-
-  cancelButton: {
-    backgroundColor: "#f87171",
-    paddingVertical: 4,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-  },
-
-  cancelButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 13,
-  },
-
-  buildButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 13,
-  },
-});

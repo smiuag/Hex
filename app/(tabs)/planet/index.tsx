@@ -1,20 +1,14 @@
 import React from "react";
-import { SafeAreaView, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native";
 import PlanetComponent from "../../../components/main/PlanetComponent";
 import ResourceBar from "../../../components/secondary/ResourceBar";
+import { commonStyles } from "../../../src/styles/commonStyles";
 
 export default function PlanetScreen() {
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={commonStyles.safeArea}>
       <PlanetComponent />
       <ResourceBar />
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#000",
-  },
-});

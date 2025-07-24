@@ -2,6 +2,7 @@ import { useFonts } from "expo-font";
 import { Slot } from "expo-router";
 import { StatusBar } from "react-native";
 import "react-native-reanimated";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Provider } from "../src/context/GameContext";
 
 export default function RootLayout() {
@@ -14,9 +15,11 @@ export default function RootLayout() {
   }
 
   return (
-    <Provider>
-      <StatusBar />
-      <Slot></Slot>
-    </Provider>
+    <SafeAreaProvider>
+      <Provider>
+        <StatusBar />
+        <Slot></Slot>
+      </Provider>
+    </SafeAreaProvider>
   );
 }

@@ -1,19 +1,14 @@
 import React from "react";
-import { SafeAreaView, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native";
 import QuestComponent from "../../components/main/QuestComponent";
 import ResourceBar from "../../components/secondary/ResourceBar";
+import { commonStyles } from "../../src/styles/commonStyles";
 
 export default function QuestScreen() {
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={commonStyles.safeArea}>
       <QuestComponent />
       <ResourceBar />
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

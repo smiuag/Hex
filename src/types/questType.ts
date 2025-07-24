@@ -6,7 +6,8 @@ export type QuestType =
   | "BUILDING_KRYSTALMINE1"
   | "RESEARCH_MINING1"
   | "BUILDING_BASE2"
-  | "BUILDING_HANGAR";
+  | "BUILDING_HANGAR"
+  | "FLEET_FIRST";
 
 export type Quest = {
   type: QuestType;
