@@ -19,7 +19,7 @@ export default function ProductionBar({
   const { resources } = useGameContext();
 
   const productionPerHour = Object.fromEntries(
-    Object.entries(resources.production).map(([key, value]) => [
+    Object.entries(resources?.production ?? {}).map(([key, value]) => [
       key,
       Math.round(value * 3600),
     ])
