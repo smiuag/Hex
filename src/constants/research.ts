@@ -1,14 +1,14 @@
 export const RESEARCH_COST = {
-  TERRAFORMING: { stone: 100000, metal: 100000, energy: 50000 },
-  MINING: { stone: 10000, metal: 10000, energy: 1000 },
-  WATERPURIFICATION: { stone: 15000, metal: 15000, energy: 1000 },
-  FUELREFINEMENT: { stone: 50000, metal: 30000, energy: 2000 },
-  ENERGYEFFICIENCY: { stone: 20000, metal: 10000, energy: 5000 },
-  SHIPENGINEERING: { crystal: 30000, metal: 200000, energy: 100000 },
-  LASER: { crystal: 30000, metal: 200000, energy: 100000 },
-  PLASMA: { crystal: 30000, metal: 150000, energy: 150000 },
-  SHIELD: { crystal: 60000, metal: 200000, energy: 150000 },
-  GRAVITY: { crystal: 300000, metal: 200000, energy: 200000 },
+  TERRAFORMING: { stone: 10000, metal: 10000, energy: 5000 },
+  MINING: { stone: 5000, metal: 5000, energy: 1000 },
+  WATERPURIFICATION: { stone: 1500, metal: 1500, energy: 100 },
+  FUELREFINEMENT: { stone: 5000, metal: 3000, energy: 200 },
+  ENERGYEFFICIENCY: { stone: 2000, metal: 1000, energy: 500 },
+  SHIPENGINEERING: { crystal: 3000, metal: 20000, energy: 10000 },
+  LASER: { crystal: 3000, metal: 20000, energy: 10000 },
+  PLASMA: { crystal: 3000, metal: 15000, energy: 15000 },
+  SHIELD: { crystal: 6000, metal: 20000, energy: 15000 },
+  GRAVITY: { crystal: 30000, metal: 20000, energy: 20000 },
 };
 
 export const RESEARCH_TIME = {
@@ -28,7 +28,7 @@ export const LAB_LVL_REQUIRED = {
   TERRAFORMING: 1,
   MINING: 1,
   WATERPURIFICATION: 2,
-  FUELREFINEMENT: 4,
+  FUELREFINEMENT: 2,
   ENERGYEFFICIENCY: 3,
   SHIPENGINEERING: 1,
   LASER: 2,

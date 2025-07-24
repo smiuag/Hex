@@ -1,3 +1,4 @@
+import { StoredResources } from "@/src/types/resourceTypes";
 import React, { useEffect, useState } from "react";
 import {
   ImageBackground,
@@ -19,12 +20,14 @@ import {
   isUnlocked,
 } from "../../utils/buildingUtils";
 import { formatDuration } from "../../utils/generalUtils";
+import { hasEnoughResources } from "../../utils/resourceUtils";
 import { ResourceDisplay } from "./ResourceDisplay";
 
 type Props = {
   visible: boolean;
   research: Research[];
   onClose: () => void;
+  resources: StoredResources;
   data: Hex | null;
   onBuild: (type: BuildingType) => void;
   onCancelBuild: () => void;
@@ -34,6 +37,7 @@ export default function HexModal({
   visible,
   research,
   onClose,
+  resources,
   data,
   onBuild,
   onCancelBuild,
@@ -77,6 +81,7 @@ export default function HexModal({
     const canUpgrade = isUnlocked(building.type, nextLevel, research);
     const cost = getBuildCost(building.type, nextLevel);
     const time = getBuildTime(building.type, nextLevel);
+    const enoughResources = hasEnoughResources(resources, cost);
     const currentProduction = getProductionPerHour(
       building.type,
       building.level
@@ -93,6 +98,9 @@ export default function HexModal({
           return playerResearchLevel < req.researchLevelRequired;
         }) ?? [];
 
+    const canBuild = canUpgrade && enoughResources;
+    const cardOpacity = canBuild ? 0.2 : 0.4;
+
     return (
       <ImageBackground
         source={config.imageBackground}
@@ -104,7 +112,7 @@ export default function HexModal({
         }}
         imageStyle={{
           resizeMode: "cover",
-          opacity: canUpgrade ? 1 : 0.4,
+          opacity: cardOpacity,
         }}
       >
         <View style={{ padding: 16, backgroundColor: "rgba(0,0,0,0.55)" }}>
@@ -116,6 +124,7 @@ export default function HexModal({
           <Text style={[styles.subTitle, { color: "#eee" }]}>
             Nivel actual: {building.level}
           </Text>
+
           {hasProduction && (
             <View
               style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
@@ -149,6 +158,7 @@ export default function HexModal({
               </View>
             </View>
           )}
+
           <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
             <Text style={[styles.label, { color: "#ddd", lineHeight: 18 }]}>
               Coste:
@@ -167,28 +177,33 @@ export default function HexModal({
 
           <View style={styles.actionContainer}>
             {canUpgrade ? (
-              <Text style={styles.statusText}>⏱️ {formatDuration(time)}</Text>
+              !enoughResources ? (
+                <Text style={[styles.lockedByResources]}>
+                  ⚠️ Recursos insuficientes
+                </Text>
+              ) : (
+                <Text style={styles.statusText}>⏱️ {formatDuration(time)}</Text>
+              )
             ) : (
               <Text style={styles.lockedText}>
                 {unmetRequirements
                   .map(
                     (r) =>
-                      `🔒 Requiere ${
-                        researchTechnologies[r.researchType].name
-                      } Nv ${r.researchLevelRequired}`
+                      `🔒 ${researchTechnologies[r.researchType].name} Nv ${
+                        r.researchLevelRequired
+                      }`
                   )
                   .join("\n")}
               </Text>
             )}
 
-            {canUpgrade && (
-              <Pressable
-                style={styles.buildButton}
-                onPress={() => onBuild(building.type)}
-              >
-                <Text style={styles.buildButtonText}>Mejorar</Text>
-              </Pressable>
-            )}
+            <Pressable
+              style={[styles.buildButton, { opacity: canBuild ? 1 : 0.5 }]}
+              onPress={() => canBuild && onBuild(building.type)}
+              disabled={!canBuild}
+            >
+              <Text style={styles.buildButtonText}>Mejorar</Text>
+            </Pressable>
           </View>
         </View>
       </ImageBackground>
@@ -391,6 +406,11 @@ const styles = StyleSheet.create({
   },
   lockedText: {
     color: "#b91c1c",
+    verticalAlign: "middle",
+    fontSize: 14,
+  },
+  lockedByResources: {
+    color: "#facc15",
     verticalAlign: "middle",
     fontSize: 14,
   },

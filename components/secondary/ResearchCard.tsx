@@ -28,7 +28,6 @@ type Props = {
     hasResources: boolean;
     remainingTime: number;
     totalTime: number;
-    time: string;
     cost: Record<string, number>;
     labLevelRequired: number;
     progress?: {
@@ -143,7 +142,7 @@ export const ResearchCard: React.FC<Props> = ({
               <View style={styles.actionContainer}>
                 {!item.isAvailable ? (
                   <Text style={styles.lockedText}>
-                    🔒 Requiere laboratorio nivel {item.labLevelRequired}
+                    🔒 Laboratorio nivel {item.labLevelRequired}
                   </Text>
                 ) : !item.hasResources ? (
                   <Text style={styles.warningText}>
@@ -154,7 +153,9 @@ export const ResearchCard: React.FC<Props> = ({
                     🔕 Otra investigación en curso
                   </Text>
                 ) : (
-                  <Text style={styles.statusText}>⏱️ {item.time}</Text>
+                  <Text style={styles.statusText}>
+                    ⏱️ {formatDuration(item.totalTime)}
+                  </Text>
                 )}
 
                 <TouchableOpacity

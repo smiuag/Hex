@@ -1,6 +1,5 @@
 import React from "react";
-import { StyleSheet } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, StyleSheet } from "react-native";
 import GalaxyComponent from "../../components/main/GalaxyComponent";
 import ResourceBar from "../../components/secondary/ResourceBar";
 

@@ -3,16 +3,16 @@ import { BuildingRequiredResearch } from "../types/researchTypes";
 import { IMAGES } from "./images";
 
 export const BUILDING_COST = {
-  LAB: { stone: 180000, metal: 180000, energy: 1000 },
-  KRYSTALMINE: { stone: 360000, metal: 180000 },
-  METALLURGY: { stone: 180000 },
-  QUARRY: { metal: 180000 },
-  BASE: { stone: 4000, metal: 5000 },
-  ANTENNA: { stone: 75000, metal: 35000, crystal: 75000, energy: 3000 },
-  ROCKET: { stone: 150000, metal: 150000, crystal: 50000, energy: 3000 },
-  HANGAR: { stone: 150000, metal: 150000, crystal: 50000, energy: 3000 },
-  ENERGY: { stone: 80000, metal: 120000, crystal: 250000 },
-  SPACESTATION: { stone: 180000, metal: 1120000, crystal: 1250000 },
+  LAB: { stone: 18000, metal: 18000, energy: 100 },
+  KRYSTALMINE: { stone: 36000, metal: 18000 },
+  METALLURGY: { stone: 18000 },
+  QUARRY: { metal: 18000 },
+  BASE: { stone: 15000, metal: 15000, crystal: 15000 },
+  ANTENNA: { stone: 7500, metal: 3500, crystal: 7500, energy: 300 },
+  ROCKET: { stone: 15000, metal: 15000, crystal: 5000, energy: 300 },
+  HANGAR: { stone: 15000, metal: 15000, crystal: 5000, energy: 300 },
+  ENERGY: { stone: 8000, metal: 120000, crystal: 25000 },
+  SPACESTATION: { stone: 18000, metal: 112000, crystal: 120000 },
 };
 
 export const BUILDING_PRODUCTION = {
@@ -49,7 +49,7 @@ export const BUILDING_MAX_IN_PLANET = {
   BASE: 1,
   ANTENNA: 1,
   ROCKET: 3,
-  HANGAR: 5,
+  HANGAR: 1,
   ENERGY: 7,
   SPACESTATION: 0,
 };

@@ -1,5 +1,4 @@
 export type ResourceType = "metal" | "stone" | "energy" | "crystal";
-
 export type Resources = Record<ResourceType, number>;
 
 export type StoredResources = {

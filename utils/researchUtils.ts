@@ -14,7 +14,7 @@ export const getResearchTime = (
 ): number => {
   const baseTime = researchTechnologies[research].baseResearchTime;
   return Math.round(
-    (baseTime * Math.pow(RESEARCH_TIME_INCREMENT, level - 1)) / GENERAL_FACTOR
+    (baseTime / GENERAL_FACTOR) * Math.pow(RESEARCH_TIME_INCREMENT, level - 1)
   );
 };
 

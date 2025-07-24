@@ -17,7 +17,6 @@ import { Hex } from "../../src/types/hexTypes";
 import { PlayerQuest, QuestType } from "../../src/types/questType";
 import { Resources, StoredResources } from "../../src/types/resourceTypes";
 import { normalizeHexMap } from "../../utils/mapUtils";
-import { getLabLevel } from "../../utils/researchUtils";
 import { loadMap, saveMap } from "../services/storage";
 import { Research, ResearchType } from "../types/researchTypes";
 
@@ -42,7 +41,6 @@ type ProviderContextType = {
   handleBuildFleet: (type: FleetType, amount: number) => void;
   handleCancelFleet: (type: FleetType) => void;
   research: Research[];
-  labLevel: number;
   playerQuests: PlayerQuest[];
   completeQuest: (type: QuestType) => void;
   markQuestsAsViewed: (types: QuestType[]) => void;
@@ -147,7 +145,6 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     processResearchTick,
     resetResearch,
     research,
-    labLevel: getLabLevel(hexes),
     handleBuildFleet,
     handleCancelFleet,
     processFleetTick,

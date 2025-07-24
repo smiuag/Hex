@@ -35,8 +35,13 @@ export function canCompleteQuest(
       return hexes.some((hex) => hex.building?.type === "QUARRY");
     case "BUILDING_LAB1":
       return hexes.some((hex) => hex.building?.type === "LAB");
-    case "RESEARCH_MINING1": {
+    case "RESEARCH_MINING1":
       return research.some((r) => r.data.type == "MINING" && !r.progress);
-    }
+    case "BUILDING_BASE2":
+      return hexes.some(
+        (hex) => hex.building?.type === "QUARRY" && hex.building.level > 1
+      );
+    case "BUILDING_HANGAR":
+      return hexes.some((hex) => hex.building?.type === "HANGAR");
   }
 }

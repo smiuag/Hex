@@ -157,7 +157,7 @@ export default function ConstructionComponent() {
                             { textAlign: "left", maxWidth: "100%" },
                           ]}
                         >
-                          🔒 Requiere{" "}
+                          🔒
                           {researchTechnologies[r.researchType]?.name ??
                             r.researchType}{" "}
                           Nv {r.researchLevelRequired}

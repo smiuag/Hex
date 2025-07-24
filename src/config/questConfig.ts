@@ -21,7 +21,7 @@ export const questConfig: Record<
     name: "Comenzando la colonia",
     backgroundImage: IMAGES.LAB_BACKGROUND,
     requiredQuest: [],
-    reward: { stone: 180000, metal: 180000, energy: 1000 },
+    reward: { stone: 18000, metal: 18000, energy: 100 },
   },
   BUILDING_LAB1: {
     type: "BUILDING_LAB1",
@@ -29,7 +29,7 @@ export const questConfig: Record<
     name: "Laboratorio",
     backgroundImage: IMAGES.LAB_BACKGROUND,
     requiredQuest: ["START"],
-    reward: { stone: 10000, metal: 10000, energy: 1000 },
+    reward: { stone: 1000, metal: 1000, energy: 100 },
   },
   RESEARCH_MINING1: {
     type: "RESEARCH_MINING1",
@@ -37,7 +37,7 @@ export const questConfig: Record<
     name: "Primera investigación",
     backgroundImage: IMAGES.RESEARCH_MINING,
     requiredQuest: ["BUILDING_LAB1"],
-    reward: { stone: 180000, metal: 180000 },
+    reward: { stone: 18000, metal: 18000 },
   },
   BUILDING_METALLURGY1: {
     type: "BUILDING_METALLURGY1",
@@ -45,7 +45,7 @@ export const questConfig: Record<
     name: "Mina de metales",
     backgroundImage: IMAGES.METALLURGY_BACKGROUND,
     requiredQuest: ["RESEARCH_MINING1"],
-    reward: { stone: 300000 },
+    reward: { stone: 36000 },
   },
   BUILDING_QUARRY1: {
     type: "BUILDING_QUARRY1",
@@ -54,7 +54,7 @@ export const questConfig: Record<
     name: "Cantera",
     backgroundImage: IMAGES.QUARRY_BACKGROUND,
     requiredQuest: ["RESEARCH_MINING1"],
-    reward: { metal: 150000 },
+    reward: { metal: 18000 },
   },
   BUILDING_KRYSTALMINE1: {
     type: "BUILDING_KRYSTALMINE1",
@@ -62,6 +62,22 @@ export const questConfig: Record<
     name: "Mina de cristal",
     backgroundImage: IMAGES.KRYSTALMINE_BACKGROUND,
     requiredQuest: ["BUILDING_METALLURGY1", "BUILDING_QUARRY1"],
-    reward: { stone: 10000, metal: 10000, energy: 5000 },
+    reward: { stone: 15000, metal: 15000, energy: 15000 },
+  },
+  BUILDING_BASE2: {
+    type: "BUILDING_BASE2",
+    description: "Mejora el nivel de la base a nivel 2.",
+    name: "Base de nivel 2",
+    backgroundImage: IMAGES.BASE_BACKGROUND,
+    requiredQuest: ["BUILDING_KRYSTALMINE1"],
+    reward: { stone: 15000, metal: 15000, energy: 15000 },
+  },
+  BUILDING_HANGAR: {
+    type: "BUILDING_HANGAR",
+    description: "Mejora el nivel de la base a nivel 2.",
+    name: "Base de nivel 2",
+    backgroundImage: IMAGES.BASE_BACKGROUND,
+    requiredQuest: ["BUILDING_BASE2"],
+    reward: { stone: 10000, metal: 10000, energy: 10000 },
   },
 };

@@ -32,6 +32,7 @@ import HexModal from "../secondary/HexModal";
 import HexTile from "../secondary/HexTile";
 
 export default function PlanetComponent() {
+  console.log("Planet");
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedHex, setSelectedHex] = useState<Hex | null>(null);
   const [cameraOffset, setCameraOffset] = useState({ x: 0, y: 0 });
@@ -47,8 +48,14 @@ export default function PlanetComponent() {
     });
 
   const router = useRouter();
-  const { hexes, research, reloadMap, handleBuild, handleCancelBuild } =
-    useGameContext();
+  const {
+    hexes,
+    research,
+    resources,
+    reloadMap,
+    handleBuild,
+    handleCancelBuild,
+  } = useGameContext();
 
   const {
     SCREEN_WIDTH,
@@ -218,6 +225,7 @@ export default function PlanetComponent() {
                 <HexModal
                   visible={modalVisible}
                   research={research}
+                  resources={resources}
                   onClose={() => setModalVisible(false)}
                   data={selectedHex}
                   onBuild={onBuild}

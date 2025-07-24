@@ -3,19 +3,17 @@ import { FlatList, StyleSheet } from "react-native";
 import { researchTechnologies } from "../../src/config/researchConfig";
 import { useGameContext } from "../../src/context/GameContext";
 import { ResearchType } from "../../src/types/researchTypes";
-import { formatDuration } from "../../utils/generalUtils";
-import { getResearchCost, getResearchTime } from "../../utils/researchUtils";
+import {
+  getLabLevel,
+  getResearchCost,
+  getResearchTime,
+} from "../../utils/researchUtils";
 import { hasEnoughResources } from "../../utils/resourceUtils";
 import { ResearchCard } from "../secondary/ResearchCard";
 
 export default function ResearchComponent() {
-  const {
-    research,
-    labLevel,
-    resources,
-    handleResearch,
-    handleCancelResearch,
-  } = useGameContext();
+  const { research, hexes, resources, handleResearch, handleCancelResearch } =
+    useGameContext();
   console.log("Research");
 
   const researchItems = Object.entries(researchTechnologies)
@@ -26,6 +24,7 @@ export default function ResearchComponent() {
       const inProgress = !!data?.progress;
       const targetLevel = data?.progress?.targetLevel ?? currentLevel + 1;
       const totalTime = getResearchTime(type, targetLevel);
+
       const remainingTime = inProgress
         ? Math.max(
             0,
@@ -35,8 +34,7 @@ export default function ResearchComponent() {
 
       const scaledCost = getResearchCost(type, targetLevel);
       const hasResources = hasEnoughResources(resources, scaledCost);
-      const isAvailable = labLevel >= config.labLevelRequired;
-      const time = formatDuration(getResearchTime(type, currentLevel + 1));
+      const isAvailable = config.labLevelRequired <= getLabLevel(hexes);
       const isMaxed = currentLevel >= config.maxLevel;
 
       return {
@@ -47,7 +45,6 @@ export default function ResearchComponent() {
         isAvailable,
         inProgress,
         remainingTime,
-        time,
         isMaxed,
         hasResources,
         cost: scaledCost,
