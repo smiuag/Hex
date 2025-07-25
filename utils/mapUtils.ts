@@ -100,13 +100,10 @@ export const expandMapAroundBase = (
   currentMap: Hex[],
   newBaseLevel: number
 ): Hex[] => {
-  const radius = Math.floor(newBaseLevel / 2) + 1;
-  const borderRadius = radius + 1;
-
   const updatedMap = currentMap.map((hex) => {
     const dist = axialDistance({ q: 0, r: 0 }, { q: hex.q, r: hex.r });
 
-    if (dist <= radius && hex.terrain === "border") {
+    if (dist <= newBaseLevel && hex.terrain === "border") {
       return { ...hex, terrain: "initial" as TerrainType };
     }
 
@@ -116,15 +113,15 @@ export const expandMapAroundBase = (
   const existingCoords = new Set(updatedMap.map((h) => `${h.q},${h.r}`));
   const newBorders: Hex[] = [];
 
-  for (let q = -borderRadius; q <= borderRadius; q++) {
-    for (let r = -borderRadius; r <= borderRadius; r++) {
+  for (let q = -newBaseLevel; q <= newBaseLevel; q++) {
+    for (let r = -newBaseLevel; r <= newBaseLevel; r++) {
       const s = -q - r;
-      if (Math.abs(s) > borderRadius) continue;
+      if (Math.abs(s) > newBaseLevel) continue;
 
       const dist = axialDistance({ q: 0, r: 0 }, { q, r });
       const key = `${q},${r}`;
 
-      if (dist === borderRadius && !existingCoords.has(key)) {
+      if (dist === newBaseLevel && !existingCoords.has(key)) {
         newBorders.push({
           q,
           r,

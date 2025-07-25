@@ -128,7 +128,7 @@ export const commonStyles = StyleSheet.create({
   },
   closeXButton: {
     position: "absolute",
-    top: 40,
+    top: 20,
     right: 20,
     backgroundColor: "rgba(0,0,0,0.6)",
     borderRadius: 30,

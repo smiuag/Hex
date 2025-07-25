@@ -101,6 +101,18 @@ export default function TabLayout() {
           tabBarItemStyle: hasHangar && partidaIniciada ? {} : tabStyles.hidden,
         }}
       />
+
+      <Tabs.Screen
+        name="galaxy"
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <GalaxyIcon color={color} size={size} />
+          ),
+          tabBarLabel: "Galaxia",
+          tabBarButton: hasHangar && partidaIniciada ? undefined : () => null,
+          tabBarItemStyle: hasHangar && partidaIniciada ? {} : tabStyles.hidden,
+        }}
+      />
       <Tabs.Screen
         name="quest"
         options={{
@@ -119,18 +131,6 @@ export default function TabLayout() {
             );
           },
           tabBarLabel: "Misiones",
-          tabBarButton: partidaIniciada ? undefined : () => null,
-          tabBarItemStyle: partidaIniciada ? {} : tabStyles.hidden,
-        }}
-      />
-
-      <Tabs.Screen
-        name="galaxy"
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <GalaxyIcon color={color} size={size} />
-          ),
-          tabBarLabel: "Galaxia",
           tabBarButton: partidaIniciada ? undefined : () => null,
           tabBarItemStyle: partidaIniciada ? {} : tabStyles.hidden,
         }}

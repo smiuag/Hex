@@ -41,7 +41,7 @@ export function canCompleteQuest(
       return research.some((r) => r.data.type == "MINING" && !r.progress);
     case "BUILDING_BASE2":
       return hexes.some(
-        (hex) => hex.building?.type === "QUARRY" && hex.building.level > 1
+        (hex) => hex.building?.type === "BASE" && hex.building.level > 1
       );
     case "BUILDING_HANGAR":
       return hexes.some((hex) => hex.building?.type === "HANGAR");

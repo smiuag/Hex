@@ -47,7 +47,7 @@ export const getResearchProcesses = (research: Research[]): Process[] => {
       const startedAt = r.progress.startedAt ?? 0;
 
       const proc: Process = {
-        name: "Investigación: " + type.name + " Nv: " + targetLevel,
+        name: type.name + " Nv: " + targetLevel,
         type: "RESEARCH",
         id: "RESEARCH-" + r.data.type,
         researchType: r.data.type,

@@ -36,7 +36,7 @@ export const BUILDING_TIME = {
   BASE: 1000 * 60 * 7, //Ya empieza a nivel 1 así que el primero no son 7 son 12
   ANTENNA: 1000 * 60 * 60,
   ROCKET: 1000 * 60 * 60 * 12,
-  HANGAR: 1000 * 60 * 60 * 6,
+  HANGAR: 1000 * 60 * 60 * 1,
   ENERGY: 1000 * 60 * 5,
   SPACESTATION: 1000 * 60 * 60 * 24 * 5,
 };

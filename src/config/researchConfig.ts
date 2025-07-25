@@ -71,7 +71,7 @@ export const researchTechnologies: Record<
       "Optimiza el consumo energético de todas tus estructuras, reduciendo los costes de mantenimiento.",
   },
   SHIPENGINEERING: {
-    name: "Ingeniería de Naves",
+    name: "Ingeniería espacial",
     labLevelRequired: LAB_LVL_REQUIRED.SHIPENGINEERING,
     image: IMAGES.RESEARCH_SHIPS,
     baseCost: RESEARCH_COST.SHIPENGINEERING,

@@ -247,6 +247,7 @@ export default function PlanetComponent() {
                       py={py}
                       points={points}
                       factor={scale.FACTOR}
+                      fontSize={scale.FONT_SIZE}
                     />
                   );
                 })}
@@ -291,7 +292,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#333",
     paddingHorizontal: 15,
     paddingVertical: 10,
-    borderRadius: 25,
+    borderRadius: 30,
     justifyContent: "center",
     alignItems: "center",
   },

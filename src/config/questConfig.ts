@@ -84,7 +84,7 @@ export const questConfig: Record<
     type: "BUILDING_HANGAR",
     order: 8,
     description: "Mejora el nivel de la base a nivel 2.",
-    name: "Base de nivel 2",
+    name: "Hangar",
     backgroundImage: IMAGES.BASE_BACKGROUND,
     requiredQuest: ["BUILDING_BASE2"],
     reward: { stone: 10000, metal: 10000, energy: 10000 },

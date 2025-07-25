@@ -12,9 +12,17 @@ interface Props {
   py: number;
   points: string;
   factor: number;
+  fontSize: number;
 }
 
-export default function HexTile({ hex, px, py, points, factor }: Props) {
+export default function HexTile({
+  hex,
+  px,
+  py,
+  points,
+  factor,
+  fontSize,
+}: Props) {
   const { terrain, building, construction } = hex;
   const config = terrainConfig[terrain];
 
@@ -73,7 +81,7 @@ export default function HexTile({ hex, px, py, points, factor }: Props) {
           x={px}
           y={py + 60 * 0.2}
           textAnchor="middle"
-          fontSize={36}
+          fontSize={fontSize}
           fill="white"
           fontWeight="bold"
           stroke="black"

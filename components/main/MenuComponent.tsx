@@ -132,7 +132,7 @@ export default function MenuComponent() {
 
   const cancelResearch = async (type: ResearchType) => {
     await handleCancelResearch(type);
-    const updatedProcesses = getBuildingProcesses(hexes);
+    const updatedProcesses = getResearchProcesses(research);
     setProcesses(updatedProcesses);
   };
 
