@@ -18,7 +18,16 @@ import { Hex } from "../../src/types/hexTypes";
 import { PlayerQuest, QuestType } from "../../src/types/questType";
 import { Resources, StoredResources } from "../../src/types/resourceTypes";
 import { normalizeHexMap } from "../../utils/mapUtils";
-import { loadMap, saveMap } from "../services/storage";
+
+import { generateHexGrid, getInitialResources } from "../../utils/mapUtils";
+import { NotificationManager } from "../../utils/notificacionUtils";
+import {
+  deleteMap,
+  deleteResearch,
+  loadMap,
+  saveMap,
+  saveResources,
+} from "../services/storage";
 import { ConfigEntry, PlayerConfig } from "../types/configTypes";
 import { Research, ResearchType } from "../types/researchTypes";
 
@@ -52,6 +61,8 @@ type ProviderContextType = {
   loadPlayerConfig: () => void;
   playerConfig: PlayerConfig;
   updatePlayerConfig: (config: PlayerConfig) => void;
+  endGame: () => void;
+  startGame: () => void;
 };
 
 const ResourceContext = createContext<ProviderContextType | undefined>(
@@ -140,6 +151,37 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     reloadMap();
   }, []);
 
+  const endGame = async () => {
+    await deleteMap();
+    await saveResources(getInitialResources());
+    await NotificationManager.cancelAllNotifications();
+    await deleteResearch();
+    await resetPlayerConfig();
+    resetResearch();
+    resetQuests();
+    resetFleet();
+    setHexes([]);
+    resetResources();
+  };
+
+  const startGame = async () => {
+    const newMap = generateHexGrid(2).map((hex) => {
+      const isBase = hex.q === 0 && hex.r === 0;
+      const terrain = isBase ? ("base" as any) : ("initial" as any);
+
+      return {
+        ...hex,
+        terrain,
+        building: isBase ? { type: "BASE" as BuildingType, level: 1 } : null,
+        construction: undefined,
+        previousBuilding: null,
+      };
+    });
+
+    endGame();
+    setHexes(newMap);
+  };
+
   const contextValue = {
     handleUpdateConfig,
     resetPlayerConfig,
@@ -172,6 +214,8 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     playerQuests,
     completeQuest,
     markQuestsAsViewed,
+    endGame,
+    startGame,
   };
 
   return (

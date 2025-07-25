@@ -15,7 +15,6 @@ import { ResearchCard } from "../secondary/ResearchCard";
 export default function ResearchComponent() {
   const { research, hexes, resources, handleResearch, handleCancelResearch } =
     useGameContext();
-  console.log("Research");
 
   const researchItems = Object.entries(researchTechnologies)
     .map(([key, config]) => {

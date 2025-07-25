@@ -1,7 +1,6 @@
 import { ResearchType } from "@/src/types/researchTypes";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
   Button,
   FlatList,
@@ -12,20 +11,10 @@ import {
 } from "react-native";
 import { IMAGES } from "../../src/constants/images";
 import { useGameContext } from "../../src/context/GameContext";
-import {
-  deleteMap,
-  deleteResearch,
-  loadMap,
-  saveMap,
-  saveResources,
-} from "../../src/services/storage";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { menuStyles } from "../../src/styles/menuStyles";
-import { BuildingType } from "../../src/types/buildingTypes";
 import { Process } from "../../src/types/processTypes";
 import { formatDuration } from "../../utils/generalUtils";
-import { generateHexGrid, getInitialResources } from "../../utils/mapUtils";
-import { NotificationManager } from "../../utils/notificacionUtils";
 import {
   getBuildingProcesses,
   getResearchProcesses,
@@ -33,19 +22,14 @@ import {
 menuStyles;
 
 export default function MenuComponent() {
-  const [checking, setChecking] = useState(true);
-  const [hasMap, setHasMap] = useState(false);
   const [processes, setProcesses] = useState<Process[]>([]);
   const {
-    setHexes,
-    resetResources,
-    resetResearch,
     handleCancelBuild,
     handleCancelResearch,
     hexes,
     research,
-    resetQuests,
-    resetPlayerConfig,
+    endGame,
+    startGame,
   } = useGameContext();
 
   useEffect(() => {
@@ -61,39 +45,8 @@ export default function MenuComponent() {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    const checkMap = async () => {
-      const savedMap = await loadMap();
-      setHasMap(!!savedMap?.length);
-      setChecking(false);
-    };
-    checkMap();
-  }, []);
-
   const handleStartGame = async () => {
-    const newMap = generateHexGrid(2).map((hex) => {
-      const isBase = hex.q === 0 && hex.r === 0;
-      const terrain = isBase ? ("base" as any) : ("initial" as any);
-
-      return {
-        ...hex,
-        terrain,
-        building: isBase ? { type: "BASE" as BuildingType, level: 1 } : null,
-        construction: undefined,
-        previousBuilding: null,
-      };
-    });
-
-    await saveMap(newMap);
-    await saveResources(getInitialResources());
-    await NotificationManager.cancelAllNotifications();
-    await deleteResearch();
-    await resetPlayerConfig();
-    resetResearch();
-    resetQuests();
-    setHexes(newMap);
-    resetResources();
-    setHasMap(true);
+    startGame();
   };
 
   const handleReset = () => {
@@ -106,17 +59,7 @@ export default function MenuComponent() {
           text: "Sí, borrar",
           style: "destructive",
           onPress: async () => {
-            await deleteMap();
-            await saveResources(getInitialResources());
-            await NotificationManager.cancelAllNotifications();
-            await deleteResearch();
-            await resetPlayerConfig();
-            resetResearch();
-            resetQuests();
-
-            setHexes([]);
-            resetResources();
-            setHasMap(false);
+            endGame();
           },
         },
       ]
@@ -166,15 +109,6 @@ export default function MenuComponent() {
     );
   };
 
-  if (checking) {
-    return (
-      <View style={commonStyles.center}>
-        <ActivityIndicator size="large" />
-        <Text>Cargando...</Text>
-      </View>
-    );
-  }
-
   return (
     <ImageBackground
       source={IMAGES.BACKGROUND_MENU_IMAGE}
@@ -185,7 +119,7 @@ export default function MenuComponent() {
         <View style={menuStyles.topContainer}>
           <Text style={menuStyles.title}>Colonia</Text>
 
-          {hasMap && (
+          {hexes.length > 0 && (
             <>
               {processes.length === 0 ? (
                 <Text style={commonStyles.emptyText}>
@@ -205,10 +139,10 @@ export default function MenuComponent() {
         </View>
 
         <View>
-          {!hasMap && (
+          {hexes.length == 0 && (
             <Button title="Iniciar partida" onPress={handleStartGame} />
           )}
-          {hasMap && (
+          {hexes.length > 0 && (
             <Button
               title="Finalizar partida"
               color="red"

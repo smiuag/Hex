@@ -32,7 +32,7 @@ export const questConfig: Record<
     name: "Laboratorio",
     backgroundImage: IMAGES.LAB_BACKGROUND,
     requiredQuest: ["START"],
-    reward: { stone: 1000, metal: 1000, energy: 100 },
+    reward: { stone: 5000, metal: 5000, energy: 1000 },
   },
   RESEARCH_MINING1: {
     order: 3,
@@ -69,7 +69,7 @@ export const questConfig: Record<
     name: "Mina de cristal",
     backgroundImage: IMAGES.KRYSTALMINE_BACKGROUND,
     requiredQuest: ["BUILDING_METALLURGY1", "BUILDING_QUARRY1"],
-    reward: { stone: 15000, metal: 15000, energy: 15000 },
+    reward: { stone: 12000, metal: 12000, energy: 5000 },
   },
   BUILDING_BASE2: {
     type: "BUILDING_BASE2",
