@@ -1,7 +1,13 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
-import { ImageBackground, View } from "react-native";
+import {
+  ImageBackground,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import {
   Gesture,
   GestureDetector,
@@ -14,37 +20,29 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 import Svg from "react-native-svg";
+import { scaleKeys, ScaleSize } from "../../src/types/configTypes";
 
 import { IMAGES } from "../../src/constants/images";
 import { useGameContext } from "../../src/context/GameContext";
 import { BuildingType } from "../../src/types/buildingTypes";
 import { Hex } from "../../src/types/hexTypes";
+import { getScaleValues } from "../../utils/configUtils";
 import {
   axialToPixel,
   getHexPoints,
   pixelToAxial,
   SCREEN_DIMENSIONS,
 } from "../../utils/hexUtils";
-
 import BorderHexTile from "../secondary/BorderHexTile";
 import HexModal from "../secondary/HexModal";
 import HexTile from "../secondary/HexTile";
 
 export default function PlanetComponent() {
   console.log("Planet");
+
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedHex, setSelectedHex] = useState<Hex | null>(null);
   const [cameraOffset, setCameraOffset] = useState({ x: 0, y: 0 });
-  const scale = useSharedValue(1);
-  const savedScale = useSharedValue(1);
-
-  const pinchGesture = Gesture.Pinch()
-    .onStart(() => {
-      savedScale.value = scale.value;
-    })
-    .onUpdate((event) => {
-      scale.value = savedScale.value * event.scale;
-    });
 
   const router = useRouter();
   const {
@@ -54,7 +52,11 @@ export default function PlanetComponent() {
     reloadMap,
     handleBuild,
     handleCancelBuild,
+    playerConfig,
+    handleUpdateConfig,
   } = useGameContext();
+
+  const scale = getScaleValues(playerConfig);
 
   const {
     SCREEN_WIDTH,
@@ -64,6 +66,12 @@ export default function PlanetComponent() {
     CENTER_X,
     CENTER_Y,
   } = SCREEN_DIMENSIONS;
+
+  const currentMapSize =
+    (playerConfig.find((c) => c.key === "MAP_SIZE")?.value as ScaleSize) ||
+    "MEDIUM";
+
+  const currentIndex = scaleKeys.indexOf(currentMapSize);
 
   // Cámara
   const offsetX = useSharedValue(SCREEN_WIDTH / 2 - CENTER_X);
@@ -92,15 +100,11 @@ export default function PlanetComponent() {
     });
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: offsetX.value },
-      { translateY: offsetY.value },
-      { scale: scale.value },
-    ],
+    transform: [{ translateX: offsetX.value }, { translateY: offsetY.value }],
   }));
 
   const handleTap = (x: number, y: number) => {
-    const axial = pixelToAxial(x - CENTER_X, y - CENTER_Y);
+    const axial = pixelToAxial(x - CENTER_X, y - CENTER_Y, scale.HEX_SIZE);
 
     const tappedHex = hexes.find((h) => h.q === axial!.q && h.r === axial!.r);
 
@@ -125,7 +129,33 @@ export default function PlanetComponent() {
       setModalVisible(true);
     }
   };
+  const increaseScale = () => {
+    const currentMapSize =
+      (playerConfig.find((c) => c.key === "MAP_SIZE")?.value as ScaleSize) ||
+      "MEDIUM";
+    const currentIndex = scaleKeys.indexOf(currentMapSize);
+    const nextIndex = Math.min(currentIndex + 1, scaleKeys.length - 1);
 
+    if (nextIndex !== currentIndex) {
+      const newScaleKey = scaleKeys[nextIndex];
+      handleUpdateConfig({ key: "MAP_SIZE", value: newScaleKey });
+      reloadMap();
+    }
+  };
+
+  const decreaseScale = () => {
+    const currentMapSize =
+      (playerConfig.find((c) => c.key === "MAP_SIZE")?.value as ScaleSize) ||
+      "MEDIUM";
+    const currentIndex = scaleKeys.indexOf(currentMapSize);
+    const nextIndex = Math.max(currentIndex - 1, 0);
+
+    if (nextIndex !== currentIndex) {
+      const newScaleKey = scaleKeys[nextIndex];
+      handleUpdateConfig({ key: "MAP_SIZE", value: newScaleKey });
+      reloadMap();
+    }
+  };
   const tapGesture = Gesture.Tap()
     .maxDuration(300)
     .maxDistance(20)
@@ -136,8 +166,7 @@ export default function PlanetComponent() {
     });
 
   const composedGesture = Gesture.Simultaneous(
-    Gesture.Exclusive(tapGesture, panGesture),
-    pinchGesture
+    Gesture.Exclusive(tapGesture, panGesture)
   );
 
   const onBuild = async (type: BuildingType) => {
@@ -193,10 +222,10 @@ export default function PlanetComponent() {
               >
                 {hexes.map((hex, index) => {
                   const { q, r } = hex;
-                  const { x, y } = axialToPixel(q, r);
+                  const { x, y } = axialToPixel(q, r, scale.HEX_SIZE);
                   const px = x + CENTER_X;
                   const py = y + CENTER_Y;
-                  const points = getHexPoints(px, py);
+                  const points = getHexPoints(px, py, scale.HEX_SIZE);
 
                   if (hex.isRadius) {
                     return (
@@ -217,6 +246,7 @@ export default function PlanetComponent() {
                       px={px}
                       py={py}
                       points={points}
+                      factor={scale.FACTOR}
                     />
                   );
                 })}
@@ -235,6 +265,39 @@ export default function PlanetComponent() {
           </View>
         </GestureDetector>
       </ImageBackground>
+      <View style={styles.buttonsContainer}>
+        <TouchableOpacity style={styles.button} onPress={decreaseScale}>
+          <Text style={styles.buttonText}>-</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={increaseScale}>
+          <Text style={styles.buttonText}>+</Text>
+        </TouchableOpacity>
+      </View>
     </GestureHandlerRootView>
   );
 }
+const styles = StyleSheet.create({
+  buttonsContainer: {
+    position: "absolute",
+    top: 20,
+    left: 0,
+    right: 0,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    zIndex: 1000,
+  },
+  button: {
+    backgroundColor: "#333",
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 25,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+});

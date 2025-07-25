@@ -6,9 +6,10 @@ import { terrainConfig } from "../../src/config/terrainConfig";
 interface Props {
   points: string;
   index: number;
+  onPress?: () => void;
 }
 
-export default function BorderHexTile({ points, index }: Props) {
+export default function BorderHexTile({ points, index, onPress }: Props) {
   const config = terrainConfig["border"];
   return (
     <Polygon
@@ -17,6 +18,7 @@ export default function BorderHexTile({ points, index }: Props) {
       fill={config.fallbackColor}
       stroke="#444"
       strokeWidth="1"
+      onPress={onPress}
     />
   );
 }

@@ -45,6 +45,7 @@ export default function MenuComponent() {
     hexes,
     research,
     resetQuests,
+    resetPlayerConfig,
   } = useGameContext();
 
   useEffect(() => {
@@ -87,6 +88,7 @@ export default function MenuComponent() {
     await saveResources(getInitialResources());
     await NotificationManager.cancelAllNotifications();
     await deleteResearch();
+    await resetPlayerConfig();
     resetResearch();
     resetQuests();
     setHexes(newMap);
@@ -108,6 +110,7 @@ export default function MenuComponent() {
             await saveResources(getInitialResources());
             await NotificationManager.cancelAllNotifications();
             await deleteResearch();
+            await resetPlayerConfig();
             resetResearch();
             resetQuests();
 

@@ -51,7 +51,7 @@ export const BUILDING_MAX_IN_PLANET = {
   ROCKET: 3,
   HANGAR: 1,
   ENERGY: 7,
-  SPACESTATION: 0,
+  SPACESTATION: 1,
 };
 
 export const BUILDING_REQUIRED_RESEARCH: Record<

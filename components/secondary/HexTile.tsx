@@ -11,9 +11,10 @@ interface Props {
   px: number;
   py: number;
   points: string;
+  factor: number;
 }
 
-export default function HexTile({ hex, px, py, points }: Props) {
+export default function HexTile({ hex, px, py, points, factor }: Props) {
   const { terrain, building, construction } = hex;
   const config = terrainConfig[terrain];
 
@@ -52,10 +53,10 @@ export default function HexTile({ hex, px, py, points }: Props) {
       {buildingImage ? (
         <SvgImage
           href={buildingImage}
-          x={px - (60 * Math.sqrt(3) * 1.7) / 2}
-          y={py - 60 * 1.7}
-          width={60 * Math.sqrt(3) * 1.7}
-          height={60 * 2 * 1.7}
+          x={px - (60 * Math.sqrt(3) * factor) / 2}
+          y={py - 60 * factor}
+          width={60 * Math.sqrt(3) * factor}
+          height={60 * 2 * factor}
           preserveAspectRatio="xMidYMid meet"
         />
       ) : (

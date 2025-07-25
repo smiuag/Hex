@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useConfig } from "../../hooks/useConfig";
 import { useConstruction } from "../../hooks/useConstruction";
 import { useFleet } from "../../hooks/useFleet";
 import { useQuest } from "../../hooks/useQuest";
@@ -18,6 +19,7 @@ import { PlayerQuest, QuestType } from "../../src/types/questType";
 import { Resources, StoredResources } from "../../src/types/resourceTypes";
 import { normalizeHexMap } from "../../utils/mapUtils";
 import { loadMap, saveMap } from "../services/storage";
+import { ConfigEntry, PlayerConfig } from "../types/configTypes";
 import { Research, ResearchType } from "../types/researchTypes";
 
 type ProviderContextType = {
@@ -45,6 +47,11 @@ type ProviderContextType = {
   completeQuest: (type: QuestType) => void;
   markQuestsAsViewed: (types: QuestType[]) => void;
   resetQuests: () => void;
+  handleUpdateConfig: (config: ConfigEntry) => void;
+  resetPlayerConfig: () => void;
+  loadPlayerConfig: () => void;
+  playerConfig: PlayerConfig;
+  updatePlayerConfig: (config: PlayerConfig) => void;
 };
 
 const ResourceContext = createContext<ProviderContextType | undefined>(
@@ -65,6 +72,14 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
 
   const { playerQuests, completeQuest, markQuestsAsViewed, resetQuests } =
     useQuest(addResources);
+
+  const {
+    handleUpdateConfig,
+    resetPlayerConfig,
+    loadPlayerConfig,
+    playerConfig,
+    updatePlayerConfig,
+  } = useConfig();
 
   const {
     fleetBuildQueue,
@@ -126,6 +141,11 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const contextValue = {
+    handleUpdateConfig,
+    resetPlayerConfig,
+    loadPlayerConfig,
+    playerConfig,
+    updatePlayerConfig,
     resources,
     resetResources,
     resetQuests,
