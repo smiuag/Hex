@@ -33,7 +33,7 @@ export const BUILDING_TIME = {
   KRYSTALMINE: 1000 * 60 * 3,
   METALLURGY: 1000 * 60 * 2,
   QUARRY: 1000 * 60 * 2,
-  BASE: 1000 * 60 * 7, //Ya empieza a nivel 1 así que el primero no es 7 son 12
+  BASE: 1000 * 60 * 7, //Ya empieza a nivel 1 así que el primero no son 7 son 12
   ANTENNA: 1000 * 60 * 60,
   ROCKET: 1000 * 60 * 60 * 12,
   HANGAR: 1000 * 60 * 60 * 6,

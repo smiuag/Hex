@@ -17,7 +17,7 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <Provider>
-        <StatusBar />
+        <StatusBar barStyle="light-content" backgroundColor="#000" />
         <Slot></Slot>
       </Provider>
     </SafeAreaProvider>

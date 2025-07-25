@@ -1,4 +1,3 @@
-// components/HexMap.tsx
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";

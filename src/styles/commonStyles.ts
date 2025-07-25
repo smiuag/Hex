@@ -141,7 +141,7 @@ export const commonStyles = StyleSheet.create({
     fontWeight: "bold",
   },
   flatList: {
-    paddingVertical: 20,
+    paddingVertical: 5,
     paddingHorizontal: 10,
   },
   actionContainer: {
@@ -157,7 +157,6 @@ export const commonStyles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: "#000",
-    paddingTop: 15,
   },
 
   emptyText: {

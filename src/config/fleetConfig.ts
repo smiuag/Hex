@@ -89,7 +89,7 @@ export const fleetConfig: Record<
       "Nave pesada equipada para ataques directos y romper líneas defensivas enemigas.",
   },
   STARCARRIER: {
-    name: "Crucero porta cazas",
+    name: "Porta cazas",
     orden: 7,
     baseBuildTime: FLEET_TIME.STARCARRIER,
     imageBackground: FLEET_BACKGROUND_IMAGE.STARCARRIER,
@@ -100,7 +100,7 @@ export const fleetConfig: Record<
       "Base móvil para lanzar cazas y proporcionar soporte táctico en combate espacial.",
   },
   HEAVYASSAULTSHIP: {
-    name: "Nave de asalto pesada",
+    name: "Fragata pesada",
     orden: 8,
     baseBuildTime: FLEET_TIME.HEAVYASSAULTSHIP,
     imageBackground: FLEET_BACKGROUND_IMAGE.HEAVYASSAULTSHIP,
@@ -111,7 +111,7 @@ export const fleetConfig: Record<
       "Nave robusta con armamento pesado para incursiones agresivas y asedios prolongados.",
   },
   ORBITALASSAULTSHIP: {
-    name: "Nave de asalto orbital",
+    name: "Destructor orbital",
     orden: 9,
     baseBuildTime: FLEET_TIME.ORBITALASSAULTSHIP,
     imageBackground: FLEET_BACKGROUND_IMAGE.ORBITALASSAULTSHIP,

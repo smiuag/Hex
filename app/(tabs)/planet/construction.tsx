@@ -1,12 +1,14 @@
 import React from "react";
 import { SafeAreaView } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ConstructionComponent from "../../../components/main/ConstructionComponent";
 import ResourceBar from "../../../components/secondary/ResourceBar";
 import { commonStyles } from "../../../src/styles/commonStyles";
 
 export default function ConstructionScreen() {
+  const insets = useSafeAreaInsets();
   return (
-    <SafeAreaView style={commonStyles.safeArea}>
+    <SafeAreaView style={[commonStyles.safeArea, { paddingTop: insets.top }]}>
       <ConstructionComponent />
       <ResourceBar />
     </SafeAreaView>

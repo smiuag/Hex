@@ -96,6 +96,7 @@ export default function FleetComponent() {
         canBuild: hasEnoughResources(resources, config.baseCost),
       };
     })
+    .filter((item) => item.productionFacility == "HANGAR" || hasSpaceStation)
     .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0));
 
   return (
