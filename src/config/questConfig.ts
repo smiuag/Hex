@@ -37,7 +37,7 @@ export const questConfig: Record<
   RESEARCH_MINING1: {
     order: 3,
     type: "RESEARCH_MINING1",
-    description: "Investiga la terraformación de nivel 1",
+    description: "Investiga la minería de nivel 1",
     name: "Primera investigación",
     backgroundImage: IMAGES.RESEARCH_MINING,
     requiredQuest: ["BUILDING_LAB1"],

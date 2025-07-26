@@ -132,25 +132,37 @@ export default function ConstructionComponent() {
                   ) : !item.unlockedByResearch ? (
                     <View>
                       {Object.values(
-                        item.requirements.reduce((acc, req) => {
-                          const existing = acc[req.researchType];
-                          if (
-                            !existing ||
-                            req.researchLevelRequired <
-                              existing.researchLevelRequired
-                          ) {
-                            acc[req.researchType] = req;
-                          }
-                          return acc;
-                        }, {} as Record<string, (typeof item.requirements)[0]>)
-                      ).map((r, i) => (
-                        <Text key={i} style={[commonStyles.errorTextRed]}>
-                          🔒{" "}
-                          {researchTechnologies[r.researchType]?.name ??
-                            r.researchType}{" "}
-                          Nv {r.researchLevelRequired}
-                        </Text>
-                      ))}
+                        item.requirements
+                          .filter((req) => req.builddingLevel <= 1) // Filtrar solo los aplicables al nivel actual
+                          .reduce((acc, req) => {
+                            const existing = acc[req.researchType];
+
+                            if (
+                              !existing ||
+                              req.researchLevelRequired >
+                                existing.researchLevelRequired
+                            ) {
+                              acc[req.researchType] = req;
+                            }
+
+                            return acc;
+                          }, {} as Record<string, (typeof item.requirements)[0]>)
+                      )
+                        .filter((req) => {
+                          const currentLevel =
+                            research.find(
+                              (r) => r.data.type === req.researchType
+                            )?.data.level ?? 0;
+                          return currentLevel < req.researchLevelRequired;
+                        })
+                        .map((r, i) => (
+                          <Text key={i} style={commonStyles.errorTextRed}>
+                            🔒{" "}
+                            {researchTechnologies[r.researchType]?.name ??
+                              r.researchType}{" "}
+                            Nv {r.researchLevelRequired}
+                          </Text>
+                        ))}
                     </View>
                   ) : (
                     <View style={commonStyles.actionBar}>

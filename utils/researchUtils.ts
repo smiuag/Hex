@@ -19,8 +19,17 @@ export const getResearchTime = (
 };
 
 export const getLabLevel = (hexes: Hex[]): number => {
-  const labHex = hexes.find((hex) => hex.building?.type === "LAB");
-  return labHex?.building?.level ?? 0;
+  const builtLab = hexes.find((hex) => hex.building?.type === "LAB");
+  if (builtLab?.building?.level) return builtLab.building.level;
+
+  const labInConstruction = hexes.find(
+    (hex) => hex.construction?.building === "LAB"
+  );
+
+  if (labInConstruction?.construction?.targetLevel)
+    return labInConstruction.construction.targetLevel - 1;
+
+  return 0;
 };
 
 export const getResearchCost = (

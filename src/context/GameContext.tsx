@@ -176,7 +176,6 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
       };
     });
 
-    console.log(newMap);
     saveMap(newMap);
     setHexes(newMap);
   };

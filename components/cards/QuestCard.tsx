@@ -1,11 +1,5 @@
 import React, { useRef } from "react";
-import {
-  Animated,
-  ImageBackground,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Animated, ImageBackground, Text, TouchableOpacity, View } from "react-native";
 import { questConfig } from "../../src/config/questConfig";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { ResourceDisplay } from "../auxiliar/ResourceDisplay";
@@ -17,12 +11,7 @@ type Props = {
   onComplete: () => void;
 };
 
-export const QuestCard: React.FC<Props> = ({
-  item,
-  completed,
-  isAlreadyClaimed,
-  onComplete,
-}) => {
+export const QuestCard: React.FC<Props> = ({ item, completed, isAlreadyClaimed, onComplete }) => {
   const scale = useRef(new Animated.Value(1)).current;
 
   const triggerAnimation = () => {
@@ -46,9 +35,7 @@ export const QuestCard: React.FC<Props> = ({
   };
 
   return (
-    <Animated.View
-      style={[commonStyles.containerCenter, { transform: [{ scale }] }]}
-    >
+    <Animated.View style={[commonStyles.containerCenter, { transform: [{ scale }] }]}>
       <ImageBackground
         source={item.backgroundImage}
         style={commonStyles.card}
@@ -61,15 +48,19 @@ export const QuestCard: React.FC<Props> = ({
           </View>
           {!isAlreadyClaimed && (
             <View style={commonStyles.actionBar}>
-              <ResourceDisplay resources={item.reward} fontSize={13} />
+              <View style={commonStyles.rowSpaceBetween}>
+                <Text style={commonStyles.whiteText}>Recompensa</Text>
+                <View>
+                  <Text style={commonStyles.whiteText}>
+                    <ResourceDisplay resources={item.reward} fontSize={13} />
+                  </Text>
+                </View>
+              </View>
 
               <TouchableOpacity
                 onPress={handlePress}
                 disabled={!completed}
-                style={[
-                  commonStyles.buttonPrimary,
-                  !completed && commonStyles.buttonDisabled,
-                ]}
+                style={[commonStyles.buttonPrimary, !completed && commonStyles.buttonDisabled]}
               >
                 <Text style={commonStyles.buttonTextLight}>Completar</Text>
               </TouchableOpacity>

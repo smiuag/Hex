@@ -29,16 +29,16 @@ export const BUILDING_PRODUCTION = {
 };
 
 export const BUILDING_TIME = {
-  LAB: 1000 * 60 * 1,
-  KRYSTALMINE: 1000 * 60 * 3,
-  METALLURGY: 1000 * 60 * 2,
-  QUARRY: 1000 * 60 * 2,
-  BASE: 1000 * 60 * 7, //Ya empieza a nivel 1 así que el primero no son 7 son 12
-  ANTENNA: 1000 * 60 * 60,
-  ROCKET: 1000 * 60 * 60 * 12,
-  HANGAR: 1000 * 60 * 60 * 1,
+  LAB: 1000 * 60 * 0.2,
+  KRYSTALMINE: 1000 * 60 * 1,
+  METALLURGY: 1000 * 60 * 0.5,
+  QUARRY: 1000 * 60 * 0.5,
+  BASE: 1000 * 60 * 1,
+  ANTENNA: 1000 * 60 * 30,
+  ROCKET: 1000 * 60 * 60 * 2,
+  HANGAR: 1000 * 60 * 15,
   ENERGY: 1000 * 60 * 5,
-  SPACESTATION: 1000 * 60 * 60 * 24 * 5,
+  SPACESTATION: 1000 * 60 * 60 * 24,
 };
 
 export const BUILDING_MAX_IN_PLANET = {
