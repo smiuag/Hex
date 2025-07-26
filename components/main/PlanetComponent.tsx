@@ -65,12 +65,6 @@ export default function PlanetComponent() {
     CENTER_Y,
   } = SCREEN_DIMENSIONS;
 
-  const currentMapSize =
-    (playerConfig.find((c) => c.key === "MAP_SIZE")?.value as ScaleSize) ||
-    "MEDIUM";
-
-  const currentIndex = scaleKeys.indexOf(currentMapSize);
-
   // Cámara
   const offsetX = useSharedValue(SCREEN_WIDTH / 2 - CENTER_X);
   const offsetY = useSharedValue(SCREEN_HEIGHT / 2 - CENTER_Y);
@@ -127,6 +121,7 @@ export default function PlanetComponent() {
       setModalVisible(true);
     }
   };
+
   const increaseScale = () => {
     const currentMapSize =
       (playerConfig.find((c) => c.key === "MAP_SIZE")?.value as ScaleSize) ||

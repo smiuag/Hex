@@ -19,15 +19,9 @@ import { PlayerQuest, QuestType } from "../../src/types/questType";
 import { Resources, StoredResources } from "../../src/types/resourceTypes";
 import { normalizeHexMap } from "../../utils/mapUtils";
 
-import { generateHexGrid, getInitialResources } from "../../utils/mapUtils";
+import { generateHexGrid } from "../../utils/mapUtils";
 import { NotificationManager } from "../../utils/notificacionUtils";
-import {
-  deleteMap,
-  deleteResearch,
-  loadMap,
-  saveMap,
-  saveResources,
-} from "../services/storage";
+import { loadMap, saveMap } from "../services/storage";
 import { ConfigEntry, PlayerConfig } from "../types/configTypes";
 import { Research, ResearchType } from "../types/researchTypes";
 
@@ -113,16 +107,20 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     await saveMap(map);
   }, []);
 
-  const { handleBuild, handleCancelBuild, processConstructionTick } =
-    useConstruction(
-      hexesRef,
-      setHexes,
-      resources,
-      addProduction,
-      addResources,
-      subtractResources,
-      reloadMap
-    );
+  const {
+    handleBuild,
+    handleCancelBuild,
+    processConstructionTick,
+    resetBuild,
+  } = useConstruction(
+    hexesRef,
+    setHexes,
+    resources,
+    addProduction,
+    addResources,
+    subtractResources,
+    reloadMap
+  );
 
   const {
     research,
@@ -153,19 +151,18 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const endGame = async () => {
-    await deleteMap();
-    await saveResources(getInitialResources());
     await NotificationManager.cancelAllNotifications();
-    await deleteResearch();
+    await resetBuild();
     await resetPlayerConfig();
-    resetResearch();
-    resetQuests();
-    resetFleet();
-    setHexes([]);
-    resetResources();
+    await resetResearch();
+    await resetQuests();
+    await resetFleet();
+    await resetResources();
   };
 
   const startGame = async () => {
+    await endGame();
+
     const newMap = generateHexGrid(2).map((hex) => {
       const isBase = hex.q === 0 && hex.r === 0;
       const terrain = isBase ? ("base" as any) : ("initial" as any);
@@ -179,7 +176,8 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
       };
     });
 
-    await endGame();
+    console.log(newMap);
+    saveMap(newMap);
     setHexes(newMap);
   };
 

@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { Alert } from "react-native";
 import { buildingConfig } from "../src/config/buildingConfig";
-import { saveMap } from "../src/services/storage";
+import { deleteMap, saveMap } from "../src/services/storage";
 import { BuildingType } from "../src/types/buildingTypes";
 import { Hex } from "../src/types/hexTypes";
 import { Resources, StoredResources } from "../src/types/resourceTypes";
@@ -26,6 +26,10 @@ export const useConstruction = (
   reloadMap: () => Promise<void>
 ) => {
   const isBuildingRef = useRef(false);
+
+  const resetBuild = async () => {
+    await deleteMap();
+  };
 
   const handleBuild = async (q: number, r: number, type: BuildingType) => {
     if (isBuildingRef.current) return;
@@ -219,5 +223,6 @@ export const useConstruction = (
     processConstructionTick,
     handleBuild,
     handleCancelBuild,
+    resetBuild,
   };
 };

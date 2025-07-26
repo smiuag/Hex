@@ -23,7 +23,7 @@ export const useConfig = () => {
 
   const resetPlayerConfig = async () => {
     await deleteConfig();
-    setPlayerConfig(defaultPlayerConfig);
+    await setPlayerConfig(defaultPlayerConfig);
   };
 
   useEffect(() => {
