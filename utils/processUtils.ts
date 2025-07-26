@@ -1,5 +1,7 @@
 import { buildingConfig } from "../src/config/buildingConfig";
+import { fleetConfig } from "../src/config/fleetConfig";
 import { researchTechnologies } from "../src/config/researchConfig";
+import { Fleet } from "../src/types/fleetType";
 import { Hex } from "../src/types/hexTypes";
 import { Process } from "../src/types/processTypes";
 import { Research } from "../src/types/researchTypes";
@@ -56,6 +58,39 @@ export const getResearchProcesses = (research: Research[]): Process[] => {
         startedAt,
         duration,
         image: config.image,
+      };
+
+      processes.push(proc);
+    }
+  });
+
+  return processes;
+};
+
+export const getFleetProcesses = (fleetBuildQueue: Fleet[]): Process[] => {
+  const processes: Process[] = [];
+
+  fleetBuildQueue.forEach((r) => {
+    if (r.progress) {
+      const targetAmount = r.progress.targetAmount ?? 0;
+      const config = fleetConfig[r.data.type];
+      const totalTime = config.baseBuildTime * targetAmount;
+      const startedAt = r.progress.startedAt ?? 0;
+
+      const proc: Process = {
+        name:
+          "Flota: " +
+          (config.name +
+            " " +
+            targetAmount +
+            (targetAmount == 1 ? " unidad" : " unidades")),
+        type: "FLEET",
+        fleetType: r.data.type,
+        id: "RESEARCH-" + r.data.type,
+        duration: totalTime,
+        startedAt,
+
+        image: config.imageBackground,
       };
 
       processes.push(proc);

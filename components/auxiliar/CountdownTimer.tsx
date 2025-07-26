@@ -6,12 +6,14 @@ import { formatDuration } from "../../utils/generalUtils";
 interface CountdownTimerProps {
   startedAt?: number;
   duration: number;
+  onlyMostSignificant?: boolean;
   onComplete?: () => void;
 }
 
 export function CountdownTimer({
   startedAt,
   duration,
+  onlyMostSignificant = false,
   onComplete,
 }: CountdownTimerProps) {
   const safeStartedAt = startedAt ?? Date.now();
@@ -34,6 +36,9 @@ export function CountdownTimer({
   }, [duration, safeStartedAt, onComplete]);
 
   return (
-    <Text style={menuStyles.processTime}> {formatDuration(timeRemaining)}</Text>
+    <Text style={menuStyles.processTime}>
+      {" "}
+      {formatDuration(timeRemaining, onlyMostSignificant)}
+    </Text>
   );
 }

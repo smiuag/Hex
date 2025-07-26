@@ -1,9 +1,9 @@
 import React from "react";
 import { SafeAreaView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { FleetSummaryBar } from "../../components/auxiliar/FleetSummaryBar";
+import ResourceBar from "../../components/auxiliar/ResourceBar";
 import FleetComponent from "../../components/main/FleetComponent";
-import { FleetSummaryBar } from "../../components/secondary/FleetSummaryBar";
-import ResourceBar from "../../components/secondary/ResourceBar";
 import { useGameContext } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { FleetType } from "../../src/types/fleetType";

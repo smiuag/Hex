@@ -33,13 +33,11 @@ import {
   pixelToAxial,
   SCREEN_DIMENSIONS,
 } from "../../utils/hexUtils";
-import BorderHexTile from "../secondary/BorderHexTile";
-import HexModal from "../secondary/HexModal";
-import HexTile from "../secondary/HexTile";
+import BorderHexTile from "../auxiliar/BorderHexTile";
+import HexModal from "../auxiliar/HexModal";
+import HexTile from "../auxiliar/HexTile";
 
 export default function PlanetComponent() {
-  console.log("Planet");
-
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedHex, setSelectedHex] = useState<Hex | null>(null);
   const [cameraOffset, setCameraOffset] = useState({ x: 0, y: 0 });

@@ -9,8 +9,8 @@ import {
 import { commonStyles } from "../../src/styles/commonStyles";
 import { ResearchType } from "../../src/types/researchTypes";
 import { formatDuration } from "../../utils/generalUtils";
-import { CountdownTimer } from "../secondary/CountdownTimer";
-import { ResourceDisplay } from "../secondary/ResourceDisplay";
+import { CountdownTimer } from "../auxiliar/CountdownTimer";
+import { ResourceDisplay } from "../auxiliar/ResourceDisplay";
 
 type Props = {
   item: {
@@ -102,26 +102,47 @@ export const ResearchCard: React.FC<Props> = ({
           </View>
 
           {item.isMaxed ? null : item.inProgress ? (
-            <View style={commonStyles.actionBar}>
-              <Text style={commonStyles.statusTextYellow}>
-                ⏳ En curso:
-                <CountdownTimer
-                  startedAt={item.progress?.startedAt}
-                  duration={item.totalTime}
-                  onComplete={() => setAnimate(true)}
-                />
-              </Text>
-              <TouchableOpacity
-                style={commonStyles.buttonDanger}
-                onPress={() => onCancel(item.type)}
-              >
-                <Text style={commonStyles.buttonTextLight}>Cancelar</Text>
-              </TouchableOpacity>
+            <View>
+              <View style={commonStyles.rowSpaceBetween}>
+                <Text style={commonStyles.whiteText}>Coste</Text>
+                <View style={commonStyles.rowResources}>
+                  <ResourceDisplay resources={item.cost} fontSize={13} />
+                </View>
+              </View>
+
+              <View style={commonStyles.rowSpaceBetween}>
+                <Text style={commonStyles.whiteText}>Tiempo total</Text>
+                <View>
+                  <Text style={commonStyles.whiteText}>
+                    {formatDuration(item.totalTime)}
+                  </Text>
+                </View>
+              </View>
+              <View style={commonStyles.actionBar}>
+                <Text style={commonStyles.statusTextYellow}>
+                  ⏳ En curso:
+                  <CountdownTimer
+                    startedAt={item.progress?.startedAt}
+                    duration={item.totalTime}
+                    onComplete={() => setAnimate(true)}
+                  />
+                </Text>
+                <TouchableOpacity
+                  style={commonStyles.buttonDanger}
+                  onPress={() => onCancel(item.type)}
+                >
+                  <Text style={commonStyles.buttonTextLight}>Cancelar</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           ) : (
             <View>
-              <ResourceDisplay resources={item.cost} fontSize={13} />
-
+              <View style={commonStyles.rowSpaceBetween}>
+                <Text style={commonStyles.whiteText}>Coste</Text>
+                <View style={commonStyles.rowResources}>
+                  <ResourceDisplay resources={item.cost} fontSize={13} />
+                </View>
+              </View>
               <View style={commonStyles.actionBar}>
                 {!item.isAvailable ? (
                   <Text style={commonStyles.errorTextRed}>

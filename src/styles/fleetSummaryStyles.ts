@@ -1,0 +1,95 @@
+import { Dimensions, StyleSheet } from "react-native";
+
+const { width } = Dimensions.get("window");
+
+export const fleetSummaryStyle = StyleSheet.create({
+  container: {
+    width: "100%",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: "rgba(30,30,30,0.9)",
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 6,
+    elevation: 10,
+    zIndex: 1000,
+  },
+  hidden: {
+    height: 0,
+    display: "none",
+  },
+  containerExpanded: {
+    paddingBottom: 16,
+  },
+  compactRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    flexWrap: "nowrap",
+  },
+  compactText: {
+    color: "#ccc",
+    fontWeight: "600",
+    fontSize: 12,
+    marginHorizontal: 4,
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginVertical: 6,
+  },
+  item: {
+    alignItems: "center",
+    width: (width - 60) / 5,
+  },
+  iconWrapper: {
+    position: "relative",
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    overflow: "hidden",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#222",
+  },
+  icon: {
+    width: "200%",
+    height: "200%",
+    resizeMode: "contain",
+  },
+  countBadge: {
+    position: "absolute",
+    top: -6,
+    right: -6,
+    backgroundColor: "#e63946",
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    paddingHorizontal: 5,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.25,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 2,
+    elevation: 5,
+    zIndex: 10,
+  },
+  countText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 12,
+    textAlign: "center",
+    lineHeight: 14,
+  },
+  label: {
+    marginTop: 4,
+    fontSize: 10,
+    color: "#ccc",
+    textTransform: "uppercase",
+    fontWeight: "600",
+    textAlign: "center",
+  },
+});

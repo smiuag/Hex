@@ -1,13 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { fleetConfig } from "../src/config/fleetConfig";
-import { loadFleet, saveFleet } from "../src/services/storage";
+import { deleteFleet, loadFleet, saveFleet } from "../src/services/storage";
 import { Fleet, FleetType } from "../src/types/fleetType";
-import { Resources, StoredResources } from "../src/types/resourceTypes";
+import { Resources } from "../src/types/resourceTypes";
 import { getTotalFleetCost } from "../utils/fleetUtils";
-import { NotificationManager } from "../utils/notificacionUtils";
 
 export const useFleet = (
-  resources: StoredResources,
   addResources: (modifications: Partial<Resources>) => void,
   subtractResources: (modifications: Partial<Resources>) => void
 ) => {
@@ -23,103 +21,125 @@ export const useFleet = (
   const resetFleet = async () => {
     setFleetBuildQueue([]);
     fleetBuildQueueRef.current = [];
-    await saveFleet([]);
+    await deleteFleet();
   };
-
   const handleBuildFleet = async (type: FleetType, amount: number) => {
     const existing = fleetBuildQueueRef.current.find(
       (r) => r.data.type === type
     );
-    const config = fleetConfig[type];
 
     const cost = getTotalFleetCost(type, amount);
 
-    // const durationMs = config.baseBuildTime * amount;
-    // const notificationId = await NotificationManager.scheduleNotification({
-    //   title: "🧪 Investigación terminada",
-    //   body: `Has completado "${type}" nivel ${nextLevel}.`,
-    //   delayMs: durationMs,
-    // });
+    let updatedFleetQueue: Fleet[] = [];
+    const now = Date.now();
 
-    const updatedFleetQueue = [...fleetBuildQueueRef.current].map((r) =>
-      r.data.type === type
-        ? {
+    if (existing) {
+      updatedFleetQueue = fleetBuildQueueRef.current.map((r) => {
+        if (r.data.type === type) {
+          const newRemaining = (r.progress?.targetAmount ?? 0) + amount;
+          return {
             ...r,
             progress: {
-              startedAt: Date.now(),
-              targetAmount: amount,
+              startedAt: r.progress?.startedAt ?? now,
+              targetAmount: newRemaining,
               notificationId: undefined,
             },
-          }
-        : r
-    );
-
-    if (!existing) {
-      updatedFleetQueue.push({
-        data: { type, amount: amount },
-        progress: {
-          startedAt: Date.now(),
-          targetAmount: amount,
-          notificationId: undefined,
-        },
+          };
+        }
+        return r;
       });
+    } else {
+      updatedFleetQueue = [
+        ...fleetBuildQueueRef.current,
+        {
+          data: { type, amount: 0 }, // amount se actualiza al finalizar cada unidad
+          progress: {
+            startedAt: now,
+            targetAmount: amount,
+            notificationId: undefined,
+          },
+        },
+      ];
     }
 
     await updateFleetQueueState(updatedFleetQueue);
-
     subtractResources(cost);
   };
 
   const handleCancelFleet = async (type: FleetType) => {
     const inProgress = fleetBuildQueueRef.current.find(
-      (r) => r.progress && r.data.type == type
+      (r) => r.progress && r.data.type === type
     );
-    if (!inProgress) return;
+    if (!inProgress || !inProgress.progress) return;
 
-    const { data, progress } = inProgress;
-    const totalCost = getTotalFleetCost(data.type, progress?.targetAmount!);
+    const { progress } = inProgress;
 
-    addResources(totalCost);
+    const refundCost = getTotalFleetCost(type, 1);
+    addResources(refundCost);
 
-    if (progress?.notificationId) {
-      await NotificationManager.cancelNotification(progress.notificationId);
-    }
+    const updatedFleetQueue = fleetBuildQueueRef.current.map((r) => {
+      if (r.data.type !== type) return r;
 
-    const updatedResearch = fleetBuildQueueRef.current.map((r) =>
-      r.data.type === data.type ? { ...r, progress: undefined } : r
-    );
+      const remaining = progress.targetAmount - 1;
 
-    await updateFleetQueueState(updatedResearch);
+      if (remaining <= 0) {
+        return {
+          ...r,
+          progress: undefined,
+        };
+      }
+
+      return {
+        ...r,
+        progress: {
+          ...progress,
+          targetAmount: remaining,
+          startedAt: progress.startedAt, // mantener tiempo original
+          notificationId: undefined, // opcional: cancelar notif
+        },
+      };
+    });
+
+    await updateFleetQueueState(updatedFleetQueue);
   };
 
   const processFleetTick = async () => {
     const now = Date.now();
     let changed = false;
-
     const updatedFleetQueue = fleetBuildQueueRef.current.map((item) => {
-      if (item.progress) {
+      if (item.progress && item.progress.targetAmount > 0) {
         const config = fleetConfig[item.data.type];
-        const totalTime = config.baseBuildTime * item.progress.targetAmount;
+        const timePerUnit = config.baseBuildTime;
         const elapsed = now - item.progress.startedAt;
 
-        if (elapsed >= totalTime) {
+        if (elapsed >= timePerUnit) {
           changed = true;
 
-          //   Notifications.scheduleNotificationAsync({
-          //     content: {
-          //       title: "🧠 Investigación completada",
-          //       body: `Has finalizado la investigación "${config.name}".`,
-          //       sound: true,
-          //     },
-          //     trigger: null,
-          //   });
+          const newAmount = item.data.amount + 1;
+          const newTargetAmount = item.progress.targetAmount - 1;
+          const newStartedAt = item.progress.startedAt + timePerUnit;
 
-          return {
-            data: {
-              type: item.data.type,
-              amount: item.progress.targetAmount,
-            },
-          };
+          if (newTargetAmount <= 0) {
+            return {
+              data: {
+                ...item.data,
+                amount: newAmount,
+              },
+            };
+          } else {
+            return {
+              ...item,
+              data: {
+                ...item.data,
+                amount: newAmount,
+              },
+              progress: {
+                ...item.progress,
+                targetAmount: newTargetAmount,
+                startedAt: newStartedAt,
+              },
+            };
+          }
         }
       }
 

@@ -98,7 +98,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     handleCancelFleet,
     processFleetTick,
     resetFleet,
-  } = useFleet(resources, addResources, subtractResources);
+  } = useFleet(addResources, subtractResources);
 
   const reloadMap = useCallback(async () => {
     const saved = await loadMap();
@@ -140,6 +140,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     const interval = setInterval(() => {
       processConstructionTick();
       processResearchTick();
+      processFleetTick();
     }, 1000);
 
     return () => {
@@ -178,7 +179,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
       };
     });
 
-    endGame();
+    await endGame();
     setHexes(newMap);
   };
 

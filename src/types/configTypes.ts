@@ -27,7 +27,7 @@ export const SCALE: ScaleType = {
   SMALL: {
     HEX_SIZE: 40,
     FACTOR: 0.82,
-    FONT_SIZE: 26,
+    FONT_SIZE: 22,
   },
   MEDIUM: {
     HEX_SIZE: 60,

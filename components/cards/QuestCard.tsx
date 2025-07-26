@@ -6,9 +6,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { ResourceDisplay } from "../../components/secondary/ResourceDisplay";
 import { questConfig } from "../../src/config/questConfig";
 import { commonStyles } from "../../src/styles/commonStyles";
+import { ResourceDisplay } from "../auxiliar/ResourceDisplay";
 
 type Props = {
   item: (typeof questConfig)[keyof typeof questConfig];

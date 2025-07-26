@@ -1,4 +1,4 @@
-import { HapticTab } from "@/components/secondary/HapticTab";
+import { HapticTab } from "@/components/auxiliar/HapticTab";
 import { Tabs } from "expo-router";
 import React from "react";
 import { Text, View } from "react-native";
@@ -9,7 +9,7 @@ import {
   PlanetIcon,
   QuestIcon,
   ResearchIcon,
-} from "../../components/secondary/MenuIcons";
+} from "../../components/auxiliar/MenuIcons";
 import { questConfig } from "../../src/config/questConfig";
 import { useGameContext } from "../../src/context/GameContext";
 import { questIconView, tabStyles } from "../../src/styles/tabsStyles";

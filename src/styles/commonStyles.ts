@@ -213,6 +213,7 @@ export const commonStyles = StyleSheet.create({
   queueCountContainer: {
     alignItems: "center",
     justifyContent: "center",
+    flexDirection: "row",
     width: 60,
   },
   queueCount: {

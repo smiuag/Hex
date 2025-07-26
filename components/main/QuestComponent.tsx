@@ -5,7 +5,7 @@ import { questConfig } from "../../src/config/questConfig";
 import { useGameContext } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { canCompleteQuest, shouldShowQuest } from "../../utils/questUtils";
-import { QuestCard } from "../secondary/QuestCard";
+import { QuestCard } from "../cards/QuestCard";
 
 export default function QuestComponent() {
   const {

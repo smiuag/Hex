@@ -31,7 +31,6 @@ export const useConfig = () => {
   }, []);
 
   function handleUpdateConfig(newEntry: ConfigEntry) {
-    console.log(newEntry);
     setPlayerConfig((prev) => {
       const exists = prev.find((c) => c.key === newEntry.key);
       let updatedConfig;

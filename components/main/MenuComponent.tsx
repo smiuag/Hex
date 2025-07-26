@@ -17,11 +17,12 @@ import { menuStyles } from "../../src/styles/menuStyles";
 import { Process } from "../../src/types/processTypes";
 import {
   getBuildingProcesses,
+  getFleetProcesses,
   getResearchProcesses,
 } from "../../utils/processUtils";
 import { getLabLevel } from "../../utils/researchUtils";
-import { ProcessCard } from "../secondary/ProcessCard";
-import { ResourceDisplay } from "../secondary/ResourceDisplay";
+import { ResourceDisplay } from "../auxiliar/ResourceDisplay";
+import { ProcessCard } from "../cards/ProcessCard";
 
 export default function MenuComponent() {
   const [processes, setProcesses] = useState<Process[]>([]);
@@ -34,14 +35,20 @@ export default function MenuComponent() {
     resources,
     endGame,
     startGame,
+    fleetBuildQueue,
   } = useGameContext();
 
   useEffect(() => {
     const buildingProcesses = getBuildingProcesses(hexes);
     const researchProcesses = getResearchProcesses(research);
-    const allProcesses = [...buildingProcesses, ...researchProcesses];
+    const fleetProcesses = getFleetProcesses(fleetBuildQueue);
+    const allProcesses = [
+      ...buildingProcesses,
+      ...researchProcesses,
+      ...fleetProcesses,
+    ];
     setProcesses(allProcesses);
-  }, [hexes, research]);
+  }, [hexes, research, fleetBuildQueue]);
 
   const handleReset = () => {
     Alert.alert(

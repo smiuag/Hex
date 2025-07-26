@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { ResourceDisplay } from "../../components/secondary/ResourceDisplay";
 import { buildingConfig } from "../../src/config/buildingConfig";
 import { researchTechnologies } from "../../src/config/researchConfig";
 import { useGameContext } from "../../src/context/GameContext";
@@ -22,6 +21,7 @@ import {
 } from "../../utils/buildingUtils";
 import { formatDuration } from "../../utils/generalUtils";
 import { hasEnoughResources } from "../../utils/resourceUtils";
+import { ResourceDisplay } from "../auxiliar/ResourceDisplay";
 
 const { width } = Dimensions.get("window");
 

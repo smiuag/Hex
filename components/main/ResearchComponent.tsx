@@ -10,7 +10,7 @@ import {
   getResearchTime,
 } from "../../utils/researchUtils";
 import { hasEnoughResources } from "../../utils/resourceUtils";
-import { ResearchCard } from "../secondary/ResearchCard";
+import { ResearchCard } from "../cards/ResearchCard";
 
 export default function ResearchComponent() {
   const { research, hexes, resources, handleResearch, handleCancelResearch } =

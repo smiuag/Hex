@@ -73,7 +73,7 @@ export const fleetConfig: Record<
     imageBackground: FLEET_BACKGROUND_IMAGE.SPACEDESTROYER,
     baseCost: FLEET_COST.SPACEDESTROYER,
     requiredResearch: FLEET_REQUIRED_RESEARCH.SPACEDESTROYER,
-    productionFacility: "SPACESTATION",
+    productionFacility: "HANGAR",
     description:
       "Diseñado para eliminar naves enemigas y proteger las zonas estratégicas del espacio.",
   },
