@@ -1,33 +1,37 @@
+import { FleetType } from "@/src/types/fleetType";
 import { ResearchType } from "@/src/types/researchTypes";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
   Button,
-  FlatList,
   ImageBackground,
+  ScrollView,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
+import { researchTechnologies } from "../../src/config/researchConfig";
 import { IMAGES } from "../../src/constants/images";
 import { useGameContext } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { menuStyles } from "../../src/styles/menuStyles";
 import { Process } from "../../src/types/processTypes";
-import { formatDuration } from "../../utils/generalUtils";
 import {
   getBuildingProcesses,
   getResearchProcesses,
 } from "../../utils/processUtils";
-menuStyles;
+import { getLabLevel } from "../../utils/researchUtils";
+import { ProcessCard } from "../secondary/ProcessCard";
+import { ResourceDisplay } from "../secondary/ResourceDisplay";
 
 export default function MenuComponent() {
   const [processes, setProcesses] = useState<Process[]>([]);
   const {
     handleCancelBuild,
     handleCancelResearch,
+    handleCancelFleet,
     hexes,
     research,
+    resources,
     endGame,
     startGame,
   } = useGameContext();
@@ -38,16 +42,6 @@ export default function MenuComponent() {
     const allProcesses = [...buildingProcesses, ...researchProcesses];
     setProcesses(allProcesses);
   }, [hexes, research]);
-
-  const [tick, setTick] = useState(0);
-  useEffect(() => {
-    const interval = setInterval(() => setTick((t) => t + 1), 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleStartGame = async () => {
-    startGame();
-  };
 
   const handleReset = () => {
     Alert.alert(
@@ -68,79 +62,105 @@ export default function MenuComponent() {
 
   const cancelBuild = async (q: number, r: number) => {
     await handleCancelBuild(q, r);
-    // Opcional: refrescar lista procesos después de cancelar
-    const updatedProcesses = getBuildingProcesses(hexes);
-    setProcesses(updatedProcesses);
   };
 
   const cancelResearch = async (type: ResearchType) => {
     await handleCancelResearch(type);
-    const updatedProcesses = getResearchProcesses(research);
-    setProcesses(updatedProcesses);
   };
 
-  const cancelShip = async () => {};
-
-  const renderProcess = ({ item }: { item: Process }) => {
-    const elapsed = Date.now() - item.startedAt;
-    const timeRemaining = Math.max(0, item.duration - elapsed);
-
-    return (
-      <View style={menuStyles.processCard}>
-        <Text style={menuStyles.processName}>{item.name}</Text>
-        <Text style={menuStyles.processTime}>
-          ⏳ {formatDuration(timeRemaining)}
-        </Text>
-        <TouchableOpacity
-          style={commonStyles.cancelButton}
-          onPress={async () => {
-            if (item.type === "BUILDING") {
-              await cancelBuild(item.q!, item.r!);
-            } else if (item.type === "RESEARCH") {
-              await cancelResearch(item.researchType!);
-            } else if (item.type === "SHIP") {
-              await cancelShip();
-            }
-          }}
-        >
-          <Text style={commonStyles.cancelButtonText}>Cancelar</Text>
-        </TouchableOpacity>
-      </View>
-    );
+  const onCancelFleet = async (type: FleetType) => {
+    await handleCancelFleet(type);
   };
+
+  const productionPerHour = Object.fromEntries(
+    Object.entries(resources?.production ?? {}).map(([key, value]) => [
+      key,
+      Math.round(value * 3600),
+    ])
+  );
+
+  function getResearchItemsForMenu() {
+    return Object.entries(researchTechnologies)
+      .map(([key, config]) => {
+        const type = key as ResearchType;
+        const data = (research || []).find((r) => r.data.type === type);
+        const currentLevel = data?.data.level ?? 0;
+        const isAvailable = config.labLevelRequired <= getLabLevel(hexes);
+        return {
+          key: type,
+          name: config.name,
+          currentLevel,
+          maxLevel: config.maxLevel,
+          isAvailable,
+        };
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+  const researchItems = getResearchItemsForMenu();
 
   return (
     <ImageBackground
       source={IMAGES.BACKGROUND_MENU_IMAGE}
-      style={{ flex: 1 }}
+      style={commonStyles.flex1}
       resizeMode="cover"
     >
-      <View style={menuStyles.container}>
-        <View style={menuStyles.topContainer}>
+      <ScrollView
+        contentContainerStyle={[commonStyles.ph10, commonStyles.flexGrow1]}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View>
           <Text style={menuStyles.title}>Colonia</Text>
 
-          {hexes.length > 0 && (
-            <>
-              {processes.length === 0 ? (
-                <Text style={commonStyles.emptyText}>
-                  No hay procesos activos.
-                </Text>
-              ) : (
-                <FlatList
-                  data={processes}
-                  keyExtractor={(item) => item.id}
-                  renderItem={renderProcess}
-                  contentContainerStyle={{ paddingBottom: 12 }}
-                  style={menuStyles.list}
-                />
-              )}
-            </>
-          )}
-        </View>
+          <View style={commonStyles.rowSpaceBetween}>
+            <Text style={commonStyles.whiteText}>Producción:</Text>
+            <View style={commonStyles.rowResources}>
+              <ResourceDisplay resources={productionPerHour} fontSize={13} />
+            </View>
+          </View>
+          <View>
+            {researchItems.map((item) => {
+              const maxDots = 80;
+              const charWeight = 2;
+              const dotsCount = Math.max(
+                0,
+                Math.floor(maxDots - item.name.length * charWeight)
+              );
+              const dots = ".".repeat(dotsCount);
 
-        <View>
+              return (
+                <View style={menuStyles.researchItem} key={item.key}>
+                  <Text style={menuStyles.researchName} numberOfLines={1}>
+                    {item.name}
+                  </Text>
+                  <Text style={menuStyles.dots} numberOfLines={1}>
+                    {dots}
+                  </Text>
+                  <Text style={menuStyles.researchLevel}>
+                    {item.currentLevel}/{item.maxLevel}
+                  </Text>
+                </View>
+              );
+            })}
+          </View>
+
+          <View style={commonStyles.pt5}>
+            {processes.map((item) => {
+              return (
+                <ProcessCard
+                  key={`process-${item.id}`}
+                  item={item}
+                  onCancelBuild={cancelBuild}
+                  onCancelResearch={cancelResearch}
+                  onCancelFleet={onCancelFleet}
+                />
+              );
+            })}
+          </View>
+        </View>
+        <View style={commonStyles.pt5}>
           {hexes.length == 0 && (
-            <Button title="Iniciar partida" onPress={handleStartGame} />
+            <Button title="Iniciar partida" onPress={startGame} />
           )}
           {hexes.length > 0 && (
             <Button
@@ -150,7 +170,7 @@ export default function MenuComponent() {
             />
           )}
         </View>
-      </View>
+      </ScrollView>
     </ImageBackground>
   );
 }

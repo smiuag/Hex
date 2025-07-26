@@ -37,3 +37,11 @@ export type Research = {
     notificationId?: string;
   };
 };
+
+export interface ResearchItem {
+  key: string;
+  name: string;
+  currentLevel: number;
+  maxLevel: number;
+  isAvailable: boolean;
+}

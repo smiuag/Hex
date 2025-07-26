@@ -18,13 +18,15 @@ export const getBuildingProcesses = (hexes: Hex[]): Process[] => {
 
       const proc: Process = {
         name:
-          hex.construction.targetLevel == 1
+          "Construcción: " +
+          (hex.construction.targetLevel == 1
             ? `${name}`
-            : `${name} (Lvl: ${targetLevel})`,
+            : `${name} (Lvl: ${targetLevel})`),
         type: "BUILDING",
         id: "BUILDING-" + `${hex.q}-${hex.r}`,
         startedAt,
         duration,
+        image: buildingConfig[hex.construction.building].imageBackground,
         q: hex.q,
         r: hex.r,
       };
@@ -43,16 +45,17 @@ export const getResearchProcesses = (research: Research[]): Process[] => {
     if (r.progress) {
       const targetLevel = r.progress.targetLevel ?? 1;
       const duration = getResearchTime(r.data.type, r.progress.targetLevel);
-      const type = researchTechnologies[r.data.type];
+      const config = researchTechnologies[r.data.type];
       const startedAt = r.progress.startedAt ?? 0;
 
       const proc: Process = {
-        name: type.name + " Nv: " + targetLevel,
+        name: "Investigación: " + (config.name + " Nv: " + targetLevel),
         type: "RESEARCH",
         id: "RESEARCH-" + r.data.type,
         researchType: r.data.type,
         startedAt,
         duration,
+        image: config.image,
       };
 
       processes.push(proc);

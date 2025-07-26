@@ -9,6 +9,7 @@ import {
 import { commonStyles } from "../../src/styles/commonStyles";
 import { ResearchType } from "../../src/types/researchTypes";
 import { formatDuration } from "../../utils/generalUtils";
+import { CountdownTimer } from "../secondary/CountdownTimer";
 import { ResourceDisplay } from "../secondary/ResourceDisplay";
 
 type Props = {
@@ -45,38 +46,21 @@ export const ResearchCard: React.FC<Props> = ({
   onCancel,
 }) => {
   const scale = useRef(new Animated.Value(1)).current;
-  const [remaining, setRemaining] = useState(item.totalTime);
-  const intervalRef = useRef<number | null>(null);
+  const [animate, setAnimate] = useState(false);
   const wasInProgress = useRef(item.inProgress);
 
+  // Detectar cuando termina la investigación y disparar animación
   useEffect(() => {
-    if (item.inProgress && item.progress) {
-      const { startedAt } = item.progress;
-      const totalTime = item.totalTime;
-
-      const elapsed = Date.now() - startedAt;
-      const initialRemaining = Math.max(0, totalTime - elapsed);
-      setRemaining(initialRemaining);
-
-      intervalRef.current = setInterval(() => {
-        const elapsedNow = Date.now() - startedAt;
-        const newRemaining = Math.max(0, totalTime - elapsedNow);
-        setRemaining(newRemaining);
-      }, 1000);
-    } else {
-      setRemaining(item.totalTime);
+    if (wasInProgress.current && !item.inProgress) {
+      // Si quieres, aquí podrías controlar también si remaining es 0
+      // pero ahora lo hace CountdownTimer y llama onComplete
     }
+    wasInProgress.current = item.inProgress;
+  }, [item.inProgress]);
 
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
-  }, [item.inProgress, item.progress?.startedAt, item.totalTime]);
-
+  // Animación al activar `animate`
   useEffect(() => {
-    if (wasInProgress.current && !item.inProgress && remaining <= 0) {
+    if (animate) {
       Animated.sequence([
         Animated.timing(scale, {
           toValue: 1.35,
@@ -88,10 +72,9 @@ export const ResearchCard: React.FC<Props> = ({
           friction: 3,
           useNativeDriver: true,
         }),
-      ]).start();
+      ]).start(() => setAnimate(false));
     }
-    wasInProgress.current = item.inProgress;
-  }, [item.inProgress, remaining]);
+  }, [animate, scale]);
 
   return (
     <Animated.View
@@ -121,7 +104,12 @@ export const ResearchCard: React.FC<Props> = ({
           {item.isMaxed ? null : item.inProgress ? (
             <View style={commonStyles.actionBar}>
               <Text style={commonStyles.statusTextYellow}>
-                ⏳ En curso: {formatDuration(remaining)}
+                ⏳ En curso:
+                <CountdownTimer
+                  startedAt={item.progress?.startedAt}
+                  duration={item.totalTime}
+                  onComplete={() => setAnimate(true)}
+                />
               </Text>
               <TouchableOpacity
                 style={commonStyles.buttonDanger}

@@ -57,7 +57,6 @@ export const normalizeHexMap = (map: any[]): Hex[] => {
   } else if (baseHex?.construction?.building === "BASE") {
     baseLevel = baseHex.construction.targetLevel - 1;
   }
-  const visibleRadius = Math.floor(baseLevel / 2) + 1;
 
   return map.map((hex) => {
     const terrain = hex.terrain as TerrainType;
@@ -78,10 +77,9 @@ export const normalizeHexMap = (map: any[]): Hex[] => {
       : undefined;
 
     const isVisible =
-      axialDistance({ q: 0, r: 0 }, { q: hex.q, r: hex.r }) <= visibleRadius;
+      axialDistance({ q: 0, r: 0 }, { q: hex.q, r: hex.r }) <= baseLevel;
     const isRadius =
-      axialDistance({ q: 0, r: 0 }, { q: hex.q, r: hex.r }) ===
-      visibleRadius + 1;
+      axialDistance({ q: 0, r: 0 }, { q: hex.q, r: hex.r }) === baseLevel + 1;
 
     return {
       q: hex.q,

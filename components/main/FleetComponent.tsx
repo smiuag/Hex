@@ -74,7 +74,6 @@ export default function FleetComponent() {
   };
 
   const hasSpaceStation = hexes.some((h) => h.building?.type == "SPACESTATION");
-  console.log(hexes);
 
   const fleetItems = Object.entries(fleetConfig)
     .map(([key, config]) => {

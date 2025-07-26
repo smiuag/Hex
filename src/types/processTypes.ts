@@ -1,3 +1,5 @@
+import { ImageSourcePropType } from "react-native";
+import { FleetType } from "./fleetType";
 import { ResearchType } from "./researchTypes";
 
 export type ProcessType = "BUILDING" | "RESEARCH" | "SHIP";
@@ -9,6 +11,8 @@ export class Process {
   startedAt: number;
   duration: number;
   researchType?: ResearchType;
+  image: ImageSourcePropType;
+  fleetType?: FleetType;
   q?: number;
   r?: number;
 
@@ -19,6 +23,7 @@ export class Process {
     researchType: ResearchType,
     startedAt: number,
     duration: number,
+    image: ImageSourcePropType,
     q?: number,
     r?: number
   ) {
@@ -28,6 +33,7 @@ export class Process {
     this.researchType = researchType;
     this.startedAt = startedAt;
     this.duration = duration;
+    this.image = image;
     this.q = q;
     this.r = r;
   }

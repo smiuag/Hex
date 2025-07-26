@@ -20,6 +20,15 @@ export const commonStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(255, 255, 255, 0.5)",
   },
+  cardMini: {
+    minHeight: 100,
+    width: width - 24,
+    borderRadius: 16,
+    overflow: "hidden",
+    justifyContent: "flex-start",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.5)",
+  },
   imageCover: {
     resizeMode: "cover",
   },
@@ -210,5 +219,18 @@ export const commonStyles = StyleSheet.create({
     color: "#fff",
     fontSize: 20,
     fontWeight: "bold",
+  },
+  pt5: {
+    paddingTop: 10,
+  },
+  flexGrow1: {
+    flexGrow: 1,
+    justifyContent: "space-between",
+  },
+  flex1: {
+    flex: 1,
+  },
+  ph10: {
+    paddingHorizontal: 10,
   },
 });

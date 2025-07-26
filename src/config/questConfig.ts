@@ -69,7 +69,7 @@ export const questConfig: Record<
     name: "Mina de cristal",
     backgroundImage: IMAGES.KRYSTALMINE_BACKGROUND,
     requiredQuest: ["BUILDING_METALLURGY1", "BUILDING_QUARRY1"],
-    reward: { stone: 12000, metal: 12000, energy: 5000 },
+    reward: { stone: 12000, metal: 12000, crystal: 5000 },
   },
   BUILDING_BASE2: {
     type: "BUILDING_BASE2",
@@ -85,7 +85,7 @@ export const questConfig: Record<
     order: 8,
     description: "Mejora el nivel de la base a nivel 2.",
     name: "Hangar",
-    backgroundImage: IMAGES.BASE_BACKGROUND,
+    backgroundImage: IMAGES.HANGAR_BACKGROUND,
     requiredQuest: ["BUILDING_BASE2"],
     reward: { stone: 10000, metal: 10000, energy: 10000 },
   },
