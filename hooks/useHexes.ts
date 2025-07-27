@@ -1,34 +1,56 @@
-import React, { useRef } from "react";
+import * as Notifications from "expo-notifications";
+import { useEffect, useRef, useState } from "react";
 import { Alert } from "react-native";
 import { buildingConfig } from "../src/config/buildingConfig";
-import { deleteMap, saveMap } from "../src/services/storage";
+import { deleteMap, loadMap, saveMap } from "../src/services/storage";
 import { BuildingType } from "../src/types/buildingTypes";
 import { Hex } from "../src/types/hexTypes";
 import { Resources, StoredResources } from "../src/types/resourceTypes";
-import {
-  getBuildCost,
-  getBuildTime,
-  getProductionPerSecond,
-} from "../utils/buildingUtils";
-import { expandMapAroundBase } from "../utils/mapUtils";
+import { getBuildCost, getBuildTime, getProductionPerSecond } from "../utils/buildingUtils";
+import { expandMapAroundBase, generateHexGrid, normalizeHexMap } from "../utils/hexUtils";
 import { NotificationManager } from "../utils/notificacionUtils";
-
-import * as Notifications from "expo-notifications";
 import { hasEnoughResources } from "../utils/resourceUtils";
 
-export const useConstruction = (
-  hexesRef: React.RefObject<Hex[]>,
-  setHexes: React.Dispatch<React.SetStateAction<Hex[]>>,
+export const useHexes = (
   resources: StoredResources,
   addProduction: (modifications: Partial<Resources>) => void,
   addResources: (modifications: Partial<Resources>) => void,
-  subtractResources: (modifications: Partial<Resources>) => void,
-  reloadMap: () => Promise<void>
+  subtractResources: (modifications: Partial<Resources>) => void
 ) => {
+  const [hexes, setHexes] = useState<Hex[]>([]);
   const isBuildingRef = useRef(false);
+
+  useEffect(() => {
+    const load = async () => {
+      const saved = await loadMap();
+      if (saved) updateMap(saved);
+      else updateMap([]);
+    };
+    load();
+  }, []);
+
+  const updateMap = async (hexes: Hex[]) => {
+    const normalized = normalizeHexMap(hexes);
+    await saveMap(normalized);
+    setHexes(normalized);
+  };
 
   const resetBuild = async () => {
     await deleteMap();
+
+    const newMap = generateHexGrid(2).map((hex) => {
+      const isBase = hex.q === 0 && hex.r === 0;
+      const terrain = isBase ? ("base" as any) : ("initial" as any);
+
+      return {
+        ...hex,
+        terrain,
+        building: isBase ? { type: "BASE" as BuildingType, level: 1 } : null,
+        construction: undefined,
+        previousBuilding: null,
+      };
+    });
+    updateMap(newMap);
   };
 
   const handleBuild = async (q: number, r: number, type: BuildingType) => {
@@ -36,7 +58,7 @@ export const useConstruction = (
     isBuildingRef.current = true;
 
     try {
-      const hex = hexesRef.current.find((h) => h.q === q && h.r === r);
+      const hex = hexes.find((h) => h.q === q && h.r === r);
       if (!hex) return;
 
       const currentLevel = hex.building?.type === type ? hex.building.level : 0;
@@ -45,10 +67,7 @@ export const useConstruction = (
       const durationMs = getBuildTime(type, nextLevel);
 
       if (!hasEnoughResources(resources, scaledCost)) {
-        Alert.alert(
-          "Recursos insuficientes",
-          "No tienes suficientes materiales."
-        );
+        Alert.alert("Recursos insuficientes", "No tienes suficientes materiales.");
         return;
       }
 
@@ -60,7 +79,7 @@ export const useConstruction = (
 
       subtractResources(scaledCost);
 
-      const updatedHexes = hexesRef.current.map((h) =>
+      const updatedHexes = hexes.map((h) =>
         h.q === q && h.r === r
           ? {
               ...h,
@@ -76,16 +95,14 @@ export const useConstruction = (
           : h
       );
 
-      hexesRef.current = [...updatedHexes];
-      setHexes([...updatedHexes]);
-      saveMap(updatedHexes);
+      updateMap(updatedHexes);
     } finally {
       isBuildingRef.current = false;
     }
   };
 
   const handleCancelBuild = async (q: number, r: number) => {
-    const hex = hexesRef.current.find((h) => h.q === q && h.r === r);
+    const hex = hexes.find((h) => h.q === q && h.r === r);
     if (!hex || !hex.construction) return;
 
     const { building, targetLevel, notificationId } = hex.construction;
@@ -103,7 +120,7 @@ export const useConstruction = (
       await NotificationManager.cancelNotification(notificationId);
     }
 
-    const updatedHexes = hexesRef.current.map((h) => {
+    const updatedHexes = hexes.map((h) => {
       if (h.q === q && h.r === r) {
         const { construction, previousBuilding, ...rest } = h;
         return {
@@ -116,9 +133,7 @@ export const useConstruction = (
       return h;
     });
 
-    hexesRef.current = [...updatedHexes];
-    setHexes([...updatedHexes]);
-    await saveMap(updatedHexes);
+    updateMap(updatedHexes);
   };
 
   const processConstructionTick = () => {
@@ -131,7 +146,7 @@ export const useConstruction = (
       let baseLeveledUp = false;
       let updatedBaseLevel = 0;
 
-      const updated = hexesRef.current.map((hex) => {
+      const updated = hexes.map((hex) => {
         if (hex.construction) {
           const { building, startedAt, targetLevel } = hex.construction;
           const buildTime = getBuildTime(building, targetLevel);
@@ -141,14 +156,9 @@ export const useConstruction = (
 
             // Calcular producción anterior y nueva
             const prevProd: Partial<Resources> =
-              targetLevel === 1
-                ? {}
-                : getProductionPerSecond(building, targetLevel - 1);
+              targetLevel === 1 ? {} : getProductionPerSecond(building, targetLevel - 1);
 
-            const newProd: Partial<Resources> = getProductionPerSecond(
-              building,
-              targetLevel
-            );
+            const newProd: Partial<Resources> = getProductionPerSecond(building, targetLevel);
 
             // Calcular diferencia
             const productionDiff: Partial<Resources> = {};
@@ -206,13 +216,7 @@ export const useConstruction = (
       }
 
       if (changed) {
-        hexesRef.current = [...finalMap];
-        setHexes([...finalMap]);
-        saveMap(finalMap);
-
-        if (baseLeveledUp) {
-          reloadMap();
-        }
+        updateMap(finalMap);
       }
     } finally {
       isBuildingRef.current = false;
@@ -220,6 +224,7 @@ export const useConstruction = (
   };
 
   return {
+    hexes,
     processConstructionTick,
     handleBuild,
     handleCancelBuild,

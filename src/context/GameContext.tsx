@@ -1,7 +1,7 @@
-import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import React, { createContext, useContext, useEffect } from "react";
 import { useConfig } from "../../hooks/useConfig";
-import { useConstruction } from "../../hooks/useConstruction";
 import { useFleet } from "../../hooks/useFleet";
+import { useHexes } from "../../hooks/useHexes";
 import { useQuest } from "../../hooks/useQuest";
 import { useResearch } from "../../hooks/useResearch";
 import { useResources } from "../../hooks/useResources";
@@ -11,11 +11,7 @@ import { Fleet, FleetType } from "../../src/types/fleetType";
 import { Hex } from "../../src/types/hexTypes";
 import { PlayerQuest, QuestType } from "../../src/types/questType";
 import { Resources, StoredResources } from "../../src/types/resourceTypes";
-import { normalizeHexMap } from "../../utils/mapUtils";
-
-import { generateHexGrid } from "../../utils/mapUtils";
 import { NotificationManager } from "../../utils/notificacionUtils";
-import { loadMap, saveMap } from "../services/storage";
 import { ConfigEntry, PlayerConfig } from "../types/configTypes";
 import { Research, ResearchType } from "../types/researchTypes";
 import { StarSystem } from "../types/starSystemTypes";
@@ -26,9 +22,6 @@ type ProviderContextType = {
   subtractResources: (modifications: Partial<Resources>) => void;
   resources: StoredResources;
   hexes: Hex[];
-  setHexes: React.Dispatch<React.SetStateAction<Hex[]>>;
-  reloadMap: () => Promise<void>;
-  saveMapToStorage: (map: Hex[]) => Promise<void>;
   processConstructionTick: () => void;
   handleBuild: (q: number, r: number, type: BuildingType) => void;
   handleCancelBuild: (q: number, r: number) => void;
@@ -62,11 +55,15 @@ type ProviderContextType = {
 const ResourceContext = createContext<ProviderContextType | undefined>(undefined);
 
 export const Provider = ({ children }: { children: React.ReactNode }) => {
-  const hexesRef = useRef<Hex[]>([]);
-  const [hexes, setHexes] = useState<Hex[]>([]);
-
   const { resources, resetResources, addProduction, addResources, subtractResources } =
-    useResources(hexesRef);
+    useResources();
+
+  const { handleBuild, handleCancelBuild, processConstructionTick, resetBuild, hexes } = useHexes(
+    resources,
+    addProduction,
+    addResources,
+    subtractResources
+  );
 
   const { playerQuests, completeQuest, markQuestsAsViewed, resetQuests } = useQuest(addResources);
 
@@ -81,29 +78,6 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
   const { fleetBuildQueue, handleBuildFleet, handleCancelFleet, processFleetTick, resetFleet } =
     useFleet(addResources, subtractResources);
 
-  const reloadMap = useCallback(async () => {
-    const saved = await loadMap();
-    const normalized = saved ? normalizeHexMap(saved) : [];
-    setHexes(normalized);
-    hexesRef.current = normalized;
-  }, []);
-
-  const saveMapToStorage = useCallback(async (map: Hex[]) => {
-    setHexes(map);
-    hexesRef.current = map;
-    await saveMap(map);
-  }, []);
-
-  const { handleBuild, handleCancelBuild, processConstructionTick, resetBuild } = useConstruction(
-    hexesRef,
-    setHexes,
-    resources,
-    addProduction,
-    addResources,
-    subtractResources,
-    reloadMap
-  );
-
   const { research, handleResearch, handleCancelResearch, processResearchTick, resetResearch } =
     useResearch(resources, addResources, subtractResources);
 
@@ -117,10 +91,6 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
   } = useStarSystem();
 
   useEffect(() => {
-    hexesRef.current = hexes;
-  }, [hexes]);
-
-  useEffect(() => {
     const interval = setInterval(() => {
       processConstructionTick();
       processResearchTick();
@@ -131,10 +101,6 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
       clearInterval(interval);
     };
   }, [processConstructionTick, processResearchTick]);
-
-  useEffect(() => {
-    reloadMap();
-  }, []);
 
   const endGame = async () => {
     await NotificationManager.cancelAllNotifications();
@@ -149,22 +115,6 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
 
   const startGame = async () => {
     await endGame();
-
-    const newMap = generateHexGrid(2).map((hex) => {
-      const isBase = hex.q === 0 && hex.r === 0;
-      const terrain = isBase ? ("base" as any) : ("initial" as any);
-
-      return {
-        ...hex,
-        terrain,
-        building: isBase ? { type: "BASE" as BuildingType, level: 1 } : null,
-        construction: undefined,
-        previousBuilding: null,
-      };
-    });
-
-    saveMap(newMap);
-    setHexes(newMap);
   };
 
   const contextValue = {
@@ -186,9 +136,6 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     subtractResources,
     fleetBuildQueue,
     hexes,
-    setHexes,
-    reloadMap,
-    saveMapToStorage,
     processConstructionTick,
     handleBuild,
     handleCancelBuild,

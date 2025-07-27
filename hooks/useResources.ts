@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import { loadResources, saveResources } from "../src/services/storage";
-import { Hex } from "../src/types/hexTypes";
 import { Resources, StoredResources } from "../src/types/resourceTypes";
-import { getInitialResources } from "../utils/mapUtils";
+import { getInitialResources } from "../utils/hexUtils";
+import { hasEnoughResources } from "../utils/resourceUtils";
 
-export function useResources(hexesRef: React.RefObject<Hex[]>) {
-  const [resources, setResources] = useState<StoredResources>(
-    getInitialResources()
-  );
+export function useResources() {
+  const [resources, setResources] = useState<StoredResources>(getInitialResources());
 
   useEffect(() => {
     const load = async () => {
@@ -92,11 +90,16 @@ export function useResources(hexesRef: React.RefObject<Hex[]>) {
     await saveResources(updatedStoredResources);
   };
 
+  const enoughResources = async (cost: Partial<Resources>) => {
+    return hasEnoughResources(resources, cost);
+  };
+
   return {
     resources,
     resetResources,
     addResources,
     subtractResources,
     addProduction,
+    enoughResources,
   };
 }

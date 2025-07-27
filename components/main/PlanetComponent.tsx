@@ -1,18 +1,7 @@
-import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import React, { useCallback, useEffect, useState } from "react";
-import {
-  ImageBackground,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import {
-  Gesture,
-  GestureDetector,
-  GestureHandlerRootView,
-} from "react-native-gesture-handler";
+import React, { useState } from "react";
+import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import Animated, {
   runOnJS,
   useAnimatedReaction,
@@ -27,12 +16,7 @@ import { useGameContext } from "../../src/context/GameContext";
 import { BuildingType } from "../../src/types/buildingTypes";
 import { Hex } from "../../src/types/hexTypes";
 import { getScaleValues } from "../../utils/configUtils";
-import {
-  axialToPixel,
-  getHexPoints,
-  pixelToAxial,
-  SCREEN_DIMENSIONS,
-} from "../../utils/hexUtils";
+import { axialToPixel, getHexPoints, pixelToAxial, SCREEN_DIMENSIONS } from "../../utils/hexUtils";
 import BorderHexTile from "../auxiliar/BorderHexTile";
 import HexModal from "../auxiliar/HexModal";
 import HexTile from "../auxiliar/HexTile";
@@ -47,7 +31,6 @@ export default function PlanetComponent() {
     hexes,
     research,
     resources,
-    reloadMap,
     handleBuild,
     handleCancelBuild,
     playerConfig,
@@ -56,14 +39,8 @@ export default function PlanetComponent() {
 
   const scale = getScaleValues(playerConfig);
 
-  const {
-    SCREEN_WIDTH,
-    SCREEN_HEIGHT,
-    SVG_WIDTH,
-    SVG_HEIGHT,
-    CENTER_X,
-    CENTER_Y,
-  } = SCREEN_DIMENSIONS;
+  const { SCREEN_WIDTH, SCREEN_HEIGHT, SVG_WIDTH, SVG_HEIGHT, CENTER_X, CENTER_Y } =
+    SCREEN_DIMENSIONS;
 
   // Cámara
   const offsetX = useSharedValue(SCREEN_WIDTH / 2 - CENTER_X);
@@ -113,9 +90,7 @@ export default function PlanetComponent() {
 
     const isEmpty = !tappedHex.building && !tappedHex.construction;
     if (isEmpty) {
-      router.replace(
-        `/(tabs)/planet/construction?q=${tappedHex.q}&r=${tappedHex.r}`
-      );
+      router.replace(`/(tabs)/planet/construction?q=${tappedHex.q}&r=${tappedHex.r}`);
     } else {
       setSelectedHex(tappedHex);
       setModalVisible(true);
@@ -124,29 +99,25 @@ export default function PlanetComponent() {
 
   const increaseScale = () => {
     const currentMapSize =
-      (playerConfig.find((c) => c.key === "MAP_SIZE")?.value as ScaleSize) ||
-      "MEDIUM";
+      (playerConfig.find((c) => c.key === "MAP_SIZE")?.value as ScaleSize) || "MEDIUM";
     const currentIndex = scaleKeys.indexOf(currentMapSize);
     const nextIndex = Math.min(currentIndex + 1, scaleKeys.length - 1);
 
     if (nextIndex !== currentIndex) {
       const newScaleKey = scaleKeys[nextIndex];
       handleUpdateConfig({ key: "MAP_SIZE", value: newScaleKey });
-      reloadMap();
     }
   };
 
   const decreaseScale = () => {
     const currentMapSize =
-      (playerConfig.find((c) => c.key === "MAP_SIZE")?.value as ScaleSize) ||
-      "MEDIUM";
+      (playerConfig.find((c) => c.key === "MAP_SIZE")?.value as ScaleSize) || "MEDIUM";
     const currentIndex = scaleKeys.indexOf(currentMapSize);
     const nextIndex = Math.max(currentIndex - 1, 0);
 
     if (nextIndex !== currentIndex) {
       const newScaleKey = scaleKeys[nextIndex];
       handleUpdateConfig({ key: "MAP_SIZE", value: newScaleKey });
-      reloadMap();
     }
   };
   const tapGesture = Gesture.Tap()
@@ -158,9 +129,7 @@ export default function PlanetComponent() {
       runOnJS(handleTap)(x, y);
     });
 
-  const composedGesture = Gesture.Simultaneous(
-    Gesture.Exclusive(tapGesture, panGesture)
-  );
+  const composedGesture = Gesture.Simultaneous(Gesture.Exclusive(tapGesture, panGesture));
 
   const onBuild = async (type: BuildingType) => {
     if (selectedHex) {
@@ -176,23 +145,9 @@ export default function PlanetComponent() {
     }
   };
 
-  useEffect(() => {
-    reloadMap();
-  }, []);
-
-  useFocusEffect(
-    useCallback(() => {
-      reloadMap();
-    }, [reloadMap])
-  );
-
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: "white" }}>
-      <ImageBackground
-        source={IMAGES.BACKGROUND_IMAGE}
-        style={{ flex: 1 }}
-        resizeMode="cover"
-      >
+      <ImageBackground source={IMAGES.BACKGROUND_IMAGE} style={{ flex: 1 }} resizeMode="cover">
         <GestureDetector gesture={composedGesture}>
           <View style={{ flex: 1 }} pointerEvents="box-only">
             <Animated.View
@@ -221,13 +176,7 @@ export default function PlanetComponent() {
                   const points = getHexPoints(px, py, scale.HEX_SIZE);
 
                   if (hex.isRadius) {
-                    return (
-                      <BorderHexTile
-                        key={`border-${index}`}
-                        points={points}
-                        index={index}
-                      />
-                    );
+                    return <BorderHexTile key={`border-${index}`} points={points} index={index} />;
                   }
 
                   if (!hex.isVisible) return null;

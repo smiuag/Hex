@@ -4,7 +4,7 @@ import { Hex } from "../../src/types/hexTypes";
 import { PlayerQuest } from "../../src/types/questType";
 import { Research } from "../../src/types/researchTypes";
 import { StoredResources } from "../../src/types/resourceTypes";
-import { getInitialResources } from "../../utils/mapUtils";
+import { getInitialResources } from "../../utils/hexUtils";
 import { PlayerConfig } from "../types/configTypes";
 import { StarSystem } from "../types/starSystemTypes";
 
