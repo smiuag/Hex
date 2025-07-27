@@ -1,4 +1,5 @@
 import { ImageSourcePropType } from "react-native";
+import { FleetData } from "./fleetType";
 import { Resources, SpecialResources } from "./resourceTypes";
 
 export type CelestialBodyType = "PLANET" | "ASTEROID" | "MOON" | "NEBULA_FRAGMENT";
@@ -25,6 +26,7 @@ export type CelestialBody = {
   explored: boolean;
   baseBuilt: boolean;
   id: string;
+  explorationStartedAt?: number;
 };
 
 export type StarSystem = {
@@ -32,9 +34,12 @@ export type StarSystem = {
   type: StarSystemType;
   planets: CelestialBody[];
   discovered: boolean;
-  explored: boolean;
-  conquered: boolean;
-  lastUpdate: number;
+  explored: boolean; // Si has mandado sonda
+  conquered: boolean; // So has eliminado las defensas
+  explorationStartedAt?: number;
+  atackStartedAt?: number;
   distance: number;
+  starPort: boolean;
+  defense: FleetData[];
   id: string;
 };

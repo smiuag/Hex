@@ -17,6 +17,7 @@ import { Research, ResearchType } from "../types/researchTypes";
 import { StarSystem } from "../types/starSystemTypes";
 
 type ProviderContextType = {
+  explorePlanet: (systemId: string, planetId: string) => void;
   addProduction: (modifications: Partial<Resources>) => void;
   addResources: (modifications: Partial<Resources>) => void;
   subtractResources: (modifications: Partial<Resources>) => void;
@@ -41,6 +42,7 @@ type ProviderContextType = {
   starSystems: StarSystem[];
   discardStarSystem: (id: string) => void;
   exploreStarSystem: (id: string) => void;
+  cancelExploreSystem: (id: string) => void;
 };
 
 const ResourceContext = createContext<ProviderContextType | undefined>(undefined);
@@ -66,13 +68,22 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
   const { research, handleResearch, handleCancelResearch, processResearchTick, resetResearch } =
     useResearch(resources, addResources, subtractResources);
 
-  const { discardStarSystem, exploreStarSystem, resetStarSystem, starSystems } = useStarSystem();
+  const {
+    discardStarSystem,
+    exploreStarSystem,
+    resetStarSystem,
+    explorePlanet,
+    cancelExploreSystem,
+    processFlyTick,
+    starSystems,
+  } = useStarSystem();
 
   useEffect(() => {
     const interval = setInterval(() => {
       processConstructionTick();
       processResearchTick();
       processFleetTick();
+      processFlyTick();
     }, 1000);
 
     return () => {
@@ -95,10 +106,10 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     await endGame();
 
     handleUpdateConfig({ key: "GAME_STARTED", value: "true" });
-    console.log(playerConfig);
   };
 
   const contextValue = {
+    explorePlanet,
     discardStarSystem,
     exploreStarSystem,
     starSystems,
@@ -124,6 +135,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     markQuestsAsViewed,
     endGame,
     startGame,
+    cancelExploreSystem,
   };
 
   return <ResourceContext.Provider value={contextValue}>{children}</ResourceContext.Provider>;

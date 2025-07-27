@@ -1,0 +1,26 @@
+{
+  "fleetName": {
+    "LIGHTFIGHTER": "Caza ligero",
+    "INTERCEPTOR": "Interceptor",
+    "ESCORTFRIGATE": "Fragata de escolta",
+    "BATTLECRUISER": "Crucero de batalla",
+    "SPACEDESTROYER": "Destructor espacial",
+    "ASSAULTBATTLESHIP": "Acorazado de asalto",
+    "STARCARRIER": "Porta cazas",
+    "HEAVYASSAULTSHIP": "Fragata pesada",
+    "ORBITALASSAULTSHIP": "Destructor orbital",
+    "PLANETARYDESTROYER": "Destructor planetario"
+  },
+  "fleetDescription": {
+    "LIGHTFIGHTER": "Nave rápida y ágil diseñada para combates aéreos y patrullas de defensa.",
+    "INTERCEPTOR": "Especializado en interceptar y eliminar amenazas enemigas antes de que se acerquen.",
+    "ESCORTFRIGATE": "Protege naves mayores y convoyes, combinando defensa y maniobrabilidad eficiente.",
+    "BATTLECRUISER": "Nave poderosa capaz de atacar con fuerza y resistir daños considerables en batalla.",
+    "SPACEDESTROYER": "Diseñado para eliminar naves enemigas y proteger las zonas estratégicas del espacio.",
+    "ASSAULTBATTLESHIP": "Nave pesada equipada para ataques directos y romper líneas defensivas enemigas.",
+    "STARCARRIER": "Base móvil para lanzar cazas y proporcionar soporte táctico en combate espacial.",
+    "HEAVYASSAULTSHIP": "Nave robusta con armamento pesado para incursiones agresivas y asedios prolongados.",
+    "ORBITALASSAULTSHIP": "Especializada en asaltos desde órbita para tomar control rápido de objetivos planetarios.",
+    "PLANETARYDESTROYER": "Unidad masiva diseñada para destruir estructuras y bases a escala planetaria."
+  }
+}

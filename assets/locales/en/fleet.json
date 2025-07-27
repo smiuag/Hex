@@ -1,0 +1,26 @@
+{
+  "fleetName": {
+    "LIGHTFIGHTER": "Light Fighter",
+    "INTERCEPTOR": "Interceptor",
+    "ESCORTFRIGATE": "Escort Frigate",
+    "BATTLECRUISER": "Battlecruiser",
+    "SPACEDESTROYER": "Space Destroyer",
+    "ASSAULTBATTLESHIP": "Assault Battleship",
+    "STARCARRIER": "Star Carrier",
+    "HEAVYASSAULTSHIP": "Heavy Assault Frigate",
+    "ORBITALASSAULTSHIP": "Orbital Assault Ship",
+    "PLANETARYDESTROYER": "Planetary Destroyer"
+  },
+  "fleetDescription": {
+    "LIGHTFIGHTER": "A fast and agile ship designed for aerial combat and defense patrols.",
+    "INTERCEPTOR": "Specialized in intercepting and eliminating enemy threats before they approach.",
+    "ESCORTFRIGATE": "Protects larger ships and convoys, combining defense with efficient maneuverability.",
+    "BATTLECRUISER": "A powerful ship capable of dealing strong attacks and withstanding significant damage.",
+    "SPACEDESTROYER": "Designed to eliminate enemy ships and guard strategic space zones.",
+    "ASSAULTBATTLESHIP": "A heavy ship equipped for direct assaults and breaking enemy defensive lines.",
+    "STARCARRIER": "A mobile base for launching fighters and providing tactical support in space battles.",
+    "HEAVYASSAULTSHIP": "A robust vessel with heavy weaponry for aggressive raids and prolonged sieges.",
+    "ORBITALASSAULTSHIP": "Specialized in orbital assaults for fast planetary objective takeovers.",
+    "PLANETARYDESTROYER": "A massive unit designed to destroy structures and bases on a planetary scale."
+  }
+}

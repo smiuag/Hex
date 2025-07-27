@@ -103,3 +103,61 @@ export const FLEET_BACKGROUND_IMAGE: Record<FleetType, any> = {
   ORBITALASSAULTSHIP: IMAGES.FLEET_BG_ORBITALASSAULTSHIP,
   PLANETARYDESTROYER: IMAGES.FLEET_BG_PLANETARYDESTROYER,
 };
+
+export const FLEET_STATS: Record<FleetType, any> = {
+  PROBE: {
+    ATTACK: 0,
+    DEFENSE: 1,
+    SPEED: 1000,
+  },
+  LIGHTFIGHTER: {
+    ATTACK: 1,
+    DEFENSE: 2,
+    SPEED: 100,
+  },
+  INTERCEPTOR: {
+    ATTACK: 3,
+    DEFENSE: 1,
+    SPEED: 100,
+  },
+  ESCORTFRIGATE: {
+    ATTACK: 3,
+    DEFENSE: 3,
+    SPEED: 300,
+  },
+  BATTLECRUISER: {
+    ATTACK: 4,
+    DEFENSE: 4,
+    SPEED: 200,
+  },
+  SPACEDESTROYER: {
+    ATTACK: 3,
+    DEFENSE: 5,
+    SPEED: 300,
+  },
+  ASSAULTBATTLESHIP: {
+    ATTACK: 5,
+    DEFENSE: 3,
+    SPEED: 300,
+  },
+  STARCARRIER: {
+    ATTACK: 5,
+    DEFENSE: 5,
+    SPEED: 300,
+  },
+  HEAVYASSAULTSHIP: {
+    ATTACK: 6,
+    DEFENSE: 6,
+    SPEED: 250,
+  },
+  ORBITALASSAULTSHIP: {
+    ATTACK: 7,
+    DEFENSE: 9,
+    SPEED: 150,
+  },
+  PLANETARYDESTROYER: {
+    ATTACK: 10,
+    DEFENSE: 10,
+    SPEED: 100,
+  },
+};

@@ -3,10 +3,7 @@ import { FleetType } from "../src/types/fleetType";
 import { Research } from "../src/types/researchTypes";
 import { Resources } from "../src/types/resourceTypes";
 
-export const isUnlocked = (
-  type: string,
-  playerResearch: Research[] = []
-): boolean => {
+export const isUnlocked = (type: string, playerResearch: Research[] = []): boolean => {
   const config = fleetConfig[type as FleetType];
   if (!config) return false;
 
@@ -20,10 +17,7 @@ export const isUnlocked = (
   });
 };
 
-export const getTotalFleetCost = (
-  type: FleetType,
-  amount: number
-): Resources => {
+export const getTotalFleetCost = (type: FleetType, amount: number): Resources => {
   const config = fleetConfig[type];
   const base = config.baseCost;
   const result: Resources = {} as Resources;
@@ -35,4 +29,8 @@ export const getTotalFleetCost = (
   }
 
   return result;
+};
+
+export const getFlyTime = (speed: number, distance: number) => {
+  return Math.round(distance / (speed / 10)) * 100;
 };

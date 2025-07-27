@@ -8,7 +8,7 @@ import { ResourceDisplay } from "../auxiliar/ResourceDisplay";
 type Props = {
   system: StarSystem;
   onDiscard: (id: string) => void;
-  onExplorePlanet: (id: string) => void;
+  onExplorePlanet: (systemId: string, planetId: string) => void;
 };
 
 export const SystemExploredCard: React.FC<Props> = ({ system, onDiscard, onExplorePlanet }) => {
@@ -34,11 +34,6 @@ export const SystemExploredCard: React.FC<Props> = ({ system, onDiscard, onExplo
             </Text>
           </View>
 
-          <Text style={commonStyles.subtitleText}>
-            {t("CelestialBodys")}: {totalBodies} | {t("Explored")}: {exploredBodies} |{" "}
-            {t("Unexplored")}: {unexploredBodies}
-          </Text>
-
           <View style={{ marginTop: 10 }}>
             {system.planets.map((planet, index) => (
               <View key={index} style={[commonStyles.actionBar, commonStyles.rowSpaceBetween]}>
@@ -48,14 +43,13 @@ export const SystemExploredCard: React.FC<Props> = ({ system, onDiscard, onExplo
                     : tPlanets(`stelarBody.${planet.type}`)}
                 </Text>
                 <View>
-                  {" "}
                   {planet.explored ? (
                     <ResourceDisplay resources={planet.resources} fontSize={12} />
                   ) : (
                     <TouchableOpacity
                       style={commonStyles.buttonPrimary}
                       disabled={!enoughProbe}
-                      onPress={() => onExplorePlanet(system.id)}
+                      onPress={() => onExplorePlanet(system.id, planet.id)}
                     >
                       <Text style={commonStyles.buttonTextLight}>{t("Explore")}</Text>
                     </TouchableOpacity>

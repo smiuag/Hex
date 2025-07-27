@@ -10,8 +10,6 @@ import { ResourceDisplay } from "../auxiliar/ResourceDisplay";
 type Props = {
   item: {
     type: FleetType;
-    name: string;
-    description: string;
     imageBackground: any;
     owned: number;
     inProgress: boolean;
@@ -29,6 +27,7 @@ type Props = {
 
 export const FleetCard: React.FC<Props> = ({ item, disableButton, onBuild, onCancel }) => {
   const { t } = useTranslation("common");
+  const { t: tFleet } = useTranslation("common");
   const scale = useRef(new Animated.Value(1)).current;
   const [animate, setAnimate] = useState(false);
   const wasInProgress = useRef(item.inProgress);
@@ -71,10 +70,10 @@ export const FleetCard: React.FC<Props> = ({ item, disableButton, onBuild, onCan
         <View style={commonStyles.overlayDark}>
           <View>
             <View style={commonStyles.headerRow}>
-              <Text style={commonStyles.titleText}>{item.name}</Text>
+              <Text style={commonStyles.titleText}>{tFleet(`fleetName.${item.type}`)}</Text>
               {item.owned > 0 && <Text style={commonStyles.whiteText}>x{item.owned}</Text>}
             </View>
-            <Text style={commonStyles.subtitleText}>{item.description}</Text>
+            <Text style={commonStyles.subtitleText}>{tFleet(`fleetDescription.${item.type}`)}</Text>
           </View>
           <View>
             <View style={commonStyles.rowSpaceBetween}>

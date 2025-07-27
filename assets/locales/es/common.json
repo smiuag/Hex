@@ -31,5 +31,8 @@
   "startGame": "Iniciar partida",
   "endGameTitle": "Finalizar partida",
   "endGameConfirmation": "¿Estás seguro de que quieres borrar el mapa actual?",
-  "confirmDelete": "Sí, borrar"
+  "confirmDelete": "Sí, borrar",
+
+  "Attack": "Atacar",
+  "CelestialBodys": "Cuerpos estelares encontrados: "
 }

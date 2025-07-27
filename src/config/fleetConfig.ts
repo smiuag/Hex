@@ -3,6 +3,7 @@ import {
   FLEET_BACKGROUND_IMAGE,
   FLEET_COST,
   FLEET_REQUIRED_RESEARCH,
+  FLEET_STATS,
   FLEET_TIME,
 } from "../constants/fleet";
 import { FleetType, ProductionFacilityType } from "../types/fleetType";
@@ -12,130 +13,136 @@ import { Resources } from "../types/resourceTypes";
 export const fleetConfig: Record<
   FleetType,
   {
-    name: string;
     baseBuildTime: number;
     imageBackground: ImageSourcePropType;
     baseCost: Partial<Resources>;
     requiredResearch: FleetResearchRequiredData[];
-    description: string;
     orden: number;
     productionFacility: ProductionFacilityType;
+    attack: number;
+    defense: number;
+    speed: number;
   }
 > = {
   PROBE: {
-    name: "Sonda",
     orden: 0,
     baseBuildTime: FLEET_TIME.PROBE,
     imageBackground: FLEET_BACKGROUND_IMAGE.PROBE,
     baseCost: FLEET_COST.PROBE,
     requiredResearch: FLEET_REQUIRED_RESEARCH.PROBE,
     productionFacility: "HANGAR",
-    description: "Sonda de investigación para la exploración de sistemas distantes",
+    attack: FLEET_STATS.PROBE.ATACK,
+    defense: FLEET_STATS.PROBE.DEFENSE,
+    speed: FLEET_STATS.PROBE.SPEED,
   },
   LIGHTFIGHTER: {
-    name: "Caza ligero",
     orden: 1,
     baseBuildTime: FLEET_TIME.LIGHTFIGHTER,
     imageBackground: FLEET_BACKGROUND_IMAGE.LIGHTFIGHTER,
     baseCost: FLEET_COST.LIGHTFIGHTER,
     requiredResearch: FLEET_REQUIRED_RESEARCH.LIGHTFIGHTER,
     productionFacility: "HANGAR",
-    description: "Nave rápida y ágil diseñada para combates aéreos y patrullas de defensa.",
+    attack: FLEET_STATS.LIGHTFIGHTER.ATACK,
+    defense: FLEET_STATS.LIGHTFIGHTER.DEFENSE,
+    speed: FLEET_STATS.LIGHTFIGHTER.SPEED,
   },
   INTERCEPTOR: {
-    name: "Interceptor",
     orden: 2,
     baseBuildTime: FLEET_TIME.INTERCEPTOR,
     imageBackground: FLEET_BACKGROUND_IMAGE.INTERCEPTOR,
     baseCost: FLEET_COST.INTERCEPTOR,
     requiredResearch: FLEET_REQUIRED_RESEARCH.INTERCEPTOR,
     productionFacility: "HANGAR",
-    description:
-      "Especializado en interceptar y eliminar amenazas enemigas antes de que se acerquen.",
+    attack: FLEET_STATS.INTERCEPTOR.ATACK,
+    defense: FLEET_STATS.INTERCEPTOR.DEFENSE,
+    speed: FLEET_STATS.INTERCEPTOR.SPEED,
   },
   ESCORTFRIGATE: {
-    name: "Fragata de escolta",
     orden: 3,
     baseBuildTime: FLEET_TIME.ESCORTFRIGATE,
     imageBackground: FLEET_BACKGROUND_IMAGE.ESCORTFRIGATE,
     baseCost: FLEET_COST.ESCORTFRIGATE,
     requiredResearch: FLEET_REQUIRED_RESEARCH.ESCORTFRIGATE,
     productionFacility: "HANGAR",
-    description:
-      "Protege naves mayores y convoyes, combinando defensa y maniobrabilidad eficiente.",
+    attack: FLEET_STATS.ESCORTFRIGATE.ATACK,
+    defense: FLEET_STATS.ESCORTFRIGATE.DEFENSE,
+    speed: FLEET_STATS.ESCORTFRIGATE.SPEED,
   },
   BATTLECRUISER: {
-    name: "Crucero de batalla",
     orden: 4,
     baseBuildTime: FLEET_TIME.BATTLECRUISER,
     imageBackground: FLEET_BACKGROUND_IMAGE.BATTLECRUISER,
     baseCost: FLEET_COST.BATTLECRUISER,
     requiredResearch: FLEET_REQUIRED_RESEARCH.BATTLECRUISER,
     productionFacility: "HANGAR",
-    description:
-      "Nave poderosa capaz de atacar con fuerza y resistir daños considerables en batalla.",
+    attack: FLEET_STATS.BATTLECRUISER.ATACK,
+    defense: FLEET_STATS.BATTLECRUISER.DEFENSE,
+    speed: FLEET_STATS.BATTLECRUISER.SPEED,
   },
   SPACEDESTROYER: {
-    name: "Destructor espacial",
     orden: 5,
     baseBuildTime: FLEET_TIME.SPACEDESTROYER,
     imageBackground: FLEET_BACKGROUND_IMAGE.SPACEDESTROYER,
     baseCost: FLEET_COST.SPACEDESTROYER,
     requiredResearch: FLEET_REQUIRED_RESEARCH.SPACEDESTROYER,
     productionFacility: "HANGAR",
-    description:
-      "Diseñado para eliminar naves enemigas y proteger las zonas estratégicas del espacio.",
+    attack: FLEET_STATS.SPACEDESTROYER.ATACK,
+    defense: FLEET_STATS.SPACEDESTROYER.DEFENSE,
+    speed: FLEET_STATS.SPACEDESTROYER.SPEED,
   },
   ASSAULTBATTLESHIP: {
-    name: "Acorazado de asalto",
     orden: 6,
     baseBuildTime: FLEET_TIME.ASSAULTBATTLESHIP,
     imageBackground: FLEET_BACKGROUND_IMAGE.ASSAULTBATTLESHIP,
     baseCost: FLEET_COST.ASSAULTBATTLESHIP,
     requiredResearch: FLEET_REQUIRED_RESEARCH.ASSAULTBATTLESHIP,
     productionFacility: "SPACESTATION",
-    description: "Nave pesada equipada para ataques directos y romper líneas defensivas enemigas.",
+    attack: FLEET_STATS.ASSAULTBATTLESHIP.ATACK,
+    defense: FLEET_STATS.ASSAULTBATTLESHIP.DEFENSE,
+    speed: FLEET_STATS.ASSAULTBATTLESHIP.SPEED,
   },
   STARCARRIER: {
-    name: "Porta cazas",
     orden: 7,
     baseBuildTime: FLEET_TIME.STARCARRIER,
     imageBackground: FLEET_BACKGROUND_IMAGE.STARCARRIER,
     baseCost: FLEET_COST.STARCARRIER,
     requiredResearch: FLEET_REQUIRED_RESEARCH.STARCARRIER,
     productionFacility: "SPACESTATION",
-    description: "Base móvil para lanzar cazas y proporcionar soporte táctico en combate espacial.",
+    attack: FLEET_STATS.STARCARRIER.ATACK,
+    defense: FLEET_STATS.STARCARRIER.DEFENSE,
+    speed: FLEET_STATS.STARCARRIER.SPEED,
   },
   HEAVYASSAULTSHIP: {
-    name: "Fragata pesada",
     orden: 8,
     baseBuildTime: FLEET_TIME.HEAVYASSAULTSHIP,
     imageBackground: FLEET_BACKGROUND_IMAGE.HEAVYASSAULTSHIP,
     baseCost: FLEET_COST.HEAVYASSAULTSHIP,
     requiredResearch: FLEET_REQUIRED_RESEARCH.HEAVYASSAULTSHIP,
     productionFacility: "SPACESTATION",
-    description:
-      "Nave robusta con armamento pesado para incursiones agresivas y asedios prolongados.",
+    attack: FLEET_STATS.HEAVYASSAULTSHIP.ATACK,
+    defense: FLEET_STATS.HEAVYASSAULTSHIP.DEFENSE,
+    speed: FLEET_STATS.HEAVYASSAULTSHIP.SPEED,
   },
   ORBITALASSAULTSHIP: {
-    name: "Destructor orbital",
     orden: 9,
     baseBuildTime: FLEET_TIME.ORBITALASSAULTSHIP,
     imageBackground: FLEET_BACKGROUND_IMAGE.ORBITALASSAULTSHIP,
     baseCost: FLEET_COST.ORBITALASSAULTSHIP,
     requiredResearch: FLEET_REQUIRED_RESEARCH.ORBITALASSAULTSHIP,
     productionFacility: "SPACESTATION",
-    description:
-      "Especializada en asaltos desde órbita para tomar control rápido de objetivos planetarios.",
+    attack: FLEET_STATS.ORBITALASSAULTSHIP.ATACK,
+    defense: FLEET_STATS.ORBITALASSAULTSHIP.DEFENSE,
+    speed: FLEET_STATS.ORBITALASSAULTSHIP.SPEED,
   },
   PLANETARYDESTROYER: {
-    name: "Destructor planetario",
     orden: 10,
     baseBuildTime: FLEET_TIME.PLANETARYDESTROYER,
     imageBackground: FLEET_BACKGROUND_IMAGE.PLANETARYDESTROYER,
     baseCost: FLEET_COST.PLANETARYDESTROYER,
     requiredResearch: FLEET_REQUIRED_RESEARCH.PLANETARYDESTROYER,
     productionFacility: "SPACESTATION",
-    description: "Unidad masiva diseñada para destruir estructuras y bases a escala planetaria.",
+    attack: FLEET_STATS.PLANETARYDESTROYER.ATACK,
+    defense: FLEET_STATS.PLANETARYDESTROYER.DEFENSE,
+    speed: FLEET_STATS.PLANETARYDESTROYER.SPEED,
   },
 };

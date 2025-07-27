@@ -129,15 +129,3 @@ export const removeStarSystemById = async (idToRemove: string): Promise<void> =>
 
   await AsyncStorage.setItem(STAR_SYSTEM_KEY, JSON.stringify(updatedSystems));
 };
-
-export const markStarSystemAsExplored = async (idToMark: string): Promise<void> => {
-  const data = await AsyncStorage.getItem(STAR_SYSTEM_KEY);
-  if (!data) return;
-
-  const systems: StarSystem[] = JSON.parse(data);
-  const updatedSystems = systems.map((system) =>
-    system.id === idToMark ? { ...system, explored: true } : system
-  );
-
-  await AsyncStorage.setItem(STAR_SYSTEM_KEY, JSON.stringify(updatedSystems));
-};
