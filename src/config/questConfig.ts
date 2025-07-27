@@ -23,7 +23,7 @@ export const questConfig: Record<
     name: "Comenzando la colonia",
     backgroundImage: IMAGES.BACKGROUND_MENU_IMAGE,
     requiredQuest: [],
-    reward: { stone: 18000, metal: 18000, energy: 100 },
+    reward: { STONE: 18000, METAL: 18000, ENERGY: 100 },
   },
   BUILDING_LAB1: {
     type: "BUILDING_LAB1",
@@ -32,7 +32,7 @@ export const questConfig: Record<
     name: "Laboratorio",
     backgroundImage: IMAGES.LAB_BACKGROUND,
     requiredQuest: ["START"],
-    reward: { stone: 5000, metal: 5000, energy: 1000 },
+    reward: { STONE: 5000, METAL: 5000, ENERGY: 1000 },
   },
   RESEARCH_MINING1: {
     order: 3,
@@ -41,7 +41,7 @@ export const questConfig: Record<
     name: "Primera investigación",
     backgroundImage: IMAGES.RESEARCH_MINING,
     requiredQuest: ["BUILDING_LAB1"],
-    reward: { stone: 18000, metal: 18000 },
+    reward: { STONE: 18000, METAL: 18000 },
   },
   BUILDING_METALLURGY1: {
     type: "BUILDING_METALLURGY1",
@@ -50,17 +50,16 @@ export const questConfig: Record<
     name: "Mina de metales",
     backgroundImage: IMAGES.METALLURGY_BACKGROUND,
     requiredQuest: ["RESEARCH_MINING1"],
-    reward: { stone: 36000 },
+    reward: { STONE: 36000 },
   },
   BUILDING_QUARRY1: {
     type: "BUILDING_QUARRY1",
     order: 5,
-    description:
-      "Construye una cantera para la extracción de minerales sólidos en el planeta.",
+    description: "Construye una cantera para la extracción de minerales sólidos en el planeta.",
     name: "Cantera",
     backgroundImage: IMAGES.QUARRY_BACKGROUND,
     requiredQuest: ["RESEARCH_MINING1"],
-    reward: { metal: 18000 },
+    reward: { METAL: 18000 },
   },
   BUILDING_KRYSTALMINE1: {
     type: "BUILDING_KRYSTALMINE1",
@@ -69,7 +68,7 @@ export const questConfig: Record<
     name: "Mina de cristal",
     backgroundImage: IMAGES.KRYSTALMINE_BACKGROUND,
     requiredQuest: ["BUILDING_METALLURGY1", "BUILDING_QUARRY1"],
-    reward: { stone: 12000, metal: 12000, crystal: 5000 },
+    reward: { STONE: 12000, METAL: 12000, CRYSTAL: 5000 },
   },
   BUILDING_BASE2: {
     type: "BUILDING_BASE2",
@@ -78,7 +77,7 @@ export const questConfig: Record<
     name: "Base de nivel 2",
     backgroundImage: IMAGES.BASE_BACKGROUND,
     requiredQuest: ["BUILDING_KRYSTALMINE1"],
-    reward: { stone: 15000, metal: 15000, energy: 15000 },
+    reward: { STONE: 15000, METAL: 15000, ENERGY: 15000 },
   },
   BUILDING_HANGAR: {
     type: "BUILDING_HANGAR",
@@ -87,7 +86,7 @@ export const questConfig: Record<
     name: "Hangar",
     backgroundImage: IMAGES.HANGAR_BACKGROUND,
     requiredQuest: ["BUILDING_BASE2"],
-    reward: { stone: 10000, metal: 10000, energy: 10000 },
+    reward: { STONE: 10000, METAL: 10000, ENERGY: 10000 },
   },
   FLEET_FIRST: {
     type: "FLEET_FIRST",
@@ -96,6 +95,6 @@ export const questConfig: Record<
     name: "Primera flota",
     backgroundImage: IMAGES.FLEET_BG_HEAVYASSAULTSHIP,
     requiredQuest: ["BUILDING_HANGAR"],
-    reward: { stone: 10000, metal: 10000, energy: 10000 },
+    reward: { STONE: 10000, METAL: 10000, ENERGY: 10000 },
   },
 };

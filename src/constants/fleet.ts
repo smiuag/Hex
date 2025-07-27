@@ -4,16 +4,16 @@ import { Resources } from "../types/resourceTypes";
 import { IMAGES } from "./images";
 
 export const FLEET_COST: Record<FleetType, Partial<Resources>> = {
-  LIGHTFIGHTER: { metal: 100, crystal: 50, energy: 10 },
-  INTERCEPTOR: { metal: 200, crystal: 100, energy: 25 },
-  ESCORTFRIGATE: { metal: 500, crystal: 250, energy: 50 },
-  BATTLECRUISER: { metal: 1500, crystal: 700, energy: 150 },
-  SPACEDESTROYER: { metal: 4000, crystal: 2000, energy: 400 },
-  ASSAULTBATTLESHIP: { metal: 9000, crystal: 5000, energy: 900 },
-  STARCARRIER: { metal: 18000, crystal: 10000, energy: 1800 },
-  HEAVYASSAULTSHIP: { metal: 12000, crystal: 6500, energy: 1200 },
-  ORBITALASSAULTSHIP: { metal: 22000, crystal: 12000, energy: 2500 },
-  PLANETARYDESTROYER: { metal: 50000, crystal: 25000, energy: 6000 },
+  LIGHTFIGHTER: { METAL: 100, CRYSTAL: 50, ENERGY: 10 },
+  INTERCEPTOR: { METAL: 200, CRYSTAL: 100, ENERGY: 25 },
+  ESCORTFRIGATE: { METAL: 500, CRYSTAL: 250, ENERGY: 50 },
+  BATTLECRUISER: { METAL: 1500, CRYSTAL: 700, ENERGY: 150 },
+  SPACEDESTROYER: { METAL: 4000, CRYSTAL: 2000, ENERGY: 400 },
+  ASSAULTBATTLESHIP: { METAL: 9000, CRYSTAL: 5000, ENERGY: 900 },
+  STARCARRIER: { METAL: 18000, CRYSTAL: 10000, ENERGY: 1800 },
+  HEAVYASSAULTSHIP: { METAL: 12000, CRYSTAL: 6500, ENERGY: 1200 },
+  ORBITALASSAULTSHIP: { METAL: 22000, CRYSTAL: 12000, ENERGY: 2500 },
+  PLANETARYDESTROYER: { METAL: 50000, CRYSTAL: 25000, ENERGY: 6000 },
 };
 
 export const FLEET_TIME: Record<FleetType, number> = {
@@ -29,10 +29,7 @@ export const FLEET_TIME: Record<FleetType, number> = {
   PLANETARYDESTROYER: 1000 * 60 * 60 * 24 * 2,
 };
 
-export const FLEET_REQUIRED_RESEARCH: Record<
-  FleetType,
-  FleetResearchRequiredData[]
-> = {
+export const FLEET_REQUIRED_RESEARCH: Record<FleetType, FleetResearchRequiredData[]> = {
   LIGHTFIGHTER: [{ researchType: "SHIPENGINEERING", researchLevelRequired: 1 }],
   INTERCEPTOR: [
     { researchType: "SHIPENGINEERING", researchLevelRequired: 1 },

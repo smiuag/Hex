@@ -6,6 +6,7 @@ import { Research } from "../../src/types/researchTypes";
 import { StoredResources } from "../../src/types/resourceTypes";
 import { getInitialResources } from "../../utils/mapUtils";
 import { PlayerConfig } from "../types/configTypes";
+import { StarSystem } from "../types/starSystemTypes";
 
 const MAP_KEY = "player_map";
 const RESOURCES_KEY = "player_resources";
@@ -13,6 +14,7 @@ const RESEARCH_KEY = "player_research";
 const FLEET_KEY = "player_fleet";
 const CONFIG_KEY = "player_config";
 const QUESTS_KEY = "player_quests";
+const STAR_SYSTEM_KEY = "player_star_systems";
 
 //MAP_KEY
 export const saveMap = async (hexes: Hex[]) => {
@@ -102,4 +104,18 @@ export const loadConfig = async (): Promise<PlayerConfig | null> => {
 
 export const deleteConfig = async (): Promise<void> => {
   await AsyncStorage.removeItem(CONFIG_KEY);
+};
+
+//STAR_SYSTEM_KEY
+export const saveStarSystem = async (starSystem: StarSystem[] | null): Promise<void> => {
+  await AsyncStorage.setItem(STAR_SYSTEM_KEY, JSON.stringify(starSystem));
+};
+
+export const loadStarSystem = async (): Promise<StarSystem[] | null> => {
+  const data = await AsyncStorage.getItem(STAR_SYSTEM_KEY);
+  return data ? JSON.parse(data) : null;
+};
+
+export const deleteStarSystem = async (): Promise<void> => {
+  await AsyncStorage.removeItem(STAR_SYSTEM_KEY);
 };

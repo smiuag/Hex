@@ -3,28 +3,28 @@ import { BuildingRequiredResearch } from "../types/researchTypes";
 import { IMAGES } from "./images";
 
 export const BUILDING_COST = {
-  LAB: { stone: 18000, metal: 18000, energy: 100 },
-  KRYSTALMINE: { stone: 36000, metal: 18000 },
-  METALLURGY: { stone: 18000 },
-  QUARRY: { metal: 18000 },
-  BASE: { stone: 15000, metal: 15000, crystal: 15000 },
-  ANTENNA: { stone: 7500, metal: 3500, crystal: 7500, energy: 300 },
-  ROCKET: { stone: 15000, metal: 15000, crystal: 5000, energy: 300 },
-  HANGAR: { stone: 15000, metal: 15000, crystal: 5000, energy: 300 },
-  ENERGY: { stone: 8000, metal: 120000, crystal: 25000 },
-  SPACESTATION: { stone: 18000, metal: 112000, crystal: 120000 },
+  LAB: { STONE: 18000, METAL: 18000, ENERGY: 100 },
+  KRYSTALMINE: { STONE: 36000, METAL: 18000 },
+  METALLURGY: { STONE: 18000 },
+  QUARRY: { METAL: 18000 },
+  BASE: { STONE: 15000, METAL: 15000, CRYSTAL: 15000 },
+  ANTENNA: { STONE: 7500, METAL: 3500, CRYSTAL: 7500, ENERGY: 300 },
+  ROCKET: { STONE: 15000, METAL: 15000, CRYSTAL: 5000, ENERGY: 300 },
+  HANGAR: { STONE: 15000, METAL: 15000, CRYSTAL: 5000, ENERGY: 300 },
+  ENERGY: { STONE: 8000, METAL: 120000, CRYSTAL: 25000 },
+  SPACESTATION: { STONE: 18000, METAL: 112000, CRYSTAL: 120000 },
 };
 
 export const BUILDING_PRODUCTION = {
   LAB: {},
-  KRYSTALMINE: { crystal: 40 },
-  METALLURGY: { metal: 50 },
-  QUARRY: { stone: 60 },
-  BASE: { stone: 10, metal: 10, energy: 5 },
+  KRYSTALMINE: { CRYSTAL: 40 },
+  METALLURGY: { METAL: 50 },
+  QUARRY: { STONE: 60 },
+  BASE: { STONE: 10, metal: 10, ENERGY: 5 },
   ANTENNA: {},
   ROCKET: {},
   HANGAR: {},
-  ENERGY: { energy: 20 },
+  ENERGY: { ENERGY: 20 },
   SPACESTATION: {},
 };
 
@@ -54,10 +54,7 @@ export const BUILDING_MAX_IN_PLANET = {
   SPACESTATION: 1,
 };
 
-export const BUILDING_REQUIRED_RESEARCH: Record<
-  BuildingType,
-  BuildingRequiredResearch
-> = {
+export const BUILDING_REQUIRED_RESEARCH: Record<BuildingType, BuildingRequiredResearch> = {
   LAB: [],
   KRYSTALMINE: [
     { researchType: "MINING", researchLevelRequired: 1, builddingLevel: 1 },

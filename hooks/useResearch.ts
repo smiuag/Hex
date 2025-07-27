@@ -38,10 +38,7 @@ export const useResearch = (
     const durationMs = getResearchTime(type, nextLevel);
 
     if (!hasEnoughResources(resources, scaledCost)) {
-      Alert.alert(
-        "Recursos insuficientes",
-        "No puedes iniciar esta investigación."
-      );
+      Alert.alert("Recursos insuficientes", "No puedes iniciar esta investigación.");
       return;
     }
 
@@ -81,9 +78,7 @@ export const useResearch = (
   };
 
   const handleCancelResearch = async (type: ResearchType) => {
-    const inProgress = researchRef.current.find(
-      (r) => r.progress && r.data.type == type
-    );
+    const inProgress = researchRef.current.find((r) => r.progress && r.data.type == type);
     if (!inProgress) return;
 
     const { data, progress } = inProgress;
@@ -110,10 +105,7 @@ export const useResearch = (
     const updatedResearch = researchRef.current.map((item) => {
       if (item.progress) {
         const config = researchTechnologies[item.data.type];
-        const totalTime = getResearchTime(
-          item.data.type,
-          item.progress.targetLevel
-        );
+        const totalTime = getResearchTime(item.data.type, item.progress.targetLevel);
         const elapsed = now - item.progress.startedAt;
 
         if (elapsed >= totalTime) {

@@ -17,9 +17,7 @@ export const getProductionForBuilding = (
     const resource = key as keyof Resources;
     const baseValue = baseProduction[resource] ?? 0; // Si no hay valor, asignamos 0
     const scaled =
-      baseValue *
-      Math.pow(PRODUCTION_INCREMENT, Math.max(0, level - 1)) *
-      GENERAL_FACTOR;
+      baseValue * Math.pow(PRODUCTION_INCREMENT, Math.max(0, level - 1)) * GENERAL_FACTOR;
     result[resource] = scaled;
   }
 
@@ -32,14 +30,10 @@ export const getProduction = (hexes: Hex[]): Partial<Resources> => {
   for (const hex of hexes) {
     const building = hex.building;
     if (building) {
-      const production = getProductionForBuilding(
-        building.type,
-        building.level
-      );
+      const production = getProductionForBuilding(building.type, building.level);
       for (const key in production) {
         const typedKey = key as keyof Resources;
-        result[typedKey] =
-          (result[typedKey] || 0) + (production[typedKey] || 0); // Si no hay producción, usamos 0
+        result[typedKey] = (result[typedKey] || 0) + (production[typedKey] || 0); // Si no hay producción, usamos 0
       }
     }
   }
@@ -47,18 +41,14 @@ export const getProduction = (hexes: Hex[]): Partial<Resources> => {
   return result;
 };
 
-export const hasEnoughResources = (
-  current: StoredResources,
-  cost: Partial<Resources>
-): boolean => {
+export const hasEnoughResources = (current: StoredResources, cost: Partial<Resources>): boolean => {
   const produced: Partial<Resources> = current.production || {};
   const elapsedSeconds = (Date.now() - current.lastUpdate) / 1000;
 
   return Object.entries(cost).every(([key, value]) => {
     const typedKey = key as keyof Resources;
     const availableResources =
-      (current.resources[typedKey] || 0) +
-      (produced[typedKey] || 0) * elapsedSeconds;
+      (current.resources[typedKey] || 0) + (produced[typedKey] || 0) * elapsedSeconds;
 
     return availableResources >= (value || 0);
   });
@@ -110,8 +100,8 @@ export const hasEnoughResources = (
 //   const rb = b.resources;
 //   return (
 //     ra.metal === rb.metal &&
-//     ra.energy === rb.energy &&
-//     ra.crystal === rb.crystal
+//     ra.ENERGY === rb.ENERGY &&
+//     ra.CRYSTAL === rb.CRYSTAL
 //   );
 // };
 

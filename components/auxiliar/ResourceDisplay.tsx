@@ -1,11 +1,11 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { resourceEmojis } from "../../src/config/resourceConfig";
-import { ResourceType, Resources } from "../../src/types/resourceTypes";
+import { ResourceType, Resources, SpecialResources } from "../../src/types/resourceTypes";
 import { formatAmount } from "../../utils/generalUtils";
 
 interface Props {
-  resources: Partial<Resources>;
+  resources: Partial<Resources | SpecialResources>;
   fontSize?: number;
   fontColor?: string;
   gap?: number;
@@ -21,7 +21,7 @@ export const ResourceDisplay = ({
     <View style={[styles.container, { gap }]}>
       {[...Object.entries(resources)].reverse().map(([key, value]) => {
         const emoji = resourceEmojis[key as ResourceType];
-        if (!emoji || value === null || value === 0) return null;
+        if (!emoji || value == null || value === 0) return null;
 
         return (
           <Text key={key} style={[styles.item, { fontSize, color: fontColor }]}>

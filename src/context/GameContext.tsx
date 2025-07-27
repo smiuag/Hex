@@ -1,17 +1,11 @@
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useConfig } from "../../hooks/useConfig";
 import { useConstruction } from "../../hooks/useConstruction";
 import { useFleet } from "../../hooks/useFleet";
 import { useQuest } from "../../hooks/useQuest";
 import { useResearch } from "../../hooks/useResearch";
 import { useResources } from "../../hooks/useResources";
+import { useStarSystem } from "../../hooks/useStarSystem";
 import { BuildingType } from "../../src/types/buildingTypes";
 import { Fleet, FleetType } from "../../src/types/fleetType";
 import { Hex } from "../../src/types/hexTypes";
@@ -24,6 +18,7 @@ import { NotificationManager } from "../../utils/notificacionUtils";
 import { loadMap, saveMap } from "../services/storage";
 import { ConfigEntry, PlayerConfig } from "../types/configTypes";
 import { Research, ResearchType } from "../types/researchTypes";
+import { StarSystem } from "../types/starSystemTypes";
 
 type ProviderContextType = {
   addProduction: (modifications: Partial<Resources>) => void;
@@ -57,26 +52,21 @@ type ProviderContextType = {
   updatePlayerConfig: (config: PlayerConfig) => void;
   endGame: () => void;
   startGame: () => void;
+  loadStarSystem: () => void;
+  starSystems: StarSystem[];
+  updateStarSystems: (starSystem: StarSystem[]) => void;
 };
 
-const ResourceContext = createContext<ProviderContextType | undefined>(
-  undefined
-);
+const ResourceContext = createContext<ProviderContextType | undefined>(undefined);
 
 export const Provider = ({ children }: { children: React.ReactNode }) => {
   const hexesRef = useRef<Hex[]>([]);
   const [hexes, setHexes] = useState<Hex[]>([]);
 
-  const {
-    resources,
-    resetResources,
-    addProduction,
-    addResources,
-    subtractResources,
-  } = useResources(hexesRef);
+  const { resources, resetResources, addProduction, addResources, subtractResources } =
+    useResources(hexesRef);
 
-  const { playerQuests, completeQuest, markQuestsAsViewed, resetQuests } =
-    useQuest(addResources);
+  const { playerQuests, completeQuest, markQuestsAsViewed, resetQuests } = useQuest(addResources);
 
   const {
     handleUpdateConfig,
@@ -86,13 +76,8 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     updatePlayerConfig,
   } = useConfig();
 
-  const {
-    fleetBuildQueue,
-    handleBuildFleet,
-    handleCancelFleet,
-    processFleetTick,
-    resetFleet,
-  } = useFleet(addResources, subtractResources);
+  const { fleetBuildQueue, handleBuildFleet, handleCancelFleet, processFleetTick, resetFleet } =
+    useFleet(addResources, subtractResources);
 
   const reloadMap = useCallback(async () => {
     const saved = await loadMap();
@@ -107,12 +92,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     await saveMap(map);
   }, []);
 
-  const {
-    handleBuild,
-    handleCancelBuild,
-    processConstructionTick,
-    resetBuild,
-  } = useConstruction(
+  const { handleBuild, handleCancelBuild, processConstructionTick, resetBuild } = useConstruction(
     hexesRef,
     setHexes,
     resources,
@@ -122,13 +102,10 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     reloadMap
   );
 
-  const {
-    research,
-    handleResearch,
-    handleCancelResearch,
-    processResearchTick,
-    resetResearch,
-  } = useResearch(resources, addResources, subtractResources);
+  const { research, handleResearch, handleCancelResearch, processResearchTick, resetResearch } =
+    useResearch(resources, addResources, subtractResources);
+
+  const { loadStarSystem, resetStarSystem, starSystems, updateStarSystems } = useStarSystem();
 
   useEffect(() => {
     hexesRef.current = hexes;
@@ -158,6 +135,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     await resetQuests();
     await resetFleet();
     await resetResources();
+    await resetStarSystem();
   };
 
   const startGame = async () => {
@@ -181,6 +159,9 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const contextValue = {
+    loadStarSystem,
+    starSystems,
+    updateStarSystems,
     handleUpdateConfig,
     resetPlayerConfig,
     loadPlayerConfig,
@@ -216,16 +197,11 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     startGame,
   };
 
-  return (
-    <ResourceContext.Provider value={contextValue}>
-      {children}
-    </ResourceContext.Provider>
-  );
+  return <ResourceContext.Provider value={contextValue}>{children}</ResourceContext.Provider>;
 };
 
 export const useGameContext = () => {
   const context = useContext(ResourceContext);
-  if (!context)
-    throw new Error("useResources debe usarse dentro de ResourceProvider");
+  if (!context) throw new Error("useResources debe usarse dentro de ResourceProvider");
   return context;
 };

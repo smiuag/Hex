@@ -22,30 +22,22 @@ export const generateHexGrid = (radius: number): Hex[] => {
 
 export const getInitialResources = (): StoredResources => ({
   resources: {
-    metal: 0,
-    energy: 0,
-    crystal: 0,
-    stone: 0,
+    METAL: 0,
+    ENERGY: 0,
+    CRYSTAL: 0,
+    STONE: 0,
   },
   lastUpdate: Date.now(),
   production: {
-    metal: 10,
-    energy: 5,
-    crystal: 0,
-    stone: 10,
+    METAL: 10,
+    ENERGY: 5,
+    CRYSTAL: 0,
+    STONE: 10,
   },
 });
 
-export const axialDistance = (
-  a: { q: number; r: number },
-  b: { q: number; r: number }
-): number => {
-  return (
-    (Math.abs(a.q - b.q) +
-      Math.abs(a.q + a.r - b.q - b.r) +
-      Math.abs(a.r - b.r)) /
-    2
-  );
+export const axialDistance = (a: { q: number; r: number }, b: { q: number; r: number }): number => {
+  return (Math.abs(a.q - b.q) + Math.abs(a.q + a.r - b.q - b.r) + Math.abs(a.r - b.r)) / 2;
 };
 
 export const normalizeHexMap = (map: any[]): Hex[] => {
@@ -76,10 +68,8 @@ export const normalizeHexMap = (map: any[]): Hex[] => {
         }
       : undefined;
 
-    const isVisible =
-      axialDistance({ q: 0, r: 0 }, { q: hex.q, r: hex.r }) <= baseLevel;
-    const isRadius =
-      axialDistance({ q: 0, r: 0 }, { q: hex.q, r: hex.r }) === baseLevel + 1;
+    const isVisible = axialDistance({ q: 0, r: 0 }, { q: hex.q, r: hex.r }) <= baseLevel;
+    const isRadius = axialDistance({ q: 0, r: 0 }, { q: hex.q, r: hex.r }) === baseLevel + 1;
 
     return {
       q: hex.q,
@@ -94,10 +84,7 @@ export const normalizeHexMap = (map: any[]): Hex[] => {
   });
 };
 
-export const expandMapAroundBase = (
-  currentMap: Hex[],
-  newBaseLevel: number
-): Hex[] => {
+export const expandMapAroundBase = (currentMap: Hex[], newBaseLevel: number): Hex[] => {
   const updatedMap = currentMap.map((hex) => {
     const dist = axialDistance({ q: 0, r: 0 }, { q: hex.q, r: hex.r });
 

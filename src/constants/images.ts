@@ -2,7 +2,7 @@ import background from "../../assets/images/background.jpg";
 import backgroundMenu from "../../assets/images/backgroundMenu.jpg";
 import antennaBackground from "../../assets/images/buildings/antenna.png";
 import baseBackground from "../../assets/images/buildings/base.png";
-import krystalmineBackground from "../../assets/images/buildings/cristal.png";
+import crystalmineBackground from "../../assets/images/buildings/crystal.png";
 import energyBackground from "../../assets/images/buildings/energy.png";
 import hangarBackground from "../../assets/images/buildings/hangar.png";
 import labBackground from "../../assets/images/buildings/lab.png";
@@ -56,6 +56,12 @@ import shield from "../../assets/images/research/Shield.png";
 import ships from "../../assets/images/research/Ships.png";
 import terraforming from "../../assets/images/research/Terraforming.png";
 import water from "../../assets/images/research/Water.png";
+import binary from "../../assets/images/starSystems/Binary.png";
+import deadStar from "../../assets/images/starSystems/DeadStar.png";
+import nebula from "../../assets/images/starSystems/Nebula.png";
+import redDwarf from "../../assets/images/starSystems/RedDwarf.png";
+import supernova from "../../assets/images/starSystems/Supernova.png";
+import trinary from "../../assets/images/starSystems/Trinary.png";
 
 export const IMAGES = {
   //IMAGENES GENERALES
@@ -98,7 +104,7 @@ export const IMAGES = {
   LAB_BACKGROUND: labBackground,
   METALLURGY_BACKGROUND: metallurgyBackground,
   QUARRY_BACKGROUND: quarryBackground,
-  KRYSTALMINE_BACKGROUND: krystalmineBackground,
+  KRYSTALMINE_BACKGROUND: crystalmineBackground,
   BASE_BACKGROUND: baseBackground,
   HANGAR_BACKGROUND: hangarBackground,
   ROCKET_BACKGROUND: rocketBackground,
@@ -119,4 +125,10 @@ export const IMAGES = {
   RESEARCH_SHIELD: shield,
   RESEARCH_GRAVITY: gravity,
   SPACESTATION_BACKGROUND: spaceStation,
+  BINARY: binary,
+  TRINARY: trinary,
+  SUPERNOVA_REMNANT: supernova,
+  DEAD_STAR: deadStar,
+  RED_DWARF: redDwarf,
+  NEBULA: nebula,
 };

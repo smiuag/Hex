@@ -1,11 +1,6 @@
 import { ImageSourcePropType } from "react-native";
 import { IMAGES } from "../constants/images";
-import {
-  LAB_LVL_REQUIRED,
-  MAX_LVL,
-  RESEARCH_COST,
-  RESEARCH_TIME,
-} from "../constants/research";
+import { LAB_LVL_REQUIRED, MAX_LVL, RESEARCH_COST, RESEARCH_TIME } from "../constants/research";
 import { ResearchType } from "../types/researchTypes";
 import { Resources } from "../types/resourceTypes";
 
@@ -96,8 +91,7 @@ export const researchTechnologies: Record<
     baseCost: RESEARCH_COST.LASER,
     baseResearchTime: RESEARCH_TIME.LASER,
     maxLevel: MAX_LVL.LASER,
-    description:
-      "Tecnología base para el armamento ligero de naves espaciales.",
+    description: "Tecnología base para el armamento ligero de naves espaciales.",
   },
   SHIELD: {
     name: "Escudos de energía",
@@ -106,8 +100,7 @@ export const researchTechnologies: Record<
     baseCost: RESEARCH_COST.SHIELD,
     baseResearchTime: RESEARCH_TIME.SHIELD,
     maxLevel: MAX_LVL.SHIELD,
-    description:
-      "Imprescindible para la construcción de destructores espaciales y naves orbitales",
+    description: "Imprescindible para la construcción de destructores espaciales y naves orbitales",
   },
   GRAVITY: {
     name: "Tecnología de gravitón",
@@ -116,7 +109,6 @@ export const researchTechnologies: Record<
     baseCost: RESEARCH_COST.GRAVITY,
     baseResearchTime: RESEARCH_TIME.GRAVITY,
     maxLevel: MAX_LVL.GRAVITY,
-    description:
-      "Tecnología finalpara el dominio de las bases espaciales y motores WARP.",
+    description: "Tecnología finalpara el dominio de las bases espaciales y motores WARP.",
   },
 };

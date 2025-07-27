@@ -62,8 +62,7 @@ export const buildingConfig: Record<
     production: BUILDING_PRODUCTION.METALLURGY,
     requiredResearch: BUILDING_REQUIRED_RESEARCH.METALLURGY,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.METALLURGY,
-    description:
-      "Instalación para la extracción de metales del subsuelo del planeta.",
+    description: "Instalación para la extracción de metales del subsuelo del planeta.",
   },
   QUARRY: {
     name: "Cantera",
@@ -88,8 +87,7 @@ export const buildingConfig: Record<
     production: BUILDING_PRODUCTION.KRYSTALMINE,
     requiredResearch: BUILDING_REQUIRED_RESEARCH.KRYSTALMINE,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.KRYSTALMINE,
-    description:
-      "Instalación para la extracción de cristal de las rocas de la superficie.",
+    description: "Instalación para la extracción de cristal de las rocas de la superficie.",
   },
   ANTENNA: {
     name: "Antena de comunicaciones",

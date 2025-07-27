@@ -48,14 +48,7 @@ export const QuestCard: React.FC<Props> = ({ item, completed, isAlreadyClaimed, 
           </View>
           {!isAlreadyClaimed && (
             <View style={commonStyles.actionBar}>
-              <View style={commonStyles.rowSpaceBetween}>
-                <Text style={commonStyles.whiteText}>Recompensa</Text>
-                <View>
-                  <Text style={commonStyles.whiteText}>
-                    <ResourceDisplay resources={item.reward} fontSize={13} />
-                  </Text>
-                </View>
-              </View>
+              <ResourceDisplay resources={item.reward} fontSize={13} />
 
               <TouchableOpacity
                 onPress={handlePress}
