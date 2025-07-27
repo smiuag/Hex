@@ -55,6 +55,8 @@ type ProviderContextType = {
   loadStarSystem: () => void;
   starSystems: StarSystem[];
   updateStarSystems: (starSystem: StarSystem[]) => void;
+  discardStarSystem: (id: string) => void;
+  exploreStarSystem: (id: string) => void;
 };
 
 const ResourceContext = createContext<ProviderContextType | undefined>(undefined);
@@ -105,7 +107,14 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
   const { research, handleResearch, handleCancelResearch, processResearchTick, resetResearch } =
     useResearch(resources, addResources, subtractResources);
 
-  const { loadStarSystem, resetStarSystem, starSystems, updateStarSystems } = useStarSystem();
+  const {
+    discardStarSystem,
+    exploreStarSystem,
+    loadStarSystem,
+    resetStarSystem,
+    starSystems,
+    updateStarSystems,
+  } = useStarSystem();
 
   useEffect(() => {
     hexesRef.current = hexes;
@@ -159,6 +168,8 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const contextValue = {
+    discardStarSystem,
+    exploreStarSystem,
     loadStarSystem,
     starSystems,
     updateStarSystems,

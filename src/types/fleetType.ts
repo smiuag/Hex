@@ -1,4 +1,5 @@
 export type FleetType =
+  | "PROBE"
   | "LIGHTFIGHTER"
   | "INTERCEPTOR"
   | "ESCORTFRIGATE"

@@ -22,6 +22,16 @@ export const fleetConfig: Record<
     productionFacility: ProductionFacilityType;
   }
 > = {
+  PROBE: {
+    name: "Sonda",
+    orden: 0,
+    baseBuildTime: FLEET_TIME.PROBE,
+    imageBackground: FLEET_BACKGROUND_IMAGE.PROBE,
+    baseCost: FLEET_COST.PROBE,
+    requiredResearch: FLEET_REQUIRED_RESEARCH.PROBE,
+    productionFacility: "HANGAR",
+    description: "Sonda de investigación para la exploración de sistemas distantes",
+  },
   LIGHTFIGHTER: {
     name: "Caza ligero",
     orden: 1,
@@ -30,8 +40,7 @@ export const fleetConfig: Record<
     baseCost: FLEET_COST.LIGHTFIGHTER,
     requiredResearch: FLEET_REQUIRED_RESEARCH.LIGHTFIGHTER,
     productionFacility: "HANGAR",
-    description:
-      "Nave rápida y ágil diseñada para combates aéreos y patrullas de defensa.",
+    description: "Nave rápida y ágil diseñada para combates aéreos y patrullas de defensa.",
   },
   INTERCEPTOR: {
     name: "Interceptor",
@@ -85,8 +94,7 @@ export const fleetConfig: Record<
     baseCost: FLEET_COST.ASSAULTBATTLESHIP,
     requiredResearch: FLEET_REQUIRED_RESEARCH.ASSAULTBATTLESHIP,
     productionFacility: "SPACESTATION",
-    description:
-      "Nave pesada equipada para ataques directos y romper líneas defensivas enemigas.",
+    description: "Nave pesada equipada para ataques directos y romper líneas defensivas enemigas.",
   },
   STARCARRIER: {
     name: "Porta cazas",
@@ -96,8 +104,7 @@ export const fleetConfig: Record<
     baseCost: FLEET_COST.STARCARRIER,
     requiredResearch: FLEET_REQUIRED_RESEARCH.STARCARRIER,
     productionFacility: "SPACESTATION",
-    description:
-      "Base móvil para lanzar cazas y proporcionar soporte táctico en combate espacial.",
+    description: "Base móvil para lanzar cazas y proporcionar soporte táctico en combate espacial.",
   },
   HEAVYASSAULTSHIP: {
     name: "Fragata pesada",
@@ -129,7 +136,6 @@ export const fleetConfig: Record<
     baseCost: FLEET_COST.PLANETARYDESTROYER,
     requiredResearch: FLEET_REQUIRED_RESEARCH.PLANETARYDESTROYER,
     productionFacility: "SPACESTATION",
-    description:
-      "Unidad masiva diseñada para destruir estructuras y bases a escala planetaria.",
+    description: "Unidad masiva diseñada para destruir estructuras y bases a escala planetaria.",
   },
 };

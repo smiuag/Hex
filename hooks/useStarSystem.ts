@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { starSystemTypeProbabilities } from "../src/constants/starSystem";
-import { deleteStarSystem, loadStarSystem, saveStarSystem } from "../src/services/storage";
+import {
+  deleteStarSystem,
+  loadStarSystem,
+  markStarSystemAsExplored,
+  saveStarSystem,
+} from "../src/services/storage";
 import { StarSystem, StarSystemType } from "../src/types/starSystemTypes";
 import { generateStarSystem } from "../utils/starSystemUtils";
 
@@ -27,14 +32,27 @@ export const useStarSystem = () => {
     await saveStarSystem(starSystem);
   };
 
+  const discardStarSystem = async (id: string) => {
+    const updated = starSystems.filter((system) => system.id !== id);
+    setPlayerStarSystems(updated);
+    await saveStarSystem(updated);
+  };
+  const exploreStarSystem = async (id: string) => {
+    const updated = starSystems.map((system) =>
+      system.id === id ? { ...system, explored: true } : system
+    );
+    setPlayerStarSystems(updated);
+    markStarSystemAsExplored(id);
+  };
+
   const loadStarSystems = async () => {
     const saved = await loadStarSystem();
     if (saved && saved.length > 0) {
       setPlayerStarSystems(saved);
     } else {
       const generated = generateInitialSystems();
-      setPlayerStarSystems(generated);
       await saveStarSystem(generated);
+      setPlayerStarSystems(generated);
     }
   };
 
@@ -51,6 +69,8 @@ export const useStarSystem = () => {
     updateStarSystems,
     loadStarSystem,
     resetStarSystem,
+    discardStarSystem,
+    exploreStarSystem,
     starSystems,
   };
 };

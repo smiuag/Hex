@@ -1,3 +1,4 @@
+import uuid from "react-native-uuid";
 import { IMAGES } from "../src/constants/images";
 import { celestialResourceChances, starSystemConfig } from "../src/constants/starSystem";
 import {
@@ -83,6 +84,8 @@ export function generateStarSystem(type: StarSystemType): StarSystem {
     }
   });
 
+  const id = uuid.v4();
+
   return {
     type,
     planets: celestialBodies,
@@ -93,6 +96,7 @@ export function generateStarSystem(type: StarSystemType): StarSystem {
     lastUpdate: Date.now(),
     name: type.replace("_", " "),
     distance,
+    id: id,
   };
 }
 

@@ -36,4 +36,5 @@ export type StarSystem = {
   lastUpdate: number;
   distance: number;
   name: string;
+  id: string;
 };

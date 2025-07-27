@@ -18,6 +18,7 @@ import interceptorBackground from "../../assets/images/fleet/interceptorBackgrou
 import lightFighterBackground from "../../assets/images/fleet/lightFighterBackground.png";
 import orbitalAssaultShipBackground from "../../assets/images/fleet/orbitalAssaultShipBackground.png";
 import planetarDestroyerBackground from "../../assets/images/fleet/planetarDestroyerBackground.png";
+import probeBackground from "../../assets/images/fleet/probeBackground.png";
 import spaceDestroyerBackground from "../../assets/images/fleet/spaceDestroyerBackground.png";
 import starCarrierBackground from "../../assets/images/fleet/starCarrierBackground.png";
 import base1 from "../../assets/images/mini/base1.png";
@@ -110,6 +111,7 @@ export const IMAGES = {
   ROCKET_BACKGROUND: rocketBackground,
   ANTENNA_BACKGROUND: antennaBackground,
   ENERGY_BACKGROUND: energyBackground,
+  FLEET_BG_PROBE: probeBackground,
   FLEET_BG_LIGHTFIGHTER: lightFighterBackground,
   FLEET_BG_INTERCEPTOR: interceptorBackground,
   FLEET_BG_ESCORTFRIGATE: escrotFrigateBackground,
