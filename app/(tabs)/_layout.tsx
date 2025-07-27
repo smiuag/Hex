@@ -13,14 +13,15 @@ import {
 import { questConfig } from "../../src/config/questConfig";
 import { useGameContext } from "../../src/context/GameContext";
 import { questIconView, tabStyles } from "../../src/styles/tabsStyles";
+import { gameStarted } from "../../utils/configUtils";
 import { canCompleteQuest, shouldShowQuest } from "../../utils/questUtils";
 
 export default function TabLayout() {
-  const { playerQuests, hexes, research, fleetBuildQueue } = useGameContext();
-  const partidaIniciada = hexes.length > 0;
+  const { playerQuests, hexes, research, fleetBuildQueue, playerConfig } = useGameContext();
+  const partidaIniciada = gameStarted(playerConfig);
 
   const hasHangar = hexes.length > 0 && hexes.some((h) => h.building?.type == "HANGAR");
-
+  const hasAntenna = hexes.length > 0 && hexes.some((h) => h.building?.type == "ANTENNA");
   const completedQuestTypes = playerQuests.filter((q) => q.completed).map((q) => q.type);
 
   const hasNewQuest = Object.values(questConfig).some((quest) => {
@@ -89,8 +90,8 @@ export default function TabLayout() {
         options={{
           tabBarIcon: ({ color, size }) => <GalaxyIcon color={color} size={size} />,
           tabBarLabel: "Galaxia",
-          // tabBarButton: hasHangar && partidaIniciada ? undefined : () => null,
-          // tabBarItemStyle: hasHangar && partidaIniciada ? {} : tabStyles.hidden,
+          tabBarButton: hasAntenna && partidaIniciada ? undefined : () => null,
+          tabBarItemStyle: hasAntenna && partidaIniciada ? {} : tabStyles.hidden,
         }}
       />
       <Tabs.Screen

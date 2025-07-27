@@ -1,0 +1,23 @@
+{
+  "planetType": {
+    "VOLCANIC_PLANET": "Planeta volcánico",
+    "ICE_PLANET": "Planeta helado",
+    "GAS_GIANT": "Gigante gaseoso",
+    "ROCKY_PLANET": "Planeta rocoso",
+    "TOXIC_PLANET": "Planeta tóxico"
+  },
+  "systemType": {
+    "BINARY": "Sistema binario",
+    "TRINARY": "Sistema trinario",
+    "RED_DWARF": "Enana roja",
+    "SUPERNOVA_REMNANT": "Remanente de supernova",
+    "DEAD_STAR": "Estrella muerta",
+    "NEBULA": "Nebulosa"
+  },
+  "stelarBody": {
+    "PLANET": "Planeta",
+    "ASTEROID": "Asteroide",
+    "MOON": "Luna",
+    "NEBULA_FRAGMENT": "Fragmento de nebulosa"
+  }
+}

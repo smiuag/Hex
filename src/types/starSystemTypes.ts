@@ -24,6 +24,7 @@ export type CelestialBody = {
   resources: Partial<Resources | SpecialResources>;
   explored: boolean;
   baseBuilt: boolean;
+  id: string;
 };
 
 export type StarSystem = {
@@ -35,6 +36,5 @@ export type StarSystem = {
   conquered: boolean;
   lastUpdate: number;
   distance: number;
-  name: string;
   id: string;
 };

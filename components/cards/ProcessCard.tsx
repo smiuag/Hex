@@ -1,6 +1,7 @@
 import { FleetType } from "@/src/types/fleetType";
 import { ResearchType } from "@/src/types/researchTypes";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { ImageBackground, Text, TouchableOpacity, View } from "react-native";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { Process } from "../../src/types/processTypes";
@@ -19,6 +20,8 @@ export function ProcessCard({
   onCancelResearch,
   onCancelFleet,
 }: ProcessCardProps) {
+  const { t } = useTranslation("common");
+
   const handleCancel = async () => {
     if (item.type === "BUILDING") {
       await onCancelBuild(item.q!, item.r!);
@@ -43,18 +46,11 @@ export function ProcessCard({
           <View style={commonStyles.actionBar}>
             <View>
               <Text>
-                ⏳{" "}
-                <CountdownTimer
-                  startedAt={item.startedAt}
-                  duration={item.duration}
-                />
+                ⏳ <CountdownTimer startedAt={item.startedAt} duration={item.duration} />
               </Text>
             </View>
-            <TouchableOpacity
-              style={commonStyles.buttonDanger}
-              onPress={handleCancel}
-            >
-              <Text style={commonStyles.buttonTextLight}>Cancelar</Text>
+            <TouchableOpacity style={commonStyles.buttonDanger} onPress={handleCancel}>
+              <Text style={commonStyles.buttonTextLight}>{t("cancel")}</Text>
             </TouchableOpacity>
           </View>
         </View>

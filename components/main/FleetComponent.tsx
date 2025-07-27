@@ -8,17 +8,10 @@ import { hasEnoughResources } from "../../utils/resourceUtils";
 import { FleetCard } from "../cards/FleetCard";
 
 export default function FleetComponent() {
-  const {
-    fleetBuildQueue,
-    handleBuildFleet,
-    handleCancelFleet,
-    resources,
-    hexes,
-  } = useGameContext();
+  const { fleetBuildQueue, handleBuildFleet, handleCancelFleet, resources, hexes } =
+    useGameContext();
 
-  const hasSpaceStation = hexes.some(
-    (h) => h.building?.type === "SPACESTATION"
-  );
+  const hasSpaceStation = hexes.some((h) => h.building?.type === "SPACESTATION");
 
   const fleetItems = Object.entries(fleetConfig)
     .map(([key, config]) => {
@@ -47,8 +40,6 @@ export default function FleetComponent() {
     })
     .filter((item) => item.show)
     .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0));
-
-  const anyInProgress = fleetItems.some((item) => item.inProgress);
 
   return (
     <FlatList

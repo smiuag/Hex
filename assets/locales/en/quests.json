@@ -1,0 +1,44 @@
+{
+  "quests": {
+    "START": {
+      "name": "Comenzando la colonia",
+      "description": "Visita tu diario de misiones. Completar las misiones te proporcionará beneficios, completalas para conseguir más."
+    },
+    "BUILDING_LAB1": {
+      "name": "Laboratorio",
+      "description": "Construye un laboratorio de nivel 1 en el planeta."
+    },
+    "RESEARCH_MINING1": {
+      "name": "Primera investigación",
+      "description": "Investiga la minería de nivel 1"
+    },
+    "BUILDING_METALLURGY1": {
+      "name": "Mina de metales",
+      "description": "Construye una mina de metales en el planeta."
+    },
+    "BUILDING_QUARRY1": {
+      "name": "Cantera",
+      "description": "Construye una cantera para la extracción de minerales sólidos en el planeta."
+    },
+    "BUILDING_KRYSTALMINE1": {
+      "name": "Mina de cristal",
+      "description": "Construye una mina de cristal en el planeta."
+    },
+    "BUILDING_BASE2": {
+      "name": "Base de nivel 2",
+      "description": "Mejora el nivel de la base a nivel 2."
+    },
+    "BUILDING_ANTENNA": {
+      "name": "Antenas de radio",
+      "description": "Construye una antena para intentar encontrar otros sistemas planetarios accesibles"
+    },
+    "BUILDING_HANGAR": {
+      "name": "Hangar",
+      "description": "Construye un hangar para poder comenzar la fabricación de naves"
+    },
+    "FLEET_FIRST": {
+      "name": "Primera flota",
+      "description": "Construye una nave de algún tipo."
+    }
+  }
+}

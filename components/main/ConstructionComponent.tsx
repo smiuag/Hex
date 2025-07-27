@@ -1,24 +1,13 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
-import {
-  Dimensions,
-  FlatList,
-  ImageBackground,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { useTranslation } from "react-i18next";
+import { Dimensions, FlatList, ImageBackground, Text, TouchableOpacity, View } from "react-native";
 import { buildingConfig } from "../../src/config/buildingConfig";
-import { researchTechnologies } from "../../src/config/researchConfig";
 import { useGameContext } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { BuildingType } from "../../src/types/buildingTypes";
 import { Resources } from "../../src/types/resourceTypes";
-import {
-  getBuildTime,
-  isAtMaxCount,
-  isUnlocked,
-} from "../../utils/buildingUtils";
+import { getBuildTime, isAtMaxCount, isUnlocked } from "../../utils/buildingUtils";
 import { formatDuration } from "../../utils/generalUtils";
 import { hasEnoughResources } from "../../utils/resourceUtils";
 import { ResourceDisplay } from "../auxiliar/ResourceDisplay";
@@ -29,6 +18,9 @@ export default function ConstructionComponent() {
   const { q, r } = useLocalSearchParams();
   const { research, resources, hexes, handleBuild } = useGameContext();
   const router = useRouter();
+  const { t } = useTranslation("common");
+  const { t: tResearch } = useTranslation("research");
+  const { t: tBuilding } = useTranslation("buildings");
 
   const onBuild = async (type: BuildingType) => {
     const qNum = parseInt(q as string, 10);
@@ -53,26 +45,25 @@ export default function ConstructionComponent() {
 
       return {
         type: buildingType,
-        name: config.name,
+        name: tBuilding(`buildingName.${buildingType}`),
+        description: tBuilding(`buildingDescription.${buildingType}`),
         image: config.imageBackground,
         cost,
         time,
         available,
         lockedByMax,
         unlockedByResearch,
-        description: config.description,
         requirements: config.requiredResearch,
         lockedByResources,
       };
     })
     .sort((a, b) => {
-      // Prioridad: disponibles (0), luego bloqueados por investigación (1), luego al máximo (2)
       const getPriority = (building: typeof a) => {
         if (building.lockedByMax) return 3;
         if (!building.unlockedByResearch) return 2;
         if (building.lockedByResources) return 1;
         if (building.available) return 0;
-        return 3; // fallback
+        return 3;
       };
 
       return getPriority(a) - getPriority(b);
@@ -80,11 +71,7 @@ export default function ConstructionComponent() {
 
   return (
     <View style={{ flex: 1 }}>
-      {/* Botón flotante de cerrar */}
-      <TouchableOpacity
-        onPress={handleCancel}
-        style={commonStyles.closeXButton}
-      >
+      <TouchableOpacity onPress={handleCancel} style={commonStyles.closeXButton}>
         <Text style={commonStyles.closeXText}>✕</Text>
       </TouchableOpacity>
 
@@ -93,11 +80,8 @@ export default function ConstructionComponent() {
         keyExtractor={(item) => item.type}
         contentContainerStyle={commonStyles.flatList}
         ListFooterComponent={() => (
-          <TouchableOpacity
-            style={commonStyles.backButton}
-            onPress={handleCancel}
-          >
-            <Text style={commonStyles.closeText}>Volver</Text>
+          <TouchableOpacity style={commonStyles.backButton} onPress={handleCancel}>
+            <Text style={commonStyles.closeText}>{t("back")}</Text>
           </TouchableOpacity>
         )}
         renderItem={({ item }) => (
@@ -113,54 +97,40 @@ export default function ConstructionComponent() {
               <View style={commonStyles.overlayDark}>
                 <View>
                   <Text style={commonStyles.titleText}>{item.name}</Text>
-
-                  <Text style={commonStyles.subtitleText}>
-                    {item.description}
-                  </Text>
+                  <Text style={commonStyles.subtitleText}>{item.description}</Text>
                 </View>
                 <View>
-                  {!item.lockedByMax && (
-                    <ResourceDisplay resources={item.cost} fontSize={13} />
-                  )}
+                  {!item.lockedByMax && <ResourceDisplay resources={item.cost} fontSize={13} />}
 
                   {item.lockedByMax ? (
                     <View>
-                      <Text style={commonStyles.errorTextRed}>
-                        🔒 Límite alcanzado
-                      </Text>
+                      <Text style={commonStyles.errorTextRed}>{t("limitReached")}</Text>
                     </View>
                   ) : !item.unlockedByResearch ? (
                     <View>
                       {Object.values(
                         item.requirements
-                          .filter((req) => req.builddingLevel <= 1) // Filtrar solo los aplicables al nivel actual
+                          .filter((req) => req.builddingLevel <= 1)
                           .reduce((acc, req) => {
                             const existing = acc[req.researchType];
-
                             if (
                               !existing ||
-                              req.researchLevelRequired >
-                                existing.researchLevelRequired
+                              req.researchLevelRequired > existing.researchLevelRequired
                             ) {
                               acc[req.researchType] = req;
                             }
-
                             return acc;
                           }, {} as Record<string, (typeof item.requirements)[0]>)
                       )
                         .filter((req) => {
                           const currentLevel =
-                            research.find(
-                              (r) => r.data.type === req.researchType
-                            )?.data.level ?? 0;
+                            research.find((r) => r.data.type === req.researchType)?.data.level ?? 0;
                           return currentLevel < req.researchLevelRequired;
                         })
                         .map((r, i) => (
                           <Text key={i} style={commonStyles.errorTextRed}>
-                            🔒{" "}
-                            {researchTechnologies[r.researchType]?.name ??
-                              r.researchType}{" "}
-                            Nv {r.researchLevelRequired}
+                            🔒 {tResearch(`researchName.${r.researchType}`)} {t("level")}{" "}
+                            {r.researchLevelRequired}
                           </Text>
                         ))}
                     </View>
@@ -171,9 +141,7 @@ export default function ConstructionComponent() {
                           ⏱️ {formatDuration(item.time)}
                         </Text>
                       ) : (
-                        <Text style={commonStyles.statusTextYellow}>
-                          ⚠️ Recursos insuficientes
-                        </Text>
+                        <Text style={commonStyles.statusTextYellow}>{t("notEnoughResources")}</Text>
                       )}
 
                       <TouchableOpacity
@@ -184,9 +152,7 @@ export default function ConstructionComponent() {
                         onPress={() => onBuild(item.type)}
                         disabled={item.lockedByResources}
                       >
-                        <Text style={commonStyles.buttonTextLight}>
-                          Construir
-                        </Text>
+                        <Text style={commonStyles.buttonTextLight}>{t("build")}</Text>
                       </TouchableOpacity>
                     </View>
                   )}

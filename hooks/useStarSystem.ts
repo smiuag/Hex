@@ -27,11 +27,6 @@ export const useStarSystem = () => {
     return Array.from({ length: 3 }, () => generateStarSystem(pickRandomStarSystemType()));
   };
 
-  const updateStarSystems = async (starSystem: StarSystem[]) => {
-    setPlayerStarSystems(starSystem);
-    await saveStarSystem(starSystem);
-  };
-
   const discardStarSystem = async (id: string) => {
     const updated = starSystems.filter((system) => system.id !== id);
     setPlayerStarSystems(updated);
@@ -66,8 +61,6 @@ export const useStarSystem = () => {
   }, []);
 
   return {
-    updateStarSystems,
-    loadStarSystem,
     resetStarSystem,
     discardStarSystem,
     exploreStarSystem,

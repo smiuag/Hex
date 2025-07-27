@@ -1,20 +1,15 @@
 import { FleetType } from "@/src/types/fleetType";
 import { ResearchType } from "@/src/types/researchTypes";
 import React, { useEffect, useState } from "react";
-import {
-  Alert,
-  Button,
-  ImageBackground,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
+import { useTranslation } from "react-i18next";
+import { Alert, Button, ImageBackground, ScrollView, Text, View } from "react-native";
 import { researchTechnologies } from "../../src/config/researchConfig";
 import { IMAGES } from "../../src/constants/images";
 import { useGameContext } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { menuStyles } from "../../src/styles/menuStyles";
 import { Process } from "../../src/types/processTypes";
+import { gameStarted } from "../../utils/configUtils";
 import {
   getBuildingProcesses,
   getFleetProcesses,
@@ -25,6 +20,8 @@ import { ResourceDisplay } from "../auxiliar/ResourceDisplay";
 import { ProcessCard } from "../cards/ProcessCard";
 
 export default function MenuComponent() {
+  const { t } = useTranslation("common");
+  const { t: tResearch } = useTranslation("research");
   const [processes, setProcesses] = useState<Process[]>([]);
   const {
     handleCancelBuild,
@@ -36,35 +33,30 @@ export default function MenuComponent() {
     endGame,
     startGame,
     fleetBuildQueue,
+    playerConfig,
   } = useGameContext();
+
+  const started = gameStarted(playerConfig);
 
   useEffect(() => {
     const buildingProcesses = getBuildingProcesses(hexes);
     const researchProcesses = getResearchProcesses(research);
     const fleetProcesses = getFleetProcesses(fleetBuildQueue);
-    const allProcesses = [
-      ...buildingProcesses,
-      ...researchProcesses,
-      ...fleetProcesses,
-    ];
+    const allProcesses = [...buildingProcesses, ...researchProcesses, ...fleetProcesses];
     setProcesses(allProcesses);
   }, [hexes, research, fleetBuildQueue]);
 
   const handleReset = () => {
-    Alert.alert(
-      "Finalizar partida",
-      "¿Estás seguro de que quieres borrar el mapa actual?",
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Sí, borrar",
-          style: "destructive",
-          onPress: async () => {
-            endGame();
-          },
+    Alert.alert(t("endGameTitle"), t("endGameConfirmation"), [
+      { text: t("cancel"), style: "cancel" },
+      {
+        text: t("confirmDelete"),
+        style: "destructive",
+        onPress: async () => {
+          endGame();
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const cancelBuild = async (q: number, r: number) => {
@@ -95,7 +87,7 @@ export default function MenuComponent() {
         const isAvailable = config.labLevelRequired <= getLabLevel(hexes);
         return {
           key: type,
-          name: config.name,
+          name: tResearch(`researchName.${type}`),
           currentLevel,
           maxLevel: config.maxLevel,
           isAvailable,
@@ -103,6 +95,7 @@ export default function MenuComponent() {
       })
       .sort((a, b) => a.name.localeCompare(b.name));
   }
+
   const researchItems = getResearchItemsForMenu();
 
   return (
@@ -117,22 +110,20 @@ export default function MenuComponent() {
         showsVerticalScrollIndicator={false}
       >
         <View>
-          <Text style={menuStyles.title}>Colonia</Text>
+          <Text style={menuStyles.title}>{t("colony")}</Text>
 
           <View style={commonStyles.rowSpaceBetween}>
-            <Text style={commonStyles.whiteText}>Producción:</Text>
+            <Text style={commonStyles.whiteText}>{t("production")}:</Text>
             <View style={commonStyles.rowResources}>
               <ResourceDisplay resources={productionPerHour} fontSize={13} />
             </View>
           </View>
+
           <View>
             {researchItems.map((item) => {
               const maxDots = 80;
               const charWeight = 2;
-              const dotsCount = Math.max(
-                0,
-                Math.floor(maxDots - item.name.length * charWeight)
-              );
+              const dotsCount = Math.max(0, Math.floor(maxDots - item.name.length * charWeight));
               const dots = ".".repeat(dotsCount);
 
               return (
@@ -152,29 +143,23 @@ export default function MenuComponent() {
           </View>
 
           <View style={commonStyles.pt5}>
-            {processes.map((item) => {
-              return (
-                <ProcessCard
-                  key={`process-${item.id}`}
-                  item={item}
-                  onCancelBuild={cancelBuild}
-                  onCancelResearch={cancelResearch}
-                  onCancelFleet={onCancelFleet}
-                />
-              );
-            })}
+            {processes.map((item) => (
+              <ProcessCard
+                key={`process-${item.id}`}
+                item={item}
+                onCancelBuild={cancelBuild}
+                onCancelResearch={cancelResearch}
+                onCancelFleet={onCancelFleet}
+              />
+            ))}
           </View>
         </View>
+
         <View style={commonStyles.pt5}>
-          {hexes.length == 0 && (
-            <Button title="Iniciar partida" onPress={startGame} />
-          )}
-          {hexes.length > 0 && (
-            <Button
-              title="Finalizar partida"
-              color="red"
-              onPress={handleReset}
-            />
+          {started ? (
+            <Button title={t("endGame")} color="red" onPress={handleReset} />
+          ) : (
+            <Button title={t("startGame")} onPress={startGame} />
           )}
         </View>
       </ScrollView>

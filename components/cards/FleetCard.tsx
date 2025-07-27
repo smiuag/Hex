@@ -1,11 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Animated,
-  ImageBackground,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { useTranslation } from "react-i18next";
+import { Animated, ImageBackground, Text, TouchableOpacity, View } from "react-native";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { FleetType } from "../../src/types/fleetType";
 import { formatDuration } from "../../utils/generalUtils";
@@ -32,12 +27,8 @@ type Props = {
   onCancel: (type: FleetType) => void;
 };
 
-export const FleetCard: React.FC<Props> = ({
-  item,
-  disableButton,
-  onBuild,
-  onCancel,
-}) => {
+export const FleetCard: React.FC<Props> = ({ item, disableButton, onBuild, onCancel }) => {
+  const { t } = useTranslation("common");
   const scale = useRef(new Animated.Value(1)).current;
   const [animate, setAnimate] = useState(false);
   const wasInProgress = useRef(item.inProgress);
@@ -67,9 +58,7 @@ export const FleetCard: React.FC<Props> = ({
   }, [animate, scale]);
 
   return (
-    <Animated.View
-      style={[commonStyles.cardContainer, { transform: [{ scale }] }]}
-    >
+    <Animated.View style={[commonStyles.cardContainer, { transform: [{ scale }] }]}>
       <ImageBackground
         source={item.imageBackground}
         style={commonStyles.card}
@@ -83,25 +72,20 @@ export const FleetCard: React.FC<Props> = ({
           <View>
             <View style={commonStyles.headerRow}>
               <Text style={commonStyles.titleText}>{item.name}</Text>
-              {item.owned > 0 && (
-                <Text style={commonStyles.whiteText}>x{item.owned}</Text>
-              )}
+              {item.owned > 0 && <Text style={commonStyles.whiteText}>x{item.owned}</Text>}
             </View>
             <Text style={commonStyles.subtitleText}>{item.description}</Text>
           </View>
           <View>
             <View style={commonStyles.rowSpaceBetween}>
-              <Text style={commonStyles.whiteText}> Coste</Text>
+              <Text style={commonStyles.whiteText}>{t("cost")}</Text>
               <View style={commonStyles.rowResources}>
                 <ResourceDisplay resources={item.cost} fontSize={13} />
               </View>
             </View>
             <View style={commonStyles.rowSpaceBetween}>
-              <Text style={commonStyles.whiteText}> Tiempo por unidad</Text>
-              <Text style={commonStyles.whiteText}>
-                {" "}
-                {formatDuration(item.unitTime)}
-              </Text>
+              <Text style={commonStyles.whiteText}>{t("timePerUnit")}</Text>
+              <Text style={commonStyles.whiteText}>{formatDuration(item.unitTime)}</Text>
             </View>
 
             <View style={commonStyles.actionBar}>
@@ -110,15 +94,13 @@ export const FleetCard: React.FC<Props> = ({
                 onPress={() => onCancel(item.type)}
                 disabled={item.remainingAmount === 0}
               >
-                <Text style={commonStyles.cancelButtonText}>Cancelar</Text>
+                <Text style={commonStyles.cancelButtonText}>{t("cancel")}</Text>
               </TouchableOpacity>
 
               <View style={commonStyles.queueCountContainer}>
                 {item.remainingAmount > 0 && (
                   <>
-                    <Text style={[commonStyles.queueCount]}>
-                      {item.remainingAmount} /{" "}
-                    </Text>
+                    <Text style={[commonStyles.queueCount]}>{item.remainingAmount} / </Text>
                     <Text style={{ marginRight: 4 }}>⏳</Text>
                     <CountdownTimer
                       startedAt={item.startedAt}
@@ -132,13 +114,12 @@ export const FleetCard: React.FC<Props> = ({
               <TouchableOpacity
                 style={[
                   commonStyles.buttonPrimary,
-                  (!item.canBuild || disableButton) &&
-                    commonStyles.buttonDisabled,
+                  (!item.canBuild || disableButton) && commonStyles.buttonDisabled,
                 ]}
                 disabled={!item.canBuild || disableButton}
                 onPress={() => onBuild(item.type, 1)}
               >
-                <Text style={commonStyles.buttonTextLight}>Construir</Text>
+                <Text style={commonStyles.buttonTextLight}>{t("build")}</Text>
               </TouchableOpacity>
             </View>
           </View>

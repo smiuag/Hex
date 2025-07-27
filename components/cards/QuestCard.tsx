@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import { useTranslation } from "react-i18next"; // ✅ Importamos i18n hook
 import { Animated, ImageBackground, Text, TouchableOpacity, View } from "react-native";
 import { questConfig } from "../../src/config/questConfig";
 import { commonStyles } from "../../src/styles/commonStyles";
@@ -12,6 +13,7 @@ type Props = {
 };
 
 export const QuestCard: React.FC<Props> = ({ item, completed, isAlreadyClaimed, onComplete }) => {
+  const { t } = useTranslation("common"); // ✅ Namespace usado
   const scale = useRef(new Animated.Value(1)).current;
 
   const triggerAnimation = () => {
@@ -46,19 +48,26 @@ export const QuestCard: React.FC<Props> = ({ item, completed, isAlreadyClaimed, 
             <Text style={commonStyles.titleText}>{item.name}</Text>
             <Text style={commonStyles.subtitleText}>{item.description}</Text>
           </View>
-          {!isAlreadyClaimed && (
-            <View style={commonStyles.actionBar}>
-              <ResourceDisplay resources={item.reward} fontSize={13} />
-
-              <TouchableOpacity
-                onPress={handlePress}
-                disabled={!completed}
-                style={[commonStyles.buttonPrimary, !completed && commonStyles.buttonDisabled]}
-              >
-                <Text style={commonStyles.buttonTextLight}>Completar</Text>
-              </TouchableOpacity>
+          <View>
+            <View style={commonStyles.rowSpaceBetween}>
+              <Text style={commonStyles.whiteText}>{t("reward")}</Text>
+              <View style={commonStyles.rowResources}>
+                <ResourceDisplay resources={item.reward} fontSize={13} />
+              </View>
             </View>
-          )}
+            {!isAlreadyClaimed && (
+              <View style={commonStyles.actionBar}>
+                <View></View>
+                <TouchableOpacity
+                  onPress={handlePress}
+                  disabled={!completed}
+                  style={[commonStyles.buttonPrimary, !completed && commonStyles.buttonDisabled]}
+                >
+                  <Text style={commonStyles.buttonTextLight}>{t("complete")}</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
         </View>
       </ImageBackground>
     </Animated.View>

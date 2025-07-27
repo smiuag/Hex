@@ -10,10 +10,10 @@ export type ScaleType = {
   [key in ScaleSize]: ScaleValues;
 };
 
-export type ConfigType = "MAP_SIZE";
+export type ConfigType = "MAP_SIZE" | "GAME_STARTED";
 
 export type ConfigEntry = {
-  key: string;
+  key: ConfigType;
   value: string;
 };
 
@@ -21,6 +21,7 @@ export type PlayerConfig = ConfigEntry[];
 
 export const defaultPlayerConfig: PlayerConfig = [
   { key: "MAP_SIZE", value: "LARGE" },
+  { key: "GAME_STARTED", value: "false" },
 ];
 
 export const SCALE: ScaleType = {

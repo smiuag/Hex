@@ -58,6 +58,7 @@ function generateCelestialBody(type: CelestialBodyType): CelestialBody {
   }
 
   const { resources } = generateResources(type, planetType);
+  const id = uuid.v4();
 
   return {
     type,
@@ -65,6 +66,7 @@ function generateCelestialBody(type: CelestialBodyType): CelestialBody {
     resources,
     explored: false,
     baseBuilt: false,
+    id: id,
   };
 }
 
@@ -94,7 +96,6 @@ export function generateStarSystem(type: StarSystemType): StarSystem {
     explored: false,
     conquered: false,
     lastUpdate: Date.now(),
-    name: type.replace("_", " "),
     distance,
     id: id,
   };

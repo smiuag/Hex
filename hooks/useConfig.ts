@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
 import { deleteConfig, loadConfig, saveConfig } from "../src/services/storage";
-import {
-  ConfigEntry,
-  defaultPlayerConfig,
-  PlayerConfig,
-} from "../src/types/configTypes";
+import { ConfigEntry, defaultPlayerConfig, PlayerConfig } from "../src/types/configTypes";
 
 export const useConfig = () => {
   const [playerConfig, setPlayerConfig] = useState(defaultPlayerConfig);
@@ -35,9 +31,7 @@ export const useConfig = () => {
       const exists = prev.find((c) => c.key === newEntry.key);
       let updatedConfig;
       if (exists) {
-        updatedConfig = prev.map((c) =>
-          c.key === newEntry.key ? newEntry : c
-        );
+        updatedConfig = prev.map((c) => (c.key === newEntry.key ? newEntry : c));
       } else {
         updatedConfig = [...prev, newEntry];
       }

@@ -1,0 +1,13 @@
+{
+  "resourceType": {
+    "METAL": "Metal",
+    "STONE": "Piedra",
+    "ILMENITA": "Ilmenita",
+    "REGOLITO": "Regolito",
+    "NEBULITA": "Nebulita",
+    "THARNIO": "Tharnio",
+    "KAIROX": "Kairox",
+    "CRYSTAL": "Cristal",
+    "ENERGY": "Energía"
+  }
+}

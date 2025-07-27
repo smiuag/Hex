@@ -22,13 +22,9 @@ type ProviderContextType = {
   subtractResources: (modifications: Partial<Resources>) => void;
   resources: StoredResources;
   hexes: Hex[];
-  processConstructionTick: () => void;
   handleBuild: (q: number, r: number, type: BuildingType) => void;
   handleCancelBuild: (q: number, r: number) => void;
-  resetResources: () => void;
-  resetResearch: () => void;
   handleResearch: (type: ResearchType) => void;
-  processResearchTick: () => void;
   handleCancelResearch: (type: ResearchType) => void;
   fleetBuildQueue: Fleet[];
   handleBuildFleet: (type: FleetType, amount: number) => void;
@@ -37,17 +33,12 @@ type ProviderContextType = {
   playerQuests: PlayerQuest[];
   completeQuest: (type: QuestType) => void;
   markQuestsAsViewed: (types: QuestType[]) => void;
-  resetQuests: () => void;
   handleUpdateConfig: (config: ConfigEntry) => void;
-  resetPlayerConfig: () => void;
-  loadPlayerConfig: () => void;
   playerConfig: PlayerConfig;
   updatePlayerConfig: (config: PlayerConfig) => void;
   endGame: () => void;
   startGame: () => void;
-  loadStarSystem: () => void;
   starSystems: StarSystem[];
-  updateStarSystems: (starSystem: StarSystem[]) => void;
   discardStarSystem: (id: string) => void;
   exploreStarSystem: (id: string) => void;
 };
@@ -67,13 +58,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
 
   const { playerQuests, completeQuest, markQuestsAsViewed, resetQuests } = useQuest(addResources);
 
-  const {
-    handleUpdateConfig,
-    resetPlayerConfig,
-    loadPlayerConfig,
-    playerConfig,
-    updatePlayerConfig,
-  } = useConfig();
+  const { handleUpdateConfig, resetPlayerConfig, playerConfig, updatePlayerConfig } = useConfig();
 
   const { fleetBuildQueue, handleBuildFleet, handleCancelFleet, processFleetTick, resetFleet } =
     useFleet(addResources, subtractResources);
@@ -81,14 +66,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
   const { research, handleResearch, handleCancelResearch, processResearchTick, resetResearch } =
     useResearch(resources, addResources, subtractResources);
 
-  const {
-    discardStarSystem,
-    exploreStarSystem,
-    loadStarSystem,
-    resetStarSystem,
-    starSystems,
-    updateStarSystems,
-  } = useStarSystem();
+  const { discardStarSystem, exploreStarSystem, resetStarSystem, starSystems } = useStarSystem();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -115,38 +93,31 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
 
   const startGame = async () => {
     await endGame();
+
+    handleUpdateConfig({ key: "GAME_STARTED", value: "true" });
+    console.log(playerConfig);
   };
 
   const contextValue = {
     discardStarSystem,
     exploreStarSystem,
-    loadStarSystem,
     starSystems,
-    updateStarSystems,
     handleUpdateConfig,
-    resetPlayerConfig,
-    loadPlayerConfig,
     playerConfig,
     updatePlayerConfig,
     resources,
-    resetResources,
-    resetQuests,
     addProduction,
     addResources,
     subtractResources,
     fleetBuildQueue,
     hexes,
-    processConstructionTick,
     handleBuild,
     handleCancelBuild,
     handleResearch,
     handleCancelResearch,
-    processResearchTick,
-    resetResearch,
     research,
     handleBuildFleet,
     handleCancelFleet,
-    processFleetTick,
     resetFleet,
     playerQuests,
     completeQuest,

@@ -1,8 +1,8 @@
 import { StoredResources } from "@/src/types/resourceTypes";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ImageBackground, Modal, Pressable, Text, View } from "react-native";
 import { buildingConfig } from "../../src/config/buildingConfig";
-import { researchTechnologies } from "../../src/config/researchConfig";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { hexStyles } from "../../src/styles/hexStyles";
 import { BuildingType } from "../../src/types/buildingTypes";
@@ -37,26 +37,22 @@ export default function HexModal({
   onBuild,
   onCancelBuild,
 }: Props) {
+  const { t } = useTranslation("common");
+  const { t: tBuilding } = useTranslation("buildings");
+  const { t: tResearch } = useTranslation("research");
   const [remainingTime, setRemainingTime] = useState<number | null>(null);
 
   useEffect(() => {
     if (!data?.construction) return;
 
-    const {
-      building: buildingUnderConstruction,
-      startedAt,
-      targetLevel,
-    } = data.construction;
+    const { building: buildingUnderConstruction, startedAt, targetLevel } = data.construction;
     const totalBuildTime = getBuildTime(buildingUnderConstruction, targetLevel);
 
     const updateRemaining = () => {
       const elapsed = Date.now() - startedAt;
       const remaining = Math.max(0, totalBuildTime - elapsed);
       setRemainingTime(remaining);
-
-      if (remaining <= 1) {
-        onClose();
-      }
+      if (remaining <= 1) onClose();
     };
 
     updateRemaining();
@@ -77,10 +73,7 @@ export default function HexModal({
     const cost = getBuildCost(building.type, nextLevel);
     const time = getBuildTime(building.type, nextLevel);
     const enoughResources = hasEnoughResources(resources, cost);
-    const currentProduction = getProductionPerHour(
-      building.type,
-      building.level
-    );
+    const currentProduction = getProductionPerHour(building.type, building.level);
     const nextProduction = getProductionPerHour(building.type, nextLevel);
     const hasProduction = Object.values(nextProduction).some((v) => v > 0);
     const unmetRequirements =
@@ -88,8 +81,7 @@ export default function HexModal({
         ?.filter((req) => req.builddingLevel <= nextLevel)
         .filter((req) => {
           const playerResearchLevel =
-            research.find((r) => r.data.type === req.researchType)?.data
-              .level ?? 0;
+            research.find((r) => r.data.type === req.researchType)?.data.level ?? 0;
           return playerResearchLevel < req.researchLevelRequired;
         }) ?? [];
 
@@ -103,58 +95,42 @@ export default function HexModal({
       >
         <View style={commonStyles.overlayDark}>
           <View>
-            <Text style={commonStyles.titleText}>{config.name}</Text>
-            <Text style={commonStyles.subtitleText}>{config.description}</Text>
-          </View>
-          <View>
-            <Text style={commonStyles.whiteText}>
-              Nivel actual: {building.level}
+            <Text style={commonStyles.titleText}>{tBuilding(`buildingName.${building.type}`)}</Text>
+            <Text style={commonStyles.subtitleText}>
+              {tBuilding(`buildingDescription.${building.type}`)}
             </Text>
-
-            {hasProduction && (
-              <View style={commonStyles.rowResources}>
-                <Text style={commonStyles.whiteText}>
-                  Producción (Nv {building.level}):
-                </Text>
-                <View>
-                  <ResourceDisplay
-                    resources={currentProduction}
-                    fontSize={14}
-                    fontColor="white"
-                  />
-                </View>
-              </View>
-            )}
-
-            {hasProduction && (
-              <View style={commonStyles.rowResources}>
-                <Text style={commonStyles.whiteText}>
-                  Producción (Nv {nextLevel}):
-                </Text>
-                <View>
-                  <ResourceDisplay
-                    resources={nextProduction}
-                    fontSize={14}
-                    fontColor="white"
-                  />
-                </View>
-              </View>
-            )}
-
-            <View style={commonStyles.rowResources}>
-              <Text style={commonStyles.whiteText}>Coste:</Text>
-              <ResourceDisplay
-                resources={cost}
-                fontSize={14}
-                fontColor="white"
-              />
-            </View>
           </View>
+
+          <Text style={commonStyles.whiteText}>
+            {t("currentLevel")}: {building.level}
+          </Text>
+
+          {hasProduction && (
+            <View style={commonStyles.rowResources}>
+              <Text style={commonStyles.whiteText}>
+                {t("productionLevel", { level: building.level })}
+              </Text>
+              <ResourceDisplay resources={currentProduction} fontSize={14} fontColor="white" />
+            </View>
+          )}
+
+          {hasProduction && (
+            <View style={commonStyles.rowResources}>
+              <Text style={commonStyles.whiteText}>
+                {t("productionLevel", { level: nextLevel })}
+              </Text>
+              <ResourceDisplay resources={nextProduction} fontSize={14} fontColor="white" />
+            </View>
+          )}
+
+          <View style={commonStyles.rowResources}>
+            <Text style={commonStyles.whiteText}>{t("cost")}:</Text>
+            <ResourceDisplay resources={cost} fontSize={14} fontColor="white" />
+          </View>
+
           {!canUpgrade && (
             <>
-              <Text style={commonStyles.whiteText}>
-                Tiempo de construcción:
-              </Text>
+              <Text style={commonStyles.whiteText}>{t("buildTime")}:</Text>
               <Text style={commonStyles.whiteText}>{formatDuration(time)}</Text>
             </>
           )}
@@ -162,20 +138,16 @@ export default function HexModal({
           <View style={commonStyles.actionBar}>
             {canUpgrade ? (
               !enoughResources ? (
-                <Text style={[commonStyles.warningTextYellow]}>
-                  ⚠️ Recursos insuficientes
-                </Text>
+                <Text style={commonStyles.warningTextYellow}>{t("notEnoughResources")}</Text>
               ) : (
-                <Text style={commonStyles.warningTextYellow}>
-                  ⏱️ {formatDuration(time)}
-                </Text>
+                <Text style={commonStyles.warningTextYellow}>⏱️ {formatDuration(time)}</Text>
               )
             ) : (
               <Text style={commonStyles.errorTextRed}>
                 {unmetRequirements
                   .map(
                     (r) =>
-                      `🔒 ${researchTechnologies[r.researchType].name} Nv ${
+                      `🔒 ${tResearch(`researchName.${r.researchType}`)} ${t("level")} ${
                         r.researchLevelRequired
                       }`
                   )
@@ -184,14 +156,11 @@ export default function HexModal({
             )}
 
             <Pressable
-              style={[
-                commonStyles.buttonPrimary,
-                !canBuild && commonStyles.buttonDisabled,
-              ]}
+              style={[commonStyles.buttonPrimary, !canBuild && commonStyles.buttonDisabled]}
               onPress={() => canBuild && onBuild(building.type)}
               disabled={!canBuild}
             >
-              <Text style={commonStyles.buttonTextLight}>Mejorar</Text>
+              <Text style={commonStyles.buttonTextLight}>{t("upgrade")}</Text>
             </Pressable>
           </View>
         </View>
@@ -202,18 +171,11 @@ export default function HexModal({
   const renderConstructionView = () => {
     if (!data?.construction || remainingTime === null) return null;
 
-    const typeUnderConstrucion = data.construction.building;
-
-    const config = buildingConfig[typeUnderConstrucion];
+    const typeUnderConstruction = data.construction.building;
+    const config = buildingConfig[typeUnderConstruction];
     const targetLevel = data.construction.targetLevel;
-    const currentProduction = getProductionPerHour(
-      typeUnderConstrucion,
-      targetLevel
-    );
-    const nextProduction = getProductionPerHour(
-      typeUnderConstrucion,
-      targetLevel + 1
-    );
+    const currentProduction = getProductionPerHour(typeUnderConstruction, targetLevel);
+    const nextProduction = getProductionPerHour(typeUnderConstruction, targetLevel + 1);
     const hasProduction = Object.values(nextProduction).some((v) => v > 0);
 
     return (
@@ -224,54 +186,40 @@ export default function HexModal({
       >
         <View style={commonStyles.overlayDark}>
           <View>
-            <Text style={commonStyles.titleText}>{config.name}</Text>
-            <Text style={commonStyles.subtitleText}>{config.description}</Text>
+            <Text style={commonStyles.titleText}>
+              {tBuilding(`buildingName.${typeUnderConstruction}`)}
+            </Text>
+            <Text style={commonStyles.subtitleText}>
+              {tBuilding(`buildingDescription.${typeUnderConstruction}`)}
+            </Text>
           </View>
-          <View>
-            {hasProduction && targetLevel > 1 && (
-              <>
-                <Text style={commonStyles.whiteText}>
-                  Nivel actual: {targetLevel - 1}
-                </Text>
-                <View style={commonStyles.rowResources}>
-                  <Text style={commonStyles.whiteText}>
-                    Producción (Nv {targetLevel - 1}):
-                  </Text>
-                  <View>
-                    <ResourceDisplay
-                      resources={currentProduction}
-                      fontSize={14}
-                      fontColor="white"
-                    />
-                  </View>
-                </View>
-              </>
-            )}
-            {hasProduction && (
+          {hasProduction && targetLevel > 1 && (
+            <>
+              <Text style={commonStyles.whiteText}>
+                {t("currentLevel")}: {targetLevel - 1}
+              </Text>
               <View style={commonStyles.rowResources}>
                 <Text style={commonStyles.whiteText}>
-                  Producción (Nv {targetLevel}):
+                  {t("productionLevel", { level: targetLevel - 1 })}
                 </Text>
-                <View>
-                  <ResourceDisplay
-                    resources={nextProduction}
-                    fontSize={14}
-                    fontColor="white"
-                  />
-                </View>
+                <ResourceDisplay resources={currentProduction} fontSize={14} fontColor="white" />
               </View>
-            )}
-          </View>
-          <View style={commonStyles.actionBar}>
-            <Text style={commonStyles.warningTextYellow}>
-              ⏱️ {formatDuration(remainingTime)}
-            </Text>
+            </>
+          )}
 
-            <Pressable
-              style={commonStyles.cancelButton}
-              onPress={onCancelBuild}
-            >
-              <Text style={commonStyles.cancelButtonText}>Cancelar</Text>
+          {hasProduction && (
+            <View style={commonStyles.rowResources}>
+              <Text style={commonStyles.whiteText}>
+                {t("productionLevel", { level: targetLevel })}
+              </Text>
+              <ResourceDisplay resources={nextProduction} fontSize={14} fontColor="white" />
+            </View>
+          )}
+
+          <View style={commonStyles.actionBar}>
+            <Text style={commonStyles.warningTextYellow}>⏱️ {formatDuration(remainingTime)}</Text>
+            <Pressable style={commonStyles.cancelButton} onPress={onCancelBuild}>
+              <Text style={commonStyles.cancelButtonText}>{t("cancel")}</Text>
             </Pressable>
           </View>
         </View>
@@ -280,17 +228,9 @@ export default function HexModal({
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <Pressable style={hexStyles.overlay} onPress={onClose}>
-        <Pressable
-          style={hexStyles.modalWrapper}
-          onPress={(e) => e.stopPropagation()}
-        >
+        <Pressable style={hexStyles.modalWrapper} onPress={(e) => e.stopPropagation()}>
           {construction ? renderConstructionView() : renderUpgradeView()}
         </Pressable>
       </Pressable>

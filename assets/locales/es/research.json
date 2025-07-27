@@ -1,0 +1,26 @@
+{
+  "researchName": {
+    "TERRAFORMING": "Terraformación",
+    "MINING": "Minería",
+    "WATERPURIFICATION": "Purificación de Agua",
+    "FUELREFINEMENT": "Refinamiento de Combustible",
+    "ENERGYEFFICIENCY": "Eficiencia Energética",
+    "SHIPENGINEERING": "Ingeniería espacial",
+    "PLASMA": "Tecnología de plasma",
+    "LASER": "Tecnología láser",
+    "SHIELD": "Escudos de energía",
+    "GRAVITY": "Tecnología de gravitón"
+  },
+  "researchDescription": {
+    "TERRAFORMING": "Permite mejorar la base, algo necesario para ampliar su alcance y conseguir más área construible.",
+    "MINING": "Permite mejorar las minas de piedra, cristal y metal.",
+    "WATERPURIFICATION": "Desbloquea sistemas de filtrado y recolección de agua, vital para mantener la vida y expandir tu colonia.",
+    "FUELREFINEMENT": "Permite producir combustible más eficiente para los vehículos y sistemas avanzados de la base.",
+    "ENERGYEFFICIENCY": "Optimiza el consumo energético de todas tus estructuras, reduciendo los costes de mantenimiento.",
+    "SHIPENGINEERING": "Permite construir naves exploradoras y cargueros, esenciales para la expansión y el comercio interestelar.",
+    "PLASMA": "Tecnología para el armamento de naves espaciales pesadas.",
+    "LASER": "Tecnología base para el armamento ligero de naves espaciales.",
+    "SHIELD": "Imprescindible para la construcción de destructores espaciales y naves orbitales.",
+    "GRAVITY": "Tecnología final para el dominio de las bases espaciales y motores WARP."
+  }
+}
