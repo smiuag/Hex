@@ -37,6 +37,7 @@ export default function MenuComponent() {
     handleCancelShip,
     endGame,
     startGame,
+    cancelExploreSystem,
   } = useGameContext();
 
   const started = gameStarted(playerConfig);
@@ -74,6 +75,10 @@ export default function MenuComponent() {
 
   const cancelResearch = async (type: ResearchType) => {
     await handleCancelResearch(type);
+  };
+
+  const onCancelExploreSystem = async (id: string) => {
+    await cancelExploreSystem(id);
   };
 
   const onCancelShip = async (type: ShipType) => {
@@ -159,6 +164,7 @@ export default function MenuComponent() {
                 onCancelBuild={cancelBuild}
                 onCancelResearch={cancelResearch}
                 onCancelShip={onCancelShip}
+                onCancelExploreSystem={onCancelExploreSystem}
               />
             ))}
           </View>

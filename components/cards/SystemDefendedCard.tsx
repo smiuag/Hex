@@ -19,7 +19,7 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onAttac
   const enoughProbe = true;
 
   return (
-    <View style={commonStyles.containerCenter}>
+    <View style={commonStyles.containerCenter} key={system.id}>
       <ImageBackground
         source={system.image}
         style={commonStyles.card}

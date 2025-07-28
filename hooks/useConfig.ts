@@ -5,9 +5,13 @@ import { ConfigEntry, defaultPlayerConfig, PlayerConfig } from "../src/types/con
 export const useConfig = () => {
   const [playerConfig, setPlayerConfig] = useState(defaultPlayerConfig);
 
-  const updatePlayerConfig = async (config: PlayerConfig) => {
-    setPlayerConfig(config);
-    await saveConfig(config);
+  // Actualiza el estado con función o array, y guarda
+  const updatePlayerConfig = async (
+    updater: PlayerConfig | ((prev: PlayerConfig) => PlayerConfig)
+  ) => {
+    const updated = typeof updater === "function" ? updater(playerConfig) : updater;
+    setPlayerConfig(updated);
+    await saveConfig(updated);
   };
 
   const loadPlayerConfig = async () => {
@@ -18,29 +22,24 @@ export const useConfig = () => {
   };
 
   const resetPlayerConfig = async () => {
+    setPlayerConfig(defaultPlayerConfig);
     await deleteConfig();
-    await setPlayerConfig(defaultPlayerConfig);
+  };
+
+  const handleUpdateConfig = async (newEntry: ConfigEntry) => {
+    await updatePlayerConfig((prev) => {
+      const exists = prev.find((c) => c.key === newEntry.key);
+      if (exists) {
+        return prev.map((c) => (c.key === newEntry.key ? newEntry : c));
+      } else {
+        return [...prev, newEntry];
+      }
+    });
   };
 
   useEffect(() => {
     loadPlayerConfig();
   }, []);
-
-  function handleUpdateConfig(newEntry: ConfigEntry) {
-    setPlayerConfig((prev) => {
-      const exists = prev.find((c) => c.key === newEntry.key);
-      let updatedConfig;
-      if (exists) {
-        updatedConfig = prev.map((c) => (c.key === newEntry.key ? newEntry : c));
-      } else {
-        updatedConfig = [...prev, newEntry];
-      }
-
-      saveConfig(updatedConfig);
-
-      return updatedConfig;
-    });
-  }
 
   return {
     handleUpdateConfig,

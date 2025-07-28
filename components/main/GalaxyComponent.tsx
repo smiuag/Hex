@@ -10,8 +10,9 @@ export default function StarSystemComponent() {
   const {
     starSystems,
     discardStarSystem,
-    explorePlanet,
+    startPlanetExploration,
     cancelExploreSystem,
+    cancelExplorePlanet,
     startStarSystemExploration,
   } = useGameContext();
 
@@ -27,7 +28,8 @@ export default function StarSystemComponent() {
           <SystemExploredCard
             system={item}
             onDiscard={discardStarSystem}
-            onExplorePlanet={explorePlanet}
+            onExplorePlanet={startPlanetExploration}
+            onCancelExplorePlanet={cancelExplorePlanet}
           />
         ) : item.explored ? (
           <SystemDefendedCard

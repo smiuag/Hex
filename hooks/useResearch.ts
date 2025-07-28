@@ -1,5 +1,5 @@
 import * as Notifications from "expo-notifications";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 import { researchTechnologies } from "../src/config/researchConfig";
 import { loadResearch, saveResearch } from "../src/services/storage";
@@ -15,24 +15,22 @@ export const useResearch = (
   subtractResources: (modifications: Partial<Resources>) => void
 ) => {
   const [research, setResearch] = useState<Research[]>([]);
-  const researchRef = useRef<Research[]>([]);
 
-  const updateResearchState = async (newResearch: Research[]) => {
-    setResearch(newResearch);
-    researchRef.current = newResearch;
-    await saveResearch(newResearch);
+  const updateResearchState = (updater: Research[] | ((prev: Research[]) => Research[])) => {
+    setResearch((prev) => {
+      const updated = typeof updater === "function" ? updater(prev) : updater;
+      saveResearch(updated).catch((e) => console.error("Error saving research:", e));
+      return updated;
+    });
   };
 
   const resetResearch = async () => {
     setResearch([]);
-    researchRef.current = [];
     await saveResearch([]);
   };
 
   const handleResearch = async (type: ResearchType) => {
-    const existing = researchRef.current.find((r) => r.data.type === type);
-
-    const currentLevel = existing?.data.level ?? 0;
+    const currentLevel = research.find((r) => r.data.type === type)?.data.level ?? 0;
     const nextLevel = currentLevel + 1;
     const scaledCost = getResearchCost(type, nextLevel);
     const durationMs = getResearchTime(type, nextLevel);
@@ -48,21 +46,26 @@ export const useResearch = (
       delayMs: durationMs,
     });
 
-    const updatedResearch = [...researchRef.current].map((r) =>
-      r.data.type === type
-        ? {
-            ...r,
-            progress: {
-              startedAt: Date.now(),
-              targetLevel: nextLevel,
-              notificationId: notificationId ?? undefined,
-            },
-          }
-        : r
-    );
+    updateResearchState((prev) => {
+      const existing = prev.find((r) => r.data.type === type);
+      const updated = [...prev];
 
-    if (!existing) {
-      updatedResearch.push({
+      if (existing) {
+        return updated.map((r) =>
+          r.data.type === type
+            ? {
+                ...r,
+                progress: {
+                  startedAt: Date.now(),
+                  targetLevel: nextLevel,
+                  notificationId: notificationId ?? undefined,
+                },
+              }
+            : r
+        );
+      }
+
+      updated.push({
         data: { type, level: 0 },
         progress: {
           startedAt: Date.now(),
@@ -70,39 +73,36 @@ export const useResearch = (
           notificationId: notificationId ?? undefined,
         },
       });
-    }
 
-    await updateResearchState(updatedResearch);
+      return updated;
+    });
 
     subtractResources(scaledCost);
   };
 
   const handleCancelResearch = async (type: ResearchType) => {
-    const inProgress = researchRef.current.find((r) => r.progress && r.data.type == type);
-    if (!inProgress) return;
+    const target = research.find((r) => r.data.type === type && r.progress);
+    if (!target) return;
 
-    const { data, progress } = inProgress;
-    const scaledCost = getResearchCost(data.type, progress?.targetLevel ?? 1);
+    const scaledCost = getResearchCost(target.data.type, target.progress?.targetLevel ?? 1);
 
     addResources(scaledCost);
 
-    if (progress?.notificationId) {
-      await NotificationManager.cancelNotification(progress.notificationId);
+    if (target.progress?.notificationId) {
+      await NotificationManager.cancelNotification(target.progress.notificationId);
     }
 
-    const updatedResearch = researchRef.current.map((r) =>
-      r.data.type === data.type ? { ...r, progress: undefined } : r
+    updateResearchState((prev) =>
+      prev.map((r) => (r.data.type === type ? { ...r, progress: undefined } : r))
     );
-
-    setResearch(updatedResearch);
-    await updateResearchState(updatedResearch);
   };
 
   const processResearchTick = async () => {
     const now = Date.now();
+
     let changed = false;
 
-    const updatedResearch = researchRef.current.map((item) => {
+    const updated = research.map((item) => {
       if (item.progress) {
         const config = researchTechnologies[item.data.type];
         const totalTime = getResearchTime(item.data.type, item.progress.targetLevel);
@@ -133,7 +133,7 @@ export const useResearch = (
     });
 
     if (changed) {
-      await updateResearchState(updatedResearch);
+      updateResearchState(updated);
     }
   };
 
@@ -141,7 +141,6 @@ export const useResearch = (
     const saved = await loadResearch();
     if (saved) {
       setResearch(saved);
-      researchRef.current = saved;
     }
   };
 

@@ -33,7 +33,7 @@ export const researchTechnologies: Record<
     baseCost: RESEARCH_COST.MINING,
     baseResearchTime: RESEARCH_TIME.MINING,
     maxLevel: MAX_LVL.MINING,
-    description: "Permite mejorar las minas de piedra, cristal y metal ",
+    description: "Permite mejorar las minas de regolito, cristal y metal ",
   },
   WATERPURIFICATION: {
     name: "Purificación de Agua",

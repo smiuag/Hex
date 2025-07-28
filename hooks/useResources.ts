@@ -22,72 +22,79 @@ export function useResources() {
   };
 
   const subtractResources = async (modifications: Partial<Resources>) => {
-    const elapsedSeconds = (Date.now() - resources.lastUpdate) / 1000;
-    const updatedResources: Partial<Resources> = { ...resources.resources };
+    const now = Date.now();
+    setResources((prev) => {
+      const elapsedSeconds = (now - prev.lastUpdate) / 1000;
+      const updated: Partial<Resources> = { ...prev.resources };
 
-    for (const key in resources.production) {
-      const typedKey = key as keyof Resources;
-      const produced = (resources.production[typedKey] || 0) * elapsedSeconds;
-      updatedResources[typedKey] = (updatedResources[typedKey] || 0) + produced;
-    }
-    for (const key in modifications) {
-      const typedKey = key as keyof Resources;
-      updatedResources[typedKey] =
-        (updatedResources[typedKey] || 0) - (modifications[typedKey] || 0);
-    }
+      for (const key in prev.production) {
+        const typedKey = key as keyof Resources;
+        const produced = (prev.production[typedKey] || 0) * elapsedSeconds;
+        updated[typedKey] = (updated[typedKey] || 0) + produced;
+      }
 
-    const updatedStoredResources: StoredResources = {
-      resources: updatedResources as Resources,
-      lastUpdate: Date.now(),
-      production: resources.production,
-    };
+      for (const key in modifications) {
+        const typedKey = key as keyof Resources;
+        updated[typedKey] = (updated[typedKey] || 0) - (modifications[typedKey] || 0);
+      }
 
-    setResources(updatedStoredResources);
-    await saveResources(updatedStoredResources);
+      const updatedState: StoredResources = {
+        resources: updated as Resources,
+        lastUpdate: now,
+        production: prev.production,
+      };
+
+      saveResources(updatedState);
+      return updatedState;
+    });
   };
 
   const addResources = async (modifications: Partial<Resources>) => {
-    const elapsedSeconds = (Date.now() - resources.lastUpdate) / 1000;
-    const updatedResources: Partial<Resources> = { ...resources.resources };
+    const now = Date.now();
+    setResources((prev) => {
+      const elapsedSeconds = (now - prev.lastUpdate) / 1000;
+      const updated: Partial<Resources> = { ...prev.resources };
 
-    for (const key in resources.production) {
-      const typedKey = key as keyof Resources;
-      const produced = (resources.production[typedKey] || 0) * elapsedSeconds;
-      updatedResources[typedKey] = (updatedResources[typedKey] || 0) + produced;
-    }
+      for (const key in prev.production) {
+        const typedKey = key as keyof Resources;
+        const produced = (prev.production[typedKey] || 0) * elapsedSeconds;
+        updated[typedKey] = (updated[typedKey] || 0) + produced;
+      }
 
-    for (const key in modifications) {
-      const typedKey = key as keyof Resources;
-      updatedResources[typedKey] =
-        (updatedResources[typedKey] || 0) + (modifications[typedKey] || 0);
-    }
+      for (const key in modifications) {
+        const typedKey = key as keyof Resources;
+        updated[typedKey] = (updated[typedKey] || 0) + (modifications[typedKey] || 0);
+      }
 
-    const updatedStoredResources: StoredResources = {
-      resources: updatedResources as Resources,
-      lastUpdate: Date.now(),
-      production: resources.production,
-    };
+      const updatedState: StoredResources = {
+        resources: updated as Resources,
+        lastUpdate: now,
+        production: prev.production,
+      };
 
-    setResources(updatedStoredResources);
-    await saveResources(updatedStoredResources);
+      saveResources(updatedState);
+      return updatedState;
+    });
   };
 
   const addProduction = async (extraProduction: Partial<Resources>) => {
-    const updatedProduction: Partial<Resources> = { ...resources.production };
+    setResources((prev) => {
+      const updatedProduction: Partial<Resources> = { ...prev.production };
 
-    for (const key in extraProduction) {
-      const typedKey = key as keyof Resources;
-      updatedProduction[typedKey] =
-        (updatedProduction[typedKey] || 0) + (extraProduction[typedKey] || 0);
-    }
+      for (const key in extraProduction) {
+        const typedKey = key as keyof Resources;
+        updatedProduction[typedKey] =
+          (updatedProduction[typedKey] || 0) + (extraProduction[typedKey] || 0);
+      }
 
-    const updatedStoredResources: StoredResources = {
-      ...resources,
-      production: updatedProduction,
-    };
+      const updatedState: StoredResources = {
+        ...prev,
+        production: updatedProduction,
+      };
 
-    setResources(updatedStoredResources);
-    await saveResources(updatedStoredResources);
+      saveResources(updatedState);
+      return updatedState;
+    });
   };
 
   const enoughResources = async (cost: Partial<Resources>) => {

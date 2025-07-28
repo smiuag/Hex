@@ -3,7 +3,7 @@ import { buildingConfig } from "../src/config/buildingConfig";
 import { researchTechnologies } from "../src/config/researchConfig";
 import { shipConfig } from "../src/config/shipConfig";
 import { Hex } from "../src/types/hexTypes";
-import { Process } from "../src/types/processTypes";
+import { Process, ProcessType } from "../src/types/processTypes";
 import { Research } from "../src/types/researchTypes";
 import { Ship } from "../src/types/shipType";
 import { getBuildTime } from "../utils/buildingUtils";
@@ -108,16 +108,54 @@ export const getFleetProcesses = (fleetData: FleetData[]): Process[] => {
     const fleetShips = fleet.ships.reduce((total, fl) => total + fl.amount, 0);
     const config = shipConfig[fleet.ships[0].type];
     const totalTime = fleet.endTime - fleet.startTime;
+
+    let type: ProcessType;
+    let name: string;
+
+    switch (fleet.movementType) {
+      case "EXPLORE SYSTEM":
+        type = "EXPLORATION SYSTEM FLEET";
+        name =
+          fleetShips +
+          " nave" +
+          (fleetShips > 1 ? "s" : "") +
+          " rumbo a explorar un nuevo sistema ";
+        break;
+      case "RETURN":
+        type = "RETURN FLEET";
+        name = fleetShips + " nave" + (fleetShips > 1 ? "s" : "") + " volviendo a casa";
+        break;
+      case "ATTACK":
+        type = "ATTACK FLEET";
+        name = fleetShips + " nave" + (fleetShips > 1 ? "s" : "") + " rumbo a atacar un planeta ";
+        break;
+      case "EXPLORE PLANET":
+        type = "EXPLORATION PLANET FLEET";
+        name =
+          fleetShips +
+          " nave" +
+          (fleetShips > 1 ? "s" : "") +
+          " rumbo a explorar un nuevo planeta ";
+        break;
+      case "MOVEMENT":
+        type = "MOVEMENT FLEET";
+        name = fleetShips + " nave" + (fleetShips > 1 ? "s" : "") + " viajando a otro sistema ";
+        break;
+    }
+
     const proc: Process = {
-      name:
-        fleet.movementType == "RETURN"
-          ? fleetShips + " nave" + (fleetShips > 0 ? "s" : "") + " volviendo a casa"
-          : fleetShips + " nave" + (fleetShips > 0 ? "s" : "") + " rumbo al sistema... ",
-      type: "FLEET",
+      name,
+      type,
       id: "FLEET-" + fleet.id,
       duration: totalTime,
       startedAt: fleet.startTime,
-
+      explorationSystemId:
+        fleet.movementType == "EXPLORE SYSTEM" || fleet.movementType == "EXPLORE PLANET"
+          ? fleet.destinationSystemId
+          : undefined,
+      explorationPlanetId:
+        fleet.movementType == "EXPLORE PLANET" ? fleet.destinationPlanetId : undefined,
+      attackSystemId: fleet.movementType == "ATTACK" ? fleet.destinationSystemId : undefined,
       image: config.imageBackground,
     };
 

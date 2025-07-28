@@ -18,9 +18,11 @@ export const QuestIcon = ({ color, size }: { color: string; size: number }) => (
 );
 
 export const GalaxyIcon = ({ color, size }: { color: string; size: number }) => (
-  <MaterialCommunityIcons name="star-four-points" size={size} color={color} />
+  <MaterialCommunityIcons name="radar" size={size} color={color} />
 );
 
 export const ShipIcon = ({ color, size }: { color: string; size: number }) => (
   <MaterialCommunityIcons name="rocket" size={size} color={color} />
 );
+
+//space-station

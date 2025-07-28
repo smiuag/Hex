@@ -7,7 +7,8 @@ export type FleetData = {
   ships: ShipData[];
   startTime: number;
   endTime: number;
-  destination: string;
+  destinationSystemId: string;
+  destinationPlanetId?: string;
   origin: string;
   id: string;
 };

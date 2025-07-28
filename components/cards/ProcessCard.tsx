@@ -12,6 +12,7 @@ type ProcessCardProps = {
   onCancelBuild: (q: number, r: number) => Promise<void>;
   onCancelResearch: (type: ResearchType) => Promise<void>;
   onCancelShip: (shipType: ShipType) => Promise<void>;
+  onCancelExploreSystem: (id: string) => Promise<void>;
 };
 
 export function ProcessCard({
@@ -19,6 +20,7 @@ export function ProcessCard({
   onCancelBuild,
   onCancelResearch,
   onCancelShip,
+  onCancelExploreSystem,
 }: ProcessCardProps) {
   const { t } = useTranslation("common");
 
@@ -29,6 +31,8 @@ export function ProcessCard({
       await onCancelResearch(item.researchType!);
     } else if (item.type === "SHIP") {
       await onCancelShip(item.shipType!);
+    } else if (item.type === "EXPLORATION SYSTEM FLEET") {
+      await onCancelExploreSystem(item.explorationSystemId!);
     }
   };
 
@@ -49,9 +53,11 @@ export function ProcessCard({
                 ⏳ <CountdownTimer startedAt={item.startedAt} duration={item.duration} />
               </Text>
             </View>
-            <TouchableOpacity style={commonStyles.buttonDanger} onPress={handleCancel}>
-              <Text style={commonStyles.buttonTextLight}>{t("cancel")}</Text>
-            </TouchableOpacity>
+            {item.type !== "RETURN FLEET" && (
+              <TouchableOpacity style={commonStyles.buttonDanger} onPress={handleCancel}>
+                <Text style={commonStyles.buttonTextLight}>{t("cancel")}</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </ImageBackground>

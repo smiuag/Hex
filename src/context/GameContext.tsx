@@ -27,7 +27,7 @@ type ProviderContextType = {
   playerConfig: PlayerConfig;
   starSystems: StarSystem[];
   startStarSystemExploration: (id: string) => void;
-  explorePlanet: (systemId: string, planetId: string) => void;
+  startPlanetExploration: (systemId: string, planetId: string) => void;
   addProduction: (modifications: Partial<Resources>) => void;
   addResources: (modifications: Partial<Resources>) => void;
   subtractResources: (modifications: Partial<Resources>) => void;
@@ -45,6 +45,7 @@ type ProviderContextType = {
   startGame: () => void;
   discardStarSystem: (id: string) => void;
   cancelExploreSystem: (id: string) => void;
+  cancelExplorePlanet: (systemId: string, planetId: string) => void;
 };
 
 const ResourceContext = createContext<ProviderContextType | undefined>(undefined);
@@ -89,8 +90,9 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     starSystems,
     discardStarSystem,
     resetStarSystem,
-    explorePlanet,
+    startPlanetExploration,
     cancelExploreSystem,
+    cancelExplorePlanet,
     startStarSystemExploration,
     processFleeTick,
     resetFleet,
@@ -137,7 +139,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     research,
     playerQuests,
     startStarSystemExploration,
-    explorePlanet,
+    startPlanetExploration,
     discardStarSystem,
     handleUpdateConfig,
     updatePlayerConfig,
@@ -156,6 +158,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     endGame,
     startGame,
     cancelExploreSystem,
+    cancelExplorePlanet,
   };
 
   return <ResourceContext.Provider value={contextValue}>{children}</ResourceContext.Provider>;

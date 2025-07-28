@@ -31,7 +31,6 @@ export const SystemUnknownCard: React.FC<Props> = ({
   const expected = getExpectedResourceProbabilities(system.type);
   const enoughProbe = true;
   const isBeingExplored = !!system.explorationFleetId;
-  console.log(isBeingExplored);
 
   const { shipBuildQueue, fleet } = useGameContext();
 
@@ -54,7 +53,7 @@ export const SystemUnknownCard: React.FC<Props> = ({
   };
 
   return (
-    <View style={commonStyles.containerCenter}>
+    <View style={commonStyles.containerCenter} key={system.id}>
       <ImageBackground
         source={system.image}
         style={commonStyles.card}
