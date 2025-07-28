@@ -1,8 +1,8 @@
 import { ImageSourcePropType } from "react-native";
-import { FleetType } from "./fleetType";
 import { ResearchType } from "./researchTypes";
+import { ShipType } from "./shipType";
 
-export type ProcessType = "BUILDING" | "RESEARCH" | "FLEET";
+export type ProcessType = "BUILDING" | "RESEARCH" | "SHIP" | "FLEET";
 
 export class Process {
   id: string;
@@ -12,7 +12,7 @@ export class Process {
   duration: number;
   researchType?: ResearchType;
   image: ImageSourcePropType;
-  fleetType?: FleetType;
+  shipType?: ShipType;
   q?: number;
   r?: number;
 

@@ -1,9 +1,9 @@
-import { FleetType } from "../types/fleetType";
-import { FleetResearchRequiredData } from "../types/researchTypes";
+import { ShipResearchRequiredData } from "../types/researchTypes";
 import { Resources } from "../types/resourceTypes";
+import { ShipType } from "../types/shipType";
 import { IMAGES } from "./images";
 
-export const FLEET_COST: Record<FleetType, Partial<Resources>> = {
+export const SHIP_COST: Record<ShipType, Partial<Resources>> = {
   PROBE: { METAL: 1000, CRYSTAL: 500, ENERGY: 2000 },
   LIGHTFIGHTER: { METAL: 1000, CRYSTAL: 500, ENERGY: 1000 },
   INTERCEPTOR: { METAL: 2000, CRYSTAL: 1000, ENERGY: 2500 },
@@ -17,7 +17,7 @@ export const FLEET_COST: Record<FleetType, Partial<Resources>> = {
   PLANETARYDESTROYER: { METAL: 500000, CRYSTAL: 250000, ENERGY: 60000 },
 };
 
-export const FLEET_TIME: Record<FleetType, number> = {
+export const SHIP_TIME: Record<ShipType, number> = {
   PROBE: 1000 * 60 * 3,
   LIGHTFIGHTER: 1000 * 60 * 3,
   INTERCEPTOR: 1000 * 60 * 4,
@@ -31,7 +31,7 @@ export const FLEET_TIME: Record<FleetType, number> = {
   PLANETARYDESTROYER: 1000 * 60 * 60 * 24 * 2,
 };
 
-export const FLEET_REQUIRED_RESEARCH: Record<FleetType, FleetResearchRequiredData[]> = {
+export const SHIP_REQUIRED_RESEARCH: Record<ShipType, ShipResearchRequiredData[]> = {
   PROBE: [{ researchType: "SHIPENGINEERING", researchLevelRequired: 1 }],
   LIGHTFIGHTER: [
     { researchType: "SHIPENGINEERING", researchLevelRequired: 1 },
@@ -90,21 +90,21 @@ export const FLEET_REQUIRED_RESEARCH: Record<FleetType, FleetResearchRequiredDat
   ],
 };
 
-export const FLEET_BACKGROUND_IMAGE: Record<FleetType, any> = {
-  PROBE: IMAGES.FLEET_BG_PROBE,
-  LIGHTFIGHTER: IMAGES.FLEET_BG_LIGHTFIGHTER,
-  INTERCEPTOR: IMAGES.FLEET_BG_INTERCEPTOR,
-  ESCORTFRIGATE: IMAGES.FLEET_BG_ESCORTFRIGATE,
-  BATTLECRUISER: IMAGES.FLEET_BG_BATTLECRUISER,
-  SPACEDESTROYER: IMAGES.FLEET_BG_SPACEDESTROYER,
-  ASSAULTBATTLESHIP: IMAGES.FLEET_BG_ASSAULTBATTLESHIP,
-  STARCARRIER: IMAGES.FLEET_BG_STARCARRIER,
-  HEAVYASSAULTSHIP: IMAGES.FLEET_BG_HEAVYASSAULTSHIP,
-  ORBITALASSAULTSHIP: IMAGES.FLEET_BG_ORBITALASSAULTSHIP,
-  PLANETARYDESTROYER: IMAGES.FLEET_BG_PLANETARYDESTROYER,
+export const SHIP_BACKGROUND_IMAGE: Record<ShipType, any> = {
+  PROBE: IMAGES.SHIP_BG_PROBE,
+  LIGHTFIGHTER: IMAGES.SHIP_BG_LIGHTFIGHTER,
+  INTERCEPTOR: IMAGES.SHIP_BG_INTERCEPTOR,
+  ESCORTFRIGATE: IMAGES.SHIP_BG_ESCORTFRIGATE,
+  BATTLECRUISER: IMAGES.SHIP_BG_BATTLECRUISER,
+  SPACEDESTROYER: IMAGES.SHIP_BG_SPACEDESTROYER,
+  ASSAULTBATTLESHIP: IMAGES.SHIP_BG_ASSAULTBATTLESHIP,
+  STARCARRIER: IMAGES.SHIP_BG_STARCARRIER,
+  HEAVYASSAULTSHIP: IMAGES.SHIP_BG_HEAVYASSAULTSHIP,
+  ORBITALASSAULTSHIP: IMAGES.SHIP_BG_ORBITALASSAULTSHIP,
+  PLANETARYDESTROYER: IMAGES.SHIP_BG_PLANETARYDESTROYER,
 };
 
-export const FLEET_STATS: Record<FleetType, any> = {
+export const SHIP_STATS: Record<ShipType, any> = {
   PROBE: {
     ATTACK: 0,
     DEFENSE: 1,

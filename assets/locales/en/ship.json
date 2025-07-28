@@ -1,5 +1,6 @@
 {
-  "fleetName": {
+  "shipName": {
+    "PROBE": "Probe",
     "LIGHTFIGHTER": "Light Fighter",
     "INTERCEPTOR": "Interceptor",
     "ESCORTFRIGATE": "Escort Frigate",
@@ -11,7 +12,8 @@
     "ORBITALASSAULTSHIP": "Orbital Assault Ship",
     "PLANETARYDESTROYER": "Planetary Destroyer"
   },
-  "fleetDescription": {
+  "shipDescription": {
+    "PROBE": "Space exploration probe. It has great speed but no attack or defense capabilities.",
     "LIGHTFIGHTER": "A fast and agile ship designed for aerial combat and defense patrols.",
     "INTERCEPTOR": "Specialized in intercepting and eliminating enemy threats before they approach.",
     "ESCORTFRIGATE": "Protects larger ships and convoys, combining defense with efficient maneuverability.",

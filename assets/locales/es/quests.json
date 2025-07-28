@@ -36,7 +36,7 @@
       "name": "Hangar",
       "description": "Construye un hangar para poder comenzar la fabricación de naves"
     },
-    "FLEET_FIRST": {
+    "SHIP_FIRST": {
       "name": "Primera flota",
       "description": "Construye una nave de algún tipo."
     }

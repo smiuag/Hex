@@ -10,17 +10,6 @@ import metallurgyBackground from "../../assets/images/buildings/metal.png";
 import quarryBackground from "../../assets/images/buildings/mining.png";
 import rocketBackground from "../../assets/images/buildings/rocket.png";
 import spaceStation from "../../assets/images/buildings/spaceStation.png";
-import assaultBattleshipBackground from "../../assets/images/fleet/assaultBattleshipBackground.png";
-import battleCruiserBackground from "../../assets/images/fleet/battleCruiserBackground.png";
-import escrotFrigateBackground from "../../assets/images/fleet/escrotFrigateBackground.png";
-import heavyAssaultShipBackground from "../../assets/images/fleet/heavyAssaultShipBackground.png";
-import interceptorBackground from "../../assets/images/fleet/interceptorBackground.png";
-import lightFighterBackground from "../../assets/images/fleet/lightFighterBackground.png";
-import orbitalAssaultShipBackground from "../../assets/images/fleet/orbitalAssaultShipBackground.png";
-import planetarDestroyerBackground from "../../assets/images/fleet/planetarDestroyerBackground.png";
-import probeBackground from "../../assets/images/fleet/probeBackground.png";
-import spaceDestroyerBackground from "../../assets/images/fleet/spaceDestroyerBackground.png";
-import starCarrierBackground from "../../assets/images/fleet/starCarrierBackground.png";
 import base1 from "../../assets/images/mini/base1.png";
 import base2 from "../../assets/images/mini/base2.png";
 import base3 from "../../assets/images/mini/base3.png";
@@ -57,6 +46,17 @@ import shield from "../../assets/images/research/Shield.png";
 import ships from "../../assets/images/research/Ships.png";
 import terraforming from "../../assets/images/research/Terraforming.png";
 import water from "../../assets/images/research/Water.png";
+import assaultBattleshipBackground from "../../assets/images/ship/assaultBattleshipBackground.png";
+import battleCruiserBackground from "../../assets/images/ship/battleCruiserBackground.png";
+import escrotFrigateBackground from "../../assets/images/ship/escrotFrigateBackground.png";
+import heavyAssaultShipBackground from "../../assets/images/ship/heavyAssaultShipBackground.png";
+import interceptorBackground from "../../assets/images/ship/interceptorBackground.png";
+import lightFighterBackground from "../../assets/images/ship/lightFighterBackground.png";
+import orbitalAssaultShipBackground from "../../assets/images/ship/orbitalAssaultShipBackground.png";
+import planetarDestroyerBackground from "../../assets/images/ship/planetarDestroyerBackground.png";
+import probeBackground from "../../assets/images/ship/probeBackground.png";
+import spaceDestroyerBackground from "../../assets/images/ship/spaceDestroyerBackground.png";
+import starCarrierBackground from "../../assets/images/ship/starCarrierBackground.png";
 import binary from "../../assets/images/starSystems/Binary.png";
 import deadStar from "../../assets/images/starSystems/DeadStar.png";
 import nebula from "../../assets/images/starSystems/Nebula.png";
@@ -111,17 +111,17 @@ export const IMAGES = {
   ROCKET_BACKGROUND: rocketBackground,
   ANTENNA_BACKGROUND: antennaBackground,
   ENERGY_BACKGROUND: energyBackground,
-  FLEET_BG_PROBE: probeBackground,
-  FLEET_BG_LIGHTFIGHTER: lightFighterBackground,
-  FLEET_BG_INTERCEPTOR: interceptorBackground,
-  FLEET_BG_ESCORTFRIGATE: escrotFrigateBackground,
-  FLEET_BG_BATTLECRUISER: battleCruiserBackground,
-  FLEET_BG_SPACEDESTROYER: spaceDestroyerBackground,
-  FLEET_BG_ASSAULTBATTLESHIP: assaultBattleshipBackground,
-  FLEET_BG_STARCARRIER: starCarrierBackground,
-  FLEET_BG_HEAVYASSAULTSHIP: heavyAssaultShipBackground,
-  FLEET_BG_ORBITALASSAULTSHIP: orbitalAssaultShipBackground,
-  FLEET_BG_PLANETARYDESTROYER: planetarDestroyerBackground,
+  SHIP_BG_PROBE: probeBackground,
+  SHIP_BG_LIGHTFIGHTER: lightFighterBackground,
+  SHIP_BG_INTERCEPTOR: interceptorBackground,
+  SHIP_BG_ESCORTFRIGATE: escrotFrigateBackground,
+  SHIP_BG_BATTLECRUISER: battleCruiserBackground,
+  SHIP_BG_SPACEDESTROYER: spaceDestroyerBackground,
+  SHIP_BG_ASSAULTBATTLESHIP: assaultBattleshipBackground,
+  SHIP_BG_STARCARRIER: starCarrierBackground,
+  SHIP_BG_HEAVYASSAULTSHIP: heavyAssaultShipBackground,
+  SHIP_BG_ORBITALASSAULTSHIP: orbitalAssaultShipBackground,
+  SHIP_BG_PLANETARYDESTROYER: planetarDestroyerBackground,
   RESEARCH_LASER: laser,
   RESEARCH_PLASMA: plasma,
   RESEARCH_SHIELD: shield,

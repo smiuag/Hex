@@ -1,5 +1,6 @@
 {
-  "fleetName": {
+  "shipName": {
+    "PROBE": "Sonda",
     "LIGHTFIGHTER": "Caza ligero",
     "INTERCEPTOR": "Interceptor",
     "ESCORTFRIGATE": "Fragata de escolta",
@@ -11,7 +12,8 @@
     "ORBITALASSAULTSHIP": "Destructor orbital",
     "PLANETARYDESTROYER": "Destructor planetario"
   },
-  "fleetDescription": {
+  "shipDescription": {
+    "PROBE": "Sonda de exploración espacial. Tiene una gran velocidad pero nulas capacidades de ataque o defensa.",
     "LIGHTFIGHTER": "Nave rápida y ágil diseñada para combates aéreos y patrullas de defensa.",
     "INTERCEPTOR": "Especializado en interceptar y eliminar amenazas enemigas antes de que se acerquen.",
     "ESCORTFRIGATE": "Protege naves mayores y convoyes, combinando defensa y maniobrabilidad eficiente.",

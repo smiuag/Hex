@@ -1,23 +1,22 @@
 import React from "react";
 import { FlatList } from "react-native";
-import { fleetConfig } from "../../src/config/fleetConfig";
+import { shipConfig } from "../../src/config/shipConfig";
 import { useGameContext } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
-import { FleetType } from "../../src/types/fleetType";
+import { ShipType } from "../../src/types/shipType";
 import { hasEnoughResources } from "../../utils/resourceUtils";
-import { FleetCard } from "../cards/FleetCard";
+import { ShipCard } from "../cards/ShipCard";
 
-export default function FleetComponent() {
-  const { fleetBuildQueue, handleBuildFleet, handleCancelFleet, resources, hexes } =
-    useGameContext();
+export default function ShipComponent() {
+  const { shipBuildQueue, handleBuildShip, handleCancelShip, resources, hexes } = useGameContext();
 
   const hasSpaceStation = hexes.some((h) => h.building?.type === "SPACESTATION");
 
-  const fleetItems = Object.entries(fleetConfig)
+  const shipItems = Object.entries(shipConfig)
     .map(([key, config]) => {
-      const type = key as FleetType;
-      const queueItem = fleetBuildQueue.find((f) => f.data.type === type);
-      const owned = queueItem?.data.amount ?? 0;
+      const type = key as ShipType;
+      const queueItem = shipBuildQueue.find((f) => f.type === type);
+      const owned = queueItem?.amount ?? 0;
       const inProgress = !!queueItem?.progress;
       const remainingAmount = queueItem?.progress?.targetAmount ?? 0;
       const startedAt = queueItem?.progress?.startedAt ?? 0;
@@ -43,15 +42,15 @@ export default function FleetComponent() {
 
   return (
     <FlatList
-      data={fleetItems}
+      data={shipItems}
       keyExtractor={(item) => item.key}
       contentContainerStyle={commonStyles.flatList}
       renderItem={({ item }) => (
-        <FleetCard
+        <ShipCard
           item={item}
           disableButton={false} // puedes ajustar si solo 1 puede construirse a la vez
-          onBuild={handleBuildFleet}
-          onCancel={handleCancelFleet}
+          onBuild={handleBuildShip}
+          onCancel={handleCancelShip}
         />
       )}
     />

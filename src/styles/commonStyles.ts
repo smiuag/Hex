@@ -96,6 +96,7 @@ export const commonStyles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 12,
     borderRadius: 6,
+    minWidth: 80,
   },
   buttonDisabled: {
     backgroundColor: "#6b8dc3",
@@ -110,6 +111,7 @@ export const commonStyles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     fontSize: 13,
+    textAlign: "center",
   },
   closeButton: {
     position: "absolute",
@@ -185,12 +187,14 @@ export const commonStyles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 12,
     borderRadius: 6,
+    minWidth: 80,
   },
 
   cancelButtonText: {
     color: "#fff",
     fontWeight: "bold",
     fontSize: 13,
+    textAlign: "center",
   },
   whiteText: {
     color: "white",

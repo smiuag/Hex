@@ -1,13 +1,17 @@
 import uuid from "react-native-uuid";
 import { IMAGES } from "../src/constants/images";
-import { celestialResourceChances, starSystemConfig } from "../src/constants/starSystem";
-import { ALL_FLEET_TYPES, FleetData, FleetType } from "../src/types/fleetType";
+import {
+  celestialResourceChances,
+  starSystemConfig,
+  starSystemTypeProbabilities,
+} from "../src/constants/starSystem";
 import {
   Resources,
   ResourceType,
   SpecialResources,
   SpecialResourceType,
 } from "../src/types/resourceTypes";
+import { ALL_SHIP_TYPES, ShipData, ShipType } from "../src/types/shipType";
 import {
   CelestialBody,
   CelestialBodyType,
@@ -85,11 +89,11 @@ function shuffleArray<T>(array: T[]): T[] {
   return [...array].sort(() => Math.random() - 0.5);
 }
 
-function generatePlanetDefense(decay: number): FleetData[] {
+function generatePlanetDefense(decay: number): ShipData[] {
   const maxShipTypes = getRandomFromRange([2, 6]);
   if (decay > 0.8) decay = 0.8;
-  const selectedShips = shuffleArray(ALL_FLEET_TYPES).slice(0, maxShipTypes);
-  const defense: FleetData[] = [];
+  const selectedShips = shuffleArray(ALL_SHIP_TYPES).slice(0, maxShipTypes);
+  const defense: ShipData[] = [];
 
   for (const ship of selectedShips) {
     let count = 0;
@@ -100,7 +104,7 @@ function generatePlanetDefense(decay: number): FleetData[] {
       chance *= decay;
     } while (Math.random() < chance);
 
-    defense.push({ type: ship as FleetType, amount: count });
+    defense.push({ type: ship as ShipType, amount: count });
   }
 
   return defense;
@@ -126,7 +130,7 @@ export function generateStarSystem(type: StarSystemType): StarSystem {
 
   const decay = 1 - 0.1 * numPlanets;
   const starPort = shouldInclude(0.1 * numPlanets);
-  const defenseFleet = starPort ? generatePlanetDefense(decay) : [];
+  const defenseShip = starPort ? generatePlanetDefense(decay) : [];
 
   const id = uuid.v4();
 
@@ -139,7 +143,7 @@ export function generateStarSystem(type: StarSystemType): StarSystem {
     conquered: !starPort,
     distance,
     starPort: starPort,
-    defense: defenseFleet,
+    defense: defenseShip,
     id: id,
   };
 }
@@ -149,3 +153,17 @@ export function getExpectedResourceProbabilities(
 ): Partial<Record<ResourceType | SpecialResourceType, number>> {
   return starSystemConfig[systemType]?.resourceProbabilities ?? {};
 }
+
+const pickRandomStarSystemType = (): StarSystemType => {
+  const rand = Math.random();
+  let cumulative = 0;
+  for (const [type, prob] of Object.entries(starSystemTypeProbabilities)) {
+    cumulative += prob;
+    if (rand <= cumulative) return type as StarSystemType;
+  }
+  return "RED_DWARF";
+};
+
+export const generateInitialSystems = (): StarSystem[] => {
+  return Array.from({ length: 3 }, () => generateStarSystem(pickRandomStarSystemType()));
+};

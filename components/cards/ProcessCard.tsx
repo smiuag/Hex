@@ -1,24 +1,24 @@
-import { FleetType } from "@/src/types/fleetType";
-import { ResearchType } from "@/src/types/researchTypes";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { ImageBackground, Text, TouchableOpacity, View } from "react-native";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { Process } from "../../src/types/processTypes";
+import { ResearchType } from "../../src/types/researchTypes";
+import { ShipType } from "../../src/types/shipType";
 import { CountdownTimer } from "../auxiliar/CountdownTimer";
 
 type ProcessCardProps = {
   item: Process;
   onCancelBuild: (q: number, r: number) => Promise<void>;
   onCancelResearch: (type: ResearchType) => Promise<void>;
-  onCancelFleet: (fleetType: FleetType) => Promise<void>;
+  onCancelShip: (shipType: ShipType) => Promise<void>;
 };
 
 export function ProcessCard({
   item,
   onCancelBuild,
   onCancelResearch,
-  onCancelFleet,
+  onCancelShip,
 }: ProcessCardProps) {
   const { t } = useTranslation("common");
 
@@ -27,8 +27,8 @@ export function ProcessCard({
       await onCancelBuild(item.q!, item.r!);
     } else if (item.type === "RESEARCH") {
       await onCancelResearch(item.researchType!);
-    } else if (item.type === "FLEET") {
-      await onCancelFleet(item.fleetType!);
+    } else if (item.type === "SHIP") {
+      await onCancelShip(item.shipType!);
     }
   };
 

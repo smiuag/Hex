@@ -1,20 +1,20 @@
-import { fleetConfig } from "@/src/config/fleetConfig";
-import { FleetType } from "@/src/types/fleetType";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { ImageBackground, Text, TouchableOpacity, View } from "react-native";
+import { shipConfig } from "../../src/config/shipConfig";
 import { commonStyles } from "../../src/styles/commonStyles";
+import { ShipType } from "../../src/types/shipType";
 import { StarSystem } from "../../src/types/starSystemTypes";
 
 type Props = {
   system: StarSystem;
   onDiscard: (id: string) => void;
-  onExplore: (id: string) => void;
+  onAttack: (id: string) => void;
 };
 
-export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onExplore }) => {
+export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onAttack }) => {
   const { t } = useTranslation("common");
-  const { t: tFleet } = useTranslation("fleet");
+  const { t: tShip } = useTranslation("ship");
   const { t: tPlanets } = useTranslation("planets");
   const enoughProbe = true;
 
@@ -37,15 +37,15 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onExplo
               {t("CelestialBodys")} {system.planets.length}
             </Text>
           </View>
-          {system.defense.map((fleet) => {
-            const config = fleetConfig[fleet.type as FleetType];
-            const name = tFleet(`fleetName.${fleet.type}`);
+          {system.defense.map((ship) => {
+            const config = shipConfig[ship.type as ShipType];
+            const name = tShip(`shipName.${ship.type}`);
             return (
               <Text
-                key={fleet.type}
+                key={ship.type}
                 style={[commonStyles.subtitleText, { fontSize: 12, marginVertical: 1 }]}
               >
-                {fleet.amount} {name} (at:{config.attack} de:{config.defense} vel:{config.speed})
+                {ship.amount} {name} (at:{config.attack} de:{config.defense} vel:{config.speed})
               </Text>
             );
           })}
@@ -60,7 +60,7 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onExplo
             <TouchableOpacity
               style={commonStyles.buttonPrimary}
               disabled={!enoughProbe}
-              onPress={() => onExplore(system.id)}
+              onPress={() => onAttack(system.id)}
             >
               <Text style={commonStyles.buttonTextLight}>{t("Attack")}</Text>
             </TouchableOpacity>

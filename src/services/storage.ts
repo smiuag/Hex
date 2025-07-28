@@ -1,20 +1,22 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Fleet } from "../../src/types/fleetType";
 import { Hex } from "../../src/types/hexTypes";
 import { PlayerQuest } from "../../src/types/questType";
 import { Research } from "../../src/types/researchTypes";
 import { StoredResources } from "../../src/types/resourceTypes";
+import { Ship } from "../../src/types/shipType";
 import { getInitialResources } from "../../utils/hexUtils";
 import { PlayerConfig } from "../types/configTypes";
+import { FleetData } from "../types/fleetType";
 import { StarSystem } from "../types/starSystemTypes";
 
 const MAP_KEY = "player_map";
 const RESOURCES_KEY = "player_resources";
 const RESEARCH_KEY = "player_research";
-const FLEET_KEY = "player_fleet";
+const SHIP_KEY = "player_ship";
 const CONFIG_KEY = "player_config";
 const QUESTS_KEY = "player_quests";
 const STAR_SYSTEM_KEY = "player_star_systems";
+const FLEET_KEY = "player_fleet";
 
 //MAP_KEY
 export const saveMap = async (hexes: Hex[]) => {
@@ -64,18 +66,18 @@ export const deleteResearch = async () => {
   await AsyncStorage.removeItem(RESEARCH_KEY);
 };
 
-//FLEET_KEY
-export const saveFleet = async (researchList: Fleet[]) => {
-  await AsyncStorage.setItem(FLEET_KEY, JSON.stringify(researchList));
+//SHIP_KEY
+export const saveShip = async (researchList: Ship[]) => {
+  await AsyncStorage.setItem(SHIP_KEY, JSON.stringify(researchList));
 };
 
-export const loadFleet = async (): Promise<Fleet[] | null> => {
-  const data = await AsyncStorage.getItem(FLEET_KEY);
+export const loadShip = async (): Promise<Ship[] | null> => {
+  const data = await AsyncStorage.getItem(SHIP_KEY);
   return data ? JSON.parse(data) : null;
 };
 
-export const deleteFleet = async () => {
-  await AsyncStorage.removeItem(FLEET_KEY);
+export const deleteShip = async () => {
+  await AsyncStorage.removeItem(SHIP_KEY);
 };
 
 //QUESTS_KEY
@@ -120,12 +122,16 @@ export const deleteStarSystem = async (): Promise<void> => {
   await AsyncStorage.removeItem(STAR_SYSTEM_KEY);
 };
 
-export const removeStarSystemById = async (idToRemove: string): Promise<void> => {
-  const data = await AsyncStorage.getItem(STAR_SYSTEM_KEY);
-  if (!data) return;
+//FLEET_KEY
+export const saveFleet = async (fleet: FleetData[] | null): Promise<void> => {
+  await AsyncStorage.setItem(FLEET_KEY, JSON.stringify(fleet));
+};
 
-  const systems: StarSystem[] = JSON.parse(data);
-  const updatedSystems = systems.filter((system) => system.id !== idToRemove);
+export const loadFleet = async (): Promise<FleetData[] | null> => {
+  const data = await AsyncStorage.getItem(FLEET_KEY);
+  return data ? JSON.parse(data) : null;
+};
 
-  await AsyncStorage.setItem(STAR_SYSTEM_KEY, JSON.stringify(updatedSystems));
+export const deleteFleet = async (): Promise<void> => {
+  await AsyncStorage.removeItem(FLEET_KEY);
 };

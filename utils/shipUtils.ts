@@ -1,10 +1,10 @@
-import { fleetConfig } from "../src/config/fleetConfig";
-import { FleetType } from "../src/types/fleetType";
+import { shipConfig } from "../src/config/shipConfig";
 import { Research } from "../src/types/researchTypes";
 import { Resources } from "../src/types/resourceTypes";
+import { ShipType } from "../src/types/shipType";
 
 export const isUnlocked = (type: string, playerResearch: Research[] = []): boolean => {
-  const config = fleetConfig[type as FleetType];
+  const config = shipConfig[type as ShipType];
   if (!config) return false;
 
   const requiredResearch = config.requiredResearch;
@@ -17,8 +17,8 @@ export const isUnlocked = (type: string, playerResearch: Research[] = []): boole
   });
 };
 
-export const getTotalFleetCost = (type: FleetType, amount: number): Resources => {
-  const config = fleetConfig[type];
+export const getTotalShipCost = (type: ShipType, amount: number): Resources => {
+  const config = shipConfig[type];
   const base = config.baseCost;
   const result: Resources = {} as Resources;
 
@@ -32,5 +32,5 @@ export const getTotalFleetCost = (type: FleetType, amount: number): Resources =>
 };
 
 export const getFlyTime = (speed: number, distance: number) => {
-  return Math.round(distance / (speed / 10)) * 100;
+  return Math.round(distance / (speed / 10)) * 10000;
 };

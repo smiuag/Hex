@@ -1,12 +1,14 @@
-import { fleetConfig } from "@/src/config/fleetConfig";
+import { useGameContext } from "@/src/context/GameContext";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { ImageBackground, Text, TouchableOpacity, View } from "react-native";
+import Toast from "react-native-toast-message";
 import { resourceEmojis } from "../../src/config/resourceConfig";
+import { shipConfig } from "../../src/config/shipConfig";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { ResourceType, SpecialResourceType } from "../../src/types/resourceTypes";
 import { StarSystem } from "../../src/types/starSystemTypes";
-import { getFlyTime } from "../../utils/fleetUtils";
+import { getFlyTime } from "../../utils/shipUtils";
 import { getExpectedResourceProbabilities } from "../../utils/starSystemUtils";
 import { CountdownTimer } from "../auxiliar/CountdownTimer";
 
@@ -28,10 +30,28 @@ export const SystemUnknownCard: React.FC<Props> = ({
   const { t: tResources } = useTranslation("resources");
   const expected = getExpectedResourceProbabilities(system.type);
   const enoughProbe = true;
-  const isBeingExplored = !!system.explorationStartedAt;
+  const isBeingExplored = !!system.explorationFleetId;
+  console.log(isBeingExplored);
 
-  const probeSpeed = fleetConfig["PROBE"].speed;
+  const { shipBuildQueue, fleet } = useGameContext();
+
+  const probeSpeed = shipConfig["PROBE"].speed;
   const timeToExplore = getFlyTime(probeSpeed, system.distance);
+
+  const startTime = system.explorationFleetId
+    ? fleet.find((f) => f.id === system.explorationFleetId)?.startTime
+    : undefined;
+
+  const handleExplorePress = (systemId: string) => {
+    if (shipBuildQueue.find((s) => s.type == "PROBE" && s.amount > 0)) onExplore(systemId);
+    else
+      Toast.show({
+        type: "info", // "success" | "info" | "error"
+        text1: "No hay sondas disponibles para la exploración",
+        position: "top",
+        visibilityTime: 2000,
+      });
+  };
 
   return (
     <View style={commonStyles.containerCenter}>
@@ -70,7 +90,7 @@ export const SystemUnknownCard: React.FC<Props> = ({
             <View style={commonStyles.actionBar}>
               <Text style={commonStyles.statusTextYellow}>
                 ⏳ {t("inProgress")}:{" "}
-                <CountdownTimer startedAt={system.explorationStartedAt} duration={timeToExplore} />
+                <CountdownTimer startedAt={startTime} duration={timeToExplore} />
               </Text>
               <TouchableOpacity
                 style={commonStyles.cancelButton}
@@ -91,7 +111,7 @@ export const SystemUnknownCard: React.FC<Props> = ({
               <TouchableOpacity
                 style={commonStyles.buttonPrimary}
                 disabled={!enoughProbe}
-                onPress={() => onExplore(system.id)}
+                onPress={() => handleExplorePress(system.id)}
               >
                 <Text style={commonStyles.buttonTextLight}>{t("Explore")}</Text>
               </TouchableOpacity>

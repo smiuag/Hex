@@ -98,12 +98,12 @@ export const questConfig: Record<
     requiredQuest: ["BUILDING_ANTENNA"],
     reward: { STONE: 10000, METAL: 10000, ENERGY: 10000 },
   },
-  FLEET_FIRST: {
-    type: "FLEET_FIRST",
+  SHIP_FIRST: {
+    type: "SHIP_FIRST",
     order: 10,
     description: "Construye una nave de algún tipo.",
     name: "Primera flota",
-    backgroundImage: IMAGES.FLEET_BG_HEAVYASSAULTSHIP,
+    backgroundImage: IMAGES.SHIP_BG_HEAVYASSAULTSHIP,
     requiredQuest: ["BUILDING_HANGAR"],
     reward: { STONE: 10000, METAL: 10000, ENERGY: 10000 },
   },

@@ -5,6 +5,8 @@ import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Provider } from "../src/context/GameContext";
 
+import Toast from "react-native-toast-message";
+
 export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -19,6 +21,7 @@ export default function RootLayout() {
       <Provider>
         <StatusBar barStyle="light-content" backgroundColor="#000" />
         <Slot></Slot>
+        <Toast />
       </Provider>
     </SafeAreaProvider>
   );

@@ -8,7 +8,7 @@ export type QuestType =
   | "BUILDING_BASE2"
   | "BUILDING_ANTENNA"
   | "BUILDING_HANGAR"
-  | "FLEET_FIRST";
+  | "SHIP_FIRST";
 
 export type Quest = {
   type: QuestType;

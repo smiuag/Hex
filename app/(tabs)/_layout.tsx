@@ -3,12 +3,12 @@ import { Tabs } from "expo-router";
 import React from "react";
 import { Text, View } from "react-native";
 import {
-  FleetIcon,
   GalaxyIcon,
   MenuIcon,
   PlanetIcon,
   QuestIcon,
   ResearchIcon,
+  ShipIcon,
 } from "../../components/auxiliar/MenuIcons";
 import { questConfig } from "../../src/config/questConfig";
 import { useGameContext } from "../../src/context/GameContext";
@@ -17,7 +17,7 @@ import { gameStarted } from "../../utils/configUtils";
 import { canCompleteQuest, shouldShowQuest } from "../../utils/questUtils";
 
 export default function TabLayout() {
-  const { playerQuests, hexes, research, fleetBuildQueue, playerConfig } = useGameContext();
+  const { playerQuests, hexes, research, shipBuildQueue, playerConfig } = useGameContext();
   const partidaIniciada = gameStarted(playerConfig);
 
   const hasHangar = hexes.length > 0 && hexes.some((h) => h.building?.type == "HANGAR");
@@ -34,7 +34,7 @@ export default function TabLayout() {
   const hasCompletedQuest = Object.values(questConfig).some((quest) => {
     const pq = playerQuests.find((q) => q.type === quest.type);
     const isAvailable = shouldShowQuest(quest.type, completedQuestTypes);
-    const isCompleted = canCompleteQuest(quest.type, hexes, research, fleetBuildQueue);
+    const isCompleted = canCompleteQuest(quest.type, hexes, research, shipBuildQueue);
 
     return pq && !pq.completed && isAvailable && isCompleted;
   });
@@ -76,9 +76,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="fleet"
+        name="ship"
         options={{
-          tabBarIcon: ({ color, size }) => <FleetIcon color={color} size={size} />,
+          tabBarIcon: ({ color, size }) => <ShipIcon color={color} size={size} />,
           tabBarLabel: "Naves",
           tabBarButton: hasHangar && partidaIniciada ? undefined : () => null,
           tabBarItemStyle: hasHangar && partidaIniciada ? {} : tabStyles.hidden,

@@ -1,5 +1,5 @@
-import { FleetType } from "@/src/types/fleetType";
 import { ResearchType } from "@/src/types/researchTypes";
+import { ShipType } from "@/src/types/shipType";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Button, ImageBackground, ScrollView, Text, View } from "react-native";
@@ -14,6 +14,7 @@ import {
   getBuildingProcesses,
   getFleetProcesses,
   getResearchProcesses,
+  getShipProcesses,
 } from "../../utils/processUtils";
 import { getLabLevel } from "../../utils/researchUtils";
 import { ResourceDisplay } from "../auxiliar/ResourceDisplay";
@@ -22,18 +23,20 @@ import { ProcessCard } from "../cards/ProcessCard";
 export default function MenuComponent() {
   const { t } = useTranslation("common");
   const { t: tResearch } = useTranslation("research");
+  const { t: tShip } = useTranslation("ship");
   const [processes, setProcesses] = useState<Process[]>([]);
   const {
-    handleCancelBuild,
-    handleCancelResearch,
-    handleCancelFleet,
     hexes,
     research,
     resources,
+    shipBuildQueue,
+    playerConfig,
+    fleet,
+    handleCancelBuild,
+    handleCancelResearch,
+    handleCancelShip,
     endGame,
     startGame,
-    fleetBuildQueue,
-    playerConfig,
   } = useGameContext();
 
   const started = gameStarted(playerConfig);
@@ -41,10 +44,16 @@ export default function MenuComponent() {
   useEffect(() => {
     const buildingProcesses = getBuildingProcesses(hexes);
     const researchProcesses = getResearchProcesses(research);
-    const fleetProcesses = getFleetProcesses(fleetBuildQueue);
-    const allProcesses = [...buildingProcesses, ...researchProcesses, ...fleetProcesses];
+    const shipProcesses = getShipProcesses(tShip, shipBuildQueue);
+    const fleetProcesses = getFleetProcesses(fleet);
+    const allProcesses = [
+      ...buildingProcesses,
+      ...researchProcesses,
+      ...shipProcesses,
+      ...fleetProcesses,
+    ];
     setProcesses(allProcesses);
-  }, [hexes, research, fleetBuildQueue]);
+  }, [hexes, research, shipBuildQueue, fleet]);
 
   const handleReset = () => {
     Alert.alert(t("endGameTitle"), t("endGameConfirmation"), [
@@ -67,8 +76,8 @@ export default function MenuComponent() {
     await handleCancelResearch(type);
   };
 
-  const onCancelFleet = async (type: FleetType) => {
-    await handleCancelFleet(type);
+  const onCancelShip = async (type: ShipType) => {
+    await handleCancelShip(type);
   };
 
   const productionPerHour = Object.fromEntries(
@@ -149,7 +158,7 @@ export default function MenuComponent() {
                 item={item}
                 onCancelBuild={cancelBuild}
                 onCancelResearch={cancelResearch}
-                onCancelFleet={onCancelFleet}
+                onCancelShip={onCancelShip}
               />
             ))}
           </View>

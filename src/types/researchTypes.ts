@@ -21,13 +21,13 @@ export type BuildingResearchRequiredData = {
   builddingLevel: number;
 };
 
-export type FleetResearchRequiredData = {
+export type ShipResearchRequiredData = {
   researchType: ResearchType;
   researchLevelRequired: number;
 };
 
 export type BuildingRequiredResearch = BuildingResearchRequiredData[];
-export type FleetRequiredResearch = FleetResearchRequiredData[];
+export type ShipRequiredResearch = ShipResearchRequiredData[];
 
 export type Research = {
   data: ResearchData;

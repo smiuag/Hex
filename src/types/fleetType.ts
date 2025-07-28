@@ -1,42 +1,13 @@
-export type FleetType =
-  | "PROBE"
-  | "LIGHTFIGHTER"
-  | "INTERCEPTOR"
-  | "ESCORTFRIGATE"
-  | "BATTLECRUISER"
-  | "SPACEDESTROYER"
-  | "ASSAULTBATTLESHIP"
-  | "STARCARRIER"
-  | "HEAVYASSAULTSHIP"
-  | "ORBITALASSAULTSHIP"
-  | "PLANETARYDESTROYER";
+import { ShipData } from "./shipType";
 
-export const ALL_FLEET_TYPES = [
-  "PROBE",
-  "LIGHTFIGHTER",
-  "INTERCEPTOR",
-  "ESCORTFRIGATE",
-  "BATTLECRUISER",
-  "SPACEDESTROYER",
-  "ASSAULTBATTLESHIP",
-  "STARCARRIER",
-  "HEAVYASSAULTSHIP",
-  "ORBITALASSAULTSHIP",
-  "PLANETARYDESTROYER",
-];
-
-export type ProductionFacilityType = "HANGAR" | "SPACESTATION";
+export type MovementType = "MOVEMENT" | "ATTACK" | "EXPLORE SYSTEM" | "RETURN" | "EXPLORE PLANET";
 
 export type FleetData = {
-  type: FleetType;
-  amount: number;
-};
-
-export type Fleet = {
-  data: FleetData;
-  progress?: {
-    startedAt: number;
-    targetAmount: number;
-    notificationId?: string;
-  };
+  movementType: MovementType;
+  ships: ShipData[];
+  startTime: number;
+  endTime: number;
+  destination: string;
+  origin: string;
+  id: string;
 };

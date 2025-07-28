@@ -8,14 +8,8 @@ import { canCompleteQuest, shouldShowQuest } from "../../utils/questUtils";
 import { QuestCard } from "../cards/QuestCard";
 
 export default function QuestComponent() {
-  const {
-    playerQuests,
-    hexes,
-    research,
-    fleetBuildQueue,
-    completeQuest,
-    markQuestsAsViewed,
-  } = useGameContext();
+  const { playerQuests, hexes, research, shipBuildQueue, completeQuest, markQuestsAsViewed } =
+    useGameContext();
 
   const hasViewedOnce = useRef(false);
 
@@ -59,16 +53,9 @@ export default function QuestComponent() {
       data={availableQuests}
       keyExtractor={(item) => item.type}
       renderItem={({ item }) => {
-        const completed = canCompleteQuest(
-          item.type,
-          hexes,
-          research,
-          fleetBuildQueue
-        );
+        const completed = canCompleteQuest(item.type, hexes, research, shipBuildQueue);
 
-        const isAlreadyClaimed = playerQuests.some(
-          (pq) => pq.completed && pq.type == item.type
-        );
+        const isAlreadyClaimed = playerQuests.some((pq) => pq.completed && pq.type == item.type);
 
         return (
           <QuestCard

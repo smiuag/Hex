@@ -3,7 +3,6 @@ import i18n from "i18next";
 import { useEffect } from "react";
 import "../i18n";
 import { NotificationManager } from "../utils/notificacionUtils";
-
 export default function IndexRedirect() {
   const router = useRouter();
 
@@ -16,7 +15,7 @@ export default function IndexRedirect() {
   }, []);
 
   useEffect(() => {
-    NotificationManager.initializeNotifications(); // ✅ Llamada correcta
+    NotificationManager.initializeNotifications();
 
     const requestPermissions = async () => {
       const granted = await NotificationManager.requestPermissions?.();

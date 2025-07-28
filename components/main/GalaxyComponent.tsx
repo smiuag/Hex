@@ -7,8 +7,15 @@ import { SystemExploredCard } from "../cards/SystemExploredCard";
 import { SystemUnknownCard } from "../cards/SystemUnkownCard";
 
 export default function StarSystemComponent() {
-  const { starSystems, discardStarSystem, exploreStarSystem, explorePlanet, cancelExploreSystem } =
-    useGameContext();
+  const {
+    starSystems,
+    discardStarSystem,
+    explorePlanet,
+    cancelExploreSystem,
+    startStarSystemExploration,
+  } = useGameContext();
+
+  const startStarSystemAttack = () => {};
 
   return (
     <FlatList
@@ -26,13 +33,13 @@ export default function StarSystemComponent() {
           <SystemDefendedCard
             system={item}
             onDiscard={discardStarSystem}
-            onExplore={exploreStarSystem}
+            onAttack={startStarSystemAttack}
           />
         ) : (
           <SystemUnknownCard
             system={item}
             onDiscard={discardStarSystem}
-            onExplore={exploreStarSystem}
+            onExplore={startStarSystemExploration}
             onCancelExploreSystem={cancelExploreSystem}
           />
         )

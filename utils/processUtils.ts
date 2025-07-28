@@ -1,10 +1,11 @@
+import { FleetData } from "@/src/types/fleetType";
 import { buildingConfig } from "../src/config/buildingConfig";
-import { fleetConfig } from "../src/config/fleetConfig";
 import { researchTechnologies } from "../src/config/researchConfig";
-import { Fleet } from "../src/types/fleetType";
+import { shipConfig } from "../src/config/shipConfig";
 import { Hex } from "../src/types/hexTypes";
 import { Process } from "../src/types/processTypes";
 import { Research } from "../src/types/researchTypes";
+import { Ship } from "../src/types/shipType";
 import { getBuildTime } from "../utils/buildingUtils";
 import { getResearchTime } from "../utils/researchUtils";
 
@@ -21,9 +22,7 @@ export const getBuildingProcesses = (hexes: Hex[]): Process[] => {
       const proc: Process = {
         name:
           "Construcción: " +
-          (hex.construction.targetLevel == 1
-            ? `${name}`
-            : `${name} (Lvl: ${targetLevel})`),
+          (hex.construction.targetLevel == 1 ? `${name}` : `${name} (Lvl: ${targetLevel})`),
         type: "BUILDING",
         id: "BUILDING-" + `${hex.q}-${hex.r}`,
         startedAt,
@@ -67,26 +66,28 @@ export const getResearchProcesses = (research: Research[]): Process[] => {
   return processes;
 };
 
-export const getFleetProcesses = (fleetBuildQueue: Fleet[]): Process[] => {
+export const getShipProcesses = (
+  tShip: (key: string) => string,
+  shipBuildQueue: Ship[]
+): Process[] => {
   const processes: Process[] = [];
 
-  fleetBuildQueue.forEach((r) => {
+  shipBuildQueue.forEach((r) => {
     if (r.progress) {
       const targetAmount = r.progress.targetAmount ?? 0;
-      const config = fleetConfig[r.data.type];
+      const config = shipConfig[r.type];
       const totalTime = config.baseBuildTime * targetAmount;
       const startedAt = r.progress.startedAt ?? 0;
-
       const proc: Process = {
         name:
           "Flota: " +
-          (config.name +
+          (tShip("shipName." + r.type) +
             " " +
             targetAmount +
             (targetAmount == 1 ? " unidad" : " unidades")),
-        type: "FLEET",
-        fleetType: r.data.type,
-        id: "RESEARCH-" + r.data.type,
+        type: "SHIP",
+        shipType: r.type,
+        id: "SHIP-" + r.type,
         duration: totalTime,
         startedAt,
 
@@ -95,6 +96,32 @@ export const getFleetProcesses = (fleetBuildQueue: Fleet[]): Process[] => {
 
       processes.push(proc);
     }
+  });
+
+  return processes;
+};
+
+export const getFleetProcesses = (fleetData: FleetData[]): Process[] => {
+  const processes: Process[] = [];
+
+  fleetData.forEach((fleet) => {
+    const fleetShips = fleet.ships.reduce((total, fl) => total + fl.amount, 0);
+    const config = shipConfig[fleet.ships[0].type];
+    const totalTime = fleet.endTime - fleet.startTime;
+    const proc: Process = {
+      name:
+        fleet.movementType == "RETURN"
+          ? fleetShips + " nave" + (fleetShips > 0 ? "s" : "") + " volviendo a casa"
+          : fleetShips + " nave" + (fleetShips > 0 ? "s" : "") + " rumbo al sistema... ",
+      type: "FLEET",
+      id: "FLEET-" + fleet.id,
+      duration: totalTime,
+      startedAt: fleet.startTime,
+
+      image: config.imageBackground,
+    };
+
+    processes.push(proc);
   });
 
   return processes;

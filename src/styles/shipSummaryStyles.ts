@@ -2,7 +2,7 @@ import { Dimensions, StyleSheet } from "react-native";
 
 const { width } = Dimensions.get("window");
 
-export const fleetSummaryStyle = StyleSheet.create({
+export const shipSummaryStyle = StyleSheet.create({
   container: {
     width: "100%",
     paddingHorizontal: 12,
