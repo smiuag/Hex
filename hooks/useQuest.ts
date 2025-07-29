@@ -43,8 +43,7 @@ export const useQuest = (addResources: (modifications: Partial<Resources>) => vo
 
     addResources(config.reward);
   };
-
-  const markQuestsAsViewed = async (questTypes: QuestType[]) => {
+  const markQuestsAsViewed = async (questType: QuestType) => {
     updateQuestState((prev) => {
       const updatedMap = new Map<QuestType, PlayerQuest>();
 
@@ -52,14 +51,12 @@ export const useQuest = (addResources: (modifications: Partial<Resources>) => vo
         updatedMap.set(quest.type, quest);
       }
 
-      for (const type of questTypes) {
-        const existing = updatedMap.get(type);
+      const existing = updatedMap.get(questType);
 
-        if (existing && !existing.viewed) {
-          updatedMap.set(type, { ...existing, viewed: true });
-        } else if (!existing) {
-          updatedMap.set(type, { type, completed: false, viewed: true });
-        }
+      if (existing && !existing.viewed) {
+        updatedMap.set(questType, { ...existing, viewed: true });
+      } else if (!existing) {
+        updatedMap.set(questType, { type: questType, completed: false, viewed: true });
       }
 
       return Array.from(updatedMap.values());

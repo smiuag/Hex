@@ -10,7 +10,8 @@
     "STARCARRIER": "Star Carrier",
     "HEAVYASSAULTSHIP": "Heavy Assault Frigate",
     "ORBITALASSAULTSHIP": "Orbital Assault Ship",
-    "PLANETARYDESTROYER": "Planetary Destroyer"
+    "PLANETARYDESTROYER": "Planetary Destroyer",
+    "FREIGHTER": "Fighter"
   },
   "shipDescription": {
     "PROBE": "Space exploration probe. It has great speed but no attack or defense capabilities.",
@@ -23,6 +24,7 @@
     "STARCARRIER": "A mobile base for launching fighters and providing tactical support in space battles.",
     "HEAVYASSAULTSHIP": "A robust vessel with heavy weaponry for aggressive raids and prolonged sieges.",
     "ORBITALASSAULTSHIP": "Specialized in orbital assaults for fast planetary objective takeovers.",
-    "PLANETARYDESTROYER": "A massive unit designed to destroy structures and bases on a planetary scale."
+    "PLANETARYDESTROYER": "A massive unit designed to destroy structures and bases on a planetary scale.",
+    "FREIGHTER": "A massive cargoo ship."
   }
 }

@@ -1,3 +1,6 @@
+import { useGameContext } from "@/src/context/GameContext";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React, { useRef } from "react";
 import { useTranslation } from "react-i18next"; // ✅ Importamos i18n hook
 import { Animated, ImageBackground, Text, TouchableOpacity, View } from "react-native";
@@ -13,8 +16,15 @@ type Props = {
 };
 
 export const QuestCard: React.FC<Props> = ({ item, completed, isAlreadyClaimed, onComplete }) => {
-  const { t } = useTranslation("common"); // ✅ Namespace usado
+  const { t } = useTranslation("common");
+  const { t: tQuests } = useTranslation("quests");
   const scale = useRef(new Animated.Value(1)).current;
+  const router = useRouter();
+
+  const questType = item.type.toString();
+  const { playerQuests } = useGameContext();
+
+  const isViewed = playerQuests.some((pq) => pq.type == questType && pq.viewed);
 
   const triggerAnimation = () => {
     Animated.sequence([
@@ -31,7 +41,7 @@ export const QuestCard: React.FC<Props> = ({ item, completed, isAlreadyClaimed, 
     ]).start();
   };
 
-  const handlePress = () => {
+  const handlePress = async () => {
     triggerAnimation();
     onComplete();
   };
@@ -40,32 +50,62 @@ export const QuestCard: React.FC<Props> = ({ item, completed, isAlreadyClaimed, 
     <Animated.View style={[commonStyles.containerCenter, { transform: [{ scale }] }]}>
       <ImageBackground
         source={item.backgroundImage}
-        style={commonStyles.card}
+        style={isAlreadyClaimed ? commonStyles.cardMini : commonStyles.card}
         imageStyle={{ borderRadius: 10 }}
       >
         <View style={commonStyles.overlayDark}>
           <View>
-            <Text style={commonStyles.titleText}>{item.name}</Text>
-            <Text style={commonStyles.subtitleText}>{item.description}</Text>
+            <View
+              style={[
+                commonStyles.rowSpaceBetween,
+                isAlreadyClaimed && commonStyles.cardMiniMiddleCenter,
+              ]}
+            >
+              <Text style={commonStyles.titleText}>{tQuests(`${item.type}.name`)}</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  router.replace(`/quests/computer?id=${questType}`);
+                }}
+                style={{
+                  position: "absolute",
+                  top: 10,
+                  right: 10,
+                  zIndex: 10,
+                  backgroundColor: "rgba(0,0,0,0.5)",
+                  borderRadius: 20,
+                  padding: 6,
+                }}
+              >
+                <Ionicons name="play" size={20} color={isViewed ? "white" : "limegreen"} />
+              </TouchableOpacity>
+            </View>
+
+            {!isAlreadyClaimed && (
+              <Text style={[commonStyles.subtitleText, { paddingTop: 10 }]}>
+                {tQuests(`${item.type}.shortDescription`)}
+              </Text>
+            )}
           </View>
           <View>
-            <View style={commonStyles.rowSpaceBetween}>
-              <Text style={commonStyles.whiteText}>{t("reward")}</Text>
-              <View style={commonStyles.rowResources}>
-                <ResourceDisplay resources={item.reward} fontSize={13} />
-              </View>
-            </View>
             {!isAlreadyClaimed && (
-              <View style={commonStyles.actionBar}>
-                <View></View>
-                <TouchableOpacity
-                  onPress={handlePress}
-                  disabled={!completed}
-                  style={[commonStyles.buttonPrimary, !completed && commonStyles.buttonDisabled]}
-                >
-                  <Text style={commonStyles.buttonTextLight}>{t("complete")}</Text>
-                </TouchableOpacity>
-              </View>
+              <>
+                <View style={commonStyles.rowSpaceBetween}>
+                  <Text style={commonStyles.whiteText}>{t("reward")}</Text>
+                  <View style={commonStyles.rowResources}>
+                    <ResourceDisplay resources={item.reward} fontSize={13} />
+                  </View>
+                </View>
+                <View style={commonStyles.actionBar}>
+                  <View></View>
+                  <TouchableOpacity
+                    onPress={handlePress}
+                    disabled={!completed}
+                    style={[commonStyles.buttonPrimary, !completed && commonStyles.buttonDisabled]}
+                  >
+                    <Text style={commonStyles.buttonTextLight}>{t("complete")}</Text>
+                  </TouchableOpacity>
+                </View>
+              </>
             )}
           </View>
         </View>

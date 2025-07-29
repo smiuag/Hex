@@ -21,7 +21,7 @@ export const commonStyles = StyleSheet.create({
     borderColor: "rgba(255, 255, 255, 0.5)",
   },
   cardMini: {
-    minHeight: 100,
+    minHeight: 80,
     width: width - 24,
     borderRadius: 16,
     overflow: "hidden",
@@ -47,6 +47,11 @@ export const commonStyles = StyleSheet.create({
   },
   titleText: {
     color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  titleBlueText: {
+    color: "#5a73f2ff",
     fontSize: 18,
     fontWeight: "bold",
   },
@@ -237,5 +242,40 @@ export const commonStyles = StyleSheet.create({
   },
   ph10: {
     paddingHorizontal: 10,
+  },
+  buildCard: {
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
+    borderRadius: 12,
+    overflow: "hidden",
+    flex: 1,
+    aspectRatio: 1,
+    marginHorizontal: 5,
+  },
+
+  buildCardImage: {
+    flex: 1,
+    padding: 10,
+    justifyContent: "space-between",
+  },
+  buildTitle: {
+    fontSize: 14,
+    color: "white",
+    fontWeight: "bold",
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  rowEvenly: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "flex-start",
+    marginVertical: 10,
+    gap: 10,
+  },
+  cardMiniMiddleCenter: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    position: "relative",
+    height: 50,
   },
 });

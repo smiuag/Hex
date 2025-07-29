@@ -25,7 +25,6 @@ export default function ExploredCelestialBody({
 }: Props) {
   const { t } = useTranslation("common");
   const { t: tPlanets } = useTranslation("planets");
-  console.log(celestialBody);
   const isBeingExplored = !!celestialBody.explorationFleetId;
 
   const { shipBuildQueue, fleet } = useGameContext();

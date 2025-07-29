@@ -49,6 +49,7 @@ import water from "../../assets/images/research/Water.png";
 import assaultBattleshipBackground from "../../assets/images/ship/assaultBattleshipBackground.png";
 import battleCruiserBackground from "../../assets/images/ship/battleCruiserBackground.png";
 import escrotFrigateBackground from "../../assets/images/ship/escrotFrigateBackground.png";
+import freighterBackground from "../../assets/images/ship/freighterBackground.png";
 import heavyAssaultShipBackground from "../../assets/images/ship/heavyAssaultShipBackground.png";
 import interceptorBackground from "../../assets/images/ship/interceptorBackground.png";
 import lightFighterBackground from "../../assets/images/ship/lightFighterBackground.png";
@@ -122,6 +123,7 @@ export const IMAGES = {
   SHIP_BG_HEAVYASSAULTSHIP: heavyAssaultShipBackground,
   SHIP_BG_ORBITALASSAULTSHIP: orbitalAssaultShipBackground,
   SHIP_BG_PLANETARYDESTROYER: planetarDestroyerBackground,
+  SHIP_BG_FREIGHTER: freighterBackground,
   RESEARCH_LASER: laser,
   RESEARCH_PLASMA: plasma,
   RESEARCH_SHIELD: shield,

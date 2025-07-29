@@ -15,23 +15,14 @@ interface Props {
   fontSize: number;
 }
 
-export default function HexTile({
-  hex,
-  px,
-  py,
-  points,
-  factor,
-  fontSize,
-}: Props) {
+export default function HexTile({ hex, px, py, points, factor, fontSize }: Props) {
   const { terrain, building, construction } = hex;
   const config = terrainConfig[terrain];
 
   const buildingImage = construction
     ? buildingConfig[construction.building].underConstructionImage
     : building
-    ? buildingConfig[building.type].images.find(
-        (img) => img.level === building.level
-      )?.image
+    ? buildingConfig[building.type].images.find((img) => img.level === building.level)?.image
     : undefined;
 
   const [remainingTime, setRemainingTime] = useState<number>(0);
@@ -68,12 +59,7 @@ export default function HexTile({
           preserveAspectRatio="xMidYMid meet"
         />
       ) : (
-        <Polygon
-          points={points}
-          fill={config.fallbackColor}
-          stroke="#333"
-          strokeWidth="3"
-        />
+        <Polygon points={points} fill={config.fallbackColor} stroke="#333" strokeWidth="3" />
       )}
 
       {construction && remainingTime > 0 && (

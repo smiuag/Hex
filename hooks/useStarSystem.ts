@@ -1,6 +1,7 @@
 import { shipConfig } from "@/src/config/shipConfig";
 import { FleetData, MovementType } from "@/src/types/fleetType";
-import { ShipType } from "@/src/types/shipType";
+import { Ship, ShipType } from "@/src/types/shipType";
+import { simulateBattle } from "@/utils/combat";
 import { getFlyTime } from "@/utils/shipUtils";
 import { useEffect, useState } from "react";
 import uuid from "react-native-uuid";
@@ -11,12 +12,15 @@ import {
   saveFleet,
   saveStarSystem,
 } from "../src/services/storage";
+import { Resources } from "../src/types/resourceTypes";
 import { StarSystem } from "../src/types/starSystemTypes";
+import { getBuildCost } from "../utils/buildingUtils";
 import { generateInitialSystems } from "../utils/starSystemUtils";
 
 export const useStarSystem = (
   handleDestroyShip: (type: ShipType, amount: number) => void,
-  handleCreateShips: (shipsToAdd: { type: ShipType; amount: number }[]) => void
+  handleCreateShips: (shipsToAdd: { type: ShipType; amount: number }[]) => void,
+  subtractResources: (modifications: Partial<Resources>) => void
 ) => {
   const [starSystems, setPlayerStarSystems] = useState<StarSystem[]>([]);
   const [fleet, setFleet] = useState<FleetData[]>([]);
@@ -75,6 +79,85 @@ export const useStarSystem = (
     return currentFleet.filter((f) => f.id !== id);
   };
 
+  const processColonialBuildings = async () => {
+    const now = Date.now();
+    for (let i = 0; i < starSystems.length; i++) {
+      const startTime = starSystems[i].starPortStartedAt;
+
+      if (startTime && now - startTime > 1000 * 60 * 60 * 24) {
+        stelarPortBuild(starSystems[i].id);
+      }
+    }
+  };
+
+  const attackResolution = async (
+    fleetId: string,
+    currentFleet: FleetData[],
+    currentSystems: StarSystem[]
+  ): Promise<{ updatedFleet: FleetData[]; updatedSystems: StarSystem[] }> => {
+    const attackingFleetData = currentFleet.find((f) => f.id === fleetId);
+    if (!attackingFleetData) {
+      return { updatedFleet: currentFleet, updatedSystems: currentSystems };
+    }
+
+    const targetSystem = currentSystems.find(
+      (sys) => sys.id === attackingFleetData.destinationSystemId
+    );
+    if (!targetSystem) {
+      return { updatedFleet: currentFleet, updatedSystems: currentSystems };
+    }
+
+    // Simula la batalla
+    const battleResult = simulateBattle(attackingFleetData.ships, targetSystem.defense);
+
+    // Flotas restantes ya en formato Ship[]
+    const updatedAttackingFleetShips = battleResult.remaining.fleetA;
+    const updatedDefenseShips = battleResult.remaining.fleetB;
+
+    // Actualiza la defensa del sistema
+    let updatedSystems = currentSystems.map((sys) =>
+      sys.id === targetSystem.id ? { ...sys, defense: updatedDefenseShips } : sys
+    );
+
+    // Actualiza la flota atacante: si no quedan naves la elimina, si quedan actualiza
+    let updatedFleet = currentFleet.filter((f) => f.id !== fleetId);
+
+    if (updatedAttackingFleetShips.length > 0) {
+      if (battleResult.winner === "A") {
+        // Ganaron los atacantes: flota regresa y sistema queda sin defensa ni ataque en curso
+        updatedFleet.push({
+          ...attackingFleetData,
+          ships: updatedAttackingFleetShips,
+          startTime: Date.now(),
+          endTime: Date.now() + (attackingFleetData.endTime - attackingFleetData.startTime),
+          destinationSystemId: attackingFleetData.origin,
+          origin: attackingFleetData.destinationSystemId,
+          movementType: "RETURN",
+        });
+
+        updatedSystems = updatedSystems.map((sys) =>
+          sys.id === targetSystem.id
+            ? {
+                ...sys,
+                defense: [],
+                attackFleetId: undefined,
+                attackStartedAt: undefined,
+                defended: false,
+              }
+            : sys
+        );
+      } else {
+        // Perdieron los atacantes: flota eliminada, sistema con defensa actualizada
+        // Ya filtramos la flota atacante arriba, nada más que hacer aquí
+      }
+    }
+
+    return {
+      updatedFleet,
+      updatedSystems,
+    };
+  };
+
   const processFleeTick = async () => {
     const now = Date.now();
     let changed = false;
@@ -110,6 +193,12 @@ export const useStarSystem = (
             workingFleet,
             workingSystems
           );
+          workingFleet = result.updatedFleet;
+          workingSystems = result.updatedSystems;
+          break;
+
+        case "ATTACK":
+          result = await attackResolution(f.id, workingFleet, workingSystems);
           workingFleet = result.updatedFleet;
           workingSystems = result.updatedSystems;
           break;
@@ -191,6 +280,28 @@ export const useStarSystem = (
     }
 
     return { updatedFleet, updatedSystems };
+  };
+
+  const stelarPortBuild = async (id: string) => {
+    const system = starSystems.find((s) => s.id === id);
+    if (!system) return;
+
+    await updateSystems((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, starPortStartedAt: undefined, starPort: true } : s))
+    );
+  };
+
+  const stelarPorStarttBuild = async (id: string) => {
+    const cost = getBuildCost("SPACESTATION", 1);
+    await subtractResources(cost);
+    await handleDestroyShip("FREIGHTER", 2);
+
+    const system = starSystems.find((s) => s.id === id);
+    if (!system) return;
+
+    await updateSystems((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, starPortStartedAt: Date.now() } : s))
+    );
   };
 
   const explorePlanet = async (
@@ -318,13 +429,56 @@ export const useStarSystem = (
 
   const loadStarSystems = async () => {
     const saved = await loadStarSystem();
-    if (saved && saved.length > 0) {
-      setPlayerStarSystems(saved);
-    } else {
-      const generated = generateInitialSystems();
-      await saveStarSystem(generated);
-      setPlayerStarSystems(generated);
+
+    if (saved) {
+      let allSystems = saved;
+
+      if (saved.length < 3) {
+        const generated = generateInitialSystems(3 - saved.length);
+        allSystems = [...saved, ...generated];
+        await saveStarSystem(allSystems); // guardamos todos
+      }
+
+      setPlayerStarSystems(allSystems); // ahora seteamos todos, no solo los nuevos
     }
+  };
+
+  const cancelAttack = async (id: string) => {
+    const system = starSystems.find((s) => s.id === id);
+    if (!system || !system.attackFleetId) return;
+
+    const updatedFleet = await cancelFleet(system.attackFleetId, fleet);
+
+    await updateFleet(updatedFleet);
+    await updateSystems((prev) =>
+      prev.map((s) =>
+        s.id === id ? { ...s, attackFleetId: undefined, attackStartedAt: undefined } : s
+      )
+    );
+  };
+
+  const startAttack = async (systemId: string, fleet: Ship[]) => {
+    const system = starSystems.find((system) => system.id == systemId);
+    if (!system) return;
+
+    const slowestSpeed = Math.min(...fleet.map((f) => shipConfig[f.type].speed));
+    const timeToExplore = getFlyTime(slowestSpeed, system.distance);
+    const fleetData: FleetData = {
+      destinationSystemId: systemId,
+      endTime: Date.now() + timeToExplore,
+      movementType: "ATTACK",
+      origin: "PLANET",
+      ships: fleet,
+      startTime: Date.now(),
+      id: uuid.v4() as string,
+    };
+
+    await newFleet(fleetData);
+    await updateSystems((prev) =>
+      prev.map((s) =>
+        s.id === systemId ? { ...s, attackStartedAt: Date.now(), attackFleetId: fleetData.id } : s
+      )
+    );
   };
 
   const resetFleet = async () => updateFleet([]);
@@ -349,8 +503,12 @@ export const useStarSystem = (
     discardStarSystem,
     startPlanetExploration,
     processFleeTick,
+    processColonialBuildings,
     newFleet,
     cancelFleet,
     resetFleet,
+    stelarPorStarttBuild,
+    startAttack,
+    cancelAttack,
   };
 };

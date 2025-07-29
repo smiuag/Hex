@@ -1,44 +1,93 @@
 {
-  "quests": {
-    "START": {
-      "name": "Comenzando la colonia",
-      "description": "Visita tu diario de misiones. Completar las misiones te proporcionará beneficios, completalas para conseguir más."
-    },
-    "BUILDING_LAB1": {
-      "name": "Laboratorio",
-      "description": "Construye un laboratorio de nivel 1 en el planeta."
-    },
-    "RESEARCH_MINING1": {
-      "name": "Primera investigación",
-      "description": "Investiga la minería de nivel 1"
-    },
-    "BUILDING_METALLURGY1": {
-      "name": "Mina de metales",
-      "description": "Construye una mina de metales en el planeta."
-    },
-    "BUILDING_QUARRY1": {
-      "name": "Cantera",
-      "description": "Construye una cantera para la extracción de minerales sólidos en el planeta."
-    },
-    "BUILDING_KRYSTALMINE1": {
-      "name": "Mina de cristal",
-      "description": "Construye una mina de cristal en el planeta."
-    },
-    "BUILDING_BASE2": {
-      "name": "Base de nivel 2",
-      "description": "Mejora el nivel de la base a nivel 2."
-    },
-    "BUILDING_ANTENNA": {
-      "name": "Antenas de radio",
-      "description": "Construye una antena para intentar encontrar otros sistemas planetarios accesibles"
-    },
-    "BUILDING_HANGAR": {
-      "name": "Hangar",
-      "description": "Construye un hangar para poder comenzar la fabricación de naves"
-    },
-    "SHIP_FIRST": {
-      "name": "Primera flota",
-      "description": "Construye una nave de algún tipo."
-    }
+  "START": {
+    "name": "Comenzando la colonia",
+    "shortDescription": "Inicia el protocolo de asentamiento y accede al diario de misiones.",
+    "descriptions": [
+      "Conectando al terminal principal...",
+      "Bienvenido comandante. El protocolo de asentamiento inicial se ha activado.",
+      "Accede al diario de misiones para recibir instrucciones fundamentales.",
+      "Cada misión completada fortalecerá nuestra posición en este nuevo mundo. La supervivencia de la especie está en tus manos. No falles."
+    ]
+  },
+  "BUILDING_LAB1": {
+    "name": "Laboratorio",
+    "shortDescription": "Construye un laboratorio para comenzar la investigación científica.",
+    "descriptions": [
+      "Nuestros datos científicos son insuficientes.",
+      "Construir un laboratorio tecnológico es esencial para entender los recursos y amenazas de este planeta.",
+      "Prioriza su construcción. El conocimiento es poder."
+    ]
+  },
+  "RESEARCH_MINING1": {
+    "name": "Primera investigación",
+    "shortDescription": "Investiga minería para identificar zonas ricas en recursos.",
+    "descriptions": [
+      "Los escáneres muestran grandes depósitos minerales bajo la superficie.",
+      "Pero no podemos ponernos a excavar sin más. Hay que analizar bien la geología del planet para ver donde podemos comenzar las excavaciones.",
+      "Inicia la investigación de tecnologías de minería básica inmediatamente."
+    ]
+  },
+  "BUILDING_METALLURGY1": {
+    "name": "Mina de metales",
+    "shortDescription": "Establece una mina para extraer metales esenciales.",
+    "descriptions": [
+      "La reserva de aleaciones metálicas se agota rápidamente.",
+      "Una mina de metales es vital para sostener la construcción y mantenimiento.",
+      "Actúa con urgencia. Cada segundo cuenta."
+    ]
+  },
+  "BUILDING_QUARRY1": {
+    "name": "Cantera",
+    "shortDescription": "Construye una cantera para obtener minerales estructurales.",
+    "descriptions": [
+      "Los cimientos de nuestra colonia requieren materiales sólidos.",
+      "Necesitamos una cantera para extraer minerales estructurales del terreno.",
+      "Hazlo posible. Este planeta no nos dará otra oportunidad."
+    ]
+  },
+  "BUILDING_KRYSTALMINE1": {
+    "name": "Mina de cristal",
+    "shortDescription": "Extrae cristales energéticos para impulsar nuestras tecnologías.",
+    "descriptions": [
+      "Detectamos formaciones cristalinas con potencial energético excepcional.",
+      "Una mina de cristal abrirá nuevas posibilidades tecnológicas.",
+      "Establece la operación cuanto antes. Las estrellas observan."
+    ]
+  },
+  "BUILDING_BASE2": {
+    "name": "Base de nivel 2",
+    "shortDescription": "Mejora la base para aumentar capacidad y soporte vital.",
+    "descriptions": [
+      "Las cosas van bien, la población de la colonia va aumentando y nuestros objetivos serán cada vez más ambiciosos.",
+      "Ampliar la base es imprescindible para continuar con nuestro crecimiento.",
+      "El futuro de la colonia depende de este paso."
+    ]
+  },
+  "BUILDING_ANTENNA": {
+    "name": "Antenas de radio",
+    "shortDescription": "Construye una antena para intentar contactar con el exterior.",
+    "descriptions": [
+      "Aún no hay señales del resto de la humanidad...",
+      "Construir una antena podría ser nuestra única forma de contacto exterior.",
+      "Si hay alguien ahí fuera... debemos intentarlo."
+    ]
+  },
+  "BUILDING_HANGAR": {
+    "name": "Hangar",
+    "shortDescription": "Prepara un hangar para construir y lanzar naves.",
+    "descriptions": [
+      "Los planos de fabricación de naves están listos.",
+      "Sin un hangar, estamos atados a este planeta.",
+      "Construye uno. El universo no esperará por nosotros."
+    ]
+  },
+  "SHIP_FIRST": {
+    "name": "Primera flota",
+    "shortDescription": "Construye la primera nave de nuestra colonia.",
+    "descriptions": [
+      "El hangar está operativo. La nave prototipo está casi lista.",
+      "Esta será la primera nave construida en este sistema.",
+      "Comandante, autorice la fabricación. Nuestra expansión comienza ahora."
+    ]
   }
 }

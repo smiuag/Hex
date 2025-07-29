@@ -164,6 +164,6 @@ const pickRandomStarSystemType = (): StarSystemType => {
   return "RED_DWARF";
 };
 
-export const generateInitialSystems = (): StarSystem[] => {
-  return Array.from({ length: 3 }, () => generateStarSystem(pickRandomStarSystemType()));
+export const generateInitialSystems = (amount: number): StarSystem[] => {
+  return Array.from({ length: amount }, () => generateStarSystem(pickRandomStarSystemType()));
 };

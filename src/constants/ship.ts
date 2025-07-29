@@ -15,6 +15,7 @@ export const SHIP_COST: Record<ShipType, Partial<Resources>> = {
   HEAVYASSAULTSHIP: { METAL: 120000, CRYSTAL: 65000, ENERGY: 12000 },
   ORBITALASSAULTSHIP: { METAL: 220000, CRYSTAL: 120000, ENERGY: 25000 },
   PLANETARYDESTROYER: { METAL: 500000, CRYSTAL: 250000, ENERGY: 60000 },
+  FREIGHTER: { METAL: 15000, CRYSTAL: 7000, ENERGY: 1500 },
 };
 
 export const SHIP_TIME: Record<ShipType, number> = {
@@ -29,6 +30,7 @@ export const SHIP_TIME: Record<ShipType, number> = {
   HEAVYASSAULTSHIP: 1000 * 60 * 60 * 12,
   ORBITALASSAULTSHIP: 1000 * 60 * 60 * 24,
   PLANETARYDESTROYER: 1000 * 60 * 60 * 24 * 2,
+  FREIGHTER: 1000 * 60 * 7,
 };
 
 export const SHIP_REQUIRED_RESEARCH: Record<ShipType, ShipResearchRequiredData[]> = {
@@ -88,6 +90,10 @@ export const SHIP_REQUIRED_RESEARCH: Record<ShipType, ShipResearchRequiredData[]
     { researchType: "GRAVITY", researchLevelRequired: 2 },
     { researchType: "SHIELD", researchLevelRequired: 3 },
   ],
+  FREIGHTER: [
+    { researchType: "SHIPENGINEERING", researchLevelRequired: 1 },
+    { researchType: "FUELREFINEMENT", researchLevelRequired: 1 },
+  ],
 };
 
 export const SHIP_BACKGROUND_IMAGE: Record<ShipType, any> = {
@@ -102,6 +108,7 @@ export const SHIP_BACKGROUND_IMAGE: Record<ShipType, any> = {
   HEAVYASSAULTSHIP: IMAGES.SHIP_BG_HEAVYASSAULTSHIP,
   ORBITALASSAULTSHIP: IMAGES.SHIP_BG_ORBITALASSAULTSHIP,
   PLANETARYDESTROYER: IMAGES.SHIP_BG_PLANETARYDESTROYER,
+  FREIGHTER: IMAGES.SHIP_BG_FREIGHTER,
 };
 
 export const SHIP_STATS: Record<ShipType, any> = {
@@ -109,55 +116,72 @@ export const SHIP_STATS: Record<ShipType, any> = {
     ATTACK: 0,
     DEFENSE: 1,
     SPEED: 1000,
+    HP: 1,
   },
   LIGHTFIGHTER: {
     ATTACK: 1,
     DEFENSE: 2,
     SPEED: 100,
+    HP: 2,
   },
   INTERCEPTOR: {
     ATTACK: 3,
     DEFENSE: 1,
-    SPEED: 100,
+    SPEED: 200,
+    HP: 2,
   },
   ESCORTFRIGATE: {
     ATTACK: 3,
     DEFENSE: 3,
     SPEED: 300,
+    HP: 3,
   },
   BATTLECRUISER: {
     ATTACK: 4,
     DEFENSE: 4,
     SPEED: 200,
+    HP: 4,
   },
   SPACEDESTROYER: {
     ATTACK: 3,
     DEFENSE: 5,
     SPEED: 300,
+    HP: 6,
   },
   ASSAULTBATTLESHIP: {
     ATTACK: 5,
     DEFENSE: 3,
     SPEED: 300,
+    HP: 7,
   },
   STARCARRIER: {
     ATTACK: 5,
     DEFENSE: 5,
     SPEED: 300,
+    HP: 6,
   },
   HEAVYASSAULTSHIP: {
     ATTACK: 6,
     DEFENSE: 6,
     SPEED: 250,
+    HP: 7,
   },
   ORBITALASSAULTSHIP: {
     ATTACK: 7,
     DEFENSE: 9,
     SPEED: 150,
+    HP: 10,
   },
   PLANETARYDESTROYER: {
     ATTACK: 10,
     DEFENSE: 10,
     SPEED: 100,
+    HP: 30,
+  },
+  FREIGHTER: {
+    ATTACK: 1,
+    DEFENSE: 2,
+    SPEED: 100,
+    HP: 60,
   },
 };

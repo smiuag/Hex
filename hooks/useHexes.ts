@@ -1,5 +1,5 @@
 import * as Notifications from "expo-notifications";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 import { buildingConfig } from "../src/config/buildingConfig";
 import { deleteMap, loadMap, saveMap } from "../src/services/storage";
@@ -11,21 +11,26 @@ import { expandMapAroundBase, generateHexGrid, normalizeHexMap } from "../utils/
 import { NotificationManager } from "../utils/notificacionUtils";
 import { hasEnoughResources } from "../utils/resourceUtils";
 
+type UseHexesCallbacks = {
+  onBuildStart?: (q: number, r: number, type: BuildingType, level: number) => void;
+  onBuildComplete?: (q: number, r: number, type: BuildingType, level: number) => void;
+  onBuildCancel?: (q: number, r: number, type: BuildingType, level: number) => void;
+};
+
 export const useHexes = (
   resources: StoredResources,
   addProduction: (modifications: Partial<Resources>) => void,
   addResources: (modifications: Partial<Resources>) => void,
-  subtractResources: (modifications: Partial<Resources>) => void
+  subtractResources: (modifications: Partial<Resources>) => void,
+  callbacks?: UseHexesCallbacks
 ) => {
   const [hexes, setHexes] = useState<Hex[]>([]);
-  const isBuildingRef = useRef(false);
 
-  // ✅ updateMap con callback o array
   const updateMap = async (updater: Hex[] | ((prev: Hex[]) => Hex[])) => {
     setHexes((prev) => {
       const next = typeof updater === "function" ? updater(prev) : updater;
       const normalized = normalizeHexMap(next);
-      saveMap(normalized); // async sin await para no bloquear render
+      saveMap(normalized);
       return normalized;
     });
   };
@@ -63,55 +68,52 @@ export const useHexes = (
   };
 
   const handleBuild = async (q: number, r: number, type: BuildingType) => {
-    if (isBuildingRef.current) return;
-    isBuildingRef.current = true;
+    let notificationId: string | undefined;
 
-    try {
-      let notificationId: string | undefined;
+    await updateMap((prevHexes) => {
+      const hex = prevHexes.find((h) => h.q === q && h.r === r);
+      if (!hex) return prevHexes;
 
-      await updateMap((prevHexes) => {
-        const hex = prevHexes.find((h) => h.q === q && h.r === r);
-        if (!hex) return prevHexes;
+      const currentLevel = hex.building?.type === type ? hex.building.level : 0;
+      const nextLevel = currentLevel + 1;
+      const scaledCost = getBuildCost(type, nextLevel);
+      const durationMs = getBuildTime(type, nextLevel);
 
-        const currentLevel = hex.building?.type === type ? hex.building.level : 0;
-        const nextLevel = currentLevel + 1;
-        const scaledCost = getBuildCost(type, nextLevel);
-        const durationMs = getBuildTime(type, nextLevel);
+      if (!hasEnoughResources(resources, scaledCost)) {
+        Alert.alert("Recursos insuficientes", "No tienes suficientes materiales.");
+        return prevHexes;
+      }
 
-        if (!hasEnoughResources(resources, scaledCost)) {
-          Alert.alert("Recursos insuficientes", "No tienes suficientes materiales.");
-          return prevHexes;
-        }
+      subtractResources(scaledCost);
 
-        subtractResources(scaledCost);
-
-        NotificationManager.scheduleNotification({
-          title: "✅ Construcción terminada",
-          body: `Tu edificio "${type}" está listo.`,
-          delayMs: durationMs,
-        }).then((id) => {
-          notificationId = id ?? undefined;
-        });
-
-        return prevHexes.map((h) =>
-          h.q === q && h.r === r
-            ? {
-                ...h,
-                previousBuilding: h.building ?? null,
-                construction: {
-                  building: type,
-                  startedAt: Date.now(),
-                  targetLevel: nextLevel,
-                  notificationId,
-                },
-                building: null,
-              }
-            : h
-        );
+      NotificationManager.scheduleNotification({
+        title: "✅ Construcción terminada",
+        body: `Tu edificio "${type}" está listo.`,
+        delayMs: durationMs,
+      }).then((id) => {
+        notificationId = id ?? undefined;
       });
-    } finally {
-      isBuildingRef.current = false;
-    }
+
+      if (callbacks?.onBuildStart) {
+        callbacks.onBuildStart(q, r, type, nextLevel);
+      }
+
+      return prevHexes.map((h) =>
+        h.q === q && h.r === r
+          ? {
+              ...h,
+              previousBuilding: h.building ?? null,
+              construction: {
+                building: type,
+                startedAt: Date.now(),
+                targetLevel: nextLevel,
+                notificationId,
+              },
+              building: null,
+            }
+          : h
+      );
+    });
   };
 
   const handleCancelBuild = async (q: number, r: number) => {
@@ -134,6 +136,10 @@ export const useHexes = (
         NotificationManager.cancelNotification(notificationId);
       }
 
+      if (callbacks?.onBuildCancel) {
+        callbacks.onBuildCancel(q, r, building, targetLevel);
+      }
+
       return prevHexes.map((h) => {
         if (h.q === q && h.r === r) {
           const { construction, previousBuilding, ...rest } = h;
@@ -150,79 +156,78 @@ export const useHexes = (
   };
 
   const processConstructionTick = () => {
-    if (isBuildingRef.current) return;
-    isBuildingRef.current = true;
+    const now = Date.now();
+    const hexesToUpdate: Hex[] = [];
+    let baseLeveledUp = false;
+    let updatedBaseLevel = 0;
+    let changed = false;
 
-    try {
-      const now = Date.now();
-      let changed = false;
-      let baseLeveledUp = false;
-      let updatedBaseLevel = 0;
+    const updatedHexes = hexes.map((hex) => {
+      if (!hex.construction) return hex;
 
-      updateMap((prevHexes) => {
-        const updated = prevHexes.map((hex) => {
-          if (hex.construction) {
-            const { building, startedAt, targetLevel } = hex.construction;
-            const buildTime = getBuildTime(building, targetLevel);
+      const { building, startedAt, targetLevel } = hex.construction;
+      const buildTime = getBuildTime(building, targetLevel);
 
-            if (now - startedAt >= buildTime) {
-              changed = true;
+      if (now - startedAt < buildTime) return hex;
 
-              const prevProd: Partial<Resources> =
-                targetLevel === 1
-                  ? ({} as Partial<Resources>)
-                  : getProductionPerSecond(building, targetLevel - 1);
+      changed = true;
 
-              const newProd = getProductionPerSecond(building, targetLevel);
-              const diff: Partial<Resources> = {};
+      const prevProd =
+        targetLevel === 1
+          ? ({} as Partial<Resources>)
+          : getProductionPerSecond(building, targetLevel - 1);
+      const newProd = getProductionPerSecond(building, targetLevel);
+      const diff: Partial<Resources> = {};
 
-              const keys = new Set([...Object.keys(prevProd), ...Object.keys(newProd)]) as Set<
-                keyof Resources
-              >;
-              for (const key of keys) {
-                const before = prevProd[key] || 0;
-                const after = newProd[key] || 0;
-                const d = after - before;
-                if (d !== 0) diff[key] = d;
-              }
+      const keys = new Set([...Object.keys(prevProd), ...Object.keys(newProd)]) as Set<
+        keyof Resources
+      >;
+      for (const key of keys) {
+        const before = prevProd[key] || 0;
+        const after = newProd[key] || 0;
+        const d = after - before;
+        if (d !== 0) diff[key] = d;
+      }
 
-              if (Object.keys(diff).length > 0) addProduction(diff);
+      if (Object.keys(diff).length > 0) addProduction(diff);
 
-              if (building === "BASE" && hex.q === 0 && hex.r === 0) {
-                baseLeveledUp = true;
-                updatedBaseLevel = targetLevel;
-              }
+      if (callbacks?.onBuildComplete) {
+        callbacks.onBuildComplete(hex.q, hex.r, building, targetLevel);
+      }
 
-              Notifications.scheduleNotificationAsync({
-                content: {
-                  title: "✅ Construcción terminada",
-                  body: `Tu edificio "${building}" ha finalizado su construcción.`,
-                  sound: true,
-                },
-                trigger: null,
-              });
+      if (building === "BASE" && hex.q === 0 && hex.r === 0) {
+        baseLeveledUp = true;
+        updatedBaseLevel = targetLevel;
+      }
 
-              return {
-                ...hex,
-                construction: undefined,
-                building: {
-                  type: building,
-                  level: targetLevel,
-                },
-              };
-            }
-          }
-          return hex;
-        });
-
-        if (baseLeveledUp) {
-          return expandMapAroundBase(updated, updatedBaseLevel);
-        }
-
-        return changed ? updated : prevHexes;
+      Notifications.scheduleNotificationAsync({
+        content: {
+          title: "✅ Construcción terminada",
+          body: `Tu edificio \"${building}\" ha finalizado su construcción.`,
+          sound: true,
+        },
+        trigger: null,
       });
-    } finally {
-      isBuildingRef.current = false;
+
+      const updatedHex: Hex = {
+        ...hex,
+        construction: undefined,
+        building: {
+          type: building,
+          level: targetLevel,
+        },
+      };
+
+      hexesToUpdate.push(updatedHex);
+      return updatedHex;
+    });
+
+    if (changed) {
+      const finalHexes = baseLeveledUp
+        ? expandMapAroundBase(updatedHexes, updatedBaseLevel)
+        : updatedHexes;
+
+      updateMap(finalHexes);
     }
   };
 

@@ -24,6 +24,7 @@ export const useShip = (
     await deleteShip();
   };
 
+  // Añade a la cola de construcción, pero no lo crea aún
   const handleBuildShip = async (type: ShipType, amount: number) => {
     const cost = getTotalShipCost(type, amount);
     const now = Date.now();
@@ -65,16 +66,21 @@ export const useShip = (
     subtractResources(cost);
   };
 
+  //Cancela la construcción de 1 del tipo indicado
   const handleCancelShip = async (type: ShipType) => {
+    let didRefund = false;
+
     updateShipQueueState((prev) => {
       const updated = prev.map((r) => {
         if (r.type !== type || !r.progress) return r;
 
         const remaining = r.progress.targetAmount - 1;
         if (remaining <= 0) {
+          didRefund = true;
           return { ...r, progress: undefined };
         }
 
+        didRefund = true;
         return {
           ...r,
           progress: {
@@ -85,49 +91,62 @@ export const useShip = (
         };
       });
 
-      const refundCost = getTotalShipCost(type, 1);
-      addResources(refundCost);
       return updated;
     });
+
+    if (didRefund) {
+      const refundCost = getTotalShipCost(type, 1);
+      addResources(refundCost);
+    }
   };
 
   const processShipTick = () => {
     const now = Date.now();
 
-    updateShipQueueState((prev) => {
-      let changed = false;
+    const updatedQueue: Ship[] = [];
+    let changed = false;
 
-      const updated = prev.map((item) => {
-        if (item.progress && item.progress.targetAmount > 0) {
-          const timePerUnit = shipConfig[item.type].baseBuildTime;
-          const elapsed = now - item.progress.startedAt;
+    for (const item of shipBuildQueue) {
+      if (item.progress && item.progress.targetAmount > 0) {
+        const timePerUnit = shipConfig[item.type].baseBuildTime;
+        const elapsed = now - item.progress.startedAt;
 
-          if (elapsed >= timePerUnit) {
-            changed = true;
-            const newAmount = item.amount + 1;
-            const newTargetAmount = item.progress.targetAmount - 1;
-            const newStartedAt = item.progress.startedAt + timePerUnit;
+        if (elapsed >= timePerUnit) {
+          changed = true;
 
-            if (newTargetAmount <= 0) {
-              return { type: item.type, amount: newAmount };
-            } else {
-              return {
-                type: item.type,
-                amount: newAmount,
-                progress: {
-                  ...item.progress,
-                  targetAmount: newTargetAmount,
-                  startedAt: newStartedAt,
-                },
-              };
-            }
+          const unitsBuilt = Math.min(
+            Math.floor(elapsed / timePerUnit),
+            item.progress.targetAmount
+          );
+
+          const newAmount = item.amount + unitsBuilt;
+          const newTargetAmount = item.progress.targetAmount - unitsBuilt;
+          const newStartedAt = item.progress.startedAt + unitsBuilt * timePerUnit;
+
+          if (newTargetAmount <= 0) {
+            updatedQueue.push({ type: item.type, amount: newAmount });
+          } else {
+            updatedQueue.push({
+              type: item.type,
+              amount: newAmount,
+              progress: {
+                ...item.progress,
+                targetAmount: newTargetAmount,
+                startedAt: newStartedAt,
+              },
+            });
           }
+        } else {
+          updatedQueue.push(item);
         }
-        return item;
-      });
+      } else {
+        updatedQueue.push(item);
+      }
+    }
 
-      return changed ? updated : prev;
-    });
+    if (changed) {
+      updateShipQueueState(() => updatedQueue);
+    }
   };
 
   const handleDestroyShip = async (type: ShipType, amount: number) => {

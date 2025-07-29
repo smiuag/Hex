@@ -29,7 +29,6 @@ export const SystemUnknownCard: React.FC<Props> = ({
   const { t: tPlanets } = useTranslation("planets");
   const { t: tResources } = useTranslation("resources");
   const expected = getExpectedResourceProbabilities(system.type);
-  const enoughProbe = true;
   const isBeingExplored = !!system.explorationFleetId;
 
   const { shipBuildQueue, fleet } = useGameContext();
@@ -109,7 +108,6 @@ export const SystemUnknownCard: React.FC<Props> = ({
 
               <TouchableOpacity
                 style={commonStyles.buttonPrimary}
-                disabled={!enoughProbe}
                 onPress={() => handleExplorePress(system.id)}
               >
                 <Text style={commonStyles.buttonTextLight}>{t("Explore")}</Text>

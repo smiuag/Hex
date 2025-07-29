@@ -37,9 +37,11 @@ export type StarSystem = {
   explored: boolean; // Si has mandado sonda
   conquered: boolean; // So has eliminado las defensas
   explorationFleetId?: string;
+  attackStartedAt?: number;
   attackFleetId?: string;
   distance: number;
   starPort: boolean;
+  starPortStartedAt?: number;
   defense: ShipData[];
   id: string;
 };

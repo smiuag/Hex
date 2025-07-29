@@ -22,6 +22,7 @@
   "research": "Investigar",
   "back": "Volver",
   "build": "Construir",
+  "defend": "Defender",
   "limitReached": "🔒 Límite alcanzado",
   "notEnoughResources": "⚠️ Recursos insuficientes",
 
@@ -32,7 +33,14 @@
   "endGameTitle": "Finalizar partida",
   "endGameConfirmation": "¿Estás seguro de que quieres borrar el mapa actual?",
   "confirmDelete": "Sí, borrar",
+  "confirm": "Confirm",
+  "MainTerminal": "Main terminal",
+  "Close": "Close",
 
   "Attack": "Attack",
-  "CelestialBodys": "Celestial bodys found: "
+  "CelestialBodys": "Celestial bodys found: ",
+
+  "BuildStelarPort": "Building a stellar port",
+  "StelarPortCostMessage": "To build a stellar port, we will need to send 2 freighters, which will remain in the system to gather local resources. Additionally, 1,200,000 crystal and 1,200,000 metal are required. Are you sure you want to continue?",
+  "Fly": "Fly"
 }

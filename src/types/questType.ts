@@ -22,3 +22,5 @@ export type PlayerQuest = {
   completed: boolean;
   viewed: boolean;
 };
+
+export type ContextType = "GENERAL" | "RESEARCH" | "BUILD" | "FLEET" | "ATTACK" | "DEFENSE";

@@ -9,7 +9,8 @@ export type ShipType =
   | "STARCARRIER"
   | "HEAVYASSAULTSHIP"
   | "ORBITALASSAULTSHIP"
-  | "PLANETARYDESTROYER";
+  | "PLANETARYDESTROYER"
+  | "FREIGHTER";
 
 export const ALL_SHIP_TYPES = [
   "PROBE",
@@ -23,6 +24,7 @@ export const ALL_SHIP_TYPES = [
   "HEAVYASSAULTSHIP",
   "ORBITALASSAULTSHIP",
   "PLANETARYDESTROYER",
+  "FREIGHTER",
 ];
 
 export type ProductionFacilityType = "HANGAR" | "SPACESTATION";
@@ -40,4 +42,11 @@ export type Ship = {
     targetAmount: number;
     notificationId?: string;
   };
+};
+
+export type CombatShip = Ship & {
+  hp: number;
+  maxHp: number;
+  attack: number;
+  defense: number;
 };

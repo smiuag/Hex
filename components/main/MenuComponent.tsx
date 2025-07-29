@@ -38,6 +38,7 @@ export default function MenuComponent() {
     endGame,
     startGame,
     cancelExploreSystem,
+    cancelAttack,
   } = useGameContext();
 
   const started = gameStarted(playerConfig);
@@ -83,6 +84,10 @@ export default function MenuComponent() {
 
   const onCancelShip = async (type: ShipType) => {
     await handleCancelShip(type);
+  };
+
+  const onCancelAttack = async (id: string) => {
+    await cancelAttack(id);
   };
 
   const productionPerHour = Object.fromEntries(
@@ -133,41 +138,44 @@ export default function MenuComponent() {
             </View>
           </View>
 
-          <View>
-            {researchItems.map((item) => {
-              const maxDots = 80;
-              const charWeight = 2;
-              const dotsCount = Math.max(0, Math.floor(maxDots - item.name.length * charWeight));
-              const dots = ".".repeat(dotsCount);
+          {processes.length == 0 ? (
+            <View>
+              {researchItems.map((item) => {
+                const maxDots = 80;
+                const charWeight = 2;
+                const dotsCount = Math.max(0, Math.floor(maxDots - item.name.length * charWeight));
+                const dots = ".".repeat(dotsCount);
 
-              return (
-                <View style={menuStyles.researchItem} key={item.key}>
-                  <Text style={menuStyles.researchName} numberOfLines={1}>
-                    {item.name}
-                  </Text>
-                  <Text style={menuStyles.dots} numberOfLines={1}>
-                    {dots}
-                  </Text>
-                  <Text style={menuStyles.researchLevel}>
-                    {item.currentLevel}/{item.maxLevel}
-                  </Text>
-                </View>
-              );
-            })}
-          </View>
-
-          <View style={commonStyles.pt5}>
-            {processes.map((item) => (
-              <ProcessCard
-                key={`process-${item.id}`}
-                item={item}
-                onCancelBuild={cancelBuild}
-                onCancelResearch={cancelResearch}
-                onCancelShip={onCancelShip}
-                onCancelExploreSystem={onCancelExploreSystem}
-              />
-            ))}
-          </View>
+                return (
+                  <View style={menuStyles.researchItem} key={item.key}>
+                    <Text style={menuStyles.researchName} numberOfLines={1}>
+                      {item.name}
+                    </Text>
+                    <Text style={menuStyles.dots} numberOfLines={1}>
+                      {dots}
+                    </Text>
+                    <Text style={menuStyles.researchLevel}>
+                      {item.currentLevel}/{item.maxLevel}
+                    </Text>
+                  </View>
+                );
+              })}
+            </View>
+          ) : (
+            <View style={commonStyles.pt5}>
+              {processes.map((item) => (
+                <ProcessCard
+                  key={`process-${item.id}`}
+                  item={item}
+                  onCancelBuild={cancelBuild}
+                  onCancelResearch={cancelResearch}
+                  onCancelShip={onCancelShip}
+                  onCancelExploreSystem={onCancelExploreSystem}
+                  onCancelAttack={onCancelAttack}
+                />
+              ))}
+            </View>
+          )}
         </View>
 
         <View style={commonStyles.pt5}>

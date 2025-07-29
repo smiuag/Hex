@@ -38,14 +38,17 @@ type ProviderContextType = {
   handleBuildShip: (type: ShipType, amount: number) => void;
   handleCancelShip: (type: ShipType) => void;
   completeQuest: (type: QuestType) => void;
-  markQuestsAsViewed: (types: QuestType[]) => void;
+  markQuestsAsViewed: (types: QuestType) => void;
   handleUpdateConfig: (config: ConfigEntry) => void;
   updatePlayerConfig: (config: PlayerConfig) => void;
   endGame: () => void;
   startGame: () => void;
   discardStarSystem: (id: string) => void;
   cancelExploreSystem: (id: string) => void;
+  stelarPorStarttBuild: (id: string) => void;
   cancelExplorePlanet: (systemId: string, planetId: string) => void;
+  startAttack: (systemId: string, fleet: Ship[]) => void;
+  cancelAttack: (id: string) => void;
 };
 
 const ResourceContext = createContext<ProviderContextType | undefined>(undefined);
@@ -95,8 +98,12 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     cancelExplorePlanet,
     startStarSystemExploration,
     processFleeTick,
+    processColonialBuildings,
     resetFleet,
-  } = useStarSystem(handleDestroyShip, handleCreateShips);
+    stelarPorStarttBuild,
+    startAttack,
+    cancelAttack,
+  } = useStarSystem(handleDestroyShip, handleCreateShips, subtractResources);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -104,6 +111,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
       processResearchTick();
       processShipTick();
       processFleeTick();
+      processColonialBuildings();
     }, 1000);
 
     return () => {
@@ -158,7 +166,10 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     endGame,
     startGame,
     cancelExploreSystem,
+    stelarPorStarttBuild,
     cancelExplorePlanet,
+    startAttack,
+    cancelAttack,
   };
 
   return <ResourceContext.Provider value={contextValue}>{children}</ResourceContext.Provider>;

@@ -10,7 +10,8 @@
     "STARCARRIER": "Porta cazas",
     "HEAVYASSAULTSHIP": "Fragata pesada",
     "ORBITALASSAULTSHIP": "Destructor orbital",
-    "PLANETARYDESTROYER": "Destructor planetario"
+    "PLANETARYDESTROYER": "Destructor planetario",
+    "FREIGHTER": "Carguero"
   },
   "shipDescription": {
     "PROBE": "Sonda de exploración espacial. Tiene una gran velocidad pero nulas capacidades de ataque o defensa.",
@@ -23,6 +24,7 @@
     "STARCARRIER": "Base móvil para lanzar cazas y proporcionar soporte táctico en combate espacial.",
     "HEAVYASSAULTSHIP": "Nave robusta con armamento pesado para incursiones agresivas y asedios prolongados.",
     "ORBITALASSAULTSHIP": "Especializada en asaltos desde órbita para tomar control rápido de objetivos planetarios.",
-    "PLANETARYDESTROYER": "Unidad masiva diseñada para destruir estructuras y bases a escala planetaria."
+    "PLANETARYDESTROYER": "Unidad masiva diseñada para destruir estructuras y bases a escala planetaria.",
+    "FREIGHTER": "Un enorme carguero para el transporte de mercancías"
   }
 }

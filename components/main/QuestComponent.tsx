@@ -1,5 +1,4 @@
-import { useFocusEffect } from "@react-navigation/native";
-import React, { useCallback, useEffect, useRef } from "react";
+import React from "react";
 import { FlatList } from "react-native";
 import { questConfig } from "../../src/config/questConfig";
 import { useGameContext } from "../../src/context/GameContext";
@@ -8,10 +7,7 @@ import { canCompleteQuest, shouldShowQuest } from "../../utils/questUtils";
 import { QuestCard } from "../cards/QuestCard";
 
 export default function QuestComponent() {
-  const { playerQuests, hexes, research, shipBuildQueue, completeQuest, markQuestsAsViewed } =
-    useGameContext();
-
-  const hasViewedOnce = useRef(false);
+  const { playerQuests, hexes, research, shipBuildQueue, completeQuest } = useGameContext();
 
   const completedTypes = playerQuests
     .filter((q) => q.completed)
@@ -21,31 +17,6 @@ export default function QuestComponent() {
   const availableQuests = Object.values(questConfig)
     .filter((quest) => shouldShowQuest(quest.type, completedTypes))
     .sort((a, b) => b.order - a.order);
-
-  useFocusEffect(
-    useCallback(() => {
-      if (!hasViewedOnce.current) {
-        const newlyViewed = availableQuests.map((q) => q.type);
-        markQuestsAsViewed(newlyViewed);
-        hasViewedOnce.current = true;
-      }
-    }, [availableQuests])
-  );
-
-  useEffect(() => {
-    if (!hasViewedOnce.current) return;
-
-    const notViewedTypes = availableQuests
-      .filter((q) => {
-        const quest = playerQuests.find((pq) => pq.type === q.type);
-        return !quest || !quest.viewed;
-      })
-      .map((q) => q.type);
-
-    if (notViewedTypes.length > 0) {
-      markQuestsAsViewed(notViewedTypes);
-    }
-  }, [availableQuests, playerQuests]);
 
   return (
     <FlatList

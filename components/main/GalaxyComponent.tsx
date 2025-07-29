@@ -14,9 +14,9 @@ export default function StarSystemComponent() {
     cancelExploreSystem,
     cancelExplorePlanet,
     startStarSystemExploration,
+    stelarPorStarttBuild,
+    cancelAttack,
   } = useGameContext();
-
-  const startStarSystemAttack = () => {};
 
   return (
     <FlatList
@@ -30,12 +30,13 @@ export default function StarSystemComponent() {
             onDiscard={discardStarSystem}
             onExplorePlanet={startPlanetExploration}
             onCancelExplorePlanet={cancelExplorePlanet}
+            onStelarPortBuild={stelarPorStarttBuild}
           />
         ) : item.explored ? (
           <SystemDefendedCard
             system={item}
             onDiscard={discardStarSystem}
-            onAttack={startStarSystemAttack}
+            onCancelAttack={cancelAttack}
           />
         ) : (
           <SystemUnknownCard

@@ -82,7 +82,7 @@ export function ShipSummaryBar({ shipCounts }: Props) {
                         <Text style={shipSummaryStyle.countText}>{item.count}</Text>
                       </View>
                     )}
-                    <Text style={shipSummaryStyle.label}>{tShip(`shiphName.${item.type}`)}</Text>
+                    <Text style={shipSummaryStyle.label}>{tShip(`shipName.${item.type}`)}</Text>
                   </View>
                 ))}
               </View>

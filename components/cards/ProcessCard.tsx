@@ -13,6 +13,7 @@ type ProcessCardProps = {
   onCancelResearch: (type: ResearchType) => Promise<void>;
   onCancelShip: (shipType: ShipType) => Promise<void>;
   onCancelExploreSystem: (id: string) => Promise<void>;
+  onCancelAttack: (id: string) => Promise<void>;
 };
 
 export function ProcessCard({
@@ -21,6 +22,7 @@ export function ProcessCard({
   onCancelResearch,
   onCancelShip,
   onCancelExploreSystem,
+  onCancelAttack,
 }: ProcessCardProps) {
   const { t } = useTranslation("common");
 
@@ -33,6 +35,8 @@ export function ProcessCard({
       await onCancelShip(item.shipType!);
     } else if (item.type === "EXPLORATION SYSTEM FLEET") {
       await onCancelExploreSystem(item.explorationSystemId!);
+    } else if (item.type === "ATTACK FLEET") {
+      await onCancelAttack(item.attackSystemId!);
     }
   };
 

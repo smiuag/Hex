@@ -22,5 +22,8 @@
     "ROCKET": "Hangar y lanzadera de cohetes y naves interplanetarias.",
     "ENERGY": "Central de generación de energía para el funcionamiento de edificios y sistemas.",
     "SPACESTATION": "Estación orbital avanzada con múltiples funciones estratégicas."
-  }
+  },
+  "ExtractionSystems": "Mineral extraction systems",
+  "LocalDefenses": "Local defenses",
+  "StellarPort": "Stellar port"
 }
