@@ -45,7 +45,7 @@ type ProviderContextType = {
   startGame: () => void;
   discardStarSystem: (id: string) => void;
   cancelExploreSystem: (id: string) => void;
-  stelarPorStarttBuild: (id: string) => void;
+  stelarPortStartBuild: (id: string) => void;
   cancelExplorePlanet: (systemId: string, planetId: string) => void;
   startAttack: (systemId: string, fleet: Ship[]) => void;
   cancelAttack: (id: string) => void;
@@ -81,7 +81,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     resetShip,
     handleDestroyShip,
     handleCreateShips,
-  } = useShip(addResources, subtractResources);
+  } = useShip(resources, addResources, subtractResources);
 
   //USE RESEARCH
   const { research, handleResearch, handleCancelResearch, processResearchTick, resetResearch } =
@@ -98,9 +98,9 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     cancelExplorePlanet,
     startStarSystemExploration,
     processFleeTick,
-    processColonialBuildings,
+    processColonialBuildingsTick,
     resetFleet,
-    stelarPorStarttBuild,
+    stelarPortStartBuild,
     startAttack,
     cancelAttack,
   } = useStarSystem(handleDestroyShip, handleCreateShips, subtractResources);
@@ -111,7 +111,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
       processResearchTick();
       processShipTick();
       processFleeTick();
-      processColonialBuildings();
+      processColonialBuildingsTick();
     }, 1000);
 
     return () => {
@@ -166,7 +166,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     endGame,
     startGame,
     cancelExploreSystem,
-    stelarPorStarttBuild,
+    stelarPortStartBuild,
     cancelExplorePlanet,
     startAttack,
     cancelAttack,

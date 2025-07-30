@@ -1,6 +1,7 @@
 import { commonStyles } from "@/src/styles/commonStyles";
 import { Ship } from "@/src/types/shipType";
 import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -31,12 +32,18 @@ export default function FleetSelector({
   destinationImage,
 }: Props) {
   const [selected, setSelected] = useState<Record<string, number>>({});
+  const [available, setAvailable] = useState<Record<string, number>>({});
 
-  const [available, setAvailable] = useState<Record<string, number>>(
-    fleets.reduce((acc, f) => {
-      acc[f.type] = f.amount;
-      return acc;
-    }, {} as Record<string, number>)
+  useFocusEffect(
+    React.useCallback(() => {
+      // Resetea el estado siempre que la pantalla se enfoque
+      setSelected({});
+      const initialAvailable = fleets.reduce((acc, f) => {
+        acc[f.type] = f.amount;
+        return acc;
+      }, {} as Record<string, number>);
+      setAvailable(initialAvailable);
+    }, [fleets])
   );
 
   const { t } = useTranslation("common");
@@ -46,6 +53,14 @@ export default function FleetSelector({
     if (available[fleetId] > 0) {
       setAvailable((prev) => ({ ...prev, [fleetId]: prev[fleetId] - 1 }));
       setSelected((prev) => ({ ...prev, [fleetId]: (prev[fleetId] || 0) + 1 }));
+    }
+  };
+
+  const onLongPressOrigin = (fleetId: string) => {
+    if (available[fleetId] > 0) {
+      const amountToMove = available[fleetId];
+      setAvailable((prev) => ({ ...prev, [fleetId]: 0 }));
+      setSelected((prev) => ({ ...prev, [fleetId]: (prev[fleetId] || 0) + amountToMove }));
     }
   };
 
@@ -61,11 +76,33 @@ export default function FleetSelector({
     }
   };
 
+  const onLongPressDestination = (fleetId: string) => {
+    if (selected[fleetId] > 0) {
+      const amountToMove = selected[fleetId];
+      setSelected((prev) => {
+        const newSelected = { ...prev };
+        delete newSelected[fleetId];
+        return newSelected;
+      });
+      setAvailable((prev) => ({ ...prev, [fleetId]: (prev[fleetId] || 0) + amountToMove }));
+    }
+  };
+
   const originFleets = fleets.filter((f) => (available[f.type] ?? 0) > 0);
   const destinationFleets = fleets.filter((f) => selected[f.type] > 0);
 
-  const renderFleetItem = (item: Ship, amount: number, onPress: (id: string) => void) => (
-    <TouchableOpacity style={styles.fleetItem} onPress={() => onPress(item.type)} activeOpacity={1}>
+  const renderFleetItem = (
+    item: Ship,
+    amount: number,
+    onPress: (id: string) => void,
+    onLongPress: (id: string) => void
+  ) => (
+    <TouchableOpacity
+      style={styles.fleetItem}
+      onPress={() => onPress(item.type)}
+      onLongPress={() => onLongPress(item.type)}
+      activeOpacity={1}
+    >
       <View style={styles.imageWrapper}>
         <Image source={shipConfig[item.type].imageBackground} style={styles.fleetImage} />
       </View>
@@ -90,7 +127,9 @@ export default function FleetSelector({
             numColumns={4}
             contentContainerStyle={styles.listContainer}
             showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => renderFleetItem(item, available[item.type], onPressOrigin)}
+            renderItem={({ item }) =>
+              renderFleetItem(item, available[item.type], onPressOrigin, onLongPressOrigin)
+            }
           />
         </View>
       </ImageBackground>
@@ -133,7 +172,7 @@ export default function FleetSelector({
             contentContainerStyle={styles.listContainer}
             showsHorizontalScrollIndicator={false}
             renderItem={({ item }) =>
-              renderFleetItem(item, selected[item.type], onPressDestination)
+              renderFleetItem(item, selected[item.type], onPressDestination, onLongPressDestination)
             }
           />
         </View>

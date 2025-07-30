@@ -1,6 +1,6 @@
 import * as Notifications from "expo-notifications";
 import { useEffect, useState } from "react";
-import { Alert } from "react-native";
+import Toast from "react-native-toast-message";
 import { researchTechnologies } from "../src/config/researchConfig";
 import { loadResearch, saveResearch } from "../src/services/storage";
 import { Research, ResearchType } from "../src/types/researchTypes";
@@ -36,7 +36,12 @@ export const useResearch = (
     const durationMs = getResearchTime(type, nextLevel);
 
     if (!hasEnoughResources(resources, scaledCost)) {
-      Alert.alert("Recursos insuficientes", "No puedes iniciar esta investigación.");
+      Toast.show({
+        type: "info",
+        text1: "Recursos insuficientes",
+        position: "top",
+        visibilityTime: 2000,
+      });
       return;
     }
 

@@ -1,6 +1,7 @@
 import FleetSelector from "@/components/auxiliar/fleetSelector";
 import { useGameContext } from "@/src/context/GameContext";
 import { Ship } from "@/src/types/shipType";
+import { getSystemImage } from "@/utils/starSystemUtils";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
 import { SafeAreaView } from "react-native";
@@ -20,10 +21,10 @@ export default function FleetScreen() {
   const { shipBuildQueue, starSystems, startAttack } = useGameContext();
 
   const system = starSystems.find((s) => s.id == systemId);
-  const destinationImage = system!.image;
+
+  const destinationImage = getSystemImage(system!.type);
 
   const sendAttack = (selectedFleets: Ship[]) => {
-    console.log(selectedFleets);
     if (selectedFleets.length > 0) {
       startAttack(system!.id, selectedFleets);
       router.replace("/galaxy");

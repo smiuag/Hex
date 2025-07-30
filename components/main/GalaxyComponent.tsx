@@ -14,7 +14,7 @@ export default function StarSystemComponent() {
     cancelExploreSystem,
     cancelExplorePlanet,
     startStarSystemExploration,
-    stelarPorStarttBuild,
+    stelarPortStartBuild,
     cancelAttack,
   } = useGameContext();
 
@@ -30,7 +30,7 @@ export default function StarSystemComponent() {
             onDiscard={discardStarSystem}
             onExplorePlanet={startPlanetExploration}
             onCancelExplorePlanet={cancelExplorePlanet}
-            onStelarPortBuild={stelarPorStarttBuild}
+            onStelarPortBuild={stelarPortStartBuild}
           />
         ) : item.explored ? (
           <SystemDefendedCard

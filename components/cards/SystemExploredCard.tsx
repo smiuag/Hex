@@ -1,3 +1,4 @@
+import { getSystemImage } from "@/utils/starSystemUtils";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, ImageBackground, Text, TouchableOpacity, View } from "react-native";
@@ -54,10 +55,12 @@ export const SystemExploredCard: React.FC<Props> = ({
     onStelarPortBuild(system.id);
   };
 
+  const image = getSystemImage(system.type);
+
   return (
     <View style={commonStyles.containerCenter} key={system.id}>
       <ImageBackground
-        source={system.image}
+        source={image}
         style={commonStyles.card}
         imageStyle={commonStyles.imageCover}
       >
@@ -152,7 +155,7 @@ export const SystemExploredCard: React.FC<Props> = ({
               style={commonStyles.buttonPrimary}
               onPress={() => onDiscard(system.id)}
             >
-              <Text style={commonStyles.buttonTextLight}>{t("Fly")}</Text>
+              <Text style={commonStyles.buttonTextLight}>{t("Collect")}</Text>
             </TouchableOpacity>
           </View>
         </View>

@@ -1,4 +1,3 @@
-import { ImageSourcePropType } from "react-native";
 import { Resources, SpecialResources } from "./resourceTypes";
 import { ShipData } from "./shipType";
 
@@ -30,7 +29,6 @@ export type CelestialBody = {
 };
 
 export type StarSystem = {
-  image: ImageSourcePropType;
   type: StarSystemType;
   planets: CelestialBody[];
   discovered: boolean;

@@ -86,6 +86,7 @@ export default function HexModal({
         }) ?? [];
 
     const canBuild = canUpgrade && enoughResources;
+    const isMaxLvl = config.maxLvl < (data.building ? data.building.level : 0);
 
     return (
       <ImageBackground
@@ -136,7 +137,13 @@ export default function HexModal({
           )}
 
           <View style={commonStyles.actionBar}>
-            {canUpgrade ? (
+            {isMaxLvl ? (
+              <Text style={commonStyles.errorTextRed}>
+                {unmetRequirements
+                  .map((r) => `🔒 ${tResearch("maxLvl")} ${t("level")} ${r.researchLevelRequired}`)
+                  .join("\n")}
+              </Text>
+            ) : canUpgrade ? (
               !enoughResources ? (
                 <Text style={commonStyles.warningTextYellow}>{t("notEnoughResources")}</Text>
               ) : (
@@ -158,7 +165,7 @@ export default function HexModal({
             <Pressable
               style={[commonStyles.buttonPrimary, !canBuild && commonStyles.buttonDisabled]}
               onPress={() => canBuild && onBuild(building.type)}
-              disabled={!canBuild}
+              disabled={!canBuild || isMaxLvl}
             >
               <Text style={commonStyles.buttonTextLight}>{t("upgrade")}</Text>
             </Pressable>

@@ -1,11 +1,14 @@
+import { hasEnoughResources } from "@/utils/resourceUtils";
 import { useEffect, useState } from "react";
+import Toast from "react-native-toast-message";
 import { shipConfig } from "../src/config/shipConfig";
 import { deleteShip, loadShip, saveShip } from "../src/services/storage";
-import { Resources } from "../src/types/resourceTypes";
+import { Resources, StoredResources } from "../src/types/resourceTypes";
 import { Ship, ShipType } from "../src/types/shipType";
 import { getTotalShipCost } from "../utils/shipUtils";
 
 export const useShip = (
+  resources: StoredResources,
   addResources: (modifications: Partial<Resources>) => void,
   subtractResources: (modifications: Partial<Resources>) => void
 ) => {
@@ -28,6 +31,16 @@ export const useShip = (
   const handleBuildShip = async (type: ShipType, amount: number) => {
     const cost = getTotalShipCost(type, amount);
     const now = Date.now();
+
+    if (!hasEnoughResources(resources, cost)) {
+      Toast.show({
+        type: "info", // "success" | "info" | "error"
+        text1: "Recursos insuficientes",
+        position: "top",
+        visibilityTime: 2000,
+      });
+      return;
+    }
 
     updateShipQueueState((prev) => {
       const updated = [...prev];

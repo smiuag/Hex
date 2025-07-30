@@ -1,6 +1,6 @@
 import * as Notifications from "expo-notifications";
 import { useEffect, useState } from "react";
-import { Alert } from "react-native";
+import Toast from "react-native-toast-message";
 import { buildingConfig } from "../src/config/buildingConfig";
 import { deleteMap, loadMap, saveMap } from "../src/services/storage";
 import { BuildingType } from "../src/types/buildingTypes";
@@ -80,7 +80,12 @@ export const useHexes = (
       const durationMs = getBuildTime(type, nextLevel);
 
       if (!hasEnoughResources(resources, scaledCost)) {
-        Alert.alert("Recursos insuficientes", "No tienes suficientes materiales.");
+        Toast.show({
+          type: "info", // "success" | "info" | "error"
+          text1: "Recursos insuficientes",
+          position: "top",
+          visibilityTime: 2000,
+        });
         return prevHexes;
       }
 

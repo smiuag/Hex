@@ -1,3 +1,4 @@
+import { ImageSourcePropType } from "react-native";
 import uuid from "react-native-uuid";
 import { IMAGES } from "../src/constants/images";
 import {
@@ -138,7 +139,6 @@ export function generateStarSystem(type: StarSystemType): StarSystem {
     type,
     planets: celestialBodies,
     discovered: false,
-    image: IMAGES[type],
     explored: false,
     conquered: !starPort,
     distance,
@@ -146,6 +146,10 @@ export function generateStarSystem(type: StarSystemType): StarSystem {
     defense: defenseShip,
     id: id,
   };
+}
+
+export function getSystemImage(type: StarSystemType): ImageSourcePropType {
+  return IMAGES[type];
 }
 
 export function getExpectedResourceProbabilities(

@@ -101,7 +101,7 @@ export const commonStyles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 12,
     borderRadius: 6,
-    minWidth: 80,
+    minWidth: 100,
   },
   buttonDisabled: {
     backgroundColor: "#6b8dc3",
@@ -192,7 +192,7 @@ export const commonStyles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 12,
     borderRadius: 6,
-    minWidth: 80,
+    minWidth: 100,
   },
 
   cancelButtonText: {

@@ -127,7 +127,7 @@ export const getFleetProcesses = (fleetData: FleetData[]): Process[] => {
         break;
       case "ATTACK":
         type = "ATTACK FLEET";
-        name = fleetShips + " nave" + (fleetShips > 1 ? "s" : "") + " rumbo a atacar un planeta ";
+        name = fleetShips + " nave" + (fleetShips > 1 ? "s" : "") + " rumbo a atacar un systema ";
         break;
       case "EXPLORE PLANET":
         type = "EXPLORATION PLANET FLEET";

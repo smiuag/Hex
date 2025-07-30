@@ -42,5 +42,6 @@
 
   "BuildStelarPort": "Construcción de un puerto estelar",
   "StelarPortCostMessage": "Para construir un puerto estelar necesitaremos enviar 2 cargueros, que se quedarán en el sistema para juntar recursos de la zona. Además es necesario enviar 1200000 de cristal y 1200000 de metal. ¿Estas seguro de que quieres continuar?",
-  "Fly": "Volar"
+  "Fly": "Volar",
+  "Collect": "Recolectar"
 }

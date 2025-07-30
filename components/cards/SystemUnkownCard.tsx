@@ -9,7 +9,7 @@ import { commonStyles } from "../../src/styles/commonStyles";
 import { ResourceType, SpecialResourceType } from "../../src/types/resourceTypes";
 import { StarSystem } from "../../src/types/starSystemTypes";
 import { getFlyTime } from "../../utils/shipUtils";
-import { getExpectedResourceProbabilities } from "../../utils/starSystemUtils";
+import { getExpectedResourceProbabilities, getSystemImage } from "../../utils/starSystemUtils";
 import { CountdownTimer } from "../auxiliar/CountdownTimer";
 
 type Props = {
@@ -51,16 +51,18 @@ export const SystemUnknownCard: React.FC<Props> = ({
       });
   };
 
+  const image = getSystemImage(system.type);
+
   return (
     <View style={commonStyles.containerCenter} key={system.id}>
       <ImageBackground
-        source={system.image}
+        source={image}
         style={commonStyles.card}
         imageStyle={commonStyles.imageCover}
       >
         <View style={commonStyles.overlayDark}>
           <View style={commonStyles.rowSpaceBetween}>
-            <Text style={commonStyles.titleText}>{tPlanets(`systemType.${system.type}`)}</Text>
+            <Text style={commonStyles.titleBlueText}>{tPlanets(`systemType.${system.type}`)}</Text>
             <Text style={commonStyles.whiteText}>
               {system.distance} {t("parsecs")}
             </Text>
