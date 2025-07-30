@@ -145,9 +145,8 @@ export default function TabLayout() {
         listeners={{
           tabPress: (e) => {
             e.preventDefault();
-
             if (hasNewQuest && newQuestId) {
-              router.replace(`/quests/computer?id=${newQuestId}`);
+              router.replace(`/quests/computer?type=${newQuestId}`);
             } else {
               router.replace("/quests");
             }

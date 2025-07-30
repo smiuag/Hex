@@ -27,16 +27,8 @@ export default function PlanetComponent() {
   const [cameraOffset, setCameraOffset] = useState({ x: 0, y: 0 });
 
   const router = useRouter();
-  const {
-    hexes,
-    research,
-    resources,
-    handleBuild,
-    handleCancelBuild,
-    playerConfig,
-    handleUpdateConfig,
-  } = useGameContext();
-
+  const { hexes, research, handleBuild, handleCancelBuild, playerConfig, handleUpdateConfig } =
+    useGameContext();
   const scale = getScaleValues(playerConfig);
 
   const { SCREEN_WIDTH, SCREEN_HEIGHT, SVG_WIDTH, SVG_HEIGHT, CENTER_X, CENTER_Y } =
@@ -197,7 +189,6 @@ export default function PlanetComponent() {
                 <HexModal
                   visible={modalVisible}
                   research={research}
-                  resources={resources}
                   onClose={() => setModalVisible(false)}
                   data={selectedHex}
                   onBuild={onBuild}

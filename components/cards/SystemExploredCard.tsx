@@ -7,7 +7,6 @@ import { BUILDING_COST } from "../../src/constants/building";
 import { useGameContext } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { StarSystem } from "../../src/types/starSystemTypes";
-import { hasEnoughResources } from "../../utils/resourceUtils";
 import { CountdownTimer } from "../auxiliar/CountdownTimer";
 import ExploredCelestialBody from "../auxiliar/ExploredCelestialBody";
 
@@ -29,7 +28,7 @@ export const SystemExploredCard: React.FC<Props> = ({
   const { t } = useTranslation("common");
   const { t: tPlanets } = useTranslation("planets");
 
-  const { resources, shipBuildQueue } = useGameContext();
+  const { shipBuildQueue, enoughResources } = useGameContext();
 
   const handleBuildPort = () => {
     Alert.alert(t("BuildStelarPort"), t("StelarPortCostMessage"), [
@@ -38,9 +37,9 @@ export const SystemExploredCard: React.FC<Props> = ({
         text: t("confirm"),
         style: "destructive",
         onPress: async () => {
-          const enoughResources = hasEnoughResources(resources, BUILDING_COST.SPACESTATION);
+          const lockedByResources = !enoughResources(BUILDING_COST.SPACESTATION);
           const enoughFreighter = shipBuildQueue.find((f) => f.type == "FREIGHTER" && f.amount > 1);
-          if (enoughFreighter && enoughResources) onStelarPortBuild(system.id);
+          if (enoughFreighter && !lockedByResources) onStelarPortBuild(system.id);
           else
             Toast.show({
               type: "info", // "success" | "info" | "error"

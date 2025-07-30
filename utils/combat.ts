@@ -3,7 +3,6 @@ import { CombatShip, Ship, ShipType } from "../src/types/shipType";
 
 // Clona profundamente una flota expandiendo cada nave como entidad individual
 function expandFleet(fleet: Ship[]): CombatShip[] {
-  console.log("expandFleet", fleet);
   return fleet.flatMap((s) =>
     Array(s.amount)
       .fill(null)
@@ -19,7 +18,6 @@ function expandFleet(fleet: Ship[]): CombatShip[] {
 
 // Calcula el daño que una nave hace a otra según las reglas
 function calculateDamage(attacker: CombatShip, defender: CombatShip) {
-  console.log("calculateDamage", attacker, defender);
   const rawDamage = attacker.attack - defender.defense; // defensa del defensor
   if (rawDamage > 1) return rawDamage;
   if (rawDamage >= -2) return 1;
@@ -28,8 +26,6 @@ function calculateDamage(attacker: CombatShip, defender: CombatShip) {
 
 // Ejecuta un turno completo de combate
 function executeTurn(fleetA: CombatShip[], fleetB: CombatShip[]) {
-  console.log("executeTurn", fleetA, fleetB);
-
   // Ataque de A a B
   for (const attacker of fleetA) {
     if (!fleetB.length) break;
@@ -86,7 +82,6 @@ function executeTurn(fleetA: CombatShip[], fleetB: CombatShip[]) {
 
 // Agrupa la flota combativa en formato compacto Ship[] contando naves por tipo
 function regroupFleet(combatFleet: CombatShip[]): Ship[] {
-  console.log("regroupFleet", combatFleet);
   const countMap: Record<string, number> = {};
   combatFleet.forEach((ship) => {
     countMap[ship.type] = (countMap[ship.type] || 0) + 1;
@@ -103,7 +98,6 @@ export function simulateBattle(fleetDataA: Ship[], fleetDataB: Ship[]) {
   let fleetB = expandFleet(fleetDataB);
 
   while (fleetA.length && fleetB.length) {
-    console.log("simulateBattle turn", fleetA, fleetB);
     ({ fleetA, fleetB } = executeTurn(fleetA, fleetB));
   }
 

@@ -23,8 +23,8 @@
   "back": "Volver",
   "build": "Construir",
   "defend": "Defender",
-  "limitReached": "🔒 Límite alcanzado",
-  "notEnoughResources": "⚠️ Recursos insuficientes",
+  "limitReached": "Límite alcanzado",
+  "notEnoughResources": "Recursos insuficientes",
 
   "colony": "Colonia",
   "production": "Producción",

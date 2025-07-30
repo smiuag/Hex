@@ -1,4 +1,4 @@
-import { StoredResources } from "@/src/types/resourceTypes";
+import { useGameContext } from "@/src/context/GameContext";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ImageBackground, Modal, Pressable, Text, View } from "react-native";
@@ -15,14 +15,12 @@ import {
   isUnlocked,
 } from "../../utils/buildingUtils";
 import { formatDuration } from "../../utils/generalUtils";
-import { hasEnoughResources } from "../../utils/resourceUtils";
 import { ResourceDisplay } from "./ResourceDisplay";
 
 type Props = {
   visible: boolean;
   research: Research[];
   onClose: () => void;
-  resources: StoredResources;
   data: Hex | null;
   onBuild: (type: BuildingType) => void;
   onCancelBuild: () => void;
@@ -32,7 +30,6 @@ export default function HexModal({
   visible,
   research,
   onClose,
-  resources,
   data,
   onBuild,
   onCancelBuild,
@@ -41,6 +38,8 @@ export default function HexModal({
   const { t: tBuilding } = useTranslation("buildings");
   const { t: tResearch } = useTranslation("research");
   const [remainingTime, setRemainingTime] = useState<number | null>(null);
+
+  const { enoughResources } = useGameContext();
 
   useEffect(() => {
     if (!data?.construction) return;
@@ -72,7 +71,7 @@ export default function HexModal({
     const canUpgrade = isUnlocked(building.type, nextLevel, research);
     const cost = getBuildCost(building.type, nextLevel);
     const time = getBuildTime(building.type, nextLevel);
-    const enoughResources = hasEnoughResources(resources, cost);
+    const lockedByResources = !enoughResources(cost);
     const currentProduction = getProductionPerHour(building.type, building.level);
     const nextProduction = getProductionPerHour(building.type, nextLevel);
     const hasProduction = Object.values(nextProduction).some((v) => v > 0);
@@ -85,7 +84,7 @@ export default function HexModal({
           return playerResearchLevel < req.researchLevelRequired;
         }) ?? [];
 
-    const canBuild = canUpgrade && enoughResources;
+    const canBuild = canUpgrade && !lockedByResources;
     const isMaxLvl = config.maxLvl < (data.building ? data.building.level : 0);
 
     return (
@@ -144,8 +143,8 @@ export default function HexModal({
                   .join("\n")}
               </Text>
             ) : canUpgrade ? (
-              !enoughResources ? (
-                <Text style={commonStyles.warningTextYellow}>{t("notEnoughResources")}</Text>
+              lockedByResources ? (
+                <Text style={commonStyles.warningTextYellow}>⚠️ {t("notEnoughResources")}</Text>
               ) : (
                 <Text style={commonStyles.warningTextYellow}>⏱️ {formatDuration(time)}</Text>
               )

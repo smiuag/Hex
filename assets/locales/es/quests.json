@@ -68,7 +68,7 @@
     "shortDescription": "Construye una antena para intentar contactar con el exterior.",
     "descriptions": [
       "Aún no hay señales del resto de la humanidad...",
-      "Construir una antena podría ser nuestra única forma de contacto exterior.",
+      "Construir una antena podría ser nuestra única forma de contacto con el exterior.",
       "Si hay alguien ahí fuera... debemos intentarlo."
     ]
   },
@@ -76,9 +76,9 @@
     "name": "Hangar",
     "shortDescription": "Prepara un hangar para construir y lanzar naves.",
     "descriptions": [
-      "Los planos de fabricación de naves están listos.",
-      "Sin un hangar, estamos atados a este planeta.",
-      "Construye uno. El universo no esperará por nosotros."
+      "Hemos detectado algunos sistemas que pueden interesantes. Los planos de fabricación de naves están listos pero sin un hangar, estamos atados a este planeta.",
+      "Construye uno lo antes posible, necesitamos comenzar a construir sondas para confirmar nuestros hallazgos.",
+      "El universo no esperará por nosotros."
     ]
   },
   "SHIP_FIRST": {

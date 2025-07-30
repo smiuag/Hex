@@ -8,8 +8,8 @@ import { Animated, Button, Pressable, ScrollView, StyleSheet, Text, View } from 
 import { QuestHeader } from "../auxiliar/QuestHeader";
 
 export default function ComputerComponent() {
-  const { id } = useLocalSearchParams();
-  if (!id || typeof id !== "string") return null;
+  const { type } = useLocalSearchParams();
+  if (!type || typeof type !== "string") return null;
   const [allLines, setAllLines] = useState<string[]>([]);
   const [currentLine, setCurrentLine] = useState("");
   const [messageIndex, setMessageIndex] = useState(0);
@@ -27,24 +27,23 @@ export default function ComputerComponent() {
     setCharIndex(0);
     setIsTyping(false);
     setShowConfirm(false);
-  }, [id]);
+  }, [type]);
 
   const promptBlink = useRef(new Animated.Value(1)).current;
 
   const router = useRouter();
 
   const onConfirm = async () => {
-    await markQuestsAsViewed(id as QuestType);
+    await markQuestsAsViewed(type as QuestType);
     router.replace("/quests");
   };
 
   const { t } = useTranslation("common");
   const { t: tQuests } = useTranslation("quests");
 
-  const messages = tQuests(`${id}.descriptions`, { returnObjects: true }) as string[];
-  console.log(messages);
+  const messages = tQuests(`${type}.descriptions`, { returnObjects: true }) as string[];
 
-  var contextType = questConfig[id as QuestType].contextType;
+  var contextType = questConfig[type as QuestType].contextType;
 
   // Animación de parpadeo del prompt
   useEffect(() => {

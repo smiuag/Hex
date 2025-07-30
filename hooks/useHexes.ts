@@ -5,11 +5,10 @@ import { buildingConfig } from "../src/config/buildingConfig";
 import { deleteMap, loadMap, saveMap } from "../src/services/storage";
 import { BuildingType } from "../src/types/buildingTypes";
 import { Hex } from "../src/types/hexTypes";
-import { Resources, StoredResources } from "../src/types/resourceTypes";
+import { Resources } from "../src/types/resourceTypes";
 import { getBuildCost, getBuildTime, getProductionPerSecond } from "../utils/buildingUtils";
 import { expandMapAroundBase, generateHexGrid, normalizeHexMap } from "../utils/hexUtils";
 import { NotificationManager } from "../utils/notificacionUtils";
-import { hasEnoughResources } from "../utils/resourceUtils";
 
 type UseHexesCallbacks = {
   onBuildStart?: (q: number, r: number, type: BuildingType, level: number) => void;
@@ -18,10 +17,10 @@ type UseHexesCallbacks = {
 };
 
 export const useHexes = (
-  resources: StoredResources,
   addProduction: (modifications: Partial<Resources>) => void,
   addResources: (modifications: Partial<Resources>) => void,
   subtractResources: (modifications: Partial<Resources>) => void,
+  enoughResources: (cost: Partial<Resources>) => boolean,
   callbacks?: UseHexesCallbacks
 ) => {
   const [hexes, setHexes] = useState<Hex[]>([]);
@@ -79,7 +78,7 @@ export const useHexes = (
       const scaledCost = getBuildCost(type, nextLevel);
       const durationMs = getBuildTime(type, nextLevel);
 
-      if (!hasEnoughResources(resources, scaledCost)) {
+      if (!enoughResources(scaledCost)) {
         Toast.show({
           type: "info", // "success" | "info" | "error"
           text1: "Recursos insuficientes",

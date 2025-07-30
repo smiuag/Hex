@@ -4,11 +4,11 @@ import { shipConfig } from "../../src/config/shipConfig";
 import { useGameContext } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { ShipType } from "../../src/types/shipType";
-import { hasEnoughResources } from "../../utils/resourceUtils";
 import { ShipCard } from "../cards/ShipCard";
 
 export default function ShipComponent() {
-  const { shipBuildQueue, handleBuildShip, handleCancelShip, resources, hexes } = useGameContext();
+  const { shipBuildQueue, handleBuildShip, handleCancelShip, enoughResources, hexes } =
+    useGameContext();
 
   const hasSpaceStation = hexes.some((h) => h.building?.type === "SPACESTATION");
 
@@ -32,7 +32,7 @@ export default function ShipComponent() {
         startedAt,
         totalTime,
         cost: config.baseCost,
-        canBuild: hasEnoughResources(resources, config.baseCost),
+        canBuild: enoughResources(config.baseCost),
         show: config.productionFacility === "HANGAR" || hasSpaceStation,
         unitTime: config.baseBuildTime,
       };

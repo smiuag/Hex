@@ -9,14 +9,13 @@ import { BuildingType } from "../../src/types/buildingTypes";
 import { Resources } from "../../src/types/resourceTypes";
 import { getBuildTime, isAtMaxCount, isUnlocked } from "../../utils/buildingUtils";
 import { formatDuration } from "../../utils/generalUtils";
-import { hasEnoughResources } from "../../utils/resourceUtils";
 import { ResourceDisplay } from "../auxiliar/ResourceDisplay";
 
 const { width } = Dimensions.get("window");
 
 export default function ConstructionComponent() {
   const { q, r } = useLocalSearchParams();
-  const { research, resources, hexes, handleBuild } = useGameContext();
+  const { research, hexes, handleBuild, enoughResources } = useGameContext();
   const router = useRouter();
   const { t } = useTranslation("common");
   const { t: tResearch } = useTranslation("research");
@@ -41,7 +40,7 @@ export default function ConstructionComponent() {
       const lockedByMax = isAtMaxCount(buildingType, hexes);
       const unlockedByResearch = isUnlocked(buildingType, 1, research);
       const available = unlockedByResearch && !lockedByMax;
-      const lockedByResources = !hasEnoughResources(resources, cost);
+      const lockedByResources = !enoughResources(cost);
 
       return {
         type: buildingType,
@@ -104,7 +103,7 @@ export default function ConstructionComponent() {
 
                   {item.lockedByMax ? (
                     <View>
-                      <Text style={commonStyles.errorTextRed}>{t("limitReached")}</Text>
+                      <Text style={commonStyles.errorTextRed}>🔒 {t("limitReached")}</Text>
                     </View>
                   ) : !item.unlockedByResearch ? (
                     <View>
@@ -141,7 +140,9 @@ export default function ConstructionComponent() {
                           ⏱️ {formatDuration(item.time)}
                         </Text>
                       ) : (
-                        <Text style={commonStyles.statusTextYellow}>{t("notEnoughResources")}</Text>
+                        <Text style={commonStyles.statusTextYellow}>
+                          ⚠️ {t("notEnoughResources")}
+                        </Text>
                       )}
 
                       <TouchableOpacity

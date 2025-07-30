@@ -96,19 +96,15 @@ export const useStarSystem = (
     currentFleet: FleetData[],
     currentSystems: StarSystem[]
   ): Promise<{ updatedFleet: FleetData[]; updatedSystems: StarSystem[] }> => {
-    console.log("attackResolution", currentFleet, currentSystems);
     const attackingFleetData = currentFleet.find((f) => f.id === fleetId);
     if (!attackingFleetData) {
-      console.log("if (!attackingFleetData)");
       return { updatedFleet: currentFleet, updatedSystems: currentSystems };
     }
-    console.log("attackResolution", attackingFleetData.destinationSystemId);
 
     const targetSystem = currentSystems.find(
       (sys) => sys.id === attackingFleetData.destinationSystemId
     );
     if (!targetSystem) {
-      console.log("cancelFleet", attackingFleetData.destinationSystemId);
       currentFleet = await cancelFleet(fleetId, currentFleet);
       return { updatedFleet: currentFleet, updatedSystems: currentSystems };
     }
@@ -122,7 +118,6 @@ export const useStarSystem = (
 
     // Simula la batalla
     const battleResult = simulateBattle(attackingFleetData.ships, targetSystem.defense);
-    console.log(battleResult);
 
     // Flotas restantes ya en formato Ship[]
     const updatedAttackingFleetShips = battleResult.remaining.fleetA;
@@ -168,7 +163,6 @@ export const useStarSystem = (
       }
     }
 
-    console.log("SALIENDOOOOOO", updatedFleet, updatedSystems);
     return {
       updatedFleet,
       updatedSystems,
@@ -222,7 +216,6 @@ export const useStarSystem = (
 
         case "ATTACK":
           result = await attackResolution(f.id, workingFleet, workingSystems);
-          console.log("result", result);
           workingFleet = result.updatedFleet;
           workingSystems = result.updatedSystems;
           break;
@@ -465,17 +458,19 @@ export const useStarSystem = (
   const loadStarSystems = async () => {
     const saved = await loadStarSystem();
 
+    let allSystems = saved;
     if (saved) {
-      let allSystems = saved;
-
       if (saved.length < 3) {
         const generated = generateInitialSystems(3 - saved.length);
         allSystems = [...saved, ...generated];
-        await saveStarSystem(allSystems); // guardamos todos
+        await saveStarSystem(allSystems);
       }
-
-      setPlayerStarSystems(allSystems); // ahora seteamos todos, no solo los nuevos
+    } else {
+      allSystems = generateInitialSystems(3);
+      await saveStarSystem(allSystems);
     }
+
+    setPlayerStarSystems(allSystems!);
   };
 
   const cancelAttack = async (id: string) => {
@@ -545,5 +540,6 @@ export const useStarSystem = (
     stelarPortStartBuild,
     startAttack,
     cancelAttack,
+    loadStarSystems,
   };
 };

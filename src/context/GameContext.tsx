@@ -49,21 +49,28 @@ type ProviderContextType = {
   cancelExplorePlanet: (systemId: string, planetId: string) => void;
   startAttack: (systemId: string, fleet: Ship[]) => void;
   cancelAttack: (id: string) => void;
+  enoughResources: (cost: Partial<Resources>) => boolean;
 };
 
 const ResourceContext = createContext<ProviderContextType | undefined>(undefined);
 
 export const Provider = ({ children }: { children: React.ReactNode }) => {
   //USE RESOURCES
-  const { resources, resetResources, addProduction, addResources, subtractResources } =
-    useResources();
+  const {
+    resources,
+    resetResources,
+    addProduction,
+    addResources,
+    subtractResources,
+    enoughResources,
+  } = useResources();
 
   //USE HEXES
   const { handleBuild, handleCancelBuild, processConstructionTick, resetBuild, hexes } = useHexes(
-    resources,
     addProduction,
     addResources,
-    subtractResources
+    subtractResources,
+    enoughResources
   );
 
   //USE QUEST
@@ -81,11 +88,11 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     resetShip,
     handleDestroyShip,
     handleCreateShips,
-  } = useShip(resources, addResources, subtractResources);
+  } = useShip(addResources, subtractResources, enoughResources);
 
   //USE RESEARCH
   const { research, handleResearch, handleCancelResearch, processResearchTick, resetResearch } =
-    useResearch(resources, addResources, subtractResources);
+    useResearch(addResources, subtractResources, enoughResources);
 
   //USE STAR SYSTEM
   const {
@@ -170,6 +177,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     cancelExplorePlanet,
     startAttack,
     cancelAttack,
+    enoughResources,
   };
 
   return <ResourceContext.Provider value={contextValue}>{children}</ResourceContext.Provider>;

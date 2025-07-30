@@ -4,15 +4,14 @@ import Toast from "react-native-toast-message";
 import { researchTechnologies } from "../src/config/researchConfig";
 import { loadResearch, saveResearch } from "../src/services/storage";
 import { Research, ResearchType } from "../src/types/researchTypes";
-import { Resources, StoredResources } from "../src/types/resourceTypes";
+import { Resources } from "../src/types/resourceTypes";
 import { NotificationManager } from "../utils/notificacionUtils";
 import { getResearchCost, getResearchTime } from "../utils/researchUtils";
-import { hasEnoughResources } from "../utils/resourceUtils";
 
 export const useResearch = (
-  resources: StoredResources,
   addResources: (modifications: Partial<Resources>) => void,
-  subtractResources: (modifications: Partial<Resources>) => void
+  subtractResources: (modifications: Partial<Resources>) => void,
+  enoughResources: (cost: Partial<Resources>) => boolean
 ) => {
   const [research, setResearch] = useState<Research[]>([]);
 
@@ -35,7 +34,7 @@ export const useResearch = (
     const scaledCost = getResearchCost(type, nextLevel);
     const durationMs = getResearchTime(type, nextLevel);
 
-    if (!hasEnoughResources(resources, scaledCost)) {
+    if (!enoughResources(scaledCost)) {
       Toast.show({
         type: "info",
         text1: "Recursos insuficientes",

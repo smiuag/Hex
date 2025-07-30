@@ -4,16 +4,11 @@ import { researchTechnologies } from "../../src/config/researchConfig";
 import { useGameContext } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { ResearchType } from "../../src/types/researchTypes";
-import {
-  getLabLevel,
-  getResearchCost,
-  getResearchTime,
-} from "../../utils/researchUtils";
-import { hasEnoughResources } from "../../utils/resourceUtils";
+import { getLabLevel, getResearchCost, getResearchTime } from "../../utils/researchUtils";
 import { ResearchCard } from "../cards/ResearchCard";
 
 export default function ResearchComponent() {
-  const { research, hexes, resources, handleResearch, handleCancelResearch } =
+  const { research, hexes, handleResearch, handleCancelResearch, enoughResources } =
     useGameContext();
 
   const researchItems = Object.entries(researchTechnologies)
@@ -26,14 +21,11 @@ export default function ResearchComponent() {
       const totalTime = getResearchTime(type, targetLevel);
 
       const remainingTime = inProgress
-        ? Math.max(
-            0,
-            totalTime - (Date.now() - (data?.progress?.startedAt ?? 0))
-          )
+        ? Math.max(0, totalTime - (Date.now() - (data?.progress?.startedAt ?? 0)))
         : 0;
 
       const scaledCost = getResearchCost(type, targetLevel);
-      const hasResources = hasEnoughResources(resources, scaledCost);
+      const hasResources = enoughResources(scaledCost);
       const isAvailable = config.labLevelRequired <= getLabLevel(hexes);
       const isMaxed = currentLevel >= config.maxLevel;
 

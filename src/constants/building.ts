@@ -20,7 +20,7 @@ export const BUILDING_PRODUCTION = {
   KRYSTALMINE: { CRYSTAL: 40 },
   METALLURGY: { METAL: 50 },
   QUARRY: { STONE: 60 },
-  BASE: { STONE: 10, metal: 10, ENERGY: 5 },
+  BASE: { STONE: 10, METAL: 10, ENERGY: 5 },
   ANTENNA: {},
   ROCKET: {},
   HANGAR: {},

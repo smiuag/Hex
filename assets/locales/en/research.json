@@ -2,9 +2,9 @@
   "researchName": {
     "TERRAFORMING": "Terraformación",
     "MINING": "Minería",
-    "WATERPURIFICATION": "Purificación de Agua",
-    "FUELREFINEMENT": "Refinamiento de Combustible",
-    "ENERGYEFFICIENCY": "Eficiencia Energética",
+    "WATERPURIFICATION": "Purificación de agua",
+    "FUELREFINEMENT": "Refinamiento de combustible",
+    "ENERGYEFFICIENCY": "Eficiencia energética",
     "SHIPENGINEERING": "Ingeniería espacial",
     "PLASMA": "Tecnología de plasma",
     "LASER": "Tecnología láser",
