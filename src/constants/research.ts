@@ -42,7 +42,10 @@ export const MAX_LVL = {
 
 export const RESEARCH_REQUIRED_BUILDING: Record<ResearchType, ResearchRequiredBuilding> = {
   ENERGYEFFICIENCY: [{ buildingLevelRequired: 3, buildingType: "LAB", researchLevel: 1 }],
-  FUELREFINEMENT: [{ buildingLevelRequired: 2, buildingType: "LAB", researchLevel: 1 }],
+  FUELREFINEMENT: [
+    { buildingLevelRequired: 2, buildingType: "LAB", researchLevel: 1 },
+    { buildingLevelRequired: 1, buildingType: "RESIDUE", researchLevel: 1 },
+  ],
   GRAVITY: [{ buildingLevelRequired: 4, buildingType: "LAB", researchLevel: 1 }],
   LASER: [{ buildingLevelRequired: 2, buildingType: "LAB", researchLevel: 1 }],
   MINING: [{ buildingLevelRequired: 1, buildingType: "LAB", researchLevel: 1 }],

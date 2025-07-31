@@ -1,5 +1,6 @@
 import background from "../../assets/images/background.jpg";
 import backgroundMenu from "../../assets/images/backgroundMenu.jpg";
+
 import antennaBackground from "../../assets/images/buildings/antenna.png";
 import baseBackground from "../../assets/images/buildings/base.png";
 import crystalmineBackground from "../../assets/images/buildings/crystal.png";
@@ -9,11 +10,10 @@ import labBackground from "../../assets/images/buildings/lab.png";
 import metallurgyBackground from "../../assets/images/buildings/metal.png";
 import quarryBackground from "../../assets/images/buildings/mining.png";
 import recycleBackground from "../../assets/images/buildings/recycle.png";
+import residueBackground from "../../assets/images/buildings/residue.png";
 import rocketBackground from "../../assets/images/buildings/rocket.png";
 import spaceStation from "../../assets/images/buildings/spaceStation.png";
-import lunar from "../../assets/images/mini/lunar.png";
-import underConstruction from "../../assets/images/mini/underConstruction.png";
-import underConstructionBase from "../../assets/images/mini/underconstructionBase.png";
+
 import energy from "../../assets/images/research/Energy.png";
 import fuel from "../../assets/images/research/Fuel.png";
 import gravity from "../../assets/images/research/Gravity.png";
@@ -24,6 +24,7 @@ import shield from "../../assets/images/research/Shield.png";
 import ships from "../../assets/images/research/Ships.png";
 import terraforming from "../../assets/images/research/Terraforming.png";
 import water from "../../assets/images/research/Water.png";
+
 import assaultBattleshipBackground from "../../assets/images/ship/assaultBattleshipBackground.png";
 import battleCruiserBackground from "../../assets/images/ship/battleCruiserBackground.png";
 import escrotFrigateBackground from "../../assets/images/ship/escrotFrigateBackground.png";
@@ -36,6 +37,7 @@ import planetarDestroyerBackground from "../../assets/images/ship/planetarDestro
 import probeBackground from "../../assets/images/ship/probeBackground.png";
 import spaceDestroyerBackground from "../../assets/images/ship/spaceDestroyerBackground.png";
 import starCarrierBackground from "../../assets/images/ship/starCarrierBackground.png";
+
 import binary from "../../assets/images/starSystems/Binary.png";
 import deadStar from "../../assets/images/starSystems/DeadStar.png";
 import nebula from "../../assets/images/starSystems/Nebula.png";
@@ -49,12 +51,16 @@ import blank from "../../assets/images/mini/blank.png";
 import crystal from "../../assets/images/mini/crystal.png";
 import hangar from "../../assets/images/mini/hangar.png";
 import lab from "../../assets/images/mini/lab.png";
+import lunar from "../../assets/images/mini/lunar.png";
 import metal from "../../assets/images/mini/metal.png";
 import plant from "../../assets/images/mini/plant.png";
 import recycle from "../../assets/images/mini/recycle.png";
 import regolith from "../../assets/images/mini/regolith.png";
+import residue from "../../assets/images/mini/residue.png";
 import rocket from "../../assets/images/mini/rocket.png";
 import spaceStationBase from "../../assets/images/mini/spaceStation.png";
+import underConstruction from "../../assets/images/mini/underConstruction.png";
+import underConstructionBase from "../../assets/images/mini/underconstructionBase.png";
 
 export const IMAGES = {
   //IMAGENES GENERALES
@@ -74,6 +80,7 @@ export const IMAGES = {
   BUILDING_SPACESTATION: spaceStationBase,
   BUILDING_UNDER_CONSTRUCTION: underConstruction,
   BUILDING_UNDER_CONSTRUCTION_BASE: underConstructionBase,
+  BUILDING_RESIDUE: residue,
   HEX_LUNAR: lunar,
   RESEARCH_MINING: mining,
   RESEARCH_TERRAFORMING: terraforming,
@@ -91,6 +98,7 @@ export const IMAGES = {
   ANTENNA_BACKGROUND: antennaBackground,
   ENERGY_BACKGROUND: energyBackground,
   RECYCLE_BACKGROUND: recycleBackground,
+  RESIDUE_BACKGROUND: residueBackground,
   SHIP_BG_PROBE: probeBackground,
   SHIP_BG_LIGHTFIGHTER: lightFighterBackground,
   SHIP_BG_INTERCEPTOR: interceptorBackground,

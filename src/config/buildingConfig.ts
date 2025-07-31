@@ -173,4 +173,17 @@ export const buildingConfig: Record<
     description: "Hangar y lanzadera de cohetes y naves interplanetarias.",
     maxLvl: BUILDING_MAX_LVL.SPACESTATION,
   },
+  RESIDUE: {
+    name: "Estación espacial",
+    baseBuildTime: BUILDING_TIME.RESIDUE,
+    image: IMAGES.BUILDING_RESIDUE,
+    imageBackground: IMAGES.RESIDUE_BACKGROUND,
+    underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
+    baseCost: BUILDING_COST.RESIDUE,
+    production: BUILDING_PRODUCTION.RESIDUE,
+    requiredResearch: BUILDING_REQUIRED_RESEARCH.RESIDUE,
+    maxNumberInPlanet: BUILDING_MAX_IN_PLANET.RESIDUE,
+    description: "Hangar y lanzadera de cohetes y naves interplanetarias.",
+    maxLvl: BUILDING_MAX_LVL.RESIDUE,
+  },
 };

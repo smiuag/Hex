@@ -13,6 +13,7 @@ export const BUILDING_COST = {
   ENERGY: { STONE: 8000, METAL: 120000, CRYSTAL: 25000 },
   SPACESTATION: { METAL: 1200000, CRYSTAL: 1200000 },
   RECYCLE: { STONE: 7500, METAL: 3500, CRYSTAL: 7500, ENERGY: 300 },
+  RESIDUE: { STONE: 15000, METAL: 6500, CRYSTAL: 7500, ENERGY: 300 },
 };
 
 export const BUILDING_PRODUCTION = {
@@ -27,6 +28,7 @@ export const BUILDING_PRODUCTION = {
   ENERGY: { ENERGY: 20 },
   SPACESTATION: {},
   RECYCLE: {},
+  RESIDUE: {},
 };
 
 export const BUILDING_TIME = {
@@ -41,6 +43,7 @@ export const BUILDING_TIME = {
   ENERGY: 1000 * 60 * 2,
   SPACESTATION: 1000 * 60 * 60,
   RECYCLE: 1000 * 60 * 15,
+  RESIDUE: 1000 * 60 * 22,
 };
 
 export const BUILDING_MAX_IN_PLANET = {
@@ -50,11 +53,12 @@ export const BUILDING_MAX_IN_PLANET = {
   QUARRY: 7,
   BASE: 1,
   ANTENNA: 1,
-  ROCKET: 3,
+  ROCKET: 1,
   HANGAR: 1,
   ENERGY: 7,
   SPACESTATION: 1,
   RECYCLE: 1,
+  RESIDUE: 1,
 };
 
 export const BUILDING_MAX_LVL = {
@@ -68,7 +72,8 @@ export const BUILDING_MAX_LVL = {
   HANGAR: 1,
   ENERGY: 4,
   SPACESTATION: 1,
-  RECYCLE: 1,
+  RECYCLE: 2,
+  RESIDUE: 2,
 };
 
 export const BUILDING_REQUIRED_RESEARCH: Record<BuildingType, BuildingRequiredResearch> = {
@@ -192,6 +197,18 @@ export const BUILDING_REQUIRED_RESEARCH: Record<BuildingType, BuildingRequiredRe
     {
       researchType: "WATERPURIFICATION",
       researchLevelRequired: 1,
+      builddingLevel: 3,
+    },
+  ],
+  RESIDUE: [
+    {
+      researchType: "TERRAFORMING",
+      researchLevelRequired: 2,
+      builddingLevel: 1,
+    },
+    {
+      researchType: "WATERPURIFICATION",
+      researchLevelRequired: 2,
       builddingLevel: 3,
     },
   ],
