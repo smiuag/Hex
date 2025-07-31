@@ -80,7 +80,7 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onCance
               </TouchableOpacity>
             </View>
           ) : (
-            <View style={commonStyles.rowSpaceBetween}>
+            <View style={commonStyles.actionBar}>
               <TouchableOpacity
                 style={commonStyles.cancelButton}
                 onPress={() => onDiscard(system.id)}

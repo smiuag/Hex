@@ -26,18 +26,18 @@ export const defaultPlayerConfig: PlayerConfig = [
 
 export const SCALE: ScaleType = {
   SMALL: {
-    HEX_SIZE: 40,
-    FACTOR: 0.82,
+    HEX_SIZE: 41,
+    FACTOR: 0.8,
     FONT_SIZE: 22,
   },
   MEDIUM: {
     HEX_SIZE: 60,
-    FACTOR: 1.25,
+    FACTOR: 1.2,
     FONT_SIZE: 34,
   },
   LARGE: {
-    HEX_SIZE: 80,
-    FACTOR: 1.7,
+    HEX_SIZE: 78,
+    FACTOR: 1.5,
     FONT_SIZE: 38,
   },
 };

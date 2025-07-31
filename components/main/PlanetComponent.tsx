@@ -29,6 +29,7 @@ export default function PlanetComponent() {
   const router = useRouter();
   const { hexes, research, handleBuild, handleCancelBuild, playerConfig, handleUpdateConfig } =
     useGameContext();
+
   const scale = getScaleValues(playerConfig);
 
   const { SCREEN_WIDTH, SCREEN_HEIGHT, SVG_WIDTH, SVG_HEIGHT, CENTER_X, CENTER_Y } =
@@ -66,25 +67,30 @@ export default function PlanetComponent() {
 
   const handleTap = (x: number, y: number) => {
     const axial = pixelToAxial(x - CENTER_X, y - CENTER_Y, scale.HEX_SIZE);
-
     const tappedHex = hexes.find((h) => h.q === axial!.q && h.r === axial!.r);
 
-    if (!tappedHex) {
-      return;
-    }
+    if (!tappedHex) return;
 
-    if (tappedHex.isRadius) {
+    // Si es parte de un grupo, usamos el líder
+    const hexToUse =
+      tappedHex.groupId && !tappedHex.isGroupLeader
+        ? hexes.find((h) => h.groupId === tappedHex.groupId && h.isGroupLeader)
+        : tappedHex;
+
+    if (!hexToUse) return;
+
+    if (hexToUse.isRadius) {
       alert("Mejora la base para acceder a las zonas más alejadas.");
       return;
     }
 
-    if (!tappedHex.isVisible) return;
+    if (!hexToUse.isVisible) return;
 
-    const isEmpty = !tappedHex.building && !tappedHex.construction;
+    const isEmpty = !hexToUse.building && !hexToUse.construction;
     if (isEmpty) {
-      router.replace(`/(tabs)/planet/construction?q=${tappedHex.q}&r=${tappedHex.r}`);
+      router.replace(`/(tabs)/planet/construction?q=${hexToUse.q}&r=${hexToUse.r}`);
     } else {
-      setSelectedHex(tappedHex);
+      setSelectedHex(hexToUse);
       setModalVisible(true);
     }
   };
@@ -168,7 +174,18 @@ export default function PlanetComponent() {
                   const points = getHexPoints(px, py, scale.HEX_SIZE);
 
                   if (hex.isRadius) {
-                    return <BorderHexTile key={`border-${index}`} points={points} index={index} />;
+                    return (
+                      <BorderHexTile
+                        key={index}
+                        hex={hex}
+                        hexes={hexes}
+                        points={points}
+                        px={px}
+                        py={py}
+                        hexSize={scale.HEX_SIZE}
+                        index={index}
+                      />
+                    );
                   }
 
                   if (!hex.isVisible) return null;

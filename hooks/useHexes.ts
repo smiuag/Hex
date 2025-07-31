@@ -7,7 +7,7 @@ import { BuildingType } from "../src/types/buildingTypes";
 import { Hex } from "../src/types/hexTypes";
 import { Resources } from "../src/types/resourceTypes";
 import { getBuildCost, getBuildTime, getProductionPerSecond } from "../utils/buildingUtils";
-import { expandMapAroundBase, generateHexGrid, normalizeHexMap } from "../utils/hexUtils";
+import { expandHexMapFromBuiltHexes, generateInitialHexMap } from "../utils/hexUtils";
 import { NotificationManager } from "../utils/notificacionUtils";
 
 type UseHexesCallbacks = {
@@ -28,9 +28,8 @@ export const useHexes = (
   const updateMap = async (updater: Hex[] | ((prev: Hex[]) => Hex[])) => {
     setHexes((prev) => {
       const next = typeof updater === "function" ? updater(prev) : updater;
-      const normalized = normalizeHexMap(next);
-      saveMap(normalized);
-      return normalized;
+      saveMap(next);
+      return next;
     });
   };
 
@@ -50,19 +49,7 @@ export const useHexes = (
   const resetBuild = async () => {
     await deleteMap();
 
-    const newMap = generateHexGrid(2).map((hex) => {
-      const isBase = hex.q === 0 && hex.r === 0;
-      const terrain = isBase ? ("base" as any) : ("initial" as any);
-
-      return {
-        ...hex,
-        terrain,
-        building: isBase ? { type: "BASE" as BuildingType, level: 1 } : null,
-        construction: undefined,
-        previousBuilding: null,
-      };
-    });
-
+    const newMap = generateInitialHexMap();
     updateMap(newMap);
   };
 
@@ -227,11 +214,8 @@ export const useHexes = (
     });
 
     if (changed) {
-      const finalHexes = baseLeveledUp
-        ? expandMapAroundBase(updatedHexes, updatedBaseLevel)
-        : updatedHexes;
-
-      updateMap(finalHexes);
+      const hexesToUpdate = expandHexMapFromBuiltHexes(updatedHexes);
+      updateMap(hexesToUpdate);
     }
   };
 

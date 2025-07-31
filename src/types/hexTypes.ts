@@ -9,6 +9,8 @@ export type Hex = {
   terrain: TerrainType;
   building?: BuildingData | null;
   previousBuilding?: BuildingData | null;
+  groupId?: string; // mismo groupId para hexágonos unidos
+  isGroupLeader?: boolean; // solo uno dibujará la imagen
   construction?: {
     building: BuildingType;
     startedAt: number;

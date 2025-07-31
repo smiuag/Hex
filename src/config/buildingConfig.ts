@@ -1,7 +1,6 @@
 import { ImageSourcePropType } from "react-native";
 import {
   BUILDING_COST,
-  BUILDING_IMAGES,
   BUILDING_MAX_IN_PLANET,
   BUILDING_MAX_LVL,
   BUILDING_PRODUCTION,
@@ -9,7 +8,7 @@ import {
   BUILDING_TIME,
 } from "../constants/building";
 import { IMAGES } from "../constants/images";
-import { BuildingImageLevel, BuildingType } from "../types/buildingTypes";
+import { BuildingType } from "../types/buildingTypes";
 import { BuildingRequiredResearch } from "../types/researchTypes";
 import { Resources } from "../types/resourceTypes";
 
@@ -18,7 +17,7 @@ export const buildingConfig: Record<
   {
     name: string;
     baseBuildTime: number;
-    images: BuildingImageLevel[];
+    image: ImageSourcePropType;
     imageBackground: ImageSourcePropType;
     underConstructionImage: ImageSourcePropType;
     baseCost: Partial<Resources>;
@@ -32,9 +31,9 @@ export const buildingConfig: Record<
   BASE: {
     name: "Base",
     baseBuildTime: BUILDING_TIME.BASE,
-    images: BUILDING_IMAGES.BASE,
+    image: IMAGES.BUILDING_BASE,
     imageBackground: IMAGES.BASE_BACKGROUND,
-    underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
+    underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION_BASE,
     baseCost: BUILDING_COST.BASE,
     production: BUILDING_PRODUCTION.BASE,
     requiredResearch: BUILDING_REQUIRED_RESEARCH.BASE,
@@ -42,10 +41,23 @@ export const buildingConfig: Record<
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.BASE,
     maxLvl: BUILDING_MAX_LVL.BASE,
   },
+  RECYCLE: {
+    name: "Recycle",
+    baseBuildTime: BUILDING_TIME.RECYCLE,
+    image: IMAGES.BUILDING_RECYCLE,
+    imageBackground: IMAGES.RECYCLE_BACKGROUND,
+    underConstructionImage: IMAGES.BUILDING_RECYCLE,
+    baseCost: BUILDING_COST.RECYCLE,
+    production: BUILDING_PRODUCTION.RECYCLE,
+    requiredResearch: BUILDING_REQUIRED_RESEARCH.RECYCLE,
+    description: "RECYCLE",
+    maxNumberInPlanet: BUILDING_MAX_IN_PLANET.RECYCLE,
+    maxLvl: BUILDING_MAX_LVL.RECYCLE,
+  },
   LAB: {
     name: "Laboratorio",
     baseBuildTime: BUILDING_TIME.LAB,
-    images: BUILDING_IMAGES.LAB,
+    image: IMAGES.BUILDING_LAB,
     imageBackground: IMAGES.LAB_BACKGROUND,
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
     baseCost: BUILDING_COST.LAB,
@@ -59,7 +71,7 @@ export const buildingConfig: Record<
   METALLURGY: {
     name: "Mina de metales",
     baseBuildTime: BUILDING_TIME.METALLURGY,
-    images: BUILDING_IMAGES.METALLURGY,
+    image: IMAGES.BUILDING_METAL,
     imageBackground: IMAGES.METALLURGY_BACKGROUND,
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
     baseCost: BUILDING_COST.METALLURGY,
@@ -72,7 +84,7 @@ export const buildingConfig: Record<
   QUARRY: {
     name: "Cantera",
     baseBuildTime: BUILDING_TIME.QUARRY,
-    images: BUILDING_IMAGES.QUARRY,
+    image: IMAGES.BUILDING_MINING,
     imageBackground: IMAGES.QUARRY_BACKGROUND,
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
     baseCost: BUILDING_COST.QUARRY,
@@ -86,7 +98,7 @@ export const buildingConfig: Record<
   KRYSTALMINE: {
     name: "Mina de cristal",
     baseBuildTime: BUILDING_TIME.KRYSTALMINE,
-    images: BUILDING_IMAGES.KRYSTALMINE,
+    image: IMAGES.BUILDING_CRYSTAL,
     imageBackground: IMAGES.KRYSTALMINE_BACKGROUND,
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
     baseCost: BUILDING_COST.KRYSTALMINE,
@@ -99,7 +111,7 @@ export const buildingConfig: Record<
   ANTENNA: {
     name: "Antena de comunicaciones",
     baseBuildTime: BUILDING_TIME.ANTENNA,
-    images: BUILDING_IMAGES.ANTENNA,
+    image: IMAGES.BUILDING_ANTENNA,
     imageBackground: IMAGES.ANTENNA_BACKGROUND,
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
     baseCost: BUILDING_COST.ANTENNA,
@@ -112,7 +124,7 @@ export const buildingConfig: Record<
   HANGAR: {
     name: "Hangar",
     baseBuildTime: BUILDING_TIME.HANGAR,
-    images: BUILDING_IMAGES.HANGAR,
+    image: IMAGES.BUILDING_HANGAR,
     imageBackground: IMAGES.HANGAR_BACKGROUND,
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
     baseCost: BUILDING_COST.HANGAR,
@@ -125,7 +137,7 @@ export const buildingConfig: Record<
   ROCKET: {
     name: "Lanzadera de cohetes",
     baseBuildTime: BUILDING_TIME.ROCKET,
-    images: BUILDING_IMAGES.ROCKET,
+    image: IMAGES.BUILDING_ROCKET,
     imageBackground: IMAGES.ROCKET_BACKGROUND,
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
     baseCost: BUILDING_COST.ROCKET,
@@ -138,7 +150,7 @@ export const buildingConfig: Record<
   ENERGY: {
     name: "Central de energía",
     baseBuildTime: BUILDING_TIME.ENERGY,
-    images: BUILDING_IMAGES.ENERGY,
+    image: IMAGES.BUILDING_ENERGY,
     imageBackground: IMAGES.ENERGY_BACKGROUND,
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
     baseCost: BUILDING_COST.ENERGY,
@@ -151,7 +163,7 @@ export const buildingConfig: Record<
   SPACESTATION: {
     name: "Estación espacial",
     baseBuildTime: BUILDING_TIME.SPACESTATION,
-    images: BUILDING_IMAGES.SPACESTATION,
+    image: IMAGES.BUILDING_SPACESTATION,
     imageBackground: IMAGES.SPACESTATION_BACKGROUND,
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
     baseCost: BUILDING_COST.SPACESTATION,

@@ -85,7 +85,7 @@ export default function ComputerComponent() {
         setMessageIndex((prev) => prev + 1);
         setCharIndex(0);
         setCurrentLine("");
-      }, 500);
+      }, 1);
       return () => clearTimeout(timeout);
     }
     setIsTyping(false);

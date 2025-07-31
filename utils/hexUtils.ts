@@ -1,7 +1,7 @@
+import { BuildingType } from "@/src/types/buildingTypes";
 import { Dimensions } from "react-native";
 import { Hex } from "../src/types/hexTypes";
 import { StoredResources } from "../src/types/resourceTypes";
-import { TerrainType } from "../src/types/terrainTypes";
 
 export const axialToPixel = (q: number, r: number, hexSize: number) => {
   const x = hexSize * Math.sqrt(3) * (q + r / 2);
@@ -60,24 +60,6 @@ export const SCREEN_DIMENSIONS = {
   CENTER_Y: (SCREEN_HEIGHT * 3) / 2,
 };
 
-export const generateHexGrid = (radius: number): Hex[] => {
-  const hexes = [];
-  for (let q = -radius; q <= radius; q++) {
-    const r1 = Math.max(-radius, -q - radius);
-    const r2 = Math.min(radius, -q + radius);
-    for (let r = r1; r <= r2; r++) {
-      hexes.push({
-        q,
-        r,
-        isVisible: false,
-        isRadius: false,
-        terrain: "initial" as TerrainType,
-      });
-    }
-  }
-  return hexes;
-};
-
 export const getInitialResources = (): StoredResources => ({
   resources: {
     METAL: 0,
@@ -98,87 +80,223 @@ export const axialDistance = (a: { q: number; r: number }, b: { q: number; r: nu
   return (Math.abs(a.q - b.q) + Math.abs(a.q + a.r - b.q - b.r) + Math.abs(a.r - b.r)) / 2;
 };
 
-export const normalizeHexMap = (map: any[]): Hex[] => {
-  const baseHex = map.find((h) => h.q === 0 && h.r === 0);
-  let baseLevel = 0;
+export const generateInitialHexMap = (): Hex[] => {
+  // Base en forma de triángulo apuntando hacia abajo (vértice superior)
+  const triangleGroup = [
+    { q: 0, r: 0 }, // Vértice superior (líder)
+    { q: -1, r: 1 }, // Abajo izquierda
+    { q: 0, r: 1 }, // Abajo derecha
+  ];
 
-  if (baseHex?.building?.type === "BASE") {
-    baseLevel = baseHex.building.level;
-  } else if (baseHex?.construction?.building === "BASE") {
-    baseLevel = baseHex.construction.targetLevel - 1;
-  }
+  const isInList = (q: number, r: number, list: { q: number; r: number }[]): boolean =>
+    list.some((h) => h.q === q && h.r === r);
 
-  return map.map((hex) => {
-    const terrain = hex.terrain as TerrainType;
+  const isBaseHex = (q: number, r: number): boolean => isInList(q, r, triangleGroup);
 
-    const building = hex.building
-      ? {
-          type: hex.building.type,
-          level: hex.building.level ?? 1,
-        }
-      : null;
+  const getNeighbors = (q: number, r: number): { q: number; r: number }[] => [
+    { q: q + 1, r: r },
+    { q: q - 1, r: r },
+    { q: q, r: r + 1 },
+    { q: q, r: r - 1 },
+    { q: q + 1, r: r - 1 },
+    { q: q - 1, r: r + 1 },
+  ];
 
-    const construction = hex.construction
-      ? {
-          building: hex.construction.building,
-          startedAt: hex.construction.startedAt,
-          targetLevel: hex.construction.targetLevel ?? 1,
-        }
-      : undefined;
+  // A partir de los 3 hexágonos base, expandimos hacia sus vecinos
+  const initialHexesSet = new Set<string>();
+  const borderHexesSet = new Set<string>();
 
-    const dist = axialDistance({ q: 0, r: 0 }, { q: hex.q, r: hex.r });
-    const isVisible = dist <= baseLevel;
-    const isRadius = dist === baseLevel + 1;
+  const stringify = (q: number, r: number) => `${q},${r}`;
 
-    return {
-      q: hex.q,
-      r: hex.r,
-      isVisible,
-      isRadius,
-      terrain,
-      building,
-      construction,
-      previousBuilding: hex.previousBuilding ?? null,
-    };
+  // Recoger los vecinos de los base
+  triangleGroup.forEach(({ q, r }) => {
+    getNeighbors(q, r).forEach(({ q: nq, r: nr }) => {
+      if (!isBaseHex(nq, nr)) {
+        initialHexesSet.add(stringify(nq, nr));
+      }
+    });
   });
+
+  // Recoger vecinos de los "initial"
+  Array.from(initialHexesSet).forEach((coord) => {
+    const [q, r] = coord.split(",").map(Number);
+    getNeighbors(q, r).forEach(({ q: nq, r: nr }) => {
+      const key = stringify(nq, nr);
+      if (!initialHexesSet.has(key) && !isBaseHex(nq, nr)) {
+        borderHexesSet.add(key);
+      }
+    });
+  });
+
+  // Fusionar todo en un array de hexágonos
+  const hexMap: Hex[] = [];
+
+  // Añadir base hexes
+  triangleGroup.forEach(({ q, r }) => {
+    hexMap.push({
+      q,
+      r,
+      terrain: "base",
+      isVisible: true,
+      isRadius: false,
+      building: q === 0 && r === 0 ? { type: "BASE" as BuildingType, level: 1 } : null,
+      construction: undefined,
+      previousBuilding: null,
+      groupId: "triangleStructure",
+      isGroupLeader: q === 0 && r === 0,
+    });
+  });
+
+  // Añadir initial hexes
+  Array.from(initialHexesSet).forEach((coord) => {
+    const [q, r] = coord.split(",").map(Number);
+    hexMap.push({
+      q,
+      r,
+      terrain: "initial",
+      isVisible: true,
+      isRadius: false,
+      building: null,
+      construction: undefined,
+      previousBuilding: null,
+    });
+  });
+
+  // Añadir border hexes
+  Array.from(borderHexesSet).forEach((coord) => {
+    const [q, r] = coord.split(",").map(Number);
+    hexMap.push({
+      q,
+      r,
+      terrain: "border",
+      isVisible: false,
+      isRadius: true,
+      building: null,
+      construction: undefined,
+      previousBuilding: null,
+    });
+  });
+
+  return hexMap;
 };
 
-export const expandMapAroundBase = (currentMap: Hex[], newBaseLevel: number): Hex[] => {
-  const updatedMap = currentMap.map((hex) => {
-    const dist = axialDistance({ q: 0, r: 0 }, { q: hex.q, r: hex.r });
+// Devuelve los vecinos de un hex axial
+const getNeighbors = (q: number, r: number): { q: number; r: number }[] => [
+  { q: q + 1, r: r },
+  { q: q - 1, r: r },
+  { q: q, r: r + 1 },
+  { q: q, r: r - 1 },
+  { q: q + 1, r: r - 1 },
+  { q: q - 1, r: r + 1 },
+];
 
-    if (dist <= newBaseLevel && hex.terrain === "border") {
-      return { ...hex, terrain: "initial" as TerrainType };
+// Devuelve una clave única por coordenadas
+const hexKey = (q: number, r: number) => `${q},${r}`;
+
+export function expandHexMapFromBuiltHexes(hexes: Hex[]): Hex[] {
+  const newHexes = [...hexes];
+  const hexMap = new Map<string, Hex>();
+  hexes.forEach((h) => hexMap.set(hexKey(h.q, h.r), h));
+
+  const builtHexes = hexes.filter((h) => h.building || h.construction);
+
+  const toReveal = new Set<string>();
+  const toBorder = new Set<string>();
+
+  for (const hex of builtHexes) {
+    const neighbors = getNeighbors(hex.q, hex.r);
+
+    for (const n of neighbors) {
+      const nKey = hexKey(n.q, n.r);
+      toReveal.add(nKey);
+
+      const secondRing = getNeighbors(n.q, n.r);
+      for (const nn of secondRing) {
+        const nnKey = hexKey(nn.q, nn.r);
+        if (!toReveal.has(nnKey)) {
+          toBorder.add(nnKey);
+        }
+      }
     }
+  }
 
-    return hex;
-  });
+  // Crea o actualiza hexes según correspondan
+  for (const key of toReveal) {
+    if (hexMap.has(key)) {
+      const h = hexMap.get(key)!;
+      hexMap.set(key, {
+        ...h,
+        isVisible: true,
+        isRadius: false,
+        terrain: "initial",
+      });
+    } else {
+      const [q, r] = key.split(",").map(Number);
+      hexMap.set(key, {
+        q,
+        r,
+        isVisible: true,
+        isRadius: false,
+        terrain: "initial",
+        building: null,
+        construction: undefined,
+        previousBuilding: null,
+      });
+    }
+  }
 
-  const existingCoords = new Set(updatedMap.map((h) => `${h.q},${h.r}`));
-  const newBorders: Hex[] = [];
+  for (const key of toBorder) {
+    if (toReveal.has(key)) continue;
 
-  for (let q = -newBaseLevel; q <= newBaseLevel; q++) {
-    for (let r = -newBaseLevel; r <= newBaseLevel; r++) {
-      const s = -q - r;
-      if (Math.abs(s) > newBaseLevel) continue;
-
-      const dist = axialDistance({ q: 0, r: 0 }, { q, r });
-      const key = `${q},${r}`;
-
-      if (dist === newBaseLevel && !existingCoords.has(key)) {
-        newBorders.push({
-          q,
-          r,
-          terrain: "border" as TerrainType,
-          building: null,
-          construction: undefined,
-          isVisible: false,
+    if (!hexMap.has(key)) {
+      const [q, r] = key.split(",").map(Number);
+      hexMap.set(key, {
+        q,
+        r,
+        isVisible: false,
+        isRadius: true,
+        terrain: "border",
+        building: null,
+        construction: undefined,
+        previousBuilding: null,
+      });
+    } else {
+      const h = hexMap.get(key)!;
+      if (!h.isVisible) {
+        hexMap.set(key, {
+          ...h,
           isRadius: true,
-          previousBuilding: null,
+          terrain: "border",
         });
       }
     }
   }
 
-  return [...updatedMap, ...newBorders];
+  return Array.from(hexMap.values());
+}
+
+export const getSideCoordinates = (q: number, r: number, side: number) => {
+  const directions = [
+    { q: +1, r: 0 }, // side 0 (East)
+    { q: +1, r: -1 }, // side 1 (NE)
+    { q: 0, r: -1 }, // side 2 (NW)
+    { q: -1, r: 0 }, // side 3 (W)
+    { q: -1, r: +1 }, // side 4 (SW)
+    { q: 0, r: +1 }, // side 5 (SE)
+  ];
+  const dir = directions[side];
+  return { q: q + dir.q, r: r + dir.r };
+};
+
+export const getHexCornerPoints = (cx: number, cy: number, size: number) => {
+  const angle_deg = 60;
+  const angle_rad = Math.PI / 180;
+  const corners = [];
+  for (let i = 0; i < 6; i++) {
+    const angle = angle_deg * i - 30;
+    const x = cx + size * Math.cos(angle * angle_rad);
+    const y = cy + size * Math.sin(angle * angle_rad);
+    corners.push({ x, y });
+  }
+  return corners;
 };

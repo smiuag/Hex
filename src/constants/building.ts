@@ -1,6 +1,5 @@
 import { BuildingType } from "../types/buildingTypes";
 import { BuildingRequiredResearch } from "../types/researchTypes";
-import { IMAGES } from "./images";
 
 export const BUILDING_COST = {
   LAB: { STONE: 18000, METAL: 18000, ENERGY: 100 },
@@ -13,6 +12,7 @@ export const BUILDING_COST = {
   HANGAR: { STONE: 15000, METAL: 15000, CRYSTAL: 5000, ENERGY: 300 },
   ENERGY: { STONE: 8000, METAL: 120000, CRYSTAL: 25000 },
   SPACESTATION: { METAL: 1200000, CRYSTAL: 1200000 },
+  RECYCLE: { STONE: 7500, METAL: 3500, CRYSTAL: 7500, ENERGY: 300 },
 };
 
 export const BUILDING_PRODUCTION = {
@@ -26,6 +26,7 @@ export const BUILDING_PRODUCTION = {
   HANGAR: {},
   ENERGY: { ENERGY: 20 },
   SPACESTATION: {},
+  RECYCLE: {},
 };
 
 export const BUILDING_TIME = {
@@ -39,6 +40,7 @@ export const BUILDING_TIME = {
   HANGAR: 1000 * 60 * 5,
   ENERGY: 1000 * 60 * 2,
   SPACESTATION: 1000 * 60 * 60,
+  RECYCLE: 1000 * 60 * 15,
 };
 
 export const BUILDING_MAX_IN_PLANET = {
@@ -52,6 +54,7 @@ export const BUILDING_MAX_IN_PLANET = {
   HANGAR: 1,
   ENERGY: 7,
   SPACESTATION: 1,
+  RECYCLE: 1,
 };
 
 export const BUILDING_MAX_LVL = {
@@ -65,6 +68,7 @@ export const BUILDING_MAX_LVL = {
   HANGAR: 1,
   ENERGY: 4,
   SPACESTATION: 1,
+  RECYCLE: 1,
 };
 
 export const BUILDING_REQUIRED_RESEARCH: Record<BuildingType, BuildingRequiredResearch> = {
@@ -179,60 +183,16 @@ export const BUILDING_REQUIRED_RESEARCH: Record<BuildingType, BuildingRequiredRe
       builddingLevel: 2,
     },
   ],
-};
-
-export const BUILDING_IMAGES = {
-  LAB: [
-    { level: 1, image: IMAGES.BUILDING_LAB_1 },
-    { level: 2, image: IMAGES.BUILDING_LAB_2 },
-    { level: 3, image: IMAGES.BUILDING_LAB_3 },
-    { level: 4, image: IMAGES.BUILDING_LAB_4 },
+  RECYCLE: [
+    {
+      researchType: "TERRAFORMING",
+      researchLevelRequired: 2,
+      builddingLevel: 1,
+    },
+    {
+      researchType: "WATERPURIFICATION",
+      researchLevelRequired: 1,
+      builddingLevel: 3,
+    },
   ],
-  KRYSTALMINE: [
-    { level: 1, image: IMAGES.BUILDING_CRYSTAL_1 },
-    { level: 2, image: IMAGES.BUILDING_CRYSTAL_2 },
-    { level: 3, image: IMAGES.BUILDING_CRYSTAL_3 },
-    { level: 4, image: IMAGES.BUILDING_CRYSTAL_4 },
-  ],
-  METALLURGY: [
-    { level: 1, image: IMAGES.BUILDING_METAL_1 },
-    { level: 2, image: IMAGES.BUILDING_METAL_2 },
-    { level: 3, image: IMAGES.BUILDING_METAL_3 },
-    { level: 4, image: IMAGES.BUILDING_METAL_4 },
-  ],
-  QUARRY: [
-    { level: 1, image: IMAGES.BUILDING_MINING_1 },
-    { level: 2, image: IMAGES.BUILDING_MINING_2 },
-    { level: 3, image: IMAGES.BUILDING_MINING_3 },
-    { level: 4, image: IMAGES.BUILDING_MINING_4 },
-  ],
-  BASE: [
-    { level: 1, image: IMAGES.BUILDING_BASE_1 },
-    { level: 2, image: IMAGES.BUILDING_BASE_2 },
-    { level: 3, image: IMAGES.BUILDING_BASE_3 },
-    { level: 4, image: IMAGES.BUILDING_BASE_4 },
-  ],
-  ANTENNA: [
-    { level: 1, image: IMAGES.BUILDING_ANTENNA_1 },
-    { level: 2, image: IMAGES.BUILDING_ANTENNA_1 },
-    { level: 3, image: IMAGES.BUILDING_ANTENNA_1 },
-    { level: 4, image: IMAGES.BUILDING_ANTENNA_1 },
-  ],
-  ROCKET: [
-    { level: 1, image: IMAGES.BUILDING_ROCKET_1 },
-    { level: 2, image: IMAGES.BUILDING_ROCKET_1 },
-  ],
-  HANGAR: [
-    { level: 1, image: IMAGES.BUILDING_HANGAR_1 },
-    { level: 2, image: IMAGES.BUILDING_HANGAR_1 },
-    { level: 3, image: IMAGES.BUILDING_HANGAR_1 },
-    { level: 4, image: IMAGES.BUILDING_HANGAR_1 },
-  ],
-  ENERGY: [
-    { level: 1, image: IMAGES.BUILDING_ENERGY_1 },
-    { level: 2, image: IMAGES.BUILDING_ENERGY_2 },
-    { level: 3, image: IMAGES.BUILDING_ENERGY_3 },
-    { level: 4, image: IMAGES.BUILDING_ENERGY_4 },
-  ],
-  SPACESTATION: [{ level: 1, image: IMAGES.SPACESTATION_BACKGROUND }],
 };
