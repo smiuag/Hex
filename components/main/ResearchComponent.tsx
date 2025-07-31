@@ -1,17 +1,17 @@
 import React from "react";
 import { FlatList } from "react-native";
-import { researchTechnologies } from "../../src/config/researchConfig";
+import { researchConfig } from "../../src/config/researchConfig";
 import { useGameContext } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { ResearchType } from "../../src/types/researchTypes";
-import { getLabLevel, getResearchCost, getResearchTime } from "../../utils/researchUtils";
+import { getResearchCost, getResearchTime, isUnlocked } from "../../utils/researchUtils";
 import { ResearchCard } from "../cards/ResearchCard";
 
 export default function ResearchComponent() {
   const { research, hexes, handleResearch, handleCancelResearch, enoughResources } =
     useGameContext();
 
-  const researchItems = Object.entries(researchTechnologies)
+  const researchItems = Object.entries(researchConfig)
     .map(([key, config]) => {
       const type = key as ResearchType;
       const data = (research || []).find((r) => r.data.type === type);
@@ -26,7 +26,8 @@ export default function ResearchComponent() {
 
       const scaledCost = getResearchCost(type, targetLevel);
       const hasResources = enoughResources(scaledCost);
-      const isAvailable = config.labLevelRequired <= getLabLevel(hexes);
+
+      const isAvailable = isUnlocked(type, 1, hexes);
       const isMaxed = currentLevel >= config.maxLevel;
 
       return {
@@ -51,12 +52,7 @@ export default function ResearchComponent() {
       if (!a.isAvailable && b.isAvailable) return 1;
       if (a.isAvailable && !b.isAvailable) return -1;
 
-      // desempate por labLevel y nombre ANTES de recursos
-      if (a.labLevelRequired === b.labLevelRequired) {
-        const nameCompare = a.name.localeCompare(b.name);
-        if (nameCompare !== 0) return nameCompare;
-      }
-      return a.labLevelRequired - b.labLevelRequired;
+      return a.order - b.order;
     });
 
   const anyInProgress = researchItems.some((item) => item.inProgress);
@@ -68,6 +64,7 @@ export default function ResearchComponent() {
       contentContainerStyle={commonStyles.flatList}
       renderItem={({ item }) => (
         <ResearchCard
+          hexes={hexes}
           item={item}
           disableButton={anyInProgress && !item.inProgress}
           onResearch={handleResearch}

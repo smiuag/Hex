@@ -1,6 +1,10 @@
+import { ResearchRequiredBuilding } from "@/src/types/buildingTypes";
+import { Hex } from "@/src/types/hexTypes";
+import { hexesMatchesRequeriments } from "@/utils/researchUtils";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Animated, ImageBackground, Text, TouchableOpacity, View } from "react-native";
+import { researchConfig } from "../../src/config/researchConfig";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { ResearchType } from "../../src/types/researchTypes";
 import { formatDuration } from "../../utils/generalUtils";
@@ -8,10 +12,9 @@ import { CountdownTimer } from "../auxiliar/CountdownTimer";
 import { ResourceDisplay } from "../auxiliar/ResourceDisplay";
 
 type Props = {
+  hexes: Hex[];
   item: {
     type: ResearchType;
-    name: string;
-    description: string;
     image: any;
     currentLevel: number;
     maxLevel: number;
@@ -22,21 +25,29 @@ type Props = {
     remainingTime: number;
     totalTime: number;
     cost: Record<string, number>;
-    labLevelRequired: number;
     progress?: {
       targetLevel: number;
       startedAt: number;
       notificationId?: string;
     };
+    requiredBuilding: ResearchRequiredBuilding;
   };
   disableButton: boolean;
   onResearch: (type: ResearchType) => void;
   onCancel: (type: ResearchType) => void;
 };
 
-export const ResearchCard: React.FC<Props> = ({ item, disableButton, onResearch, onCancel }) => {
+export const ResearchCard: React.FC<Props> = ({
+  hexes,
+  item,
+  disableButton,
+  onResearch,
+  onCancel,
+}) => {
   const { t } = useTranslation("common");
   const { t: tResearch } = useTranslation("research");
+  const { t: tBuilding } = useTranslation("buildings");
+
   const scale = useRef(new Animated.Value(1)).current;
   const [animate, setAnimate] = useState(false);
   const wasInProgress = useRef(item.inProgress);
@@ -64,6 +75,9 @@ export const ResearchCard: React.FC<Props> = ({ item, disableButton, onResearch,
       ]).start(() => setAnimate(false));
     }
   }, [animate, scale]);
+
+  const config = researchConfig[item.type];
+  const requirements = config.requiredBuilding;
 
   return (
     <Animated.View style={[commonStyles.containerCenter, { transform: [{ scale }] }]}>
@@ -130,9 +144,28 @@ export const ResearchCard: React.FC<Props> = ({ item, disableButton, onResearch,
               </View>
               <View style={commonStyles.actionBar}>
                 {!item.isAvailable ? (
-                  <Text style={commonStyles.errorTextRed}>
-                    🔒 {t("labRequired", { level: item.labLevelRequired })}
-                  </Text>
+                  <View>
+                    {Object.values(
+                      requirements
+                        .filter((req) => req.researchLevel <= 1)
+                        .reduce((acc, req) => {
+                          const existing = acc[req.buildingType];
+                          if (!existing || req.researchLevel > existing.buildingLevelRequired) {
+                            acc[req.buildingType] = req;
+                          }
+                          return acc;
+                        }, {} as Record<string, (typeof requirements)[0]>)
+                    )
+                      .filter((req) => {
+                        return !hexesMatchesRequeriments(hexes, req);
+                      })
+                      .map((r, i) => (
+                        <Text key={i} style={commonStyles.errorTextRed}>
+                          🔒 {tBuilding(`buildingName.${r.buildingType}`)} {t("level")}{" "}
+                          {r.buildingLevelRequired}
+                        </Text>
+                      ))}
+                  </View>
                 ) : !item.hasResources ? (
                   <Text style={commonStyles.warningTextYellow}>⚠️ {t("notEnoughResources")}</Text>
                 ) : disableButton ? (

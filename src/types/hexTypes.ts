@@ -5,6 +5,7 @@ export type Hex = {
   q: number;
   r: number;
   isVisible: boolean;
+  isTerraformed: boolean;
   isRadius: boolean;
   terrain: TerrainType;
   building?: BuildingData | null;

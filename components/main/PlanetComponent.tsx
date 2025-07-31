@@ -84,8 +84,6 @@ export default function PlanetComponent() {
       return;
     }
 
-    if (!hexToUse.isVisible) return;
-
     const isEmpty = !hexToUse.building && !hexToUse.construction;
     if (isEmpty) {
       router.replace(`/(tabs)/planet/construction?q=${hexToUse.q}&r=${hexToUse.r}`);

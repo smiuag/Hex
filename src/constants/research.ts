@@ -1,3 +1,6 @@
+import { ResearchRequiredBuilding } from "../types/buildingTypes";
+import { ResearchType } from "../types/researchTypes";
+
 export const RESEARCH_COST = {
   TERRAFORMING: { STONE: 10000, METAL: 10000, ENERGY: 500 },
   MINING: { STONE: 5000, METAL: 5000, ENERGY: 1000 },
@@ -24,19 +27,6 @@ export const RESEARCH_TIME = {
   GRAVITY: 1000 * 60 * 60 * 24 * 7,
 };
 
-export const LAB_LVL_REQUIRED = {
-  TERRAFORMING: 1,
-  MINING: 1,
-  WATERPURIFICATION: 2,
-  FUELREFINEMENT: 2,
-  ENERGYEFFICIENCY: 3,
-  SHIPENGINEERING: 1,
-  LASER: 2,
-  PLASMA: 3,
-  SHIELD: 3,
-  GRAVITY: 4,
-};
-
 export const MAX_LVL = {
   TERRAFORMING: 3,
   MINING: 4,
@@ -48,4 +38,20 @@ export const MAX_LVL = {
   PLASMA: 3,
   SHIELD: 3,
   GRAVITY: 2,
+};
+
+export const RESEARCH_REQUIRED_BUILDING: Record<ResearchType, ResearchRequiredBuilding> = {
+  ENERGYEFFICIENCY: [{ buildingLevelRequired: 3, buildingType: "LAB", researchLevel: 1 }],
+  FUELREFINEMENT: [{ buildingLevelRequired: 2, buildingType: "LAB", researchLevel: 1 }],
+  GRAVITY: [{ buildingLevelRequired: 4, buildingType: "LAB", researchLevel: 1 }],
+  LASER: [{ buildingLevelRequired: 2, buildingType: "LAB", researchLevel: 1 }],
+  MINING: [{ buildingLevelRequired: 1, buildingType: "LAB", researchLevel: 1 }],
+  PLASMA: [{ buildingLevelRequired: 3, buildingType: "LAB", researchLevel: 1 }],
+  SHIELD: [{ buildingLevelRequired: 3, buildingType: "LAB", researchLevel: 1 }],
+  SHIPENGINEERING: [{ buildingLevelRequired: 1, buildingType: "LAB", researchLevel: 1 }],
+  TERRAFORMING: [{ buildingLevelRequired: 1, buildingType: "LAB", researchLevel: 1 }],
+  WATERPURIFICATION: [
+    { buildingLevelRequired: 2, buildingType: "LAB", researchLevel: 1 },
+    { buildingLevelRequired: 1, buildingType: "RECYCLE", researchLevel: 1 },
+  ],
 };

@@ -59,7 +59,7 @@ export default function HexTile({ hex, px, py, points, factor, fontSize }: Props
   const isTriangularStructure = groupId === "triangleStructure" && isGroupLeader;
 
   // Imagen y su posicionamiento
-  const imageHref = buildingImage || IMAGES.BLANK;
+  const imageHref = buildingImage || (hex.isTerraformed ? IMAGES.BLANK : IMAGES.HEX_LUNAR);
   const imageWidth = isTriangularStructure ? hexWidth * 2 : hexWidth;
   const imageHeight = isTriangularStructure ? hexHeight * 1.5 : hexHeight;
 
@@ -97,7 +97,7 @@ export default function HexTile({ hex, px, py, points, factor, fontSize }: Props
           {Array.from({ length: building.level }, (_, i) => {
             const total = building.level;
             const radius = 2.5 * factor;
-            const spacing = 1.5 * radius + 2 * factor;
+            const spacing = 2 * radius + 2 * factor;
             const startX = px - ((total - 1) * spacing) / 2;
             const y = py - 60 * factor + 0.2 * 2 * 60 * factor;
 

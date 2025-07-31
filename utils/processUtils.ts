@@ -1,6 +1,6 @@
 import { FleetData } from "@/src/types/fleetType";
 import { buildingConfig } from "../src/config/buildingConfig";
-import { researchTechnologies } from "../src/config/researchConfig";
+import { researchConfig } from "../src/config/researchConfig";
 import { shipConfig } from "../src/config/shipConfig";
 import { Hex } from "../src/types/hexTypes";
 import { Process, ProcessType } from "../src/types/processTypes";
@@ -39,18 +39,22 @@ export const getBuildingProcesses = (hexes: Hex[]): Process[] => {
   return processes;
 };
 
-export const getResearchProcesses = (research: Research[]): Process[] => {
+export const getResearchProcesses = (
+  research: Research[],
+  tResearch: (key: string) => string
+): Process[] => {
   const processes: Process[] = [];
 
   research.forEach((r) => {
     if (r.progress) {
       const targetLevel = r.progress.targetLevel ?? 1;
       const duration = getResearchTime(r.data.type, r.progress.targetLevel);
-      const config = researchTechnologies[r.data.type];
+      const config = researchConfig[r.data.type];
       const startedAt = r.progress.startedAt ?? 0;
 
       const proc: Process = {
-        name: "Investigación: " + (config.name + " Nv: " + targetLevel),
+        name:
+          "Investigación: " + (tResearch("researchName." + r.data.type) + " Nv: " + targetLevel),
         type: "RESEARCH",
         id: "RESEARCH-" + r.data.type,
         researchType: r.data.type,

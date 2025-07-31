@@ -1,7 +1,7 @@
 import * as Notifications from "expo-notifications";
 import { useEffect, useState } from "react";
 import Toast from "react-native-toast-message";
-import { researchTechnologies } from "../src/config/researchConfig";
+import { researchConfig } from "../src/config/researchConfig";
 import { loadResearch, saveResearch } from "../src/services/storage";
 import { Research, ResearchType } from "../src/types/researchTypes";
 import { Resources } from "../src/types/resourceTypes";
@@ -101,14 +101,14 @@ export const useResearch = (
     );
   };
 
-  const processResearchTick = async () => {
+  const processResearchTick = async (tResearch: (key: string) => string) => {
     const now = Date.now();
 
     let changed = false;
 
     const updated = research.map((item) => {
       if (item.progress) {
-        const config = researchTechnologies[item.data.type];
+        const config = researchConfig[item.data.type];
         const totalTime = getResearchTime(item.data.type, item.progress.targetLevel);
         const elapsed = now - item.progress.startedAt;
 
@@ -118,7 +118,9 @@ export const useResearch = (
           Notifications.scheduleNotificationAsync({
             content: {
               title: "🧠 Investigación completada",
-              body: `Has finalizado la investigación "${config.name}".`,
+              body: `Has finalizado la investigación "${tResearch(
+                `researchName.${item.data.type}`
+              )}".`,
               sound: true,
             },
             trigger: null,

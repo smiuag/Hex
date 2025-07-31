@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useConfig } from "../../hooks/useConfig";
 import { useHexes } from "../../hooks/useHexes";
 import { useQuest } from "../../hooks/useQuest";
@@ -51,6 +52,8 @@ type ProviderContextType = {
   cancelAttack: (id: string) => void;
   enoughResources: (cost: Partial<Resources>) => boolean;
 };
+
+const { t: tResearch } = useTranslation("research");
 
 const ResourceContext = createContext<ProviderContextType | undefined>(undefined);
 
@@ -115,7 +118,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       processConstructionTick();
-      processResearchTick();
+      processResearchTick(tResearch);
       processShipTick();
       processFleeTick();
       processColonialBuildingsTick();

@@ -9,7 +9,8 @@
     "HANGAR": "Hangar",
     "ROCKET": "Lanzadera de cohetes",
     "ENERGY": "Central de energía",
-    "SPACESTATION": "Estación espacial"
+    "SPACESTATION": "Estación espacial",
+    "RECYCLE": "Centro de reciclaje"
   },
   "buildingDescription": {
     "BASE": "Centro de operaciones de la colonia.",
@@ -21,7 +22,8 @@
     "HANGAR": "Hangar de naves de la flota del planeta.",
     "ROCKET": "Hangar y lanzadera de cohetes y naves interplanetarias.",
     "ENERGY": "Central de generación de energía para el funcionamiento de edificios y sistemas.",
-    "SPACESTATION": "Estación orbital avanzada con múltiples funciones estratégicas."
+    "SPACESTATION": "Estación orbital avanzada con múltiples funciones estratégicas.",
+    "RECYCLE": "Centro de reciclaje de residuos."
   },
 
   "ExtractionSystems": "Sistemas de extracción de minerales",

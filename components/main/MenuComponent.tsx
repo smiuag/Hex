@@ -3,7 +3,7 @@ import { ShipType } from "@/src/types/shipType";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Button, ImageBackground, ScrollView, Text, View } from "react-native";
-import { researchTechnologies } from "../../src/config/researchConfig";
+import { researchConfig } from "../../src/config/researchConfig";
 import { IMAGES } from "../../src/constants/images";
 import { useGameContext } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
@@ -16,7 +16,6 @@ import {
   getResearchProcesses,
   getShipProcesses,
 } from "../../utils/processUtils";
-import { getLabLevel } from "../../utils/researchUtils";
 import { ResourceDisplay } from "../auxiliar/ResourceDisplay";
 import { ProcessCard } from "../cards/ProcessCard";
 
@@ -45,7 +44,7 @@ export default function MenuComponent() {
 
   useEffect(() => {
     const buildingProcesses = getBuildingProcesses(hexes);
-    const researchProcesses = getResearchProcesses(research);
+    const researchProcesses = getResearchProcesses(research, tResearch);
     const shipProcesses = getShipProcesses(tShip, shipBuildQueue);
     const fleetProcesses = getFleetProcesses(fleet);
     const allProcesses = [
@@ -98,18 +97,16 @@ export default function MenuComponent() {
   );
 
   function getResearchItemsForMenu() {
-    return Object.entries(researchTechnologies)
+    return Object.entries(researchConfig)
       .map(([key, config]) => {
         const type = key as ResearchType;
         const data = (research || []).find((r) => r.data.type === type);
         const currentLevel = data?.data.level ?? 0;
-        const isAvailable = config.labLevelRequired <= getLabLevel(hexes);
         return {
           key: type,
           name: tResearch(`researchName.${type}`),
           currentLevel,
           maxLevel: config.maxLevel,
-          isAvailable,
         };
       })
       .sort((a, b) => a.name.localeCompare(b.name));
