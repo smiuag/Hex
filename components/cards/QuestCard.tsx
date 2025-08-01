@@ -46,6 +46,10 @@ export const QuestCard: React.FC<Props> = ({ item, completed, isAlreadyClaimed, 
     onComplete();
   };
 
+  console.log(item.persist);
+  console.log(completed);
+  if (!item.persist && isAlreadyClaimed) return null;
+
   return (
     <Animated.View style={[commonStyles.containerCenter, { transform: [{ scale }] }]}>
       <ImageBackground

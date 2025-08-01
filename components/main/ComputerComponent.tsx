@@ -72,6 +72,11 @@ export default function ComputerComponent() {
 
     const currentMessage = messages[messageIndex];
 
+    if (currentMessage === "<>") {
+      setIsTyping(false);
+      return;
+    }
+
     if (charIndex < currentMessage.length) {
       setIsTyping(true);
       const timeout = setTimeout(() => {
@@ -88,6 +93,7 @@ export default function ComputerComponent() {
       }, 1);
       return () => clearTimeout(timeout);
     }
+
     setIsTyping(false);
   }, [charIndex, messageIndex, isTyping]);
 
@@ -98,6 +104,17 @@ export default function ComputerComponent() {
     }
 
     const currentMessage = messages[messageIndex];
+
+    // Manejo especial de "<>"
+    if (currentMessage === "<>") {
+      // Limpiar pantalla y avanzar
+      setAllLines([]);
+      setMessageIndex((prev) => prev + 1);
+      setCharIndex(0);
+      setCurrentLine("");
+      return;
+    }
+
     if (isTyping) {
       setCurrentLine(currentMessage);
       setCharIndex(currentMessage.length);
@@ -130,7 +147,11 @@ export default function ComputerComponent() {
             )}
           </ScrollView>
 
-          <Animated.Text style={[styles.prompt, { opacity: promptBlink }]}>{"C:\\>"}</Animated.Text>
+          {(showConfirm || messages[messageIndex] === "<>") && (
+            <Animated.Text style={[styles.prompt, { opacity: promptBlink }]}>
+              {"C:\\>"}
+            </Animated.Text>
+          )}
         </View>
 
         {showConfirm && (

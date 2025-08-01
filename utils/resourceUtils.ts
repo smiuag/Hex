@@ -53,3 +53,13 @@ export const hasEnoughResources = (current: StoredResources, cost: Partial<Resou
     return availableResources >= (value || 0);
   });
 };
+
+export const generateRandomResources = (): Partial<Resources> => {
+  const roll = () => (Math.random() < 0.4 ? Math.floor(Math.random() * 500 + 50) : 0);
+
+  return {
+    METAL: roll(),
+    CRYSTAL: roll(),
+    STONE: roll(),
+  };
+};

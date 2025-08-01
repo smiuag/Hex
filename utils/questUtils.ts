@@ -42,5 +42,11 @@ export function canCompleteQuest(
       return hexes.some((hex) => hex.building?.type === "HANGAR");
     case "SHIP_FIRST":
       return ship.length > 0;
+    case "ALIEN_TECH_FOUND":
+      return ship.length > 0;
+    case "H2O_FOUND":
+      return ship.length > 0;
+    case "H2O_SEARCH":
+      return ship.length > 0;
   }
 }

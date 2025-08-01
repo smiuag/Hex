@@ -52,7 +52,10 @@ export const RESEARCH_REQUIRED_BUILDING: Record<ResearchType, ResearchRequiredBu
   PLASMA: [{ buildingLevelRequired: 3, buildingType: "LAB", researchLevel: 1 }],
   SHIELD: [{ buildingLevelRequired: 3, buildingType: "LAB", researchLevel: 1 }],
   SHIPENGINEERING: [{ buildingLevelRequired: 1, buildingType: "LAB", researchLevel: 1 }],
-  TERRAFORMING: [{ buildingLevelRequired: 1, buildingType: "LAB", researchLevel: 1 }],
+  TERRAFORMING: [
+    { buildingLevelRequired: 1, buildingType: "LAB", researchLevel: 1 },
+    { buildingLevelRequired: 2, buildingType: "GREENHOUSE", researchLevel: 3 },
+  ],
   WATERPURIFICATION: [
     { buildingLevelRequired: 2, buildingType: "LAB", researchLevel: 1 },
     { buildingLevelRequired: 1, buildingType: "RECYCLE", researchLevel: 1 },

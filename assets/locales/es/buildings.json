@@ -10,20 +10,26 @@
     "ROCKET": "Lanzadera de cohetes",
     "ENERGY": "Central de energía",
     "SPACESTATION": "Estación espacial",
-    "RECYCLE": "Centro de reciclaje"
+    "RECYCLE": "Centro de reciclaje",
+    "RESIDUE": "Vertedero",
+    "GREENHOUSE": "Invernadero",
+    "WATEREXTRACTOR": "Procesadora de agua"
   },
   "buildingDescription": {
-    "BASE": "Centro de operaciones de la colonia.",
-    "LAB": "Centro de investigación de la colonia. Permite hacer investigaciones para desbloquear la construcción de edificios.",
-    "METALLURGY": "Instalación para la extracción de metales del subsuelo del planeta.",
-    "QUARRY": "Instalación para la extracción de rocas y sedimentos de la superficie del planeta.",
-    "KRYSTALMINE": "Instalación para la extracción de cristal de las rocas de la superficie.",
-    "ANTENNA": "Antena de comunicaciones de corto alcance.",
-    "HANGAR": "Hangar de naves de la flota del planeta.",
-    "ROCKET": "Hangar y lanzadera de cohetes y naves interplanetarias.",
-    "ENERGY": "Central de generación de energía para el funcionamiento de edificios y sistemas.",
-    "SPACESTATION": "Estación orbital avanzada con múltiples funciones estratégicas.",
-    "RECYCLE": "Centro de reciclaje de residuos."
+    "BASE": "Centro neurálgico de la colonia y primer edificio en ser construido. Desde aquí se gestionan las operaciones generales, se monitorean los recursos y se coordinan las acciones de expansión y defensa en el planeta.",
+    "LAB": "Instalación de investigación avanzada donde los científicos de la colonia desarrollan nuevas tecnologías, analizan los recursos planetarios y desbloquean mejoras críticas para la supervivencia y el progreso de la civilización.",
+    "METALLURGY": "Complejo subterráneo especializado en la extracción y refinado de metales. Permite obtener materiales estructurales esenciales para la construcción, el mantenimiento y la expansión de la infraestructura de la colonia.",
+    "QUARRY": "Instalación diseñada para la extracción masiva de piedra, arena y otros materiales no metálicos de la superficie del planeta. Proporciona recursos clave para cimentar y reforzar los edificios coloniales.",
+    "KRYSTALMINE": "Mina especializada en la localización y recolección de cristales raros y compuestos exóticos. Estos cristales son valiosos para la investigación, generación de energía y fabricación de componentes tecnológicos.",
+    "ANTENNA": "Antena de comunicaciones planetarias que establece enlaces con sondas, naves y otras colonias. Es fundamental para coordinar operaciones remotas, recibir transmisiones y planificar misiones interplanetarias.",
+    "HANGAR": "Estructura equipada para el mantenimiento y despliegue de naves atmosféricas. Permite almacenar, reparar y lanzar vehículos exploradores para tareas de reconocimiento o transporte local.",
+    "ROCKET": "Complejo de lanzamiento interplanetario capaz de ensamblar, abastecer y lanzar cohetes de carga o naves tripuladas. Es clave para la comunicación con la Tierra, exportación de recursos o expansión a otros mundos.",
+    "ENERGY": "Planta generadora que convierte la energía solar, geotérmica o química del planeta en electricidad. Suministra energía a todos los sistemas críticos de la colonia, desde la investigación hasta la defensa.",
+    "SPACESTATION": "Estación orbital multifunción en la órbita del planeta. Permite la gestión avanzada de recursos, vigilancia espacial, defensa aérea y sirve como nodo estratégico para la expansión estelar.",
+    "RECYCLE": "Centro encargado de procesar desechos orgánicos y residuos reutilizables. Contribuye a reducir la contaminación y permite recuperar materiales valiosos para su uso en otros procesos productivos.",
+    "RESIDUE": "Instalación para la gestión de residuos no reciclables. Aquí se almacenan, neutralizan o contienen sustancias peligrosas que no pueden ser reutilizadas, evitando riesgos biológicos o ambientales.",
+    "GREENHOUSE": "Estructura climatizada para el cultivo intensivo de plantas en un ambiente controlado. Proporciona alimentos frescos, oxígeno y un entorno más habitable para los colonos en este planeta hostil.",
+    "WATEREXTRACTOR": "Planta de procesamiento de hielo subterraneo. Extrae agua y la purifica para consumo humano."
   },
 
   "ExtractionSystems": "Sistemas de extracción de minerales",

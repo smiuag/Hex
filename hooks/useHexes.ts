@@ -107,6 +107,28 @@ export const useHexes = (
     });
   };
 
+  const handleTerraform = async (q: number, r: number) => {
+    const hex = hexes.find((h) => h.q === q && h.r === r);
+    if (!hex) return;
+
+    const resources = hex.resources;
+
+    updateMap((prevHexes) =>
+      prevHexes.map((h) => {
+        if (h.q === q && h.r === r) {
+          return {
+            ...h,
+            resources: undefined,
+            isTerraformed: true,
+          };
+        }
+        return h;
+      })
+    );
+
+    if (resources) addResources(resources);
+  };
+
   const handleCancelBuild = async (q: number, r: number) => {
     await updateMap((prevHexes) => {
       const hex = prevHexes.find((h) => h.q === q && h.r === r);
@@ -225,5 +247,6 @@ export const useHexes = (
     handleBuild,
     handleCancelBuild,
     resetBuild,
+    handleTerraform,
   };
 };

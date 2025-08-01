@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "Colonia 0",
+    "name": "Colonia 9",
     "slug": "hex-map-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/mini/cristal.png",
+    "icon": "./assets/images/icon.png",
     "scheme": "hexmapapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,7 +13,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,

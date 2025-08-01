@@ -34,6 +34,7 @@ type ProviderContextType = {
   subtractResources: (modifications: Partial<Resources>) => void;
   handleBuild: (q: number, r: number, type: BuildingType) => void;
   handleCancelBuild: (q: number, r: number) => void;
+  handleTerraform: (q: number, r: number) => void;
   handleResearch: (type: ResearchType) => void;
   handleCancelResearch: (type: ResearchType) => void;
   handleBuildShip: (type: ShipType, amount: number) => void;
@@ -69,12 +70,14 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
   } = useResources();
 
   //USE HEXES
-  const { handleBuild, handleCancelBuild, processConstructionTick, resetBuild, hexes } = useHexes(
-    addProduction,
-    addResources,
-    subtractResources,
-    enoughResources
-  );
+  const {
+    handleBuild,
+    handleCancelBuild,
+    processConstructionTick,
+    resetBuild,
+    handleTerraform,
+    hexes,
+  } = useHexes(addProduction, addResources, subtractResources, enoughResources);
 
   //USE QUEST
   const { playerQuests, completeQuest, markQuestsAsViewed, resetQuests } = useQuest(addResources);
@@ -166,6 +169,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     subtractResources,
     handleBuild,
     handleCancelBuild,
+    handleTerraform,
     handleResearch,
     handleCancelResearch,
     handleBuildShip,

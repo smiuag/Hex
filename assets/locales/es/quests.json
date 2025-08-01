@@ -3,10 +3,22 @@
     "name": "Comenzando la colonia",
     "shortDescription": "Inicia el protocolo de asentamiento y accede al diario de misiones.",
     "descriptions": [
-      "Conectando al terminal principal...",
-      "Bienvenido comandante. El protocolo de asentamiento inicial se ha activado.",
-      "Accede al diario de misiones para recibir instrucciones fundamentales.",
-      "Cada misión completada fortalecerá nuestra posición en este nuevo mundo. La supervivencia de la especie está en tus manos. No falles."
+      "CAPITÁN: LUCAS VERA",
+      "ESTADO: DESCRIÓGENESIS COMPLETADA [✓]",
+      "TIEMPO DESDE EL EVENTO \"ÉXODO SOLAR\": 18 AÑOS, 241 DÍAS",
+      "SINCRONIZANDO MEMORIA DE NAVE...",
+      "ACTUALIZACIÓN COMPLETA.",
+      "<>",
+      "Bienvenido de nuevo, Capitán Vera. Me complace informar que tu criostasis se ha completado con éxito, sin anomalías neurológicas ni fisiológicas detectadas.",
+      "Lamento ser quien deba transmitir esta noticia: la Tierra, y gran parte de la civilización humana, ya no existe como la conocimos. La amenaza conocida como Entidad Omega completó la aniquilación del sistema solar interior 11 años después de nuestra salida. Las últimas transmisiones recibidas indican resistencia fallida en Titán y Ceres.",
+      "Nuestra misión primaria se ha reescrito bajo protocolo Arca Alfa: Preservar y reconstruir la especie humana.",
+      "Hemos llegado a un planeta desconocido en el sector Lira-94, designado provisionalmente como Éxilon. La atmósfera es respirable con modificaciones mínimas. Gravedad estable. Recursos detectados.",
+      "<>",
+      "Escaneos de superficie detectaron formaciones regulares de origen no natural a 2.4 kilómetros del punto de aterrizaje. Geometría angular. Simetría axial. Materiales desconocidos, no coincidentes con roca marciana ni aleaciones humanas.",
+      "La nave ha aterrizado de forma segura tras una maniobra automatizada. Sistemas de soporte funcionando a 82%. Tripulación restante en criosueño.",
+      "Tú eres el primero, Capitán. El futuro depende de tus decisiones.",
+      "Recomiendo: iniciar exploración inicial, reactivación de equipo de misión, y comenzar despliegue de módulo base.",
+      "Estoy contigo. Siempre."
     ]
   },
   "BUILDING_LAB1": {
@@ -88,6 +100,41 @@
       "El hangar está operativo. La nave prototipo está casi lista.",
       "Esta será la primera nave construida en este sistema.",
       "Comandante, autorice la fabricación. Nuestra expansión comienza ahora."
+    ]
+  },
+  "H2O_FOUND": {
+    "name": "Extracción de agua",
+    "shortDescription": "Construye una planta de procesamiento de agua.",
+    "descriptions": [
+      "Capitán, hemos localizado una zona con depósitos extensos de hielo subsuperficial en el cuadrante Delta-7.",
+      "La profundidad media es de apenas 12 metros, y la densidad supera el umbral necesario para una operación sostenida de extracción y procesamiento.",
+      "La composición es estable: 91% H₂O, con impurezas mínimas. Los datos sugieren que el área podría mantener el suministro hídrico de una colonia durante varios ciclos estándar.",
+      "Es el primer hallazgo de esta magnitud desde el aterrizaje.",
+      "Recomendación: establecer una estación de perforación, iniciar montaje del sistema de purificación y asegurar la zona.",
+      "Tenemos agua, Capitán. Tenemos futuro"
+    ]
+  },
+  "ALIEN_TECH_FOUND": {
+    "name": "Tecnología alienígena",
+    "shortDescription": "Construye una planta de procesamiento de agua.",
+    "descriptions": [
+      "Capitán, durante una exploración rutinaria en el sector Kappa-3, el equipo ha encontrado restos materiales de origen no humano.",
+      "Estructuras parcialmente colapsadas, patrones geométricos no naturales y una aleación desconocida sin correspondencia en bases de datos terrestres o marcianas.",
+      "No hay señales de actividad reciente, pero la degradación sugiere una antigüedad milenaria... o algo que no se degrada fácilmente.",
+      "Este hallazgo no debe ser comunicado a la tripulación general hasta confirmar su naturaleza.",
+      "Recomendación: establecer perímetro restringido, designar equipo reducido de análisis y registrar hallazgo bajo etiqueta interna: \"Ecos\".",
+      "No sabemos quiénes fueron. Pero estuvieron aquí."
+    ]
+  },
+  "H2O_SEARCH": {
+    "name": "Busqueda de agua",
+    "shortDescription": "Construye una planta de procesamiento de agua.",
+    "descriptions": [
+      "Capitán, las reservas de agua reciclada han descendido por debajo del umbral operativo.",
+      "La tasa de consumo actual supera la capacidad de regeneración del sistema. Continuar sin una fuente externa comprometerá la supervivencia de la colonia.",
+      "El subsuelo planetario presenta indicios de humedad atrapada, pero se requiere una exploración detallada para confirmar su viabilidad.",
+      "Recomendación inmediata: desplegar drones de sondeo y priorizar la búsqueda de depósitos de hielo o acuíferos.",
+      "Sin agua, no hay colonia."
     ]
   }
 }

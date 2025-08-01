@@ -11,24 +11,34 @@ import Animated, {
 import Svg from "react-native-svg";
 import { scaleKeys, ScaleSize } from "../../src/types/configTypes";
 
+import Toast from "react-native-toast-message";
 import { IMAGES } from "../../src/constants/images";
 import { useGameContext } from "../../src/context/GameContext";
 import { BuildingType } from "../../src/types/buildingTypes";
 import { Hex } from "../../src/types/hexTypes";
 import { getScaleValues } from "../../utils/configUtils";
 import { axialToPixel, getHexPoints, pixelToAxial, SCREEN_DIMENSIONS } from "../../utils/hexUtils";
-import BorderHexTile from "../auxiliar/BorderHexTile";
-import HexModal from "../auxiliar/HexModal";
+import BorderHexTile from "../auxiliar/HexBorder";
 import HexTile from "../auxiliar/HexTile";
+import ModalConstruction from "../auxiliar/ModalConstruction";
+import ModalTerraform from "../auxiliar/ModalTerraform";
 
 export default function PlanetComponent() {
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalTerraformVisible, setModalTerraformVisible] = useState(false);
   const [selectedHex, setSelectedHex] = useState<Hex | null>(null);
   const [cameraOffset, setCameraOffset] = useState({ x: 0, y: 0 });
 
   const router = useRouter();
-  const { hexes, research, handleBuild, handleCancelBuild, playerConfig, handleUpdateConfig } =
-    useGameContext();
+  const {
+    hexes,
+    research,
+    handleBuild,
+    handleCancelBuild,
+    handleTerraform,
+    playerConfig,
+    handleUpdateConfig,
+  } = useGameContext();
 
   const scale = getScaleValues(playerConfig);
 
@@ -71,7 +81,6 @@ export default function PlanetComponent() {
 
     if (!tappedHex) return;
 
-    // Si es parte de un grupo, usamos el líder
     const hexToUse =
       tappedHex.groupId && !tappedHex.isGroupLeader
         ? hexes.find((h) => h.groupId === tappedHex.groupId && h.isGroupLeader)
@@ -85,7 +94,10 @@ export default function PlanetComponent() {
     }
 
     const isEmpty = !hexToUse.building && !hexToUse.construction;
-    if (isEmpty) {
+    if (!hexToUse.isTerraformed) {
+      setSelectedHex(hexToUse);
+      setModalTerraformVisible(true);
+    } else if (isEmpty) {
       router.replace(`/(tabs)/planet/construction?q=${hexToUse.q}&r=${hexToUse.r}`);
     } else {
       setSelectedHex(hexToUse);
@@ -138,6 +150,28 @@ export default function PlanetComponent() {
     if (selectedHex) {
       handleCancelBuild(selectedHex.q, selectedHex.r);
       setModalVisible(false);
+    }
+  };
+
+  const onTerraform = async () => {
+    const currentHexesTerraformed = hexes.filter((hex) => hex.isTerraformed).length;
+    const baseLevel = hexes.find((hex) => hex.building?.type === "BASE")?.building?.level;
+    const baseUpgradeLevel = hexes.find((hex) => hex.construction?.building === "BASE")
+      ?.construction?.targetLevel;
+    const effectiveLevel = baseUpgradeLevel ?? baseLevel ?? 0;
+    const terraformLimit = effectiveLevel * 10;
+    const maxTerraformReached = currentHexesTerraformed >= terraformLimit;
+
+    if (maxTerraformReached) {
+      Toast.show({
+        type: "info", // "success" | "info" | "error"
+        text1: "Límite alcanzado",
+        position: "top",
+        visibilityTime: 2000,
+      });
+    } else if (selectedHex) {
+      await handleTerraform(selectedHex.q, selectedHex.r);
+      setModalTerraformVisible(false);
     }
   };
 
@@ -201,13 +235,20 @@ export default function PlanetComponent() {
                   );
                 })}
 
-                <HexModal
+                <ModalConstruction
                   visible={modalVisible}
                   research={research}
                   onClose={() => setModalVisible(false)}
                   data={selectedHex}
                   onBuild={onBuild}
                   onCancelBuild={onCancel}
+                />
+
+                <ModalTerraform
+                  visible={modalTerraformVisible}
+                  onClose={() => setModalTerraformVisible(false)}
+                  data={selectedHex}
+                  onTerraform={onTerraform}
                 />
               </Svg>
             </Animated.View>

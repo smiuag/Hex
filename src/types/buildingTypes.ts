@@ -10,7 +10,9 @@ export type BuildingType =
   | "ENERGY"
   | "SPACESTATION"
   | "RECYCLE"
-  | "RESIDUE";
+  | "RESIDUE"
+  | "GREENHOUSE"
+  | "WATEREXTRACTOR";
 
 export type BuildingData = {
   type: BuildingType;

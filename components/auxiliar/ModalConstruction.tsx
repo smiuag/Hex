@@ -26,7 +26,7 @@ type Props = {
   onCancelBuild: () => void;
 };
 
-export default function HexModal({
+export default function ModalConstruction({
   visible,
   research,
   onClose,

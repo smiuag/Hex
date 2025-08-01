@@ -1,10 +1,12 @@
 import background from "../../assets/images/background.jpg";
 import backgroundMenu from "../../assets/images/backgroundMenu.jpg";
+import unterraformed from "../../assets/images/hex/unterraformed.png";
 
 import antennaBackground from "../../assets/images/buildings/antenna.png";
 import baseBackground from "../../assets/images/buildings/base.png";
 import crystalmineBackground from "../../assets/images/buildings/crystal.png";
 import energyBackground from "../../assets/images/buildings/energy.png";
+import greenhouseBackground from "../../assets/images/buildings/greenhouse.png";
 import hangarBackground from "../../assets/images/buildings/hangar.png";
 import labBackground from "../../assets/images/buildings/lab.png";
 import metallurgyBackground from "../../assets/images/buildings/metal.png";
@@ -13,6 +15,7 @@ import recycleBackground from "../../assets/images/buildings/recycle.png";
 import residueBackground from "../../assets/images/buildings/residue.png";
 import rocketBackground from "../../assets/images/buildings/rocket.png";
 import spaceStation from "../../assets/images/buildings/spaceStation.png";
+import waterBackground from "../../assets/images/buildings/water.png";
 
 import energy from "../../assets/images/research/Energy.png";
 import fuel from "../../assets/images/research/Fuel.png";
@@ -49,6 +52,7 @@ import antenna from "../../assets/images/mini/antenna.png";
 import base from "../../assets/images/mini/base.png";
 import blank from "../../assets/images/mini/blank.png";
 import crystal from "../../assets/images/mini/crystal.png";
+import greenhouse from "../../assets/images/mini/greenhouse.png";
 import hangar from "../../assets/images/mini/hangar.png";
 import lab from "../../assets/images/mini/lab.png";
 import lunar from "../../assets/images/mini/lunar.png";
@@ -61,6 +65,7 @@ import rocket from "../../assets/images/mini/rocket.png";
 import spaceStationBase from "../../assets/images/mini/spaceStation.png";
 import underConstruction from "../../assets/images/mini/underConstruction.png";
 import underConstructionBase from "../../assets/images/mini/underconstructionBase.png";
+import waterExtractor from "../../assets/images/mini/water.png";
 
 export const IMAGES = {
   //IMAGENES GENERALES
@@ -77,9 +82,11 @@ export const IMAGES = {
   BUILDING_HANGAR: hangar,
   BUILDING_ANTENNA: antenna,
   BUILDING_RECYCLE: recycle,
+  BUILDING_GREENHOUSE: greenhouse,
   BUILDING_SPACESTATION: spaceStationBase,
   BUILDING_UNDER_CONSTRUCTION: underConstruction,
   BUILDING_UNDER_CONSTRUCTION_BASE: underConstructionBase,
+  BUILDING_WATEREXTRACTOR: waterExtractor,
   BUILDING_RESIDUE: residue,
   HEX_LUNAR: lunar,
   RESEARCH_MINING: mining,
@@ -92,6 +99,7 @@ export const IMAGES = {
   METALLURGY_BACKGROUND: metallurgyBackground,
   QUARRY_BACKGROUND: quarryBackground,
   KRYSTALMINE_BACKGROUND: crystalmineBackground,
+  GREENHOUSE_BACKGROUND: greenhouseBackground,
   BASE_BACKGROUND: baseBackground,
   HANGAR_BACKGROUND: hangarBackground,
   ROCKET_BACKGROUND: rocketBackground,
@@ -99,6 +107,7 @@ export const IMAGES = {
   ENERGY_BACKGROUND: energyBackground,
   RECYCLE_BACKGROUND: recycleBackground,
   RESIDUE_BACKGROUND: residueBackground,
+  WATEREXTRACTOR_BACKGROUND: waterBackground,
   SHIP_BG_PROBE: probeBackground,
   SHIP_BG_LIGHTFIGHTER: lightFighterBackground,
   SHIP_BG_INTERCEPTOR: interceptorBackground,
@@ -123,4 +132,5 @@ export const IMAGES = {
   RED_DWARF: redDwarf,
   NEBULA: nebula,
   BLANK: blank,
+  UNTERRAFORMED: unterraformed,
 };

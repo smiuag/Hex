@@ -1,7 +1,8 @@
-import { BuildingType } from "@/src/types/buildingTypes";
 import { Dimensions } from "react-native";
+import { BuildingType } from "../src/types/buildingTypes";
 import { Hex } from "../src/types/hexTypes";
 import { StoredResources } from "../src/types/resourceTypes";
+import { generateRandomResources } from "./resourceUtils";
 
 export const axialToPixel = (q: number, r: number, hexSize: number) => {
   const x = hexSize * Math.sqrt(3) * (q + r / 2);
@@ -138,13 +139,14 @@ export const generateInitialHexMap = (): Hex[] => {
       r,
       terrain: "base",
       isVisible: true,
-      isTerraformed: false,
+      isTerraformed: true,
       isRadius: false,
       building: q === 0 && r === 0 ? { type: "BASE" as BuildingType, level: 1 } : null,
       construction: undefined,
       previousBuilding: null,
       groupId: "triangleStructure",
       isGroupLeader: q === 0 && r === 0,
+      resources: generateRandomResources(),
     });
   });
 
@@ -161,6 +163,7 @@ export const generateInitialHexMap = (): Hex[] => {
       building: null,
       construction: undefined,
       previousBuilding: null,
+      resources: generateRandomResources(),
     });
   });
 
@@ -177,6 +180,7 @@ export const generateInitialHexMap = (): Hex[] => {
       building: null,
       construction: undefined,
       previousBuilding: null,
+      resources: generateRandomResources(),
     });
   });
 
@@ -230,7 +234,6 @@ export function expandHexMapFromBuiltHexes(hexes: Hex[]): Hex[] {
       hexMap.set(key, {
         ...h,
         isVisible: true,
-        isTerraformed: false,
         isRadius: false,
         terrain: "initial",
       });

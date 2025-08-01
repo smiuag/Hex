@@ -12,16 +12,19 @@ export const useQuest = (addResources: (modifications: Partial<Resources>) => vo
   ) => {
     setPlayerQuests((prev) => {
       const newQuests = typeof updater === "function" ? updater(prev) : updater;
-      saveQuests(newQuests); // no await aquí para no bloquear render
+      saveQuests(newQuests);
       return newQuests;
     });
   };
+
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const loadData = async () => {
     const saved = await loadQuests();
     if (saved) {
       setPlayerQuests(saved);
     }
+    setIsLoaded(true); // <- ahora sabemos que podemos operar con seguridad
   };
 
   const completeQuest = async (type: QuestType) => {
@@ -43,10 +46,12 @@ export const useQuest = (addResources: (modifications: Partial<Resources>) => vo
 
     addResources(config.reward);
   };
+
   const markQuestsAsViewed = async (questType: QuestType) => {
+    if (!isLoaded) return; // 💥 evita sobrescribir sin datos reales
+
     updateQuestState((prev) => {
       const updatedMap = new Map<QuestType, PlayerQuest>();
-
       for (const quest of prev) {
         updatedMap.set(quest.type, quest);
       }
