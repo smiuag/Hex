@@ -97,7 +97,7 @@ export const commonStyles = StyleSheet.create({
     fontWeight: "600",
   },
   buttonPrimary: {
-    backgroundColor: "#2196F3",
+    backgroundColor: "#22a552ff",
     paddingVertical: 4,
     paddingHorizontal: 12,
     borderRadius: 6,
@@ -144,8 +144,8 @@ export const commonStyles = StyleSheet.create({
   },
   closeXButton: {
     position: "absolute",
-    top: 20,
-    right: 20,
+    top: 10,
+    right: 10,
     backgroundColor: "rgba(0,0,0,0.6)",
     borderRadius: 30,
     padding: 12,
@@ -157,6 +157,10 @@ export const commonStyles = StyleSheet.create({
     fontWeight: "bold",
   },
   flatList: {
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+  },
+  mainBuilding: {
     paddingVertical: 5,
     paddingHorizontal: 10,
   },

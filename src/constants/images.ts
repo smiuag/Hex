@@ -1,6 +1,7 @@
 import background from "../../assets/images/background.jpg";
 import backgroundMenu from "../../assets/images/backgroundMenu.jpg";
 import unterraformed from "../../assets/images/hex/unterraformed.png";
+import backgroundQuest from "../../assets/images/nebulosa.png";
 
 import antennaBackground from "../../assets/images/buildings/antenna.png";
 import baseBackground from "../../assets/images/buildings/base.png";
@@ -66,11 +67,28 @@ import spaceStationBase from "../../assets/images/mini/spaceStation.png";
 import underConstruction from "../../assets/images/mini/underConstruction.png";
 import underConstructionBase from "../../assets/images/mini/underconstructionBase.png";
 import waterExtractor from "../../assets/images/mini/water.png";
+import waterDrop from "../../assets/images/waterDrop.png";
+
+import alienTechFound from "../../assets/images//quests/alienTechFound.png";
+import waterFound from "../../assets/images//quests/waterFound.png";
+import waterSearch from "../../assets/images/quests/waterSearch.png";
+import backgroundCluster from "../../assets/images/starSystems/backgroundCluster.png";
+import backgroundGalaxy from "../../assets/images/starSystems/backgroundGalaxy.png";
+import backgroundRegion from "../../assets/images/starSystems/backgroundRegion.png";
 
 export const IMAGES = {
   //IMAGENES GENERALES
   BACKGROUND_IMAGE: background,
   BACKGROUND_MENU_IMAGE: backgroundMenu,
+  BACKGROUND_QUEST_IMAGE: backgroundQuest,
+  BACKGROUND_CLUSTER: backgroundCluster,
+  BACKGROUND_GALAXY: backgroundGalaxy,
+  BACKGROUND_REGION: backgroundRegion,
+  WATER_DROP: waterDrop,
+  //QUESTS
+  H2O_SEARCH: waterSearch,
+  H2O_FOUND: waterFound,
+  ALIEN_TECH_FOUND: alienTechFound,
   // EDIFICIOS
   BUILDING_BASE: base,
   BUILDING_LAB: lab,

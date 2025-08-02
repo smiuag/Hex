@@ -1,6 +1,7 @@
-import { useRouter } from "expo-router";
+import { IMAGES } from "@/src/constants/images";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect } from "react";
-import { FlatList } from "react-native";
+import { FlatList, ImageBackground } from "react-native";
 import { questConfig } from "../../src/config/questConfig";
 import { useGameContext } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
@@ -8,6 +9,7 @@ import { canCompleteQuest, shouldShowQuest } from "../../utils/questUtils";
 import { QuestCard } from "../cards/QuestCard";
 
 export default function QuestComponent() {
+  const { reload } = useLocalSearchParams();
   const { playerQuests, hexes, research, shipBuildQueue, completeQuest } = useGameContext();
   const router = useRouter();
   const completedTypes = playerQuests
@@ -31,27 +33,34 @@ export default function QuestComponent() {
     if (newQuest) {
       router.replace(`/quests/computer?type=${newQuest.type}`);
     }
-  }, [playerQuests]);
+  }, [playerQuests, reload]);
 
   return (
-    <FlatList
-      contentContainerStyle={commonStyles.flatList}
-      data={availableQuests}
-      keyExtractor={(item) => item.type}
-      renderItem={({ item }) => {
-        const completed = canCompleteQuest(item.type, hexes, research, shipBuildQueue);
+    <ImageBackground
+      source={IMAGES.BACKGROUND_QUEST_IMAGE}
+      style={commonStyles.flex1}
+      resizeMode="cover"
+    >
+      <FlatList
+        contentContainerStyle={commonStyles.flatList}
+        data={availableQuests}
+        keyExtractor={(item) => item.type}
+        renderItem={({ item }) => {
+          const completed = canCompleteQuest(item.type, hexes, research, shipBuildQueue);
 
-        const isAlreadyClaimed = playerQuests.some((pq) => pq.completed && pq.type == item.type);
+          const isAlreadyClaimed = playerQuests.some((pq) => pq.completed && pq.type == item.type);
 
-        return (
-          <QuestCard
-            item={item}
-            completed={completed}
-            isAlreadyClaimed={isAlreadyClaimed}
-            onComplete={() => completeQuest(item.type)}
-          />
-        );
-      }}
-    />
+          return (
+            <QuestCard
+              key={item.type}
+              item={item}
+              completed={completed}
+              isAlreadyClaimed={isAlreadyClaimed}
+              onComplete={() => completeQuest(item.type)}
+            />
+          );
+        }}
+      />
+    </ImageBackground>
   );
 }

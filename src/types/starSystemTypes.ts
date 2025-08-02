@@ -43,3 +43,23 @@ export type StarSystem = {
   defense: ShipData[];
   id: string;
 };
+
+export type StarSystemDetected = {
+  id: string;
+  name: string;
+  cluster: string;
+  galaxy: string;
+  region: string;
+  cluster_index: number;
+  galaxy_index: number;
+  region_index: number;
+  system_index: number;
+};
+
+export type ClusterMap = {
+  [cluster: string]: {
+    [galaxy: string]: {
+      [region: string]: StarSystemDetected[];
+    };
+  };
+};

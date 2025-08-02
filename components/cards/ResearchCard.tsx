@@ -127,10 +127,10 @@ export const ResearchCard: React.FC<Props> = ({
                   />
                 </Text>
                 <TouchableOpacity
-                  style={commonStyles.buttonDanger}
+                  style={commonStyles.cancelButton}
                   onPress={() => onCancel(item.type)}
                 >
-                  <Text style={commonStyles.buttonTextLight}>{t("cancel")}</Text>
+                  <Text style={commonStyles.cancelButtonText}>{t("cancel")}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -174,7 +174,7 @@ export const ResearchCard: React.FC<Props> = ({
                   </Text>
                 ) : (
                   <Text style={commonStyles.statusTextYellow}>
-                    ⏱️ {formatDuration(item.totalTime)}
+                    ⏳ {formatDuration(item.totalTime)}
                   </Text>
                 )}
 

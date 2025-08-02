@@ -20,6 +20,7 @@ import { getScaleValues } from "../../utils/configUtils";
 import { axialToPixel, getHexPoints, pixelToAxial, SCREEN_DIMENSIONS } from "../../utils/hexUtils";
 import BorderHexTile from "../auxiliar/HexBorder";
 import HexTile from "../auxiliar/HexTile";
+// import ModalConstruction from "../auxiliar/ModalConstruction";
 import ModalConstruction from "../auxiliar/ModalConstruction";
 import ModalTerraform from "../auxiliar/ModalTerraform";
 
@@ -93,12 +94,19 @@ export default function PlanetComponent() {
       return;
     }
 
+    if (hexToUse.building?.type == "ANTENNA") {
+      router.replace(`/(tabs)/planet/antenna?q=${hexToUse.q}&r=${hexToUse.r}`);
+      return;
+    }
+
     const isEmpty = !hexToUse.building && !hexToUse.construction;
     if (!hexToUse.isTerraformed) {
       setSelectedHex(hexToUse);
       setModalTerraformVisible(true);
     } else if (isEmpty) {
-      router.replace(`/(tabs)/planet/construction?q=${hexToUse.q}&r=${hexToUse.r}`);
+      router.replace(
+        `/(tabs)/planet/construction?terrain=${hexToUse.terrain}&q=${hexToUse.q}&r=${hexToUse.r}`
+      );
     } else {
       setSelectedHex(hexToUse);
       setModalVisible(true);
@@ -159,7 +167,7 @@ export default function PlanetComponent() {
     const baseUpgradeLevel = hexes.find((hex) => hex.construction?.building === "BASE")
       ?.construction?.targetLevel;
     const effectiveLevel = baseUpgradeLevel ?? baseLevel ?? 0;
-    const terraformLimit = effectiveLevel * 10;
+    const terraformLimit = effectiveLevel * 10 + 3;
     const maxTerraformReached = currentHexesTerraformed >= terraformLimit;
 
     if (maxTerraformReached) {
@@ -170,6 +178,11 @@ export default function PlanetComponent() {
         visibilityTime: 2000,
       });
     } else if (selectedHex) {
+      if (selectedHex.terrain == "water") {
+        alert(
+          "Este terreno parece distinto. Las primeras inspecciones indican de una gran cantidad de humedad en el subsuelo. ¡Quizá sea agua!"
+        );
+      }
       await handleTerraform(selectedHex.q, selectedHex.r);
       setModalTerraformVisible(false);
     }

@@ -72,7 +72,7 @@ export const questConfig: Record<
   H2O_SEARCH: {
     type: "H2O_SEARCH",
     order: 10,
-    backgroundImage: IMAGES.SHIP_BG_HEAVYASSAULTSHIP,
+    backgroundImage: IMAGES.H2O_SEARCH,
     requiredQuest: ["BUILDING_KRYSTALMINE1"],
     reward: {},
     contextType: "GENERAL",
@@ -81,7 +81,7 @@ export const questConfig: Record<
   H2O_FOUND: {
     type: "H2O_FOUND",
     order: 10,
-    backgroundImage: IMAGES.SHIP_BG_HEAVYASSAULTSHIP,
+    backgroundImage: IMAGES.H2O_FOUND,
     requiredQuest: ["H2O_SEARCH"],
     reward: {},
     contextType: "BUILD",
@@ -90,7 +90,7 @@ export const questConfig: Record<
   ALIEN_TECH_FOUND: {
     type: "ALIEN_TECH_FOUND",
     order: 10,
-    backgroundImage: IMAGES.SHIP_BG_HEAVYASSAULTSHIP,
+    backgroundImage: IMAGES.ALIEN_TECH_FOUND,
     requiredQuest: ["H2O_SEARCH"],
     reward: {},
     contextType: "GENERAL",

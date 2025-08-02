@@ -1,3 +1,4 @@
+import { useUniverse } from "@/hooks/useUniverse";
 import React, { createContext, useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useConfig } from "../../hooks/useConfig";
@@ -16,7 +17,7 @@ import { NotificationManager } from "../../utils/notificacionUtils";
 import { ConfigEntry, PlayerConfig } from "../types/configTypes";
 import { FleetData } from "../types/fleetType";
 import { Research, ResearchType } from "../types/researchTypes";
-import { StarSystem } from "../types/starSystemTypes";
+import { ClusterMap, StarSystem } from "../types/starSystemTypes";
 
 type ProviderContextType = {
   fleet: FleetData[];
@@ -27,6 +28,7 @@ type ProviderContextType = {
   playerQuests: PlayerQuest[];
   playerConfig: PlayerConfig;
   starSystems: StarSystem[];
+  universe: ClusterMap;
   startStarSystemExploration: (id: string) => void;
   startPlanetExploration: (systemId: string, planetId: string) => void;
   addProduction: (modifications: Partial<Resources>) => void;
@@ -57,7 +59,7 @@ type ProviderContextType = {
 const { t: tResearch } = useTranslation("research");
 
 const ResourceContext = createContext<ProviderContextType | undefined>(undefined);
-
+const { universe } = useUniverse();
 export const Provider = ({ children }: { children: React.ReactNode }) => {
   //USE RESOURCES
   const {
@@ -159,6 +161,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     hexes,
     research,
     playerQuests,
+    universe,
     startStarSystemExploration,
     startPlanetExploration,
     discardStarSystem,

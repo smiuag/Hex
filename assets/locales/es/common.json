@@ -4,6 +4,10 @@
   "ExpectedResources": "Recursos probables",
   "chanceToGet": "de obtener",
   "parsecs": "Parsecs",
+  "ExploredSystems": "Sistemas explorados",
+  "Cluster": "Cluster",
+  "Galaxy": "Galaxia",
+  "Region": "Region",
 
   "cancel": "Cancelar",
   "upgrade": "Mejorar",

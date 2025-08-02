@@ -77,7 +77,7 @@ export const BUILDING_MAX_LVL = {
   BASE: 4,
   ANTENNA: 2,
   ROCKET: 2,
-  HANGAR: 1,
+  HANGAR: 2,
   ENERGY: 4,
   SPACESTATION: 1,
   RECYCLE: 2,
@@ -170,7 +170,12 @@ export const BUILDING_REQUIRED_RESEARCH: Record<BuildingType, BuildingRequiredRe
     },
     {
       researchType: "FUELREFINEMENT",
-      researchLevelRequired: 3,
+      researchLevelRequired: 1,
+      builddingLevel: 1,
+    },
+    {
+      researchType: "FUELREFINEMENT",
+      researchLevelRequired: 2,
       builddingLevel: 2,
     },
   ],
@@ -182,7 +187,7 @@ export const BUILDING_REQUIRED_RESEARCH: Record<BuildingType, BuildingRequiredRe
     },
     {
       researchType: "FUELREFINEMENT",
-      researchLevelRequired: 2,
+      researchLevelRequired: 1,
       builddingLevel: 2,
     },
   ],

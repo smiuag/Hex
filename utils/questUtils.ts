@@ -45,8 +45,8 @@ export function canCompleteQuest(
     case "ALIEN_TECH_FOUND":
       return ship.length > 0;
     case "H2O_FOUND":
-      return ship.length > 0;
+      return hexes.some((hex) => hex.building?.type === "WATEREXTRACTOR");
     case "H2O_SEARCH":
-      return ship.length > 0;
+      return hexes.some((hex) => hex.terrain == "water" && hex.isTerraformed);
   }
 }

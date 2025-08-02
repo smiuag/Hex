@@ -171,8 +171,6 @@ export const useHexes = (
   const processConstructionTick = () => {
     const now = Date.now();
     const hexesToUpdate: Hex[] = [];
-    let baseLeveledUp = false;
-    let updatedBaseLevel = 0;
     let changed = false;
 
     const updatedHexes = hexes.map((hex) => {
@@ -206,11 +204,6 @@ export const useHexes = (
 
       if (callbacks?.onBuildComplete) {
         callbacks.onBuildComplete(hex.q, hex.r, building, targetLevel);
-      }
-
-      if (building === "BASE" && hex.q === 0 && hex.r === 0) {
-        baseLeveledUp = true;
-        updatedBaseLevel = targetLevel;
       }
 
       Notifications.scheduleNotificationAsync({

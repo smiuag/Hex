@@ -35,7 +35,7 @@ export default function ComputerComponent() {
 
   const onConfirm = async () => {
     await markQuestsAsViewed(type as QuestType);
-    router.replace("/quests");
+    router.replace(`/quests?reload=${type}`);
   };
 
   const { t } = useTranslation("common");

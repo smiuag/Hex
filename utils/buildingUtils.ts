@@ -7,7 +7,7 @@ import {
 } from "../src/constants/general";
 import { BuildingType } from "../src/types/buildingTypes";
 import { Hex } from "../src/types/hexTypes";
-import { Research } from "../src/types/researchTypes";
+import { BuildingRequiredResearch, Research } from "../src/types/researchTypes";
 import { Resources } from "../src/types/resourceTypes";
 
 export const getBuildTime = (building: BuildingType, level: number): number => {
@@ -47,6 +47,22 @@ export const isUnlocked = (
     const found = playerResearch.find((r) => r.data.type === req.researchType);
     return !!found && found.data.level >= req.researchLevelRequired;
   });
+};
+
+export const getUnmetRequirements = (
+  requiredResearch: BuildingRequiredResearch,
+  research: Research[],
+  level: number
+) => {
+  return (
+    requiredResearch
+      ?.filter((req) => req.builddingLevel <= level)
+      .filter((req) => {
+        const playerResearchLevel =
+          research.find((r) => r.data.type === req.researchType)?.data.level ?? 0;
+        return playerResearchLevel < req.researchLevelRequired;
+      }) ?? []
+  );
 };
 
 export const isAtMaxCount = (type: BuildingType, hexes: Hex[]): boolean => {

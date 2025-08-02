@@ -3,13 +3,13 @@
     "TERRAFORMING": "Terraformación",
     "MINING": "Minería",
     "WATERPURIFICATION": "Purificación de Agua",
-    "FUELREFINEMENT": "Refinamiento de Combustible",
+    "FUELREFINEMENT": "Refinamiento energético",
     "ENERGYEFFICIENCY": "Eficiencia Energética",
     "SHIPENGINEERING": "Ingeniería espacial",
     "PLASMA": "Tecnología de plasma",
     "LASER": "Tecnología láser",
     "SHIELD": "Escudos de energía",
-    "GRAVITY": "Tecnología de gravitón"
+    "GRAVITY": "El gravitón"
   },
   "researchDescription": {
     "TERRAFORMING": "Permite mejorar la base, algo necesario para ampliar su alcance y conseguir más área construible.",

@@ -2,7 +2,7 @@ import { useGameContext } from "@/src/context/GameContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useRef } from "react";
-import { useTranslation } from "react-i18next"; // ✅ Importamos i18n hook
+import { useTranslation } from "react-i18next";
 import { Animated, ImageBackground, Text, TouchableOpacity, View } from "react-native";
 import { questConfig } from "../../src/config/questConfig";
 import { commonStyles } from "../../src/styles/commonStyles";
@@ -46,8 +46,6 @@ export const QuestCard: React.FC<Props> = ({ item, completed, isAlreadyClaimed, 
     onComplete();
   };
 
-  console.log(item.persist);
-  console.log(completed);
   if (!item.persist && isAlreadyClaimed) return null;
 
   return (
@@ -68,7 +66,7 @@ export const QuestCard: React.FC<Props> = ({ item, completed, isAlreadyClaimed, 
               <Text style={commonStyles.titleText}>{tQuests(`${item.type}.name`)}</Text>
               <TouchableOpacity
                 onPress={() => {
-                  router.replace(`/quests/computer?id=${questType}`);
+                  router.replace(`/quests/computer?type=${questType}`);
                 }}
                 style={{
                   position: "absolute",

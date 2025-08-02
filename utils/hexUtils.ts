@@ -151,12 +151,12 @@ export const generateInitialHexMap = (): Hex[] => {
   });
 
   // Añadir initial hexes
-  Array.from(initialHexesSet).forEach((coord) => {
+  Array.from(initialHexesSet).forEach((coord, index) => {
     const [q, r] = coord.split(",").map(Number);
     hexMap.push({
       q,
       r,
-      terrain: "initial",
+      terrain: index === 0 ? "water" : "initial",
       isVisible: true,
       isTerraformed: false,
       isRadius: false,
@@ -188,20 +188,23 @@ export const generateInitialHexMap = (): Hex[] => {
 };
 
 // Devuelve los vecinos de un hex axial
-const getNeighbors = (q: number, r: number): { q: number; r: number }[] => [
-  { q: q + 1, r: r },
-  { q: q - 1, r: r },
-  { q: q, r: r + 1 },
-  { q: q, r: r - 1 },
-  { q: q + 1, r: r - 1 },
-  { q: q - 1, r: r + 1 },
-];
+const getNeighbors = (q: number, r: number): { q: number; r: number }[] => {
+  const neighbors = [
+    { q: q + 1, r: r },
+    { q: q - 1, r: r },
+    { q: q, r: r + 1 },
+    { q: q, r: r - 1 },
+    { q: q + 1, r: r - 1 },
+    { q: q - 1, r: r + 1 },
+  ];
+
+  return neighbors.sort(() => Math.random() - 0.5); // 👈 aleatoriza el orden
+};
 
 // Devuelve una clave única por coordenadas
 const hexKey = (q: number, r: number) => `${q},${r}`;
 
 export function expandHexMapFromBuiltHexes(hexes: Hex[]): Hex[] {
-  const newHexes = [...hexes];
   const hexMap = new Map<string, Hex>();
   hexes.forEach((h) => hexMap.set(hexKey(h.q, h.r), h));
 
@@ -235,7 +238,7 @@ export function expandHexMapFromBuiltHexes(hexes: Hex[]): Hex[] {
         ...h,
         isVisible: true,
         isRadius: false,
-        terrain: "initial",
+        terrain: h.terrain === "border" ? "initial" : h.terrain,
       });
     } else {
       const [q, r] = key.split(",").map(Number);
