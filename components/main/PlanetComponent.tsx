@@ -20,7 +20,6 @@ import { getScaleValues } from "../../utils/configUtils";
 import { axialToPixel, getHexPoints, pixelToAxial, SCREEN_DIMENSIONS } from "../../utils/hexUtils";
 import BorderHexTile from "../auxiliar/HexBorder";
 import HexTile from "../auxiliar/HexTile";
-// import ModalConstruction from "../auxiliar/ModalConstruction";
 import ModalConstruction from "../auxiliar/ModalConstruction";
 import ModalTerraform from "../auxiliar/ModalTerraform";
 
@@ -34,10 +33,11 @@ export default function PlanetComponent() {
   const {
     hexes,
     research,
+    playerConfig,
     handleBuild,
+    handleDestroyBuilding,
     handleCancelBuild,
     handleTerraform,
-    playerConfig,
     handleUpdateConfig,
   } = useGameContext();
 
@@ -95,7 +95,7 @@ export default function PlanetComponent() {
     }
 
     if (hexToUse.building?.type == "ANTENNA") {
-      router.replace(`/(tabs)/planet/antenna?q=${hexToUse.q}&r=${hexToUse.r}`);
+      router.replace("/(tabs)/planet/antenna");
       return;
     }
 
@@ -136,6 +136,7 @@ export default function PlanetComponent() {
       handleUpdateConfig({ key: "MAP_SIZE", value: newScaleKey });
     }
   };
+
   const tapGesture = Gesture.Tap()
     .maxDuration(300)
     .maxDistance(20)
@@ -159,6 +160,11 @@ export default function PlanetComponent() {
       handleCancelBuild(selectedHex.q, selectedHex.r);
       setModalVisible(false);
     }
+  };
+
+  const onDestroy = (q: number, r: number) => {
+    handleDestroyBuilding(q, r);
+    setModalVisible(false);
   };
 
   const onTerraform = async () => {
@@ -255,6 +261,7 @@ export default function PlanetComponent() {
                   data={selectedHex}
                   onBuild={onBuild}
                   onCancelBuild={onCancel}
+                  onDestroy={onDestroy}
                 />
 
                 <ModalTerraform

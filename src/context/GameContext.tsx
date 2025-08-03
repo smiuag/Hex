@@ -1,4 +1,5 @@
 import { useUniverse } from "@/hooks/useUniverse";
+import { getRandomStartSystem } from "@/utils/starSystemUtils";
 import React, { createContext, useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useConfig } from "../../hooks/useConfig";
@@ -17,7 +18,7 @@ import { NotificationManager } from "../../utils/notificacionUtils";
 import { ConfigEntry, PlayerConfig } from "../types/configTypes";
 import { FleetData } from "../types/fleetType";
 import { Research, ResearchType } from "../types/researchTypes";
-import { ClusterMap, StarSystem } from "../types/starSystemTypes";
+import { StarSystem, StarSystemMap } from "../types/starSystemTypes";
 
 type ProviderContextType = {
   fleet: FleetData[];
@@ -28,7 +29,7 @@ type ProviderContextType = {
   playerQuests: PlayerQuest[];
   playerConfig: PlayerConfig;
   starSystems: StarSystem[];
-  universe: ClusterMap;
+  universe: StarSystemMap;
   startStarSystemExploration: (id: string) => void;
   startPlanetExploration: (systemId: string, planetId: string) => void;
   addProduction: (modifications: Partial<Resources>) => void;
@@ -50,16 +51,24 @@ type ProviderContextType = {
   discardStarSystem: (id: string) => void;
   cancelExploreSystem: (id: string) => void;
   stelarPortStartBuild: (id: string) => void;
+  extractionStartBuild: (id: string) => void;
+  defenseStartBuild: (id: string) => void;
   cancelExplorePlanet: (systemId: string, planetId: string) => void;
   startAttack: (systemId: string, fleet: Ship[]) => void;
   cancelAttack: (id: string) => void;
   enoughResources: (cost: Partial<Resources>) => boolean;
+  scanStarSystem: (currentSystemId: string, id: string) => void;
+  recoverStarSystem: (id: string) => void;
+  cancelScanStarSystem: (id: string) => void;
+  handleDestroyBuilding: (q: number, r: number) => void;
 };
 
 const { t: tResearch } = useTranslation("research");
 
 const ResourceContext = createContext<ProviderContextType | undefined>(undefined);
+
 const { universe } = useUniverse();
+
 export const Provider = ({ children }: { children: React.ReactNode }) => {
   //USE RESOURCES
   const {
@@ -73,19 +82,17 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
 
   //USE HEXES
   const {
+    hexes,
     handleBuild,
     handleCancelBuild,
     processConstructionTick,
     resetBuild,
     handleTerraform,
-    hexes,
+    handleDestroyBuilding,
   } = useHexes(addProduction, addResources, subtractResources, enoughResources);
 
   //USE QUEST
   const { playerQuests, completeQuest, markQuestsAsViewed, resetQuests } = useQuest(addResources);
-
-  //USE CONFIG
-  const { handleUpdateConfig, resetPlayerConfig, playerConfig, updatePlayerConfig } = useConfig();
 
   //USE SHIP
   const {
@@ -113,12 +120,20 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     cancelExplorePlanet,
     startStarSystemExploration,
     processFleeTick,
-    processColonialBuildingsTick,
+    processColonialTick,
     resetFleet,
     stelarPortStartBuild,
+    extractionStartBuild,
+    defenseStartBuild,
     startAttack,
     cancelAttack,
-  } = useStarSystem(handleDestroyShip, handleCreateShips, subtractResources);
+    scanStarSystem,
+    recoverStarSystem,
+    cancelScanStarSystem,
+  } = useStarSystem(universe, handleDestroyShip, handleCreateShips, subtractResources);
+
+  //USE CONFIG
+  const { playerConfig, handleUpdateConfig, resetPlayerConfig, updatePlayerConfig } = useConfig();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -126,7 +141,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
       processResearchTick(tResearch);
       processShipTick();
       processFleeTick();
-      processColonialBuildingsTick();
+      processColonialTick();
     }, 1000);
 
     return () => {
@@ -149,7 +164,9 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
   const startGame = async () => {
     await endGame();
 
-    handleUpdateConfig({ key: "GAME_STARTED", value: "true" });
+    await handleUpdateConfig({ key: "GAME_STARTED", value: "true" });
+    await handleUpdateConfig({ key: "MAP_SIZE", value: "SMALL" });
+    await handleUpdateConfig({ key: "STARTING_SYSTEM", value: getRandomStartSystem(universe).id });
   };
 
   const contextValue = {
@@ -184,10 +201,16 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     startGame,
     cancelExploreSystem,
     stelarPortStartBuild,
+    extractionStartBuild,
+    defenseStartBuild,
     cancelExplorePlanet,
     startAttack,
     cancelAttack,
     enoughResources,
+    scanStarSystem,
+    recoverStarSystem,
+    cancelScanStarSystem,
+    handleDestroyBuilding,
   };
 
   return <ResourceContext.Provider value={contextValue}>{children}</ResourceContext.Provider>;

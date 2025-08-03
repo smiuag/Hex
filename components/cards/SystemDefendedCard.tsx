@@ -20,10 +20,12 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onCance
   const { t } = useTranslation("common");
   const { t: tShip } = useTranslation("ship");
   const { t: tPlanets } = useTranslation("planets");
-
+  const { universe } = useGameContext();
   const { fleet } = useGameContext();
-
   const router = useRouter();
+
+  console.log(system);
+
   const duration = system.attackFleetId
     ? (() => {
         const f = fleet.find((f) => f.id === system.attackFleetId);
@@ -33,6 +35,7 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onCance
     : 0;
 
   const image = getSystemImage(system.type);
+  const systemName = universe[system.id].name;
 
   return (
     <View style={commonStyles.containerCenter} key={system.id}>
@@ -42,12 +45,13 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onCance
         imageStyle={commonStyles.imageCover}
       >
         <View style={commonStyles.overlayDark}>
-          <View style={commonStyles.rowSpaceBetween}>
-            <Text style={commonStyles.titleBlueText}>{tPlanets(`systemType.${system.type}`)}</Text>
-            <Text style={commonStyles.whiteText}>
-              {system.distance} {t("parsecs")}
+          <Text style={commonStyles.titleBlueText}>
+            {systemName}{" "}
+            <Text style={[commonStyles.whiteText, { fontSize: 16 }]}>
+              {" "}
+              ({tPlanets(`systemType.${system.type}`)}){" "}
             </Text>
-          </View>
+          </Text>
           <View>
             <Text style={commonStyles.whiteText}>
               {t("CelestialBodys")} {system.planets.length}
@@ -66,7 +70,7 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onCance
             );
           })}
           {system.attackFleetId ? (
-            <View style={commonStyles.rowSpaceBetween}>
+            <View style={commonStyles.actionBar}>
               <Text style={commonStyles.statusTextYellow}>
                 ⏳ {t("inProgress")}:{" "}
                 <CountdownTimer startedAt={system.attackStartedAt} duration={duration} />
@@ -81,17 +85,14 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onCance
             </View>
           ) : (
             <View style={commonStyles.actionBar}>
-              <TouchableOpacity
-                style={commonStyles.cancelButton}
-                onPress={() => onDiscard(system.id)}
-              >
-                <Text style={commonStyles.cancelButtonText}>{t("Discard")}</Text>
-              </TouchableOpacity>
+              <Text style={commonStyles.whiteText}>
+                {system.distance} {t("parsecs")}
+              </Text>
 
               <TouchableOpacity
                 style={commonStyles.buttonPrimary}
                 onPress={() => {
-                  router.replace(`/galaxy/fleetAttack?systemId=${system.id}`);
+                  router.replace(`/(tabs)/galaxy/fleetAttack?systemId=${system.id}`);
                 }}
               >
                 <Text style={commonStyles.buttonTextLight}>{t("Attack")}</Text>
@@ -100,6 +101,14 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onCance
           )}
         </View>
       </ImageBackground>
+      <TouchableOpacity
+        style={commonStyles.floatingDeleteButton}
+        onPress={() => {
+          onDiscard(system.id);
+        }}
+      >
+        <Text style={commonStyles.floatingDeleteText}>💀</Text>
+      </TouchableOpacity>
     </View>
   );
 };

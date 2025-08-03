@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { ImageBackground, Text, TouchableOpacity, View } from "react-native";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { BuildingType } from "../../src/types/buildingTypes";
@@ -32,6 +33,9 @@ interface Props {
 
 export const ConstructionCard: React.FC<Props> = ({ item, onBuild, research }) => {
   const unmetVisible = item.unmetRequirements.length > 0;
+  const { t } = useTranslation("common");
+  const { t: tResearch } = useTranslation("research");
+  const { t: tBuilding } = useTranslation("buildings");
 
   const filteredRequirements = Object.values(
     item.requirements
@@ -57,18 +61,27 @@ export const ConstructionCard: React.FC<Props> = ({ item, onBuild, research }) =
       >
         <View style={commonStyles.overlayDark}>
           <View>
-            <Text style={commonStyles.titleText}>{item.name}</Text>
-            <Text style={commonStyles.subtitleText}>{item.description}</Text>
+            <Text style={commonStyles.titleText}>{tBuilding(`buildingName.${item.type}`)}</Text>
+            <Text style={commonStyles.subtitleText}>
+              {tBuilding(`buildingDescription.${item.type}`)}
+            </Text>
           </View>
           <View>
             <ResourceDisplay resources={item.cost} fontSize={13} />
             {unmetVisible ? (
-              <View>
+              <View style={commonStyles.actionBar}>
                 {filteredRequirements.map((r, i) => (
                   <Text key={i} style={commonStyles.errorTextRed}>
-                    🔒 {r.researchType} nivel {r.researchLevelRequired}
+                    🔒 {tResearch(`researchName.${r.researchType}`)} {t("level")}{" "}
+                    {r.researchLevelRequired}
                   </Text>
                 ))}
+                <TouchableOpacity
+                  style={[commonStyles.buttonPrimary, commonStyles.buttonDisabled]}
+                  disabled={true}
+                >
+                  <Text style={commonStyles.buttonTextLight}>Construir</Text>
+                </TouchableOpacity>
               </View>
             ) : (
               <View style={commonStyles.actionBar}>

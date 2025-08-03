@@ -7,7 +7,30 @@
   "ExploredSystems": "Sistemas explorados",
   "Cluster": "Cluster",
   "Galaxy": "Galaxia",
+  "Galaxys": "Ver todas las galaxias",
+  "Clusters": "Ver todos los clusters",
+  "Regions": "Ver todas las regiones",
   "Region": "Region",
+  "Natal": "Natal",
+  "Scan": "Escanear",
+  "ExploredSystem": "Sistema explorado. Visita la galaxia.",
+  "Discarded": "Sistema descartado",
+  "ScanningProcess": "Escaneo en proceso",
+  "MaxLvl": "Nivel máximo alcanzado",
+  "AntennaUpgradeNeeded": "Mejora la antena para aumentar el alcance",
+
+  "DefenseSystem": "Sistema defensivo",
+  "ExtractionSystem": "Sistemas de extracción",
+  "StelarPort": "Puerto estelar",
+  "DefenseSystemBuilt": "SISTEMA DEFENSIVO CONSTRUÍDO",
+  "ExtractionSystemBuilt": "SISTEMAS DE EXTRACCIÓN CONSTRUÍDOS",
+  "StelarPortBuilt": "PUERTO ESTELAR CONSTRUÍDO",
+
+  "VoidSystem": "Ningún cuerpo celeste con recursos aprovechables.",
+  "Instalations": "Instalaciones",
+  "NotEnoughForConstruction": "Recursos insuficientes o cargueros insuficientes",
+  "VoidExplorationScreenTitle": "Visita la antena de tu planeta para comenzar a explorarlos.",
+  "VoidExplorationScreenSubTitle": "Aún no tienes datos precisos de ningún sistema estelar. Es necesario realizar un scaneo de la zona antes de comenzar la exploración.",
 
   "cancel": "Cancelar",
   "upgrade": "Mejorar",
@@ -45,7 +68,7 @@
   "CelestialBodys": "Cuerpos estelares encontrados: ",
 
   "BuildStelarPort": "Construcción de un puerto estelar",
-  "StelarPortCostMessage": "Para construir un puerto estelar necesitaremos enviar 2 cargueros, que se quedarán en el sistema para juntar recursos de la zona. Además es necesario enviar 1200000 de cristal y 1200000 de metal. ¿Estas seguro de que quieres continuar?",
+  "StelarPortCostMessage": "Para construir un puerto estelar necesitaremos enviar 2 cargueros, que se quedarán en el sistema para juntar recursos de la zona. Además es necesario enviar 1.2M de cristal y 1.2M de metal. ¿Estas seguro de que quieres continuar?",
   "Fly": "Volar",
   "Collect": "Recolectar"
 }

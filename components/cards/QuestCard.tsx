@@ -66,7 +66,7 @@ export const QuestCard: React.FC<Props> = ({ item, completed, isAlreadyClaimed, 
               <Text style={commonStyles.titleText}>{tQuests(`${item.type}.name`)}</Text>
               <TouchableOpacity
                 onPress={() => {
-                  router.replace(`/quests/computer?type=${questType}`);
+                  router.replace(`/(tabs)/quests/computer?type=${questType}`);
                 }}
                 style={{
                   position: "absolute",

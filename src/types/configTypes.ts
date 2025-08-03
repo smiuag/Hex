@@ -10,7 +10,7 @@ export type ScaleType = {
   [key in ScaleSize]: ScaleValues;
 };
 
-export type ConfigType = "MAP_SIZE" | "GAME_STARTED";
+export type ConfigType = "MAP_SIZE" | "GAME_STARTED" | "STARTING_SYSTEM";
 
 export type ConfigEntry = {
   key: ConfigType;

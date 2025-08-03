@@ -1,7 +1,7 @@
 import { useGameContext } from "@/src/context/GameContext";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { ImageBackground, Pressable, Text, View } from "react-native";
+import { Alert, ImageBackground, Pressable, Text, TouchableOpacity, View } from "react-native";
 import { buildingConfig } from "../../src/config/buildingConfig";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { BuildingType } from "../../src/types/buildingTypes";
@@ -20,9 +20,10 @@ type Props = {
   data: Hex;
   research: Research[];
   onBuild: (type: BuildingType) => void;
+  onDestroy?: (q: number, r: number) => void;
 };
 
-export const UpgradeCard: React.FC<Props> = ({ data, research, onBuild }) => {
+export const UpgradeCard: React.FC<Props> = ({ data, research, onBuild, onDestroy }) => {
   const { t } = useTranslation("common");
   const { t: tBuilding } = useTranslation("buildings");
   const { t: tResearch } = useTranslation("research");
@@ -42,6 +43,7 @@ export const UpgradeCard: React.FC<Props> = ({ data, research, onBuild }) => {
   const canUpgrade = unmetRequirements.length == 0;
   const canBuild = canUpgrade && !lockedByResources;
   const isMaxLvl = config.maxLvl < (data.building?.level ?? 0);
+  const showDestroyButton = !!onDestroy && data.building.type != "BASE" && !data.construction;
 
   return (
     <ImageBackground
@@ -86,11 +88,7 @@ export const UpgradeCard: React.FC<Props> = ({ data, research, onBuild }) => {
 
         <View style={commonStyles.actionBar}>
           {isMaxLvl ? (
-            <Text style={commonStyles.errorTextRed}>
-              {unmetRequirements
-                .map((r) => `🔒 ${tResearch("maxLvl")} ${t("level")} ${r.researchLevelRequired}`)
-                .join("\n")}
-            </Text>
+            <Text style={commonStyles.errorTextRed}>🔒 {t("MaxLvl")}</Text>
           ) : canUpgrade ? (
             lockedByResources ? (
               <Text style={commonStyles.warningTextYellow}>⚠️ {t("notEnoughResources")}</Text>
@@ -111,7 +109,10 @@ export const UpgradeCard: React.FC<Props> = ({ data, research, onBuild }) => {
           )}
 
           <Pressable
-            style={[commonStyles.buttonPrimary, !canBuild && commonStyles.buttonDisabled]}
+            style={[
+              commonStyles.buttonPrimary,
+              (!canBuild || isMaxLvl) && commonStyles.buttonDisabled,
+            ]}
             onPress={() => canBuild && onBuild(data.building!.type)}
             disabled={!canBuild || isMaxLvl}
           >
@@ -119,6 +120,27 @@ export const UpgradeCard: React.FC<Props> = ({ data, research, onBuild }) => {
           </Pressable>
         </View>
       </View>
+      {showDestroyButton && (
+        <TouchableOpacity
+          style={commonStyles.floatingDeleteButton}
+          onPress={() => {
+            Alert.alert(
+              "💀 ¡Demolición!",
+              "¿Estás seguro de que quieres derruir este edificio?\nEsta acción no se puede deshacer.",
+              [
+                { text: "Cancelar", style: "cancel" },
+                {
+                  text: "Derruir",
+                  style: "destructive",
+                  onPress: () => onDestroy(data.q, data.r),
+                },
+              ]
+            );
+          }}
+        >
+          <Text style={commonStyles.floatingDeleteText}>💀</Text>
+        </TouchableOpacity>
+      )}
     </ImageBackground>
   );
 };

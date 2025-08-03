@@ -1,33 +1,38 @@
 import { shipConfig } from "@/src/config/shipConfig";
-import { FleetData, MovementType } from "@/src/types/fleetType";
-import { Ship, ShipType } from "@/src/types/shipType";
-import { simulateBattle } from "@/utils/combat";
-import { getFlyTime } from "@/utils/shipUtils";
-import { useEffect, useState } from "react";
-import uuid from "react-native-uuid";
+import { SCAN_DURATION, STELAR_BUILDINGS_DURATION } from "@/src/constants/general";
 import {
   deleteStarSystem,
   loadFleet,
   loadStarSystem,
   saveFleet,
   saveStarSystem,
-} from "../src/services/storage";
-import { Resources } from "../src/types/resourceTypes";
-import { StarSystem } from "../src/types/starSystemTypes";
+} from "@/src/services/storage";
+import { FleetData, MovementType } from "@/src/types/fleetType";
+import { Resources } from "@/src/types/resourceTypes";
+import { Ship, ShipType } from "@/src/types/shipType";
+import { StarSystem, StarSystemMap } from "@/src/types/starSystemTypes";
+import { simulateBattle } from "@/utils/combat";
+import { getFlyTime } from "@/utils/shipUtils";
+import { generateSystem } from "@/utils/starSystemUtils";
+import { useEffect, useRef, useState } from "react";
+import uuid from "react-native-uuid";
 import { getBuildCost } from "../utils/buildingUtils";
-import { generateInitialSystems } from "../utils/starSystemUtils";
 
 export const useStarSystem = (
+  universe: StarSystemMap,
   handleDestroyShip: (type: ShipType, amount: number) => void,
   handleCreateShips: (shipsToAdd: { type: ShipType; amount: number }[]) => void,
   subtractResources: (modifications: Partial<Resources>) => void
 ) => {
   const [starSystems, setPlayerStarSystems] = useState<StarSystem[]>([]);
   const [fleet, setFleet] = useState<FleetData[]>([]);
+  const systemsRef = useRef<StarSystem[]>([]);
+  const fleetRef = useRef<FleetData[]>([]);
 
   const updateFleet = async (updater: FleetData[] | ((prev: FleetData[]) => FleetData[])) => {
     setFleet((prev) => {
-      const next = typeof updater === "function" ? updater(prev) : updater;
+      const next = typeof updater === "function" ? updater(fleetRef.current) : updater;
+      fleetRef.current = next;
       saveFleet(next);
       return next;
     });
@@ -35,7 +40,8 @@ export const useStarSystem = (
 
   const updateSystems = async (updater: StarSystem[] | ((prev: StarSystem[]) => StarSystem[])) => {
     setPlayerStarSystems((prev) => {
-      const next = typeof updater === "function" ? updater(prev) : updater;
+      const next = typeof updater === "function" ? updater(systemsRef.current) : updater;
+      systemsRef.current = next;
       saveStarSystem(next);
       return next;
     });
@@ -45,8 +51,46 @@ export const useStarSystem = (
     const saved = await loadFleet();
     if (saved) {
       setFleet(saved);
+      fleetRef.current = saved;
     }
   };
+
+  const loadStarSystems = async () => {
+    const saved = await loadStarSystem();
+    if (saved) {
+      setPlayerStarSystems(saved);
+      systemsRef.current = saved;
+    }
+  };
+
+  const scanStarSystem = async (currentSystemId: string, id: string) => {
+    const starSystem = universe[id];
+    const generated = {
+      ...generateSystem(currentSystemId, starSystem),
+      scanStartedAt: Date.now(),
+    };
+
+    await updateSystems((prev) => [...prev, generated]);
+  };
+
+  const cancelScanStarSystem = async (id: string) => {
+    const system = starSystems.find((system) => system.id == id);
+    if (!system) return;
+
+    await updateSystems((prev) => prev.filter((s) => s.id !== id));
+  };
+
+  const recoverStarSystem = async (id: string) => {
+    const system = starSystems.find((system) => system.id == id);
+    if (!system) return;
+
+    await updateSystems((prev) => prev.map((s) => (s.id === id ? { ...s, discarded: false } : s)));
+  };
+
+  useEffect(() => {
+    loadStarSystems();
+    loadFleetData();
+  }, []);
 
   const newFleet = async (newFleet: FleetData) => {
     newFleet.ships.forEach((ship) => {
@@ -80,13 +124,28 @@ export const useStarSystem = (
     return currentFleet.filter((f) => f.id !== id);
   };
 
-  const processColonialBuildingsTick = async () => {
+  const processColonialTick = async () => {
     const now = Date.now();
     for (let i = 0; i < starSystems.length; i++) {
-      const startTime = starSystems[i].starPortStartedAt;
+      const starPortStartTime = starSystems[i].starPortStartedAt;
+      const scanStartTime = starSystems[i].scanStartedAt;
+      const extractionStartTime = starSystems[i].extractionStartedAt;
+      const defenseStartTime = starSystems[i].defenseStartedAt;
 
-      if (startTime && now - startTime > 1000 * 60 * 60 * 24) {
+      if (starPortStartTime && now - starPortStartTime > STELAR_BUILDINGS_DURATION) {
         stelarPortBuild(starSystems[i].id);
+      }
+
+      if (extractionStartTime && now - extractionStartTime > STELAR_BUILDINGS_DURATION) {
+        extractionBuild(starSystems[i].id);
+      }
+
+      if (defenseStartTime && now - defenseStartTime > STELAR_BUILDINGS_DURATION) {
+        defenseBuild(starSystems[i].id);
+      }
+
+      if (scanStartTime && now - scanStartTime > SCAN_DURATION) {
+        scanFinished(starSystems[i].id);
       }
     }
   };
@@ -238,7 +297,10 @@ export const useStarSystem = (
   };
 
   const discardStarSystem = async (id: string) => {
-    await updateSystems((prev) => prev.filter((system) => system.id !== id));
+    const system = starSystems.find((system) => system.id == id);
+    if (!system) return;
+
+    await updateSystems((prev) => prev.map((s) => (s.id === id ? { ...s, discarded: true } : s)));
   };
 
   const startStarSystemExploration = async (id: string) => {
@@ -278,25 +340,16 @@ export const useStarSystem = (
       currentFleet = await cancelFleet(fleetId, currentFleet);
       return { updatedFleet: currentFleet, updatedSystems: currentSystems };
     }
-    const updatedSystems = currentSystems.map((s) => (s.id === id ? { ...s, explored: true } : s));
+    const updatedSystems = currentSystems.map((s) =>
+      s.id === id ? { ...s, explored: true, conquered: s.defense.length === 0 } : s
+    );
 
     let updatedFleet = [...currentFleet];
 
     if (system.defense.length > 0) {
       updatedFleet = updatedFleet.filter((f) => f.id !== system.explorationFleetId);
     } else {
-      updatedFleet = updatedFleet.map((f) =>
-        f.id !== system.explorationFleetId
-          ? f
-          : {
-              ...f,
-              startTime: Date.now(),
-              endTime: Date.now() + (f.endTime - f.startTime),
-              destination: f.origin,
-              origin: f.destinationSystemId,
-              movementType: "RETURN",
-            }
-      );
+      updatedFleet = await cancelFleet(system.explorationFleetId!, currentFleet);
     }
 
     return { updatedFleet, updatedSystems };
@@ -311,6 +364,37 @@ export const useStarSystem = (
     );
   };
 
+  const extractionBuild = async (id: string) => {
+    const system = starSystems.find((s) => s.id === id);
+    if (!system) return;
+
+    await updateSystems((prev) =>
+      prev.map((s) =>
+        s.id === id ? { ...s, extractionStartedAt: undefined, extractionBuildingBuilt: true } : s
+      )
+    );
+  };
+
+  const defenseBuild = async (id: string) => {
+    const system = starSystems.find((s) => s.id === id);
+    if (!system) return;
+
+    await updateSystems((prev) =>
+      prev.map((s) =>
+        s.id === id ? { ...s, defenseStartedAt: undefined, defenseBuildingBuilt: true } : s
+      )
+    );
+  };
+
+  const scanFinished = async (id: string) => {
+    const system = starSystems.find((s) => s.id === id);
+    if (!system) return;
+
+    await updateSystems((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, scanStartedAt: undefined } : s))
+    );
+  };
+
   const stelarPortStartBuild = async (id: string) => {
     const system = starSystems.find((s) => s.id === id);
     if (!system) return;
@@ -321,6 +405,32 @@ export const useStarSystem = (
 
     await updateSystems((prev) =>
       prev.map((s) => (s.id === id ? { ...s, starPortStartedAt: Date.now() } : s))
+    );
+  };
+
+  const extractionStartBuild = async (id: string) => {
+    const system = starSystems.find((s) => s.id === id);
+    if (!system) return;
+
+    const cost = getBuildCost("SPACESTATION", 1);
+    await subtractResources(cost);
+    await handleDestroyShip("FREIGHTER", 2);
+
+    await updateSystems((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, extractionStartedAt: Date.now() } : s))
+    );
+  };
+
+  const defenseStartBuild = async (id: string) => {
+    const system = starSystems.find((s) => s.id === id);
+    if (!system) return;
+
+    const cost = getBuildCost("SPACESTATION", 1);
+    await subtractResources(cost);
+    await handleDestroyShip("FREIGHTER", 2);
+
+    await updateSystems((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, defenseStartedAt: Date.now() } : s))
     );
   };
 
@@ -455,24 +565,6 @@ export const useStarSystem = (
     );
   };
 
-  const loadStarSystems = async () => {
-    const saved = await loadStarSystem();
-
-    let allSystems = saved;
-    if (saved) {
-      if (saved.length < 3) {
-        const generated = generateInitialSystems(3 - saved.length);
-        allSystems = [...saved, ...generated];
-        await saveStarSystem(allSystems);
-      }
-    } else {
-      allSystems = generateInitialSystems(3);
-      await saveStarSystem(allSystems);
-    }
-
-    setPlayerStarSystems(allSystems!);
-  };
-
   const cancelAttack = async (id: string) => {
     const system = starSystems.find((s) => s.id === id);
     if (!system || !system.attackFleetId) return;
@@ -533,13 +625,18 @@ export const useStarSystem = (
     discardStarSystem,
     startPlanetExploration,
     processFleeTick,
-    processColonialBuildingsTick,
+    processColonialTick,
     newFleet,
     cancelFleet,
     resetFleet,
     stelarPortStartBuild,
+    extractionStartBuild,
+    defenseStartBuild,
     startAttack,
     cancelAttack,
     loadStarSystems,
+    scanStarSystem,
+    recoverStarSystem,
+    cancelScanStarSystem,
   };
 };

@@ -1,29 +1,22 @@
-import { useEffect, useState } from "react";
-import { deleteConfig, loadConfig, saveConfig } from "../src/services/storage";
-import { ConfigEntry, defaultPlayerConfig, PlayerConfig } from "../src/types/configTypes";
+import { deleteConfig, loadConfig, saveConfig } from "@/src/services/storage";
+import { ConfigEntry, defaultPlayerConfig, PlayerConfig } from "@/src/types/configTypes";
+import { useEffect, useRef, useState } from "react";
 
 export const useConfig = () => {
-  const [playerConfig, setPlayerConfig] = useState(defaultPlayerConfig);
+  const [playerConfig, setPlayerConfig] = useState<PlayerConfig>(defaultPlayerConfig);
+  const configRef = useRef<PlayerConfig>(defaultPlayerConfig);
 
-  // Actualiza el estado con función o array, y guarda
+  const syncAndSave = (newConfig: PlayerConfig) => {
+    configRef.current = newConfig;
+    setPlayerConfig(newConfig);
+    saveConfig(newConfig);
+  };
+
   const updatePlayerConfig = async (
     updater: PlayerConfig | ((prev: PlayerConfig) => PlayerConfig)
   ) => {
-    const updated = typeof updater === "function" ? updater(playerConfig) : updater;
-    setPlayerConfig(updated);
-    await saveConfig(updated);
-  };
-
-  const loadPlayerConfig = async () => {
-    const saved = await loadConfig();
-    if (saved) {
-      setPlayerConfig(saved);
-    }
-  };
-
-  const resetPlayerConfig = async () => {
-    setPlayerConfig(defaultPlayerConfig);
-    await deleteConfig();
+    const updated = typeof updater === "function" ? updater(configRef.current) : updater;
+    syncAndSave(updated);
   };
 
   const handleUpdateConfig = async (newEntry: ConfigEntry) => {
@@ -35,6 +28,18 @@ export const useConfig = () => {
         return [...prev, newEntry];
       }
     });
+  };
+
+  const loadPlayerConfig = async () => {
+    const saved = await loadConfig();
+    if (saved) {
+      syncAndSave(saved);
+    }
+  };
+
+  const resetPlayerConfig = async () => {
+    await deleteConfig();
+    syncAndSave(defaultPlayerConfig);
   };
 
   useEffect(() => {

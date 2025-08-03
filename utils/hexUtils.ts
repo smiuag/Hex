@@ -1,7 +1,7 @@
+import { BuildingType } from "@/src/types/buildingTypes";
+import { Hex } from "@/src/types/hexTypes";
+import { StoredResources } from "@/src/types/resourceTypes";
 import { Dimensions } from "react-native";
-import { BuildingType } from "../src/types/buildingTypes";
-import { Hex } from "../src/types/hexTypes";
-import { StoredResources } from "../src/types/resourceTypes";
 import { generateRandomResources } from "./resourceUtils";
 
 export const axialToPixel = (q: number, r: number, hexSize: number) => {
@@ -312,3 +312,92 @@ export const getHexCornerPoints = (cx: number, cy: number, size: number) => {
   }
   return corners;
 };
+
+export function recalculateHexMapVisibility(hexes: Hex[]): Hex[] {
+  const hexKey = (q: number, r: number) => `${q},${r}`;
+  const hexMap = new Map<string, Hex>();
+  hexes.forEach((h) => hexMap.set(hexKey(h.q, h.r), h));
+
+  // Identifica grupos cuyo líder tiene building o construction
+  const groupLeaders = new Set(
+    hexes.filter((h) => h.isGroupLeader && (h.building || h.construction)).map((h) => h.groupId)
+  );
+
+  // Identifica como construidos los hexes que:
+  // - tienen building
+  // - tienen construction
+  // - están en un grupo cuyo líder tiene building/construction
+  const builtHexes = hexes.filter(
+    (h) => h.building || h.construction || (h.groupId && groupLeaders.has(h.groupId))
+  );
+
+  const getNeighbors = (q: number, r: number): { q: number; r: number }[] => [
+    { q: q + 1, r: r },
+    { q: q - 1, r: r },
+    { q: q, r: r + 1 },
+    { q: q, r: r - 1 },
+    { q: q + 1, r: r - 1 },
+    { q: q - 1, r: r + 1 },
+  ];
+
+  const toInitial = new Set<string>();
+  const toBorder = new Set<string>();
+
+  for (const hex of builtHexes) {
+    const neighbors = getNeighbors(hex.q, hex.r);
+
+    for (const n of neighbors) {
+      const nKey = hexKey(n.q, n.r);
+      toInitial.add(nKey);
+
+      const secondRing = getNeighbors(n.q, n.r);
+      for (const nn of secondRing) {
+        const nnKey = hexKey(nn.q, nn.r);
+        if (!toInitial.has(nnKey)) {
+          toBorder.add(nnKey);
+        }
+      }
+    }
+  }
+
+  for (const k of toInitial) {
+    toBorder.delete(k);
+  }
+
+  const newHexes: Hex[] = [];
+
+  for (const hex of hexes) {
+    const key = hexKey(hex.q, hex.r);
+
+    if (toInitial.has(key)) {
+      newHexes.push({
+        ...hex,
+        isVisible: true,
+        isRadius: false,
+        terrain: hex.terrain === "border" ? "initial" : hex.terrain,
+      });
+    } else if (toBorder.has(key)) {
+      newHexes.push({
+        ...hex,
+        isVisible: false,
+        isRadius: true,
+        terrain: "border",
+      });
+    } else if (builtHexes.some((h) => h.q === hex.q && h.r === hex.r)) {
+      newHexes.push({
+        ...hex,
+        isVisible: true,
+        isRadius: false,
+      });
+    } else {
+      newHexes.push({
+        ...hex,
+        isVisible: false,
+        isRadius: false,
+        terrain: hex.terrain === "initial" ? "border" : hex.terrain,
+      });
+    }
+  }
+
+  return newHexes;
+}

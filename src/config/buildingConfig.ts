@@ -15,7 +15,6 @@ import { Resources } from "../types/resourceTypes";
 export const buildingConfig: Record<
   BuildingType,
   {
-    name: string;
     baseBuildTime: number;
     image: ImageSourcePropType;
     imageBackground: ImageSourcePropType;
@@ -23,13 +22,11 @@ export const buildingConfig: Record<
     baseCost: Partial<Resources>;
     production: Partial<Resources>;
     requiredResearch: BuildingRequiredResearch;
-    description: string;
     maxNumberInPlanet: number;
     maxLvl: number;
   }
 > = {
   BASE: {
-    name: "Base",
     baseBuildTime: BUILDING_TIME.BASE,
     image: IMAGES.BUILDING_BASE,
     imageBackground: IMAGES.BASE_BACKGROUND,
@@ -37,12 +34,10 @@ export const buildingConfig: Record<
     baseCost: BUILDING_COST.BASE,
     production: BUILDING_PRODUCTION.BASE,
     requiredResearch: BUILDING_REQUIRED_RESEARCH.BASE,
-    description: "Centro de operaciones de la colonia.",
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.BASE,
     maxLvl: BUILDING_MAX_LVL.BASE,
   },
   RECYCLE: {
-    name: "Recycle",
     baseBuildTime: BUILDING_TIME.RECYCLE,
     image: IMAGES.BUILDING_RECYCLE,
     imageBackground: IMAGES.RECYCLE_BACKGROUND,
@@ -50,12 +45,10 @@ export const buildingConfig: Record<
     baseCost: BUILDING_COST.RECYCLE,
     production: BUILDING_PRODUCTION.RECYCLE,
     requiredResearch: BUILDING_REQUIRED_RESEARCH.RECYCLE,
-    description: "RECYCLE",
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.RECYCLE,
     maxLvl: BUILDING_MAX_LVL.RECYCLE,
   },
   LAB: {
-    name: "Laboratorio",
     baseBuildTime: BUILDING_TIME.LAB,
     image: IMAGES.BUILDING_LAB,
     imageBackground: IMAGES.LAB_BACKGROUND,
@@ -64,12 +57,9 @@ export const buildingConfig: Record<
     production: BUILDING_PRODUCTION.LAB,
     requiredResearch: BUILDING_REQUIRED_RESEARCH.LAB,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.LAB,
-    description:
-      "Centro de investigacione de la colonia. Permite hacer investigaciones para desbloquear la construcción de edificios.",
     maxLvl: BUILDING_MAX_LVL.LAB,
   },
   METALLURGY: {
-    name: "Mina de metales",
     baseBuildTime: BUILDING_TIME.METALLURGY,
     image: IMAGES.BUILDING_METAL,
     imageBackground: IMAGES.METALLURGY_BACKGROUND,
@@ -78,11 +68,9 @@ export const buildingConfig: Record<
     production: BUILDING_PRODUCTION.METALLURGY,
     requiredResearch: BUILDING_REQUIRED_RESEARCH.METALLURGY,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.METALLURGY,
-    description: "Instalación para la extracción de metales del subsuelo del planeta.",
     maxLvl: BUILDING_MAX_LVL.METALLURGY,
   },
   QUARRY: {
-    name: "Cantera",
     baseBuildTime: BUILDING_TIME.QUARRY,
     image: IMAGES.BUILDING_MINING,
     imageBackground: IMAGES.QUARRY_BACKGROUND,
@@ -91,12 +79,9 @@ export const buildingConfig: Record<
     production: BUILDING_PRODUCTION.QUARRY,
     requiredResearch: BUILDING_REQUIRED_RESEARCH.QUARRY,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.QUARRY,
-    description:
-      "Instalación para la extracción de rocas y sedimentos de la superficie del planeta.",
     maxLvl: BUILDING_MAX_LVL.QUARRY,
   },
   KRYSTALMINE: {
-    name: "Mina de cristal",
     baseBuildTime: BUILDING_TIME.KRYSTALMINE,
     image: IMAGES.BUILDING_CRYSTAL,
     imageBackground: IMAGES.KRYSTALMINE_BACKGROUND,
@@ -105,11 +90,9 @@ export const buildingConfig: Record<
     production: BUILDING_PRODUCTION.KRYSTALMINE,
     requiredResearch: BUILDING_REQUIRED_RESEARCH.KRYSTALMINE,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.KRYSTALMINE,
-    description: "Instalación para la extracción de cristal de las rocas de la superficie.",
     maxLvl: BUILDING_MAX_LVL.KRYSTALMINE,
   },
   ANTENNA: {
-    name: "Antena de comunicaciones",
     baseBuildTime: BUILDING_TIME.ANTENNA,
     image: IMAGES.BUILDING_ANTENNA,
     imageBackground: IMAGES.ANTENNA_BACKGROUND,
@@ -118,11 +101,9 @@ export const buildingConfig: Record<
     production: BUILDING_PRODUCTION.ANTENNA,
     requiredResearch: BUILDING_REQUIRED_RESEARCH.ANTENNA,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.ANTENNA,
-    description: "Antena de comunicaciones de corto alcance.",
     maxLvl: BUILDING_MAX_LVL.ANTENNA,
   },
   HANGAR: {
-    name: "Hangar",
     baseBuildTime: BUILDING_TIME.HANGAR,
     image: IMAGES.BUILDING_HANGAR,
     imageBackground: IMAGES.HANGAR_BACKGROUND,
@@ -131,11 +112,9 @@ export const buildingConfig: Record<
     production: BUILDING_PRODUCTION.HANGAR,
     requiredResearch: BUILDING_REQUIRED_RESEARCH.HANGAR,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.HANGAR,
-    description: "Hangar de naves de la flota del planeta.",
     maxLvl: BUILDING_MAX_LVL.HANGAR,
   },
   ROCKET: {
-    name: "Lanzadera de cohetes",
     baseBuildTime: BUILDING_TIME.ROCKET,
     image: IMAGES.BUILDING_ROCKET,
     imageBackground: IMAGES.ROCKET_BACKGROUND,
@@ -144,11 +123,9 @@ export const buildingConfig: Record<
     production: BUILDING_PRODUCTION.ROCKET,
     requiredResearch: BUILDING_REQUIRED_RESEARCH.ROCKET,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.ROCKET,
-    description: "Hangar y lanzadera de cohetes y naves interplanetarias.",
     maxLvl: BUILDING_MAX_LVL.ROCKET,
   },
   ENERGY: {
-    name: "Central de energía",
     baseBuildTime: BUILDING_TIME.ENERGY,
     image: IMAGES.BUILDING_ENERGY,
     imageBackground: IMAGES.ENERGY_BACKGROUND,
@@ -157,11 +134,9 @@ export const buildingConfig: Record<
     production: BUILDING_PRODUCTION.ENERGY,
     requiredResearch: BUILDING_REQUIRED_RESEARCH.ENERGY,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.ENERGY,
-    description: "Hangar y lanzadera de cohetes y naves interplanetarias.",
     maxLvl: BUILDING_MAX_LVL.ENERGY,
   },
   SPACESTATION: {
-    name: "Estación espacial",
     baseBuildTime: BUILDING_TIME.SPACESTATION,
     image: IMAGES.BUILDING_SPACESTATION,
     imageBackground: IMAGES.SPACESTATION_BACKGROUND,
@@ -170,11 +145,9 @@ export const buildingConfig: Record<
     production: BUILDING_PRODUCTION.SPACESTATION,
     requiredResearch: BUILDING_REQUIRED_RESEARCH.SPACESTATION,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.SPACESTATION,
-    description: "Hangar y lanzadera de cohetes y naves interplanetarias.",
     maxLvl: BUILDING_MAX_LVL.SPACESTATION,
   },
   RESIDUE: {
-    name: "Estación espacial",
     baseBuildTime: BUILDING_TIME.RESIDUE,
     image: IMAGES.BUILDING_RESIDUE,
     imageBackground: IMAGES.RESIDUE_BACKGROUND,
@@ -183,11 +156,9 @@ export const buildingConfig: Record<
     production: BUILDING_PRODUCTION.RESIDUE,
     requiredResearch: BUILDING_REQUIRED_RESEARCH.RESIDUE,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.RESIDUE,
-    description: "Hangar y lanzadera de cohetes y naves interplanetarias.",
     maxLvl: BUILDING_MAX_LVL.RESIDUE,
   },
   GREENHOUSE: {
-    name: "Estación espacial",
     baseBuildTime: BUILDING_TIME.GREENHOUSE,
     image: IMAGES.BUILDING_GREENHOUSE,
     imageBackground: IMAGES.GREENHOUSE_BACKGROUND,
@@ -196,11 +167,9 @@ export const buildingConfig: Record<
     production: BUILDING_PRODUCTION.GREENHOUSE,
     requiredResearch: BUILDING_REQUIRED_RESEARCH.GREENHOUSE,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.GREENHOUSE,
-    description: "Hangar y lanzadera de cohetes y naves interplanetarias.",
     maxLvl: BUILDING_MAX_LVL.GREENHOUSE,
   },
   WATEREXTRACTOR: {
-    name: "Procesadora de agua",
     baseBuildTime: BUILDING_TIME.WATEREXTRACTOR,
     image: IMAGES.BUILDING_WATEREXTRACTOR,
     imageBackground: IMAGES.WATEREXTRACTOR_BACKGROUND,
@@ -209,7 +178,6 @@ export const buildingConfig: Record<
     production: BUILDING_PRODUCTION.WATEREXTRACTOR,
     requiredResearch: BUILDING_REQUIRED_RESEARCH.WATEREXTRACTOR,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.WATEREXTRACTOR,
-    description: "Extractora de agua del subsuelo.",
     maxLvl: BUILDING_MAX_LVL.WATEREXTRACTOR,
   },
 };

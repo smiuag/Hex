@@ -1,14 +1,14 @@
-import { buildingConfig } from "../src/config/buildingConfig";
+import { buildingConfig } from "@/src/config/buildingConfig";
 import {
   BUILD_COST_INCREMENT,
   BUILD_TIME_INCREMENT,
   GENERAL_FACTOR,
   PRODUCTION_INCREMENT,
-} from "../src/constants/general";
-import { BuildingType } from "../src/types/buildingTypes";
-import { Hex } from "../src/types/hexTypes";
-import { BuildingRequiredResearch, Research } from "../src/types/researchTypes";
-import { Resources } from "../src/types/resourceTypes";
+} from "@/src/constants/general";
+import { BuildingType } from "@/src/types/buildingTypes";
+import { Hex } from "@/src/types/hexTypes";
+import { BuildingRequiredResearch, Research } from "@/src/types/researchTypes";
+import { Resources } from "@/src/types/resourceTypes";
 
 export const getBuildTime = (building: BuildingType, level: number): number => {
   const baseTime = buildingConfig[building].baseBuildTime;

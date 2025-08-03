@@ -15,6 +15,7 @@ type Props = {
   data: Hex | null;
   onBuild: (type: BuildingType) => void;
   onCancelBuild: () => void;
+  onDestroy: (q: number, r: number) => void;
 };
 
 export default function ModalConstruction({
@@ -24,6 +25,7 @@ export default function ModalConstruction({
   data,
   onBuild,
   onCancelBuild,
+  onDestroy,
 }: Props) {
   if (!data) return null;
 
@@ -46,7 +48,12 @@ export default function ModalConstruction({
               duration={totalBuildTime}
             ></UnderConstructionCard>
           ) : (
-            <UpgradeCard data={data} onBuild={onBuild} research={research}></UpgradeCard>
+            <UpgradeCard
+              data={data}
+              onBuild={onBuild}
+              onDestroy={onDestroy}
+              research={research}
+            ></UpgradeCard>
           )}
         </Pressable>
       </Pressable>

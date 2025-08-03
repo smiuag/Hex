@@ -29,17 +29,30 @@ export type CelestialBody = {
 };
 
 export type StarSystem = {
+  discarded: boolean;
+
+  extractionBuildingBuilt: boolean;
+  extractionStartedAt?: number;
+
+  starPortBuilt: boolean;
+  starPortStartedAt?: number;
+
+  defenseBuildingBuilt: boolean;
+  defenseStartedAt?: number;
+
+  scanStartedAt?: number;
   type: StarSystemType;
   planets: CelestialBody[];
   discovered: boolean;
-  explored: boolean; // Si has mandado sonda
-  conquered: boolean; // So has eliminado las defensas
+  conquered: boolean;
+
+  explored: boolean;
   explorationFleetId?: string;
+
   attackStartedAt?: number;
   attackFleetId?: string;
+
   distance: number;
-  starPort: boolean;
-  starPortStartedAt?: number;
   defense: ShipData[];
   id: string;
 };
@@ -50,16 +63,13 @@ export type StarSystemDetected = {
   cluster: string;
   galaxy: string;
   region: string;
+  type: StarSystemType;
   cluster_index: number;
   galaxy_index: number;
   region_index: number;
   system_index: number;
 };
 
-export type ClusterMap = {
-  [cluster: string]: {
-    [galaxy: string]: {
-      [region: string]: StarSystemDetected[];
-    };
-  };
+export type StarSystemMap = {
+  [systemId: string]: StarSystemDetected;
 };

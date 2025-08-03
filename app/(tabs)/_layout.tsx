@@ -26,7 +26,9 @@ export default function TabLayout() {
   const hasAntenna = hexes.length > 0 && hexes.some((h) => h.building?.type == "ANTENNA");
   const completedQuestTypes = playerQuests.filter((q) => q.completed).map((q) => q.type);
 
-  const unexploretdSystems = starSystems.some((s) => !s.explored && !s.explorationFleetId);
+  const unexploretdSystems = starSystems.some(
+    (s) => !s.scanStartedAt && !s.explored && !s.explorationFleetId && !s.discarded
+  );
 
   const hasCompletedQuest = Object.values(questConfig).some((quest) => {
     const pq = playerQuests.find((q) => q.type === quest.type);
@@ -74,7 +76,7 @@ export default function TabLayout() {
         listeners={{
           tabPress: (e) => {
             e.preventDefault(); // Evita la navegación automática
-            router.replace("/planet"); // Siempre redirige a index
+            router.replace("/(tabs)/planet"); // Siempre redirige a index
           },
         }}
       />
@@ -118,7 +120,7 @@ export default function TabLayout() {
         listeners={{
           tabPress: (e) => {
             e.preventDefault();
-            router.replace("/galaxy");
+            router.replace("/(tabs)/galaxy");
           },
         }}
       />
@@ -146,9 +148,9 @@ export default function TabLayout() {
           tabPress: (e) => {
             e.preventDefault();
             if (hasNewQuest && newQuestId) {
-              router.replace(`/quests/computer?type=${newQuestId}`);
+              router.replace(`/(tabs)/quests/computer?type=${newQuestId}`);
             } else {
-              router.replace("/quests");
+              router.replace("/(tabs)/quests");
             }
           },
         }}

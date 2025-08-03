@@ -31,7 +31,7 @@ export const SystemUnknownCard: React.FC<Props> = ({
   const expected = getExpectedResourceProbabilities(system.type);
   const isBeingExplored = !!system.explorationFleetId;
 
-  const { shipBuildQueue, fleet } = useGameContext();
+  const { shipBuildQueue, fleet, universe } = useGameContext();
 
   const probeSpeed = shipConfig["PROBE"].speed;
   const timeToExplore = getFlyTime(probeSpeed, system.distance);
@@ -52,6 +52,7 @@ export const SystemUnknownCard: React.FC<Props> = ({
   };
 
   const image = getSystemImage(system.type);
+  const systemName = universe[system.id].name;
 
   return (
     <View style={commonStyles.containerCenter} key={system.id}>
@@ -61,13 +62,13 @@ export const SystemUnknownCard: React.FC<Props> = ({
         imageStyle={commonStyles.imageCover}
       >
         <View style={commonStyles.overlayDark}>
-          <View style={commonStyles.rowSpaceBetween}>
-            <Text style={commonStyles.titleBlueText}>{tPlanets(`systemType.${system.type}`)}</Text>
-            <Text style={commonStyles.whiteText}>
-              {system.distance} {t("parsecs")}
+          <Text style={commonStyles.titleBlueText}>
+            {systemName}{" "}
+            <Text style={[commonStyles.whiteText, { fontSize: 16 }]}>
+              {" "}
+              ({tPlanets(`systemType.${system.type}`)}){" "}
             </Text>
-          </View>
-
+          </Text>
           <View style={{ marginTop: 10 }}>
             <Text style={commonStyles.subtitleText}>{t("ExpectedResources")}:</Text>
             {Object.entries(expected)
@@ -101,12 +102,9 @@ export const SystemUnknownCard: React.FC<Props> = ({
             </View>
           ) : (
             <View style={commonStyles.actionBar}>
-              <TouchableOpacity
-                style={commonStyles.cancelButton}
-                onPress={() => onDiscard(system.id)}
-              >
-                <Text style={commonStyles.cancelButtonText}>{t("Discard")}</Text>
-              </TouchableOpacity>
+              <Text style={commonStyles.whiteText}>
+                {system.distance} {t("parsecs")}
+              </Text>
 
               <TouchableOpacity
                 style={commonStyles.buttonPrimary}
@@ -118,6 +116,14 @@ export const SystemUnknownCard: React.FC<Props> = ({
           )}
         </View>
       </ImageBackground>
+      <TouchableOpacity
+        style={commonStyles.floatingDeleteButton}
+        onPress={() => {
+          onDiscard(system.id);
+        }}
+      >
+        <Text style={commonStyles.floatingDeleteText}>💀</Text>
+      </TouchableOpacity>
     </View>
   );
 };

@@ -27,7 +27,7 @@ export default function FleetScreen() {
   const sendAttack = (selectedFleets: Ship[]) => {
     if (selectedFleets.length > 0) {
       startAttack(system!.id, selectedFleets);
-      router.replace("/galaxy");
+      router.replace("/(tabs)/galaxy");
     } else
       Toast.show({
         type: "info",
@@ -47,7 +47,7 @@ export default function FleetScreen() {
           sendAttack(selectedFleets);
         }}
         onCancel={() => {
-          router.replace("/galaxy");
+          router.replace("/(tabs)/galaxy");
         }}
       />
     </SafeAreaView>

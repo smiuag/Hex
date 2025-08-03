@@ -31,7 +31,7 @@ export default function QuestComponent() {
       return !isCompleted && !isViewed && isAvailable;
     });
     if (newQuest) {
-      router.replace(`/quests/computer?type=${newQuest.type}`);
+      router.replace(`/(tabs)/quests/computer?type=${newQuest.type}`);
     }
   }, [playerQuests, reload]);
 

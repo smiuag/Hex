@@ -1,25 +1,23 @@
-import { ImageSourcePropType } from "react-native";
-import uuid from "react-native-uuid";
-import { IMAGES } from "../src/constants/images";
-import {
-  celestialResourceChances,
-  starSystemConfig,
-  starSystemTypeProbabilities,
-} from "../src/constants/starSystem";
+import { IMAGES } from "@/src/constants/images";
+import { celestialResourceChances, starSystemConfig } from "@/src/constants/starSystem";
 import {
   Resources,
   ResourceType,
   SpecialResources,
   SpecialResourceType,
-} from "../src/types/resourceTypes";
-import { ALL_SHIP_TYPES, ShipData, ShipType } from "../src/types/shipType";
+} from "@/src/types/resourceTypes";
+import { ALL_SHIP_TYPES, ShipData, ShipType } from "@/src/types/shipType";
 import {
   CelestialBody,
   CelestialBodyType,
   PlanetType,
   StarSystem,
+  StarSystemDetected,
+  StarSystemMap,
   StarSystemType,
-} from "../src/types/starSystemTypes";
+} from "@/src/types/starSystemTypes";
+import { ImageSourcePropType } from "react-native";
+import uuid from "react-native-uuid";
 
 function getRandomFromRange([min, max]: [number, number]) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -32,15 +30,13 @@ function pickRandom<T>(items: T[]): T {
 function shouldInclude(probability: number): boolean {
   return Math.random() < probability;
 }
-function getBiasedRandom(min: number, max: number, mean: number, stddev: number): number {
-  let u = 0,
-    v = 0;
-  while (u === 0) u = Math.random(); // evita log(0)
-  while (v === 0) v = Math.random();
-  const standardNormal = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
 
-  const value = Math.round(standardNormal * stddev + mean);
-  return Math.max(min, Math.min(max, value)); // recorta a [min, max]
+function getLogBiasedRandom(min: number, max: number): number {
+  const u = Math.random(); // valor uniforme entre 0 y 1
+  const biased = Math.log10(9 * u + 1); // transformación logarítmica suave
+
+  const scaled = min + (max - min) * biased; // escala al rango [min, max]
+  return Math.round(scaled);
 }
 
 function generateResources(
@@ -111,10 +107,51 @@ function generatePlanetDefense(decay: number): ShipData[] {
   return defense;
 }
 
-export function generateStarSystem(type: StarSystemType): StarSystem {
+export function getSystemImage(type: StarSystemType): ImageSourcePropType {
+  return IMAGES[type];
+}
+
+export function getExpectedResourceProbabilities(
+  systemType: StarSystemType
+): Partial<Record<ResourceType | SpecialResourceType, number>> {
+  return starSystemConfig[systemType]?.resourceProbabilities ?? {};
+}
+
+function parseSystemId(id: string) {
+  const match = id.match(/^c(\d+)-g(\d+)-r(\d+)-s(\d+)$/);
+  if (!match) throw new Error("Invalid system ID format: " + id);
+  const [, cluster, galaxy, region, system] = match.map(Number);
+  return { cluster, galaxy, region, system };
+}
+
+export function getDistance(currentSystemId: string, targetSystemId: string): number {
+  const current = parseSystemId(currentSystemId);
+  const target = parseSystemId(targetSystemId);
+
+  if (currentSystemId === targetSystemId) {
+    return 0; // misma ubicación exacta
+  }
+
+  if (
+    current.cluster === target.cluster &&
+    current.galaxy === target.galaxy &&
+    current.region === target.region
+  ) {
+    return getLogBiasedRandom(30, 3000);
+  }
+
+  if (current.cluster === target.cluster && current.galaxy === target.galaxy) {
+    return getLogBiasedRandom(2000, 10000);
+  }
+
+  return getLogBiasedRandom(3500, 35000);
+}
+
+export const generateSystem = (currentSystemId: string, system: StarSystemDetected): StarSystem => {
+  const type = system.type;
+
   const config = starSystemConfig[type];
   const celestialBodies: CelestialBody[] = [];
-  const distance = getBiasedRandom(30, 3000, 1500, 500);
 
   let numPlanets = 0;
   Object.entries(config.bodyCounts).forEach(([bodyTypeKey, range]) => {
@@ -132,42 +169,66 @@ export function generateStarSystem(type: StarSystemType): StarSystem {
   const decay = 1 - 0.1 * numPlanets;
   const starPort = shouldInclude(0.1 * numPlanets);
   const defenseShip = starPort ? generatePlanetDefense(decay) : [];
-
-  const id = uuid.v4();
+  const distance = getDistance(currentSystemId, system.id);
 
   return {
     type,
     planets: celestialBodies,
     discovered: false,
     explored: false,
-    conquered: !starPort,
+    conquered: false,
     distance,
-    starPort: starPort,
+    starPortBuilt: starPort,
+    defenseBuildingBuilt: false,
+    extractionBuildingBuilt: false,
+    discarded: false,
     defense: defenseShip,
-    id: id,
+    id: system.id,
   };
-}
+};
 
-export function getSystemImage(type: StarSystemType): ImageSourcePropType {
-  return IMAGES[type];
-}
+export function getRandomStartSystem(universe: StarSystemMap): StarSystemDetected {
+  const systems = Object.values(universe);
 
-export function getExpectedResourceProbabilities(
-  systemType: StarSystemType
-): Partial<Record<ResourceType | SpecialResourceType, number>> {
-  return starSystemConfig[systemType]?.resourceProbabilities ?? {};
-}
-
-const pickRandomStarSystemType = (): StarSystemType => {
-  const rand = Math.random();
-  let cumulative = 0;
-  for (const [type, prob] of Object.entries(starSystemTypeProbabilities)) {
-    cumulative += prob;
-    if (rand <= cumulative) return type as StarSystemType;
+  if (systems.length === 0) {
+    throw new Error("El universo está vacío. No hay sistemas disponibles.");
   }
-  return "RED_DWARF";
-};
 
-export const generateInitialSystems = (amount: number): StarSystem[] => {
-  return Array.from({ length: amount }, () => generateStarSystem(pickRandomStarSystemType()));
-};
+  const randomIndex = Math.floor(Math.random() * systems.length);
+  return systems[randomIndex];
+}
+
+export function getGalaxiesFromCluster(universe: StarSystemMap, cluster: string): string[] {
+  const galaxies = new Set<string>();
+  for (const system of Object.values(universe)) {
+    if (system.cluster === cluster) {
+      galaxies.add(system.galaxy);
+    }
+  }
+  return Array.from(galaxies);
+}
+
+export function getRegionsFromGalaxy(
+  universe: StarSystemMap,
+  cluster: string,
+  galaxy: string
+): string[] {
+  const regions = new Set<string>();
+  for (const system of Object.values(universe)) {
+    if (system.cluster === cluster && system.galaxy === galaxy) {
+      regions.add(system.region);
+    }
+  }
+  return Array.from(regions);
+}
+
+export function getSystemsFromRegion(
+  universe: StarSystemMap,
+  cluster: string,
+  galaxy: string,
+  region: string
+): StarSystemDetected[] {
+  return Object.values(universe).filter(
+    (s) => s.cluster === cluster && s.galaxy === galaxy && s.region === region
+  );
+}

@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { shipConfig } from "@/src/config/shipConfig";
+import { deleteShip, loadShip, saveShip } from "@/src/services/storage";
+import { Resources } from "@/src/types/resourceTypes";
+import { Ship, ShipType } from "@/src/types/shipType";
+import { useEffect, useRef, useState } from "react";
 import Toast from "react-native-toast-message";
-import { shipConfig } from "../src/config/shipConfig";
-import { deleteShip, loadShip, saveShip } from "../src/services/storage";
-import { Resources } from "../src/types/resourceTypes";
-import { Ship, ShipType } from "../src/types/shipType";
 import { getTotalShipCost } from "../utils/shipUtils";
 
 export const useShip = (
@@ -12,28 +12,31 @@ export const useShip = (
   enoughResources: (cost: Partial<Resources>) => boolean
 ) => {
   const [shipBuildQueue, setShipBuildQueue] = useState<Ship[]>([]);
+  const shipRef = useRef<Ship[]>([]);
 
-  const updateShipQueueState = (updater: Ship[] | ((prev: Ship[]) => Ship[])) => {
-    setShipBuildQueue((prev) => {
-      const newQueue = typeof updater === "function" ? updater(prev) : updater;
-      saveShip(newQueue); // sin await
-      return newQueue;
-    });
+  const syncAndSave = (newQueue: Ship[]) => {
+    shipRef.current = newQueue;
+    setShipBuildQueue(newQueue);
+    saveShip(newQueue).catch((e) => console.error("Error saving ships:", e));
+  };
+
+  const updateShipQueueState = async (updater: Ship[] | ((prev: Ship[]) => Ship[])) => {
+    const updated = typeof updater === "function" ? updater(shipRef.current) : updater;
+    syncAndSave(updated);
   };
 
   const resetShip = async () => {
-    updateShipQueueState([]);
+    await updateShipQueueState([]);
     await deleteShip();
   };
 
-  // Añade a la cola de construcción, pero no lo crea aún
   const handleBuildShip = async (type: ShipType, amount: number) => {
     const cost = getTotalShipCost(type, amount);
     const now = Date.now();
 
     if (!enoughResources(cost)) {
       Toast.show({
-        type: "info", // "success" | "info" | "error"
+        type: "info",
         text1: "Recursos insuficientes",
         position: "top",
         visibilityTime: 2000,
@@ -41,7 +44,7 @@ export const useShip = (
       return;
     }
 
-    updateShipQueueState((prev) => {
+    await updateShipQueueState((prev) => {
       const updated = [...prev];
       const existing = updated.find((r) => r.type === type);
 
@@ -78,12 +81,11 @@ export const useShip = (
     subtractResources(cost);
   };
 
-  //Cancela la construcción de 1 del tipo indicado
   const handleCancelShip = async (type: ShipType) => {
     let didRefund = false;
 
-    updateShipQueueState((prev) => {
-      const updated = prev.map((r) => {
+    await updateShipQueueState((prev) =>
+      prev.map((r) => {
         if (r.type !== type || !r.progress) return r;
 
         const remaining = r.progress.targetAmount - 1;
@@ -101,10 +103,8 @@ export const useShip = (
             notificationId: undefined,
           },
         };
-      });
-
-      return updated;
-    });
+      })
+    );
 
     if (didRefund) {
       const refundCost = getTotalShipCost(type, 1);
@@ -112,13 +112,13 @@ export const useShip = (
     }
   };
 
-  const processShipTick = () => {
+  const processShipTick = async () => {
     const now = Date.now();
 
     const updatedQueue: Ship[] = [];
     let changed = false;
 
-    for (const item of shipBuildQueue) {
+    for (const item of shipRef.current) {
       if (item.progress && item.progress.targetAmount > 0) {
         const timePerUnit = shipConfig[item.type].baseBuildTime;
         const elapsed = now - item.progress.startedAt;
@@ -157,20 +157,18 @@ export const useShip = (
     }
 
     if (changed) {
-      updateShipQueueState(() => updatedQueue);
+      await updateShipQueueState(updatedQueue);
     }
   };
 
   const handleDestroyShip = async (type: ShipType, amount: number) => {
-    updateShipQueueState((prev) =>
+    await updateShipQueueState((prev) =>
       prev.map((ship) => (ship.type === type ? { ...ship, amount: ship.amount - amount } : ship))
     );
   };
 
-  const handleCreateShips = async (
-    shipsToAdd: { type: ShipType; amount: number }[]
-  ): Promise<void> => {
-    updateShipQueueState((prev) => {
+  const handleCreateShips = async (shipsToAdd: { type: ShipType; amount: number }[]) => {
+    await updateShipQueueState((prev) => {
       const updated = [...prev];
 
       for (const { type, amount } of shipsToAdd) {
@@ -188,7 +186,7 @@ export const useShip = (
 
   const loadData = async () => {
     const saved = await loadShip();
-    if (saved) setShipBuildQueue(saved);
+    if (saved) syncAndSave(saved);
   };
 
   useEffect(() => {

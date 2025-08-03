@@ -1,13 +1,13 @@
-import { BuildingRequiredData } from "@/src/types/buildingTypes";
-import { researchConfig } from "../src/config/researchConfig";
+import { researchConfig } from "@/src/config/researchConfig";
 import {
   GENERAL_FACTOR,
   RESEARCH_COST_INCREMENT,
   RESEARCH_TIME_INCREMENT,
-} from "../src/constants/general";
-import { Hex } from "../src/types/hexTypes";
-import { ResearchType } from "../src/types/researchTypes";
-import { Resources } from "../src/types/resourceTypes";
+} from "@/src/constants/general";
+import { BuildingRequiredData } from "@/src/types/buildingTypes";
+import { Hex } from "@/src/types/hexTypes";
+import { ResearchType } from "@/src/types/researchTypes";
+import { Resources } from "@/src/types/resourceTypes";
 
 export const getResearchTime = (research: ResearchType, level: number): number => {
   const baseTime = researchConfig[research].baseResearchTime;

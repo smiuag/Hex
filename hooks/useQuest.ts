@@ -1,36 +1,39 @@
-import { useEffect, useState } from "react";
-import { questConfig } from "../src/config/questConfig";
-import { loadQuests, saveQuests } from "../src/services/storage";
-import { PlayerQuest, QuestType } from "../src/types/questType";
-import { Resources } from "../src/types/resourceTypes";
+import { questConfig } from "@/src/config/questConfig";
+import { loadQuests, saveQuests } from "@/src/services/storage";
+import { PlayerQuest, QuestType } from "@/src/types/questType";
+import { Resources } from "@/src/types/resourceTypes";
+import { useEffect, useRef, useState } from "react";
 
 export const useQuest = (addResources: (modifications: Partial<Resources>) => void) => {
   const [playerQuests, setPlayerQuests] = useState<PlayerQuest[]>([]);
+  const questRef = useRef<PlayerQuest[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  const syncAndSave = (newQuests: PlayerQuest[]) => {
+    questRef.current = newQuests;
+    setPlayerQuests(newQuests);
+    saveQuests(newQuests);
+  };
 
   const updateQuestState = async (
     updater: PlayerQuest[] | ((prev: PlayerQuest[]) => PlayerQuest[])
   ) => {
-    setPlayerQuests((prev) => {
-      const newQuests = typeof updater === "function" ? updater(prev) : updater;
-      saveQuests(newQuests);
-      return newQuests;
-    });
+    const updated = typeof updater === "function" ? updater(questRef.current) : updater;
+    syncAndSave(updated);
   };
-
-  const [isLoaded, setIsLoaded] = useState(false);
 
   const loadData = async () => {
     const saved = await loadQuests();
     if (saved) {
-      setPlayerQuests(saved);
+      syncAndSave(saved);
     }
-    setIsLoaded(true); // <- ahora sabemos que podemos operar con seguridad
+    setIsLoaded(true);
   };
 
   const completeQuest = async (type: QuestType) => {
     const config = questConfig[type];
 
-    updateQuestState((prev) => {
+    await updateQuestState((prev) => {
       const updated = [...prev];
       const existing = updated.find((q) => q.type === type);
 
@@ -48,9 +51,9 @@ export const useQuest = (addResources: (modifications: Partial<Resources>) => vo
   };
 
   const markQuestsAsViewed = async (questType: QuestType) => {
-    if (!isLoaded) return; // 💥 evita sobrescribir sin datos reales
+    if (!isLoaded) return;
 
-    updateQuestState((prev) => {
+    await updateQuestState((prev) => {
       const updatedMap = new Map<QuestType, PlayerQuest>();
       for (const quest of prev) {
         updatedMap.set(quest.type, quest);
@@ -69,16 +72,16 @@ export const useQuest = (addResources: (modifications: Partial<Resources>) => vo
   };
 
   const resetQuests = async () => {
-    updateQuestState([]);
+    await updateQuestState([]);
   };
 
   const getCompletedQuestTypes = (): QuestType[] =>
-    playerQuests.filter((q) => q.completed).map((q) => q.type);
+    questRef.current.filter((q) => q.completed).map((q) => q.type);
 
   const hasNewQuests = (): boolean => {
     return Object.values(questConfig).some((quest) => {
-      const isCompleted = playerQuests.some((q) => q.type === quest.type && q.completed);
-      const isViewed = playerQuests.some((q) => q.type === quest.type && q.viewed);
+      const isCompleted = questRef.current.some((q) => q.type === quest.type && q.completed);
+      const isViewed = questRef.current.some((q) => q.type === quest.type && q.viewed);
       return !isCompleted && !isViewed;
     });
   };

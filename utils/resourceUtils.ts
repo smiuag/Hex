@@ -1,13 +1,14 @@
-import { buildingConfig } from "../src/config/buildingConfig";
-import { GENERAL_FACTOR, PRODUCTION_INCREMENT } from "../src/constants/general";
-import { Hex } from "../src/types/hexTypes";
-import { Resources, StoredResources } from "../src/types/resourceTypes";
+import { buildingConfig } from "@/src/config/buildingConfig";
+import { PRODUCTION_INCREMENT } from "@/src/constants/general";
+import { Hex } from "@/src/types/hexTypes";
+import { Resources, StoredResources } from "@/src/types/resourceTypes";
+
 export const getProductionForBuilding = (
   type: keyof typeof buildingConfig,
   level: number
 ): Partial<Resources> => {
   const config = buildingConfig[type];
-  const baseProduction = config?.production; // Usamos el operador de encadenamiento opcional para evitar errores si no existe producción
+  const baseProduction = config?.production;
 
   const result: Partial<Resources> = {};
 
@@ -15,9 +16,8 @@ export const getProductionForBuilding = (
 
   for (const key in baseProduction) {
     const resource = key as keyof Resources;
-    const baseValue = baseProduction[resource] ?? 0; // Si no hay valor, asignamos 0
-    const scaled =
-      baseValue * Math.pow(PRODUCTION_INCREMENT, Math.max(0, level - 1)) * GENERAL_FACTOR;
+    const baseValue = baseProduction[resource] ?? 0;
+    const scaled = baseValue * Math.pow(PRODUCTION_INCREMENT, Math.max(0, level - 1));
     result[resource] = scaled;
   }
 

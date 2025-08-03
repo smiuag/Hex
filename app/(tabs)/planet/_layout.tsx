@@ -5,7 +5,7 @@ export default function PlanetLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        lazy: false,
+        lazy: true,
         tabBarStyle: { display: "none", height: 0 },
       }}
     />

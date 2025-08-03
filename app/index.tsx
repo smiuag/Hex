@@ -11,7 +11,8 @@ export default function IndexRedirect() {
       console.error("Error al cambiar el idioma:", err);
     });
 
-    router.replace("/menu");
+    //Este siempre replace
+    router.replace("/(tabs)/menu");
   }, []);
 
   useEffect(() => {

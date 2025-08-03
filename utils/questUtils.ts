@@ -1,8 +1,8 @@
+import { questConfig } from "@/src/config/questConfig";
+import { Hex } from "@/src/types/hexTypes";
+import { QuestType } from "@/src/types/questType";
 import { Research } from "@/src/types/researchTypes";
-import { questConfig } from "../src/config/questConfig";
-import { Hex } from "../src/types/hexTypes";
-import { QuestType } from "../src/types/questType";
-import { Ship } from "../src/types/shipType";
+import { Ship } from "@/src/types/shipType";
 
 export function shouldShowQuest(questType: QuestType, completedQuests: QuestType[]): boolean {
   const config = questConfig[questType];

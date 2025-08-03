@@ -1,11 +1,11 @@
+import { buildingConfig } from "@/src/config/buildingConfig";
+import { researchConfig } from "@/src/config/researchConfig";
+import { shipConfig } from "@/src/config/shipConfig";
 import { FleetData } from "@/src/types/fleetType";
-import { buildingConfig } from "../src/config/buildingConfig";
-import { researchConfig } from "../src/config/researchConfig";
-import { shipConfig } from "../src/config/shipConfig";
-import { Hex } from "../src/types/hexTypes";
-import { Process, ProcessType } from "../src/types/processTypes";
-import { Research } from "../src/types/researchTypes";
-import { Ship } from "../src/types/shipType";
+import { Hex } from "@/src/types/hexTypes";
+import { Process, ProcessType } from "@/src/types/processTypes";
+import { Research } from "@/src/types/researchTypes";
+import { Ship } from "@/src/types/shipType";
 import { getBuildTime } from "../utils/buildingUtils";
 import { getResearchTime } from "../utils/researchUtils";
 

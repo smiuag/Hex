@@ -1,7 +1,7 @@
-import { shipConfig } from "../src/config/shipConfig";
-import { Research } from "../src/types/researchTypes";
-import { Resources } from "../src/types/resourceTypes";
-import { ShipType } from "../src/types/shipType";
+import { shipConfig } from "@/src/config/shipConfig";
+import { Research } from "@/src/types/researchTypes";
+import { Resources } from "@/src/types/resourceTypes";
+import { ShipType } from "@/src/types/shipType";
 
 export const isUnlocked = (type: string, playerResearch: Research[] = []): boolean => {
   const config = shipConfig[type as ShipType];

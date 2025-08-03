@@ -1,5 +1,5 @@
 import { shipConfig } from "@/src/config/shipConfig";
-import { CombatShip, Ship, ShipType } from "../src/types/shipType";
+import { CombatShip, Ship, ShipType } from "@/src/types/shipType";
 
 // Clona profundamente una flota expandiendo cada nave como entidad individual
 function expandFleet(fleet: Ship[]): CombatShip[] {

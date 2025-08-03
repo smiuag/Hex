@@ -131,16 +131,17 @@ export const commonStyles = StyleSheet.create({
     color: "white",
     fontSize: 20,
     fontWeight: "bold",
+    textAlign: "center",
   },
   backButton: {
-    marginTop: 20,
+    marginTop: 5,
     alignSelf: "center",
-    backgroundColor: "#e53935",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
+    backgroundColor: "#6b8dc3",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
     borderRadius: 12,
     width: width - 48,
-    marginBottom: 16,
+    marginBottom: 5,
   },
   closeXButton: {
     position: "absolute",
@@ -161,7 +162,6 @@ export const commonStyles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   mainBuilding: {
-    paddingVertical: 5,
     paddingHorizontal: 10,
   },
   actionContainer: {
@@ -281,5 +281,25 @@ export const commonStyles = StyleSheet.create({
     justifyContent: "space-between",
     position: "relative",
     height: 50,
+  },
+  flexCenter: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  floatingDeleteButton: {
+    position: "absolute",
+    top: 6,
+    right: 8,
+    backgroundColor: "rgba(200, 0, 0, 0.8)",
+    borderRadius: 20,
+    padding: 6,
+    zIndex: 10,
+  },
+
+  floatingDeleteText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });

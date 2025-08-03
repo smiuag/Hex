@@ -1,3 +1,4 @@
+import { STELAR_BUILDINGS_DURATION } from "@/src/constants/general";
 import { getSystemImage } from "@/utils/starSystemUtils";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -16,6 +17,8 @@ type Props = {
   onExplorePlanet: (systemId: string, planetId: string) => void;
   onCancelExplorePlanet: (systemId: string, planetId: string) => void;
   onStelarPortBuild: (id: string) => void;
+  onDefenseStartBuild: (id: string) => void;
+  onExtractionStartBuild: (id: string) => void;
 };
 
 export const SystemExploredCard: React.FC<Props> = ({
@@ -24,11 +27,12 @@ export const SystemExploredCard: React.FC<Props> = ({
   onExplorePlanet,
   onCancelExplorePlanet,
   onStelarPortBuild,
+  onDefenseStartBuild,
+  onExtractionStartBuild,
 }) => {
   const { t } = useTranslation("common");
   const { t: tPlanets } = useTranslation("planets");
-
-  const { shipBuildQueue, enoughResources } = useGameContext();
+  const { shipBuildQueue, universe, enoughResources } = useGameContext();
 
   const handleBuildPort = () => {
     Alert.alert(t("BuildStelarPort"), t("StelarPortCostMessage"), [
@@ -43,18 +47,61 @@ export const SystemExploredCard: React.FC<Props> = ({
           else
             Toast.show({
               type: "info", // "success" | "info" | "error"
-              text1: "Recursos insuficientes o cargueros insuficientes",
+              text1: t("NotEnoughForConstruction"),
               position: "top",
               visibilityTime: 2000,
             });
         },
       },
     ]);
+  };
 
-    onStelarPortBuild(system.id);
+  const handleDefenseBuild = () => {
+    Alert.alert(t("BuildDefense"), t("DefenseBuildingCostMessage"), [
+      { text: t("cancel"), style: "cancel" },
+      {
+        text: t("confirm"),
+        style: "destructive",
+        onPress: async () => {
+          const lockedByResources = !enoughResources(BUILDING_COST.SPACESTATION);
+          const enoughFreighter = shipBuildQueue.find((f) => f.type == "FREIGHTER" && f.amount > 1);
+          if (enoughFreighter && !lockedByResources) onDefenseStartBuild(system.id);
+          else
+            Toast.show({
+              type: "info", // "success" | "info" | "error"
+              text1: t("NotEnoughForConstruction"),
+              position: "top",
+              visibilityTime: 2000,
+            });
+        },
+      },
+    ]);
+  };
+
+  const handleExtractBuild = () => {
+    Alert.alert(t("BuildExtractionBuilding"), t("ExtractionBuildingCostMessage"), [
+      { text: t("cancel"), style: "cancel" },
+      {
+        text: t("confirm"),
+        style: "destructive",
+        onPress: async () => {
+          const lockedByResources = !enoughResources(BUILDING_COST.SPACESTATION);
+          const enoughFreighter = shipBuildQueue.find((f) => f.type == "FREIGHTER" && f.amount > 1);
+          if (enoughFreighter && !lockedByResources) onExtractionStartBuild(system.id);
+          else
+            Toast.show({
+              type: "info", // "success" | "info" | "error"
+              text1: t("NotEnoughForConstruction"),
+              position: "top",
+              visibilityTime: 2000,
+            });
+        },
+      },
+    ]);
   };
 
   const image = getSystemImage(system.type);
+  const systemName = universe[system.id].name;
 
   return (
     <View style={commonStyles.containerCenter} key={system.id}>
@@ -64,12 +111,13 @@ export const SystemExploredCard: React.FC<Props> = ({
         imageStyle={commonStyles.imageCover}
       >
         <View style={commonStyles.overlayDark}>
-          <View style={commonStyles.rowSpaceBetween}>
-            <Text style={commonStyles.titleBlueText}>{tPlanets(`systemType.${system.type}`)}</Text>
-            <Text style={commonStyles.whiteText}>
-              {system.distance} {t("parsecs")}
+          <Text style={commonStyles.titleBlueText}>
+            {systemName}{" "}
+            <Text style={[commonStyles.whiteText, { fontSize: 16 }]}>
+              {" "}
+              ({tPlanets(`systemType.${system.type}`)}){" "}
             </Text>
-          </View>
+          </Text>
 
           <Text style={[commonStyles.titleText, { textAlign: "center", marginTop: 10 }]}>
             Cuerpos celestes
@@ -87,17 +135,17 @@ export const SystemExploredCard: React.FC<Props> = ({
           </View>
           {system.planets.length == 0 ? (
             <Text style={[commonStyles.subtitleText, { textAlign: "center" }]}>
-              Ningún cuerpo celeste con recursos aprovechables.
+              {t("VoidSystem")}
             </Text>
           ) : (
             <>
               <Text style={[commonStyles.titleText, { textAlign: "center", marginTop: 10 }]}>
-                Instalaciones
+                {t("Instalations")}
               </Text>
 
-              {system.starPort ? (
+              {system.starPortBuilt ? (
                 <View style={[commonStyles.actionBar]}>
-                  <Text style={commonStyles.subtitleText}>PUERTO ESTELAR CONSTRUÍDO</Text>
+                  <Text style={commonStyles.subtitleText}>{t("StelarPortBuilt")}</Text>
                 </View>
               ) : system.starPortStartedAt ? (
                 <View style={[commonStyles.actionBar]}>
@@ -105,50 +153,82 @@ export const SystemExploredCard: React.FC<Props> = ({
                     ⏳ {t("inProgress")}:{" "}
                     <CountdownTimer
                       startedAt={system.starPortStartedAt}
-                      duration={1000 * 60 * 60 * 24}
+                      duration={STELAR_BUILDINGS_DURATION}
                     />
                   </Text>
-                  <Text style={commonStyles.whiteText}>Puerto estelar</Text>
+                  <Text style={commonStyles.whiteText}>{t("StelarPort")}</Text>
                 </View>
               ) : (
                 <View style={[commonStyles.actionBar]}>
-                  <Text style={commonStyles.subtitleText}>Puerto estelar</Text>
+                  <Text style={commonStyles.subtitleText}>{t("StelarPort")}</Text>
                   <TouchableOpacity
                     style={commonStyles.buttonPrimary}
                     onPress={() => handleBuildPort()}
                   >
-                    <Text style={commonStyles.buttonTextLight}>{t("Construir")}</Text>
+                    <Text style={commonStyles.buttonTextLight}>{t("Build")}</Text>
                   </TouchableOpacity>
                 </View>
               )}
 
-              <View style={[commonStyles.actionBar]}>
-                <Text style={commonStyles.subtitleText}>Sistema defensivo</Text>
-                <TouchableOpacity
-                  style={commonStyles.buttonPrimary}
-                  onPress={() => handleBuildPort()}
-                >
-                  <Text style={commonStyles.buttonTextLight}>{t("Construir")}</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={[commonStyles.actionBar]}>
-                <Text style={commonStyles.subtitleText}>Sistemas de extracción</Text>
-                <TouchableOpacity
-                  style={commonStyles.buttonPrimary}
-                  onPress={() => handleBuildPort()}
-                >
-                  <Text style={commonStyles.buttonTextLight}>{t("Construir")}</Text>
-                </TouchableOpacity>
-              </View>
+              {system.defenseBuildingBuilt ? (
+                <View style={[commonStyles.actionBar]}>
+                  <Text style={commonStyles.subtitleText}>{t("DefenseSystemBuilt")}</Text>
+                </View>
+              ) : system.defenseStartedAt ? (
+                <View style={[commonStyles.actionBar]}>
+                  <Text style={commonStyles.statusTextYellow}>
+                    ⏳ {t("inProgress")}:{" "}
+                    <CountdownTimer
+                      startedAt={system.defenseStartedAt}
+                      duration={STELAR_BUILDINGS_DURATION}
+                    />
+                  </Text>
+                  <Text style={commonStyles.whiteText}>{t("DefenseSystem")}</Text>
+                </View>
+              ) : (
+                <View style={[commonStyles.actionBar]}>
+                  <Text style={commonStyles.subtitleText}>{t("DefenseSystem")}</Text>
+                  <TouchableOpacity
+                    style={commonStyles.buttonPrimary}
+                    onPress={() => handleDefenseBuild()}
+                  >
+                    <Text style={commonStyles.buttonTextLight}>{t("Build")}</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+
+              {system.extractionBuildingBuilt ? (
+                <View style={[commonStyles.actionBar]}>
+                  <Text style={commonStyles.subtitleText}>{t("ExtractionSystemBuilt")}</Text>
+                </View>
+              ) : system.extractionStartedAt ? (
+                <View style={[commonStyles.actionBar]}>
+                  <Text style={commonStyles.statusTextYellow}>
+                    ⏳ {t("inProgress")}:{" "}
+                    <CountdownTimer
+                      startedAt={system.extractionStartedAt}
+                      duration={STELAR_BUILDINGS_DURATION}
+                    />
+                  </Text>
+                  <Text style={commonStyles.whiteText}>{t("ExtractionSystem")}</Text>
+                </View>
+              ) : (
+                <View style={[commonStyles.actionBar]}>
+                  <Text style={commonStyles.subtitleText}>{t("ExtractionSystem")}</Text>
+                  <TouchableOpacity
+                    style={commonStyles.buttonPrimary}
+                    onPress={() => handleExtractBuild()}
+                  >
+                    <Text style={commonStyles.buttonTextLight}>{t("Build")}</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
             </>
           )}
           <View style={commonStyles.actionBar}>
-            <TouchableOpacity
-              style={commonStyles.cancelButton}
-              onPress={() => onDiscard(system.id)}
-            >
-              <Text style={commonStyles.cancelButtonText}>{t("Discard")}</Text>
-            </TouchableOpacity>
+            <Text style={commonStyles.whiteText}>
+              {system.distance} {t("parsecs")}
+            </Text>
 
             <TouchableOpacity
               style={commonStyles.buttonPrimary}
@@ -159,6 +239,14 @@ export const SystemExploredCard: React.FC<Props> = ({
           </View>
         </View>
       </ImageBackground>
+      <TouchableOpacity
+        style={commonStyles.floatingDeleteButton}
+        onPress={() => {
+          onDiscard(system.id);
+        }}
+      >
+        <Text style={commonStyles.floatingDeleteText}>💀</Text>
+      </TouchableOpacity>
     </View>
   );
 };

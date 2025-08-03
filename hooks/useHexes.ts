@@ -1,34 +1,38 @@
+import { buildingConfig } from "@/src/config/buildingConfig";
+import { deleteMap, loadMap, saveMap } from "@/src/services/storage";
+import { BuildingType } from "@/src/types/buildingTypes";
+import { Hex } from "@/src/types/hexTypes";
+import { Resources } from "@/src/types/resourceTypes";
 import * as Notifications from "expo-notifications";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Toast from "react-native-toast-message";
-import { buildingConfig } from "../src/config/buildingConfig";
-import { deleteMap, loadMap, saveMap } from "../src/services/storage";
-import { BuildingType } from "../src/types/buildingTypes";
-import { Hex } from "../src/types/hexTypes";
-import { Resources } from "../src/types/resourceTypes";
 import { getBuildCost, getBuildTime, getProductionPerSecond } from "../utils/buildingUtils";
-import { expandHexMapFromBuiltHexes, generateInitialHexMap } from "../utils/hexUtils";
+import {
+  expandHexMapFromBuiltHexes,
+  generateInitialHexMap,
+  recalculateHexMapVisibility,
+} from "../utils/hexUtils";
 import { NotificationManager } from "../utils/notificacionUtils";
-
-type UseHexesCallbacks = {
-  onBuildStart?: (q: number, r: number, type: BuildingType, level: number) => void;
-  onBuildComplete?: (q: number, r: number, type: BuildingType, level: number) => void;
-  onBuildCancel?: (q: number, r: number, type: BuildingType, level: number) => void;
-};
 
 export const useHexes = (
   addProduction: (modifications: Partial<Resources>) => void,
   addResources: (modifications: Partial<Resources>) => void,
   subtractResources: (modifications: Partial<Resources>) => void,
-  enoughResources: (cost: Partial<Resources>) => boolean,
-  callbacks?: UseHexesCallbacks
+  enoughResources: (cost: Partial<Resources>) => boolean
 ) => {
   const [hexes, setHexes] = useState<Hex[]>([]);
+  const hexRef = useRef<Hex[]>([]);
+
+  const syncAndSave = (newHexes: Hex[]) => {
+    hexRef.current = newHexes;
+    setHexes(newHexes);
+    saveMap(newHexes);
+  };
 
   const updateMap = async (updater: Hex[] | ((prev: Hex[]) => Hex[])) => {
     setHexes((prev) => {
-      const next = typeof updater === "function" ? updater(prev) : updater;
-      saveMap(next);
+      const next = typeof updater === "function" ? updater(hexRef.current) : updater;
+      syncAndSave(next);
       return next;
     });
   };
@@ -36,9 +40,9 @@ export const useHexes = (
   const loadInitialMap = async () => {
     const saved = await loadMap();
     if (saved) {
-      updateMap(saved);
+      syncAndSave(saved);
     } else {
-      updateMap([]);
+      syncAndSave([]);
     }
   };
 
@@ -48,9 +52,8 @@ export const useHexes = (
 
   const resetBuild = async () => {
     await deleteMap();
-
     const newMap = generateInitialHexMap();
-    updateMap(newMap);
+    syncAndSave(newMap);
   };
 
   const handleBuild = async (q: number, r: number, type: BuildingType) => {
@@ -67,7 +70,7 @@ export const useHexes = (
 
       if (!enoughResources(scaledCost)) {
         Toast.show({
-          type: "info", // "success" | "info" | "error"
+          type: "info",
           text1: "Recursos insuficientes",
           position: "top",
           visibilityTime: 2000,
@@ -79,15 +82,11 @@ export const useHexes = (
 
       NotificationManager.scheduleNotification({
         title: "✅ Construcción terminada",
-        body: `Tu edificio "${type}" está listo.`,
+        body: `Tu edificio \"${type}\" está listo.`,
         delayMs: durationMs,
       }).then((id) => {
         notificationId = id ?? undefined;
       });
-
-      if (callbacks?.onBuildStart) {
-        callbacks.onBuildStart(q, r, type, nextLevel);
-      }
 
       return prevHexes.map((h) =>
         h.q === q && h.r === r
@@ -107,24 +106,45 @@ export const useHexes = (
     });
   };
 
+  const handleDestroyBuilding = async (q: number, r: number) => {
+    const hex = hexRef.current.find((h) => h.q === q && h.r === r);
+    if (!hex) return;
+
+    const updatedHexes = hexRef.current.map((h) => {
+      if (h.q === q && h.r === r) {
+        return {
+          ...h,
+          building: null,
+          previousBuilding: null,
+          construction: undefined,
+          isTerraformed: true,
+        };
+      }
+      return h;
+    });
+
+    const recalculatedHexes = recalculateHexMapVisibility(updatedHexes);
+    syncAndSave(recalculatedHexes);
+  };
+
   const handleTerraform = async (q: number, r: number) => {
-    const hex = hexes.find((h) => h.q === q && h.r === r);
+    const hex = hexRef.current.find((h) => h.q === q && h.r === r);
     if (!hex) return;
 
     const resources = hex.resources;
 
-    updateMap((prevHexes) =>
-      prevHexes.map((h) => {
-        if (h.q === q && h.r === r) {
-          return {
-            ...h,
-            resources: undefined,
-            isTerraformed: true,
-          };
-        }
-        return h;
-      })
-    );
+    const updated = hexRef.current.map((h) => {
+      if (h.q === q && h.r === r) {
+        return {
+          ...h,
+          resources: undefined,
+          isTerraformed: true,
+        };
+      }
+      return h;
+    });
+
+    syncAndSave(updated);
 
     if (resources) addResources(resources);
   };
@@ -149,10 +169,6 @@ export const useHexes = (
         NotificationManager.cancelNotification(notificationId);
       }
 
-      if (callbacks?.onBuildCancel) {
-        callbacks.onBuildCancel(q, r, building, targetLevel);
-      }
-
       return prevHexes.map((h) => {
         if (h.q === q && h.r === r) {
           const { construction, previousBuilding, ...rest } = h;
@@ -170,10 +186,9 @@ export const useHexes = (
 
   const processConstructionTick = () => {
     const now = Date.now();
-    const hexesToUpdate: Hex[] = [];
     let changed = false;
 
-    const updatedHexes = hexes.map((hex) => {
+    const updatedHexes = hexRef.current.map((hex) => {
       if (!hex.construction) return hex;
 
       const { building, startedAt, targetLevel } = hex.construction;
@@ -202,10 +217,6 @@ export const useHexes = (
 
       if (Object.keys(diff).length > 0) addProduction(diff);
 
-      if (callbacks?.onBuildComplete) {
-        callbacks.onBuildComplete(hex.q, hex.r, building, targetLevel);
-      }
-
       Notifications.scheduleNotificationAsync({
         content: {
           title: "✅ Construcción terminada",
@@ -215,7 +226,7 @@ export const useHexes = (
         trigger: null,
       });
 
-      const updatedHex: Hex = {
+      return {
         ...hex,
         construction: undefined,
         building: {
@@ -223,14 +234,11 @@ export const useHexes = (
           level: targetLevel,
         },
       };
-
-      hexesToUpdate.push(updatedHex);
-      return updatedHex;
     });
 
     if (changed) {
-      const hexesToUpdate = expandHexMapFromBuiltHexes(updatedHexes);
-      updateMap(hexesToUpdate);
+      const recalculated = expandHexMapFromBuiltHexes(updatedHexes);
+      syncAndSave(recalculated);
     }
   };
 
@@ -241,5 +249,6 @@ export const useHexes = (
     handleCancelBuild,
     resetBuild,
     handleTerraform,
+    handleDestroyBuilding,
   };
 };

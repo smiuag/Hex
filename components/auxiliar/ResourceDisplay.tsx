@@ -8,17 +8,11 @@ interface Props {
   resources: Partial<Resources | SpecialResources>;
   fontSize?: number;
   fontColor?: string;
-  gap?: number;
 }
 
-export const ResourceDisplay = ({
-  resources,
-  fontSize = 16,
-  fontColor = "white",
-  gap = 12,
-}: Props) => {
+export const ResourceDisplay = ({ resources, fontSize = 16, fontColor = "white" }: Props) => {
   return (
-    <View style={[styles.container, { gap }]}>
+    <View style={[styles.container, { gap: 12 }]}>
       {[...Object.entries(resources)].reverse().map(([key, value]) => {
         const emoji = resourceEmojis[key as ResourceType];
         if (!emoji || value == null || value === 0) return null;
