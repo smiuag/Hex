@@ -112,9 +112,20 @@ export function getSystemImage(type: StarSystemType): ImageSourcePropType {
 }
 
 export function getExpectedResourceProbabilities(
-  systemType: StarSystemType
+  systemType: StarSystemType,
+  stelarBodys: number
 ): Partial<Record<ResourceType | SpecialResourceType, number>> {
-  return starSystemConfig[systemType]?.resourceProbabilities ?? {};
+  const base = starSystemConfig[systemType]?.resourceProbabilities ?? {};
+  const multiplier = Math.log(stelarBodys + 1) / Math.log(2);
+  const adjusted: Partial<Record<ResourceType | SpecialResourceType, number>> = {};
+
+  for (const key in base) {
+    const typedKey = key as ResourceType | SpecialResourceType;
+    const baseProb = base[typedKey] ?? 0;
+    adjusted[typedKey] = Math.min(baseProb * multiplier, 1);
+  }
+
+  return adjusted;
 }
 
 function parseSystemId(id: string) {
