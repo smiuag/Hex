@@ -82,7 +82,7 @@ export const useQuest = (addResources: (modifications: Partial<Resources>) => vo
         updateQuest({
           type: "H2O_SEARCH",
           available: true,
-          completed: false,
+          completed: playerQuests.some((q) => q.type == "H2O_SEARCH" && q.completed) ? true : false,
           viewed: false,
           rewardClaimed: false,
         });
@@ -91,7 +91,9 @@ export const useQuest = (addResources: (modifications: Partial<Resources>) => vo
         updateQuest({
           type: "BUILDING_LAB1",
           available: true,
-          completed: false,
+          completed: playerQuests.some((q) => q.type == "BUILDING_LAB1" && q.completed)
+            ? true
+            : false,
           rewardClaimed: false,
           viewed: false,
         });
@@ -100,7 +102,9 @@ export const useQuest = (addResources: (modifications: Partial<Resources>) => vo
         updateQuest({
           type: "RESEARCH_MINING1",
           available: true,
-          completed: false,
+          completed: playerQuests.some((q) => q.type == "RESEARCH_MINING1" && q.completed)
+            ? true
+            : false,
           rewardClaimed: false,
           viewed: false,
         });
@@ -109,7 +113,9 @@ export const useQuest = (addResources: (modifications: Partial<Resources>) => vo
         updateQuest({
           type: "BUILDING_QUARRY1",
           available: true,
-          completed: false,
+          completed: playerQuests.some((q) => q.type == "BUILDING_QUARRY1" && q.completed)
+            ? true
+            : false,
           rewardClaimed: false,
           viewed: false,
         });
@@ -118,7 +124,9 @@ export const useQuest = (addResources: (modifications: Partial<Resources>) => vo
         updateQuest({
           type: "BUILDING_METALLURGY1",
           available: true,
-          completed: false,
+          completed: playerQuests.some((q) => q.type == "BUILDING_METALLURGY1" && q.completed)
+            ? true
+            : false,
           rewardClaimed: false,
           viewed: false,
         });
@@ -127,7 +135,9 @@ export const useQuest = (addResources: (modifications: Partial<Resources>) => vo
         updateQuest({
           type: "BUILDING_KRYSTALMINE1",
           available: true,
-          completed: false,
+          completed: playerQuests.some((q) => q.type == "BUILDING_KRYSTALMINE1" && q.completed)
+            ? true
+            : false,
           rewardClaimed: false,
           viewed: false,
         });
@@ -136,7 +146,7 @@ export const useQuest = (addResources: (modifications: Partial<Resources>) => vo
         updateQuest({
           type: "H2O_FOUND",
           available: true,
-          completed: false,
+          completed: playerQuests.some((q) => q.type == "H2O_FOUND" && q.completed) ? true : false,
           rewardClaimed: false,
           viewed: false,
         });
@@ -144,7 +154,9 @@ export const useQuest = (addResources: (modifications: Partial<Resources>) => vo
         updateQuest({
           type: "BUILDING_BASE2",
           available: true,
-          completed: false,
+          completed: playerQuests.some((q) => q.type == "BUILDING_BASE2" && q.completed)
+            ? true
+            : false,
           rewardClaimed: false,
           viewed: false,
         });
@@ -153,16 +165,29 @@ export const useQuest = (addResources: (modifications: Partial<Resources>) => vo
         updateQuest({
           type: "BUILDING_ANTENNA",
           available: true,
-          completed: false,
+          completed: playerQuests.some((q) => q.type == "BUILDING_ANTENNA" && q.completed)
+            ? true
+            : false,
           rewardClaimed: false,
           viewed: false,
         });
         break;
       case "BUILDING_ANTENNA":
         updateQuest({
+          type: "SCAN_FIRST",
+          available: true,
+          completed: playerQuests.some((q) => q.type == "SCAN_FIRST" && q.completed) ? true : false,
+          rewardClaimed: false,
+          viewed: false,
+        });
+        break;
+      case "SCAN_FIRST":
+        updateQuest({
           type: "BUILDING_HANGAR",
           available: true,
-          completed: false,
+          completed: playerQuests.some((q) => q.type == "BUILDING_HANGAR" && q.completed)
+            ? true
+            : false,
           rewardClaimed: false,
           viewed: false,
         });
@@ -171,7 +196,16 @@ export const useQuest = (addResources: (modifications: Partial<Resources>) => vo
         updateQuest({
           type: "SHIP_FIRST",
           available: true,
-          completed: false,
+          completed: playerQuests.some((q) => q.type == "SHIP_FIRST" && q.completed) ? true : false,
+          rewardClaimed: false,
+          viewed: false,
+        });
+        break;
+      case "SHIP_FIRST":
+        updateQuest({
+          type: "EXPLORE_SYSTEM",
+          available: true,
+          completed: playerQuests.some((q) => q.type == "SHIP_FIRST" && q.completed) ? true : false,
           rewardClaimed: false,
           viewed: false,
         });
@@ -180,7 +214,7 @@ export const useQuest = (addResources: (modifications: Partial<Resources>) => vo
         updateQuest({
           type: "ALIEN_TECH_FOUND",
           available: true,
-          completed: false,
+          completed: playerQuests.some((q) => q.type == "H2O_FOUND" && q.completed) ? true : false,
           rewardClaimed: false,
           viewed: false,
         });

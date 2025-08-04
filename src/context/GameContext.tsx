@@ -48,7 +48,6 @@ type ProviderContextType = {
   handleCancelShip: (type: ShipType) => void;
   updateQuest: (options: UpdateQuestOptions) => void;
   handleUpdateConfig: (config: ConfigEntry) => void;
-  updatePlayerConfig: (config: PlayerConfig) => void;
   endGame: () => void;
   startGame: () => void;
   discardStarSystem: (id: string) => void;
@@ -74,7 +73,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   const { t: tResearch } = useTranslation("research");
   const { universe } = useUniverse();
 
-  const { playerConfig, handleUpdateConfig, resetPlayerConfig, updatePlayerConfig } = useConfig();
+  const { playerConfig, handleUpdateConfig, resetPlayerConfig } = useConfig();
 
   const {
     resources,
@@ -137,7 +136,14 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     scanStarSystem,
     recoverStarSystem,
     cancelScanStarSystem,
-  } = useStarSystem(universe, handleDestroyShip, handleCreateShips, subtractResources);
+  } = useStarSystem(
+    playerQuests,
+    universe,
+    handleDestroyShip,
+    handleCreateShips,
+    subtractResources,
+    updateQuest
+  );
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -170,17 +176,24 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const startGame = async () => {
-    await endGame();
-    await handleUpdateConfig({ key: "GAME_STARTED", value: "true" });
-    await handleUpdateConfig({ key: "MAP_SIZE", value: "SMALL" });
-    await handleUpdateConfig({ key: "STARTING_SYSTEM", value: getRandomStartSystem(universe).id });
-    await updateQuest({
-      type: "START",
-      available: true,
-      completed: false,
-      viewed: false,
-      rewardClaimed: false,
-    });
+    try {
+      await endGame();
+    } catch (exception) {
+    } finally {
+      await handleUpdateConfig({ key: "GAME_STARTED", value: "true" });
+      await handleUpdateConfig({ key: "MAP_SIZE", value: "SMALL" });
+      await handleUpdateConfig({
+        key: "STARTING_SYSTEM",
+        value: getRandomStartSystem(universe).id,
+      });
+      await updateQuest({
+        type: "START",
+        available: true,
+        completed: false,
+        viewed: false,
+        rewardClaimed: false,
+      });
+    }
   };
 
   const contextValue = useMemo<ProviderContextType>(
@@ -198,7 +211,6 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       startPlanetExploration,
       discardStarSystem,
       handleUpdateConfig,
-      updatePlayerConfig,
       addProduction,
       addResources,
       subtractResources,
@@ -239,7 +251,6 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       startPlanetExploration,
       discardStarSystem,
       handleUpdateConfig,
-      updatePlayerConfig,
       addProduction,
       addResources,
       subtractResources,

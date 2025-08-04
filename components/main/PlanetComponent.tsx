@@ -11,6 +11,7 @@ import Animated, {
 import Svg from "react-native-svg";
 import { scaleKeys, ScaleSize } from "../../src/types/configTypes";
 
+import { useIsFocused } from "@react-navigation/native";
 import Toast from "react-native-toast-message";
 import { IMAGES } from "../../src/constants/images";
 import { useGameContextSelector } from "../../src/context/GameContext";
@@ -205,6 +206,9 @@ export default function PlanetComponent() {
       setModalTerraformVisible(false);
     }
   };
+
+  const isFocused = useIsFocused();
+  if (!isFocused) return null;
 
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: "white" }}>

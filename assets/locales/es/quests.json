@@ -136,5 +136,23 @@
       "Recomendación inmediata: desplegar drones de sondeo y priorizar la búsqueda de depósitos de hielo o acuíferos.",
       "Sin agua, no hay colonia."
     ]
+  },
+  "SCAN_FIRST": {
+    "name": "Explorando la galaxia",
+    "shortDescription": "Utiliza la antena para escanear otros sistemas estelares. Necesitamos conocer el vecindario.",
+    "descriptions": [
+      "Capitán, los sensores indican que nos encontramos en una región rica en posibilidades. Variaciones en la radiación cósmica sugieren que algunos sistemas cercanos podrían albergar recursos valiosos, formas de vida desconocidas o incluso restos de tecnología olvidada.",
+      "Explorar más allá de nuestra posición actual no solo ampliará nuestro conocimiento del sector, sino que podría brindarnos una ventaja decisiva para el desarrollo de la colonia. Cada escaneo nos acerca un paso más a comprender este mundo y sus secretos.",
+      "Los sistemas de escaneo están listos y a su disposición. ¿Quién sabe qué maravillas se esconden más allá de nuestro alcance visual? El universo no espera. Actívese el protocolo de exploración."
+    ]
+  },
+  "EXPLORE_FIRST": {
+    "name": "Investigando un sistema cercano",
+    "shortDescription": "Envía una sonda al sistema que acabas de scanear. Necesitamos averiguar si está habitado.",
+    "descriptions": [
+      "Capitán, los registros estelares han sido actualizados. Varios sistemas cercanos presentan condiciones prometedoras para una primera exploración. Las señales gravitacionales y térmicas indican actividad inusual, digna de una sonda de reconocimiento.",
+      "Enviar una sonda al sistema que elija marcará el inicio oficial de nuestra expansión. Esta primera misión no solo revelará datos valiosos sobre posibles recursos, sino que también sentará las bases para futuras operaciones interplanetarias.",
+      "El equipo de navegación está preparado. Basta una orden suya para lanzar la primera mirada más allá de nuestra estrella. Que este sea el comienzo de nuestro mapa en las estrellas, capitán."
+    ]
   }
 }

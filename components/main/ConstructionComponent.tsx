@@ -1,3 +1,4 @@
+import { useIsFocused } from "@react-navigation/native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -34,6 +35,9 @@ export default function ConstructionComponent() {
   const { t } = useTranslation("common");
   const { t: tBuilding } = useTranslation("buildings");
   console.log("Montado ConstructionComponent");
+
+  const isFocused = useIsFocused();
+  if (!isFocused) return null;
 
   const onBuild = async (type: BuildingType) => {
     const qNum = parseInt(q as string, 10);

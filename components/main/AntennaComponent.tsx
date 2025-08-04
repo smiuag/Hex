@@ -12,6 +12,7 @@ import {
   getSystemImage,
   getSystemsFromRegion,
 } from "@/utils/starSystemUtils";
+import { useIsFocused } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -35,6 +36,7 @@ export default function AntennaComponent() {
   console.log("Montado Antenna");
 
   const { t } = useTranslation("common");
+
   const [selectedCluster, setSelectedCluster] = useState<string | null>(null);
   const [selectedGalaxy, setSelectedGalaxy] = useState<string | null>(null);
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
@@ -47,34 +49,9 @@ export default function AntennaComponent() {
     (h) => h.building?.type == "ANTENNA" || h.construction?.building == "ANTENNA"
   );
 
-  const { cluster, galaxy, region } = startingSystem;
-  const antennaLevel = data
-    ? data.building?.type === "ANTENNA"
-      ? data.building?.level
-      : data.construction
-      ? data.construction.targetLevel - 1
-      : 0
-    : 0;
-
-  const currentCluster = selectedCluster || cluster;
-  const currentGalaxy = selectedGalaxy || galaxy;
-  const currentRegion = selectedRegion || region;
-
-  const visibleClusters =
-    antennaLevel >= 4 ? [...new Set(Object.values(universe).map((s) => s.cluster))] : [cluster];
-  const visibleGalaxies =
-    antennaLevel >= 3 ? getGalaxiesFromCluster(universe, currentCluster) : [currentGalaxy];
-  const visibleRegions =
-    antennaLevel >= 2
-      ? getRegionsFromGalaxy(universe, currentCluster, currentGalaxy)
-      : [currentRegion];
-  const visibleSystems = getSystemsFromRegion(
-    universe,
-    currentCluster,
-    currentGalaxy,
-    currentRegion
-  );
-
+  let visibleClusters: string[] = [];
+  let visibleGalaxies: string[] = [];
+  let visibleRegions: string[] = [];
   const systemScaned = starSystems.find((system) => !!system.scanStartedAt);
   const isAnyBeingExplored = !!systemScaned?.id;
 
@@ -94,6 +71,40 @@ export default function AntennaComponent() {
   const onCancel = () => {
     handleCancelBuild(data.q, data.r);
   };
+
+  const isFocused = useIsFocused();
+  if (!isFocused) return null;
+
+  if (!startingSystem) return null;
+
+  const { cluster, galaxy, region } = startingSystem;
+  const antennaLevel = data
+    ? data.building?.type === "ANTENNA"
+      ? data.building?.level
+      : data.construction
+      ? data.construction.targetLevel - 1
+      : 0
+    : 0;
+
+  const currentCluster = selectedCluster || cluster;
+  const currentGalaxy = selectedGalaxy || galaxy;
+  const currentRegion = selectedRegion || region;
+
+  const visibleSystems = getSystemsFromRegion(
+    universe,
+    currentCluster,
+    currentGalaxy,
+    currentRegion
+  );
+
+  visibleClusters =
+    antennaLevel >= 4 ? [...new Set(Object.values(universe).map((s) => s.cluster))] : [cluster];
+  visibleGalaxies =
+    antennaLevel >= 3 ? getGalaxiesFromCluster(universe, currentCluster) : [currentGalaxy];
+  visibleRegions =
+    antennaLevel >= 2
+      ? getRegionsFromGalaxy(universe, currentCluster, currentGalaxy)
+      : [currentRegion];
 
   const onBuild = () => {
     if (data.building) handleBuild(data.q, data.r, data.building.type);

@@ -1,3 +1,4 @@
+import { useIsFocused } from "@react-navigation/native";
 import React from "react";
 import { FlatList } from "react-native";
 import { researchConfig } from "../../src/config/researchConfig";
@@ -14,6 +15,8 @@ export default function ResearchComponent() {
   const handleCancelResearch = useGameContextSelector((ctx) => ctx.handleCancelResearch);
   const enoughResources = useGameContextSelector((ctx) => ctx.enoughResources);
 
+  const isFocused = useIsFocused();
+  if (!isFocused) return null;
   console.log("Montado ResearchComponent");
   const researchItems = Object.entries(researchConfig)
     .map(([key, config]) => {

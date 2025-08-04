@@ -11,7 +11,9 @@ export type QuestType =
   | "SHIP_FIRST"
   | "H2O_SEARCH"
   | "H2O_FOUND"
-  | "ALIEN_TECH_FOUND";
+  | "ALIEN_TECH_FOUND"
+  | "SCAN_FIRST"
+  | "EXPLORE_SYSTEM";
 
 export type Quest = {
   type: QuestType;

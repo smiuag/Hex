@@ -29,9 +29,8 @@ export const useHexes = (
   const updateHexes = async (newHexes: Hex[]) => {
     const prev = hexRef.current;
 
-    // Comparación superficial por referencia
     const isEqual = prev === newHexes || JSON.stringify(prev) === JSON.stringify(newHexes);
-    if (isEqual) return; // No hacer nada si no cambió
+    if (isEqual) return;
 
     hexRef.current = newHexes;
     setHexes(newHexes);
@@ -140,7 +139,7 @@ export const useHexes = (
       )
     );
 
-    if (resources) addResources(resources);
+    //if (resources) addResources(resources);
   };
 
   const handleCancelBuild = async (q: number, r: number) => {

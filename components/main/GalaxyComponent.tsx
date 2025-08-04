@@ -1,4 +1,5 @@
 import { IMAGES } from "@/src/constants/images";
+import { useIsFocused } from "@react-navigation/native";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, FlatList, ImageBackground, Text } from "react-native";
@@ -23,6 +24,9 @@ export default function StarSystemComponent() {
   );
   const cancelExploreSystem = useGameContextSelector((ctx) => ctx.cancelExploreSystem);
   console.log("Montado StarSystemComponent");
+
+  const isFocused = useIsFocused();
+  if (!isFocused) return null;
 
   const exploredSystems = starSystems.filter((s) => !s.scanStartedAt && !s.discarded);
 

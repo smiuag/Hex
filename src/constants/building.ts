@@ -41,7 +41,7 @@ export const BUILDING_TIME = {
   METALLURGY: 1000 * 60 * 0.5,
   QUARRY: 1000 * 60 * 0.5,
   BASE: 1000 * 60 * 1,
-  ANTENNA: 1000 * 30,
+  ANTENNA: 1000 * 60 * 1.5,
   ROCKET: 1000 * 60 * 15,
   HANGAR: 1000 * 60 * 5,
   ENERGY: 1000 * 60 * 2,

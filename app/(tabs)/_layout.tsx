@@ -23,7 +23,6 @@ export default function TabLayout() {
   console.log("Montado TabLayout");
   const hasHangar = hasHangarBuilt(playerConfig);
   const hasAntenna = hasAntennaBuilt(playerConfig);
-  console.log(playerQuests);
   const hasCompletedQuest = playerQuests.some((q) => q.completed && !q.rewardClaimed);
   const newQuest = playerQuests.find((q) => q.available && !q.viewed);
   const hasNewQuest = !!newQuest;

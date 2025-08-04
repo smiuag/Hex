@@ -1,6 +1,7 @@
 import { questConfig } from "@/src/config/questConfig";
 import { useGameContextSelector } from "@/src/context/GameContext";
 import { QuestType } from "@/src/types/questType";
+import { useIsFocused } from "@react-navigation/native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -127,6 +128,9 @@ export default function ComputerComponent() {
       setIsTyping(false);
     }
   };
+
+  const isFocused = useIsFocused();
+  if (!isFocused) return null;
 
   return (
     <Pressable style={styles.container} onPress={handlePress}>

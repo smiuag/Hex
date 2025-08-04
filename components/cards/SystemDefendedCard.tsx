@@ -24,8 +24,6 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onCance
   const universe = useGameContextSelector((ctx) => ctx.universe);
   const router = useRouter();
 
-  console.log(system);
-
   const duration = system.attackFleetId
     ? (() => {
         const f = fleet.find((f) => f.id === system.attackFleetId);

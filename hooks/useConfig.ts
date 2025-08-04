@@ -3,8 +3,8 @@ import { ConfigEntry, defaultPlayerConfig, PlayerConfig } from "@/src/types/conf
 import { useEffect, useRef, useState } from "react";
 
 export const useConfig = () => {
-  const [playerConfig, setPlayerConfig] = useState<PlayerConfig>(defaultPlayerConfig);
-  const configRef = useRef<PlayerConfig>(defaultPlayerConfig);
+  const [playerConfig, setPlayerConfig] = useState<PlayerConfig>([]);
+  const configRef = useRef<PlayerConfig>([]);
 
   const syncAndSave = (newConfig: PlayerConfig) => {
     configRef.current = newConfig;
@@ -12,15 +12,13 @@ export const useConfig = () => {
     saveConfig(newConfig);
   };
 
-  const updatePlayerConfig = async (
-    updater: PlayerConfig | ((prev: PlayerConfig) => PlayerConfig)
-  ) => {
-    const updated = typeof updater === "function" ? updater(configRef.current) : updater;
-    syncAndSave(updated);
+  const modifyPlayerConfig = async (modifier: (prev: PlayerConfig) => PlayerConfig) => {
+    const next = modifier(configRef.current);
+    await syncAndSave(next);
   };
 
   const handleUpdateConfig = async (newEntry: ConfigEntry) => {
-    await updatePlayerConfig((prev) => {
+    await modifyPlayerConfig((prev) => {
       const exists = prev.find((c) => c.key === newEntry.key);
       if (exists) {
         return prev.map((c) => (c.key === newEntry.key ? newEntry : c));
@@ -48,7 +46,6 @@ export const useConfig = () => {
 
   return {
     handleUpdateConfig,
-    updatePlayerConfig,
     loadPlayerConfig,
     resetPlayerConfig,
     playerConfig,

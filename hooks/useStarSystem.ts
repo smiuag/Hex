@@ -12,6 +12,7 @@ import {
   saveStarSystem,
 } from "@/src/services/storage";
 import { FleetData, MovementType } from "@/src/types/fleetType";
+import { PlayerQuest, UpdateQuestOptions } from "@/src/types/questType";
 import { Resources } from "@/src/types/resourceTypes";
 import { Ship, ShipType } from "@/src/types/shipType";
 import { StarSystem, StarSystemMap } from "@/src/types/starSystemTypes";
@@ -22,10 +23,12 @@ import { useEffect, useRef, useState } from "react";
 import uuid from "react-native-uuid";
 
 export const useStarSystem = (
+  playerQuests: PlayerQuest[],
   universe: StarSystemMap,
   handleDestroyShip: (type: ShipType, amount: number) => void,
   handleCreateShips: (shipsToAdd: { type: ShipType; amount: number }[]) => void,
-  subtractResources: (modifications: Partial<Resources>) => void
+  subtractResources: (modifications: Partial<Resources>) => void,
+  updateQuest: (options: UpdateQuestOptions) => void
 ) => {
   const [starSystems, setPlayerStarSystems] = useState<StarSystem[]>([]);
   const [fleet, setFleet] = useState<FleetData[]>([]);
@@ -315,6 +318,9 @@ export const useStarSystem = (
     } else {
       await cancelFleet(fleetId!);
     }
+
+    if (!playerQuests.some((pq) => pq.type == "EXPLORE_SYSTEM" && pq.completed))
+      await updateQuest({ type: "EXPLORE_SYSTEM", completed: true });
   };
 
   const stelarPortBuild = async (id: string) => {
@@ -355,6 +361,9 @@ export const useStarSystem = (
     await modifySystems((systems) =>
       systems.map((s) => (s.id === id ? { ...s, scanStartedAt: undefined } : s))
     );
+
+    if (!playerQuests.some((pq) => pq.type == "SCAN_FIRST" && pq.completed))
+      await updateQuest({ type: "SCAN_FIRST", completed: true });
   };
 
   const stelarPortStartBuild = async (id: string) => {
