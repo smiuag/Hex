@@ -9,14 +9,17 @@ import { Ship } from "@/src/types/shipType";
 import { getBuildTime } from "../utils/buildingUtils";
 import { getResearchTime } from "../utils/researchUtils";
 
-export const getBuildingProcesses = (hexes: Hex[]): Process[] => {
+export const getBuildingProcesses = (
+  hexes: Hex[],
+  tBuilding: (key: string) => string
+): Process[] => {
   const processes: Process[] = [];
 
   hexes.forEach((hex) => {
     if (hex.construction) {
       const targetLevel = hex.construction.targetLevel ?? 1;
       const duration = getBuildTime(hex.construction.building, targetLevel);
-      const name = buildingConfig[hex.construction.building].name;
+      const name = tBuilding(`buildingName.${hex.construction.building}`);
       const startedAt = hex.construction.startedAt ?? 0;
 
       const proc: Process = {

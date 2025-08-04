@@ -1,16 +1,20 @@
 import React from "react";
 import { FlatList } from "react-native";
 import { researchConfig } from "../../src/config/researchConfig";
-import { useGameContext } from "../../src/context/GameContext";
+import { useGameContextSelector } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { ResearchType } from "../../src/types/researchTypes";
 import { getResearchCost, getResearchTime, isUnlocked } from "../../utils/researchUtils";
 import { ResearchCard } from "../cards/ResearchCard";
 
 export default function ResearchComponent() {
-  const { research, hexes, handleResearch, handleCancelResearch, enoughResources } =
-    useGameContext();
+  const research = useGameContextSelector((ctx) => ctx.research);
+  const hexes = useGameContextSelector((ctx) => ctx.hexes);
+  const handleResearch = useGameContextSelector((ctx) => ctx.handleResearch);
+  const handleCancelResearch = useGameContextSelector((ctx) => ctx.handleCancelResearch);
+  const enoughResources = useGameContextSelector((ctx) => ctx.enoughResources);
 
+  console.log("Montado ResearchComponent");
   const researchItems = Object.entries(researchConfig)
     .map(([key, config]) => {
       const type = key as ResearchType;

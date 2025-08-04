@@ -1,4 +1,4 @@
-import { useGameContext } from "@/src/context/GameContext";
+import { useGameContextSelector } from "@/src/context/GameContext";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, ImageBackground, Pressable, Text, TouchableOpacity, View } from "react-native";
@@ -27,7 +27,7 @@ export const UpgradeCard: React.FC<Props> = ({ data, research, onBuild, onDestro
   const { t } = useTranslation("common");
   const { t: tBuilding } = useTranslation("buildings");
   const { t: tResearch } = useTranslation("research");
-  const { enoughResources } = useGameContext();
+  const enoughResources = useGameContextSelector((ctx) => ctx.enoughResources);
 
   if (!data.building) return null;
 

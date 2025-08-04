@@ -3,7 +3,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, ImageBackground, Text, TouchableOpacity, View } from "react-native";
 import { buildingConfig } from "../../src/config/buildingConfig";
-import { useGameContext } from "../../src/context/GameContext";
+import { useGameContextSelector } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { BuildingType } from "../../src/types/buildingTypes";
 import { Resources } from "../../src/types/resourceTypes";
@@ -26,10 +26,14 @@ interface BuildingItem {
 
 export default function ConstructionComponent() {
   const { terrain, q, r } = useLocalSearchParams<{ terrain?: string; q?: string; r?: string }>();
-  const { research, hexes, handleBuild, enoughResources } = useGameContext();
+  const research = useGameContextSelector((ctx) => ctx.research);
+  const hexes = useGameContextSelector((ctx) => ctx.hexes);
+  const handleBuild = useGameContextSelector((ctx) => ctx.handleBuild);
+  const enoughResources = useGameContextSelector((ctx) => ctx.enoughResources);
   const router = useRouter();
   const { t } = useTranslation("common");
   const { t: tBuilding } = useTranslation("buildings");
+  console.log("Montado ConstructionComponent");
 
   const onBuild = async (type: BuildingType) => {
     const qNum = parseInt(q as string, 10);

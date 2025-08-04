@@ -1,14 +1,17 @@
 import React from "react";
 import { FlatList } from "react-native";
 import { shipConfig } from "../../src/config/shipConfig";
-import { useGameContext } from "../../src/context/GameContext";
+import { useGameContextSelector } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { ShipType } from "../../src/types/shipType";
 import { ShipCard } from "../cards/ShipCard";
 
 export default function ShipComponent() {
-  const { shipBuildQueue, handleBuildShip, handleCancelShip, enoughResources, hexes } =
-    useGameContext();
+  const shipBuildQueue = useGameContextSelector((ctx) => ctx.shipBuildQueue);
+  const handleBuildShip = useGameContextSelector((ctx) => ctx.handleBuildShip);
+  const handleCancelShip = useGameContextSelector((ctx) => ctx.handleCancelShip);
+  const enoughResources = useGameContextSelector((ctx) => ctx.enoughResources);
+  const hexes = useGameContextSelector((ctx) => ctx.hexes);
 
   const hasSpaceStation = hexes.some((h) => h.building?.type === "SPACESTATION");
 

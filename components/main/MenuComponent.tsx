@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Alert, Button, ImageBackground, ScrollView, Text, View } from "react-native";
 import { researchConfig } from "../../src/config/researchConfig";
 import { IMAGES } from "../../src/constants/images";
-import { useGameContext } from "../../src/context/GameContext";
+import { useGameContextSelector } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { menuStyles } from "../../src/styles/menuStyles";
 import { Process } from "../../src/types/processTypes";
@@ -24,26 +24,28 @@ export default function MenuComponent() {
   const { t: tResearch } = useTranslation("research");
   const { t: tShip } = useTranslation("ship");
   const [processes, setProcesses] = useState<Process[]>([]);
-  const {
-    hexes,
-    research,
-    resources,
-    shipBuildQueue,
-    playerConfig,
-    fleet,
-    handleCancelBuild,
-    handleCancelResearch,
-    handleCancelShip,
-    endGame,
-    startGame,
-    cancelExploreSystem,
-    cancelAttack,
-  } = useGameContext();
+
+  const hexes = useGameContextSelector((ctx) => ctx.hexes);
+  const research = useGameContextSelector((ctx) => ctx.research);
+  const resources = useGameContextSelector((ctx) => ctx.resources);
+  const shipBuildQueue = useGameContextSelector((ctx) => ctx.shipBuildQueue);
+  const playerConfig = useGameContextSelector((ctx) => ctx.playerConfig);
+  const fleet = useGameContextSelector((ctx) => ctx.fleet);
+
+  const handleCancelBuild = useGameContextSelector((ctx) => ctx.handleCancelBuild);
+  const handleCancelResearch = useGameContextSelector((ctx) => ctx.handleCancelResearch);
+  const handleCancelShip = useGameContextSelector((ctx) => ctx.handleCancelShip);
+
+  const endGame = useGameContextSelector((ctx) => ctx.endGame);
+  const startGame = useGameContextSelector((ctx) => ctx.startGame);
+  const cancelExploreSystem = useGameContextSelector((ctx) => ctx.cancelExploreSystem);
+  const cancelAttack = useGameContextSelector((ctx) => ctx.cancelAttack);
 
   const started = gameStarted(playerConfig);
+  const { t: tBuilding } = useTranslation("buildings");
 
   useEffect(() => {
-    const buildingProcesses = getBuildingProcesses(hexes);
+    const buildingProcesses = getBuildingProcesses(hexes, tBuilding);
     const researchProcesses = getResearchProcesses(research, tResearch);
     const shipProcesses = getShipProcesses(tShip, shipBuildQueue);
     const fleetProcesses = getFleetProcesses(fleet);

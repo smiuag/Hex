@@ -4,8 +4,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, ImageBackground, Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
-import { BUILDING_COST } from "../../src/constants/building";
-import { useGameContext } from "../../src/context/GameContext";
+import { useGameContextSelector } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { StarSystem } from "../../src/types/starSystemTypes";
 import { CountdownTimer } from "../auxiliar/CountdownTimer";
@@ -30,9 +29,12 @@ export const SystemExploredCard: React.FC<Props> = ({
   onDefenseStartBuild,
   onExtractionStartBuild,
 }) => {
+  console.log("Montado SystemExploredCard");
   const { t } = useTranslation("common");
   const { t: tPlanets } = useTranslation("planets");
-  const { shipBuildQueue, universe, enoughResources } = useGameContext();
+  //const enoughResources = useGameContextSelector((ctx) => ctx.enoughResources);
+  const universe = useGameContextSelector((ctx) => ctx.universe);
+  const shipBuildQueue = useGameContextSelector((ctx) => ctx.shipBuildQueue);
 
   const handleBuildPort = () => {
     Alert.alert(t("BuildStelarPort"), t("StelarPortCostMessage"), [
@@ -41,7 +43,7 @@ export const SystemExploredCard: React.FC<Props> = ({
         text: t("confirm"),
         style: "destructive",
         onPress: async () => {
-          const lockedByResources = !enoughResources(BUILDING_COST.SPACESTATION);
+          const lockedByResources = true; //!enoughResources(BUILDING_COST.SPACESTATION);
           const enoughFreighter = shipBuildQueue.find((f) => f.type == "FREIGHTER" && f.amount > 1);
           if (enoughFreighter && !lockedByResources) onStelarPortBuild(system.id);
           else
@@ -63,7 +65,7 @@ export const SystemExploredCard: React.FC<Props> = ({
         text: t("confirm"),
         style: "destructive",
         onPress: async () => {
-          const lockedByResources = !enoughResources(BUILDING_COST.SPACESTATION);
+          const lockedByResources = true; //!enoughResources(BUILDING_COST.SPACESTATION);
           const enoughFreighter = shipBuildQueue.find((f) => f.type == "FREIGHTER" && f.amount > 1);
           if (enoughFreighter && !lockedByResources) onDefenseStartBuild(system.id);
           else
@@ -85,7 +87,7 @@ export const SystemExploredCard: React.FC<Props> = ({
         text: t("confirm"),
         style: "destructive",
         onPress: async () => {
-          const lockedByResources = !enoughResources(BUILDING_COST.SPACESTATION);
+          const lockedByResources = true; //!enoughResources(BUILDING_COST.SPACESTATION);
           const enoughFreighter = shipBuildQueue.find((f) => f.type == "FREIGHTER" && f.amount > 1);
           if (enoughFreighter && !lockedByResources) onExtractionStartBuild(system.id);
           else
@@ -101,7 +103,8 @@ export const SystemExploredCard: React.FC<Props> = ({
   };
 
   const image = getSystemImage(system.type);
-  const systemName = universe[system.id].name;
+  const systemData = universe[system.id];
+  const systemName = systemData?.name ?? system.id;
 
   return (
     <View style={commonStyles.containerCenter} key={system.id}>

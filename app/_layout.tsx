@@ -1,4 +1,4 @@
-import { Provider } from "@/src/context/GameContext";
+import { GameProvider } from "@/src/context/GameContext";
 import { useFonts } from "expo-font";
 import { Slot } from "expo-router";
 import { StatusBar } from "react-native";
@@ -17,11 +17,11 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <Provider>
+      <GameProvider>
         <StatusBar barStyle="light-content" backgroundColor="#000" />
         <Slot></Slot>
         <Toast />
-      </Provider>
+      </GameProvider>
     </SafeAreaProvider>
   );
 }

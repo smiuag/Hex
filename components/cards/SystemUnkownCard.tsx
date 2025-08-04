@@ -1,4 +1,4 @@
-import { useGameContext } from "@/src/context/GameContext";
+import { useGameContextSelector } from "@/src/context/GameContext";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { ImageBackground, Text, TouchableOpacity, View } from "react-native";
@@ -32,7 +32,9 @@ export const SystemUnknownCard: React.FC<Props> = ({
 
   const isBeingExplored = !!system.explorationFleetId;
 
-  const { shipBuildQueue, fleet, universe } = useGameContext();
+  const fleet = useGameContextSelector((ctx) => ctx.fleet);
+  const shipBuildQueue = useGameContextSelector((ctx) => ctx.shipBuildQueue);
+  const universe = useGameContextSelector((ctx) => ctx.universe);
 
   const probeSpeed = shipConfig["PROBE"].speed;
   const timeToExplore = getFlyTime(probeSpeed, system.distance);

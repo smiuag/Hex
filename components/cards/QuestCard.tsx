@@ -1,4 +1,4 @@
-import { useGameContext } from "@/src/context/GameContext";
+import { useGameContextSelector } from "@/src/context/GameContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useRef } from "react";
@@ -22,7 +22,7 @@ export const QuestCard: React.FC<Props> = ({ item, completed, isAlreadyClaimed, 
   const router = useRouter();
 
   const questType = item.type.toString();
-  const { playerQuests } = useGameContext();
+  const playerQuests = useGameContextSelector((ctx) => ctx.playerQuests);
 
   const isViewed = playerQuests.some((pq) => pq.type == questType && pq.viewed);
 

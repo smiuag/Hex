@@ -1,5 +1,5 @@
 import { questConfig } from "@/src/config/questConfig";
-import { useGameContext } from "@/src/context/GameContext";
+import { useGameContextSelector } from "@/src/context/GameContext";
 import { QuestType } from "@/src/types/questType";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
@@ -18,7 +18,7 @@ export default function ComputerComponent() {
   const [showConfirm, setShowConfirm] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
 
-  const { markQuestsAsViewed } = useGameContext();
+  const markQuestsAsViewed = useGameContextSelector((ctx) => ctx.markQuestsAsViewed);
 
   useEffect(() => {
     setAllLines([]);

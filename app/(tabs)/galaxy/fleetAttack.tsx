@@ -1,5 +1,5 @@
 import FleetSelector from "@/components/auxiliar/fleetSelector";
-import { useGameContext } from "@/src/context/GameContext";
+import { useGameContextSelector } from "@/src/context/GameContext";
 import { Ship } from "@/src/types/shipType";
 import { getSystemImage } from "@/utils/starSystemUtils";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -18,7 +18,9 @@ export default function FleetScreen() {
 
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { shipBuildQueue, starSystems, startAttack } = useGameContext();
+  const shipBuildQueue = useGameContextSelector((ctx) => ctx.shipBuildQueue);
+  const starSystems = useGameContextSelector((ctx) => ctx.starSystems);
+  const startAttack = useGameContextSelector((ctx) => ctx.startAttack);
 
   const system = starSystems.find((s) => s.id == systemId);
 

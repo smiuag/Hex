@@ -1,5 +1,5 @@
 import { shipConfig } from "@/src/config/shipConfig";
-import { useGameContext } from "@/src/context/GameContext";
+import { useGameContextSelector } from "@/src/context/GameContext";
 import { getFlyTime } from "@/utils/shipUtils";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -27,7 +27,8 @@ export default function ExploredCelestialBody({
   const { t: tPlanets } = useTranslation("planets");
   const isBeingExplored = !!celestialBody.explorationFleetId;
 
-  const { shipBuildQueue, fleet } = useGameContext();
+  const shipBuildQueue = useGameContextSelector((ctx) => ctx.shipBuildQueue);
+  const fleet = useGameContextSelector((ctx) => ctx.fleet);
 
   const probeSpeed = shipConfig["PROBE"].speed;
   const timeToExplore = getFlyTime(probeSpeed, system.distance);

@@ -16,24 +16,24 @@ import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, ImageBackground, Text, TouchableOpacity, View } from "react-native";
-import { useGameContext } from "../../src/context/GameContext";
+import { useGameContextSelector } from "../../src/context/GameContext";
 import { CountdownTimer } from "../auxiliar/CountdownTimer";
 import { UnderConstructionCard } from "../cards/UnderConstructionCard";
 import { UpgradeCard } from "../cards/UpgradeCard";
 
 export default function AntennaComponent() {
-  const {
-    universe,
-    hexes,
-    research,
-    playerConfig,
-    starSystems,
-    handleCancelBuild,
-    handleBuild,
-    scanStarSystem,
-    recoverStarSystem,
-    cancelScanStarSystem,
-  } = useGameContext();
+  const universe = useGameContextSelector((ctx) => ctx.universe);
+  const hexes = useGameContextSelector((ctx) => ctx.hexes);
+  const research = useGameContextSelector((ctx) => ctx.research);
+  const playerConfig = useGameContextSelector((ctx) => ctx.playerConfig);
+  const starSystems = useGameContextSelector((ctx) => ctx.starSystems);
+  const handleCancelBuild = useGameContextSelector((ctx) => ctx.handleCancelBuild);
+  const handleBuild = useGameContextSelector((ctx) => ctx.handleBuild);
+  const scanStarSystem = useGameContextSelector((ctx) => ctx.scanStarSystem);
+  const recoverStarSystem = useGameContextSelector((ctx) => ctx.recoverStarSystem);
+  const cancelScanStarSystem = useGameContextSelector((ctx) => ctx.cancelScanStarSystem);
+  console.log("Montado Antenna");
+
   const { t } = useTranslation("common");
   const [selectedCluster, setSelectedCluster] = useState<string | null>(null);
   const [selectedGalaxy, setSelectedGalaxy] = useState<string | null>(null);

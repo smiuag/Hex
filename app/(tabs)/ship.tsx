@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ResourceBar from "../../components/auxiliar/ResourceBar";
 import { ShipSummaryBar } from "../../components/auxiliar/ShipSummaryBar";
 import ShipComponent from "../../components/main/ShipComponent";
-import { useGameContext } from "../../src/context/GameContext";
+import { useGameContextSelector } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { ShipType } from "../../src/types/shipType";
 
@@ -12,7 +12,7 @@ export default function ShipScreen() {
   const totalShipCounts: Partial<Record<ShipType, number>> = {};
   const insets = useSafeAreaInsets();
 
-  const { shipBuildQueue } = useGameContext();
+  const shipBuildQueue = useGameContextSelector((ctx) => ctx.shipBuildQueue);
 
   shipBuildQueue.forEach((ship) => {
     const type = ship.type;

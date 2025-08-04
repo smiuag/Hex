@@ -11,17 +11,22 @@ import {
   ShipIcon,
 } from "../../components/auxiliar/MenuIcons";
 import { questConfig } from "../../src/config/questConfig";
-import { useGameContext } from "../../src/context/GameContext";
+import { useGameContextSelector } from "../../src/context/GameContext";
 import { questIconView, tabStyles } from "../../src/styles/tabsStyles";
 import { gameStarted } from "../../utils/configUtils";
 import { canCompleteQuest, shouldShowQuest } from "../../utils/questUtils";
 
 export default function TabLayout() {
-  const { playerQuests, hexes, research, shipBuildQueue, playerConfig, starSystems } =
-    useGameContext();
+  const playerQuests = useGameContextSelector((ctx) => ctx.playerQuests);
+  const hexes = useGameContextSelector((ctx) => ctx.hexes);
+  const research = useGameContextSelector((ctx) => ctx.research);
+  const shipBuildQueue = useGameContextSelector((ctx) => ctx.shipBuildQueue);
+  const playerConfig = useGameContextSelector((ctx) => ctx.playerConfig);
+  const starSystems = useGameContextSelector((ctx) => ctx.starSystems);
   const partidaIniciada = gameStarted(playerConfig);
   const router = useRouter();
 
+  console.log("Montado TabLayout");
   const hasHangar = hexes.length > 0 && hexes.some((h) => h.building?.type == "HANGAR");
   const hasAntenna = hexes.length > 0 && hexes.some((h) => h.building?.type == "ANTENNA");
   const completedQuestTypes = playerQuests.filter((q) => q.completed).map((q) => q.type);

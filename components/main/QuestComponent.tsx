@@ -3,14 +3,18 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect } from "react";
 import { FlatList, ImageBackground } from "react-native";
 import { questConfig } from "../../src/config/questConfig";
-import { useGameContext } from "../../src/context/GameContext";
+import { useGameContextSelector } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { canCompleteQuest, shouldShowQuest } from "../../utils/questUtils";
 import { QuestCard } from "../cards/QuestCard";
 
 export default function QuestComponent() {
   const { reload } = useLocalSearchParams();
-  const { playerQuests, hexes, research, shipBuildQueue, completeQuest } = useGameContext();
+  const playerQuests = useGameContextSelector((ctx) => ctx.playerQuests);
+  const hexes = useGameContextSelector((ctx) => ctx.hexes);
+  const research = useGameContextSelector((ctx) => ctx.research);
+  const shipBuildQueue = useGameContextSelector((ctx) => ctx.shipBuildQueue);
+  const completeQuest = useGameContextSelector((ctx) => ctx.completeQuest);
   const router = useRouter();
   const completedTypes = playerQuests
     .filter((q) => q.completed)
@@ -20,6 +24,7 @@ export default function QuestComponent() {
   const availableQuests = Object.values(questConfig)
     .filter((quest) => shouldShowQuest(quest.type, completedTypes))
     .sort((a, b) => b.order - a.order);
+  console.log("Montado QuestComponent");
 
   useEffect(() => {
     const completedQuestTypes = playerQuests.filter((q) => q.completed).map((q) => q.type);

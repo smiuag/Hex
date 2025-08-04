@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
-import { useGameContext } from "../../src/context/GameContext";
+import { useGameContextSelector } from "../../src/context/GameContext";
 import { resourceBarStyles } from "../../src/styles/resourceBarStyles";
 import { Resources, ResourceType } from "../../src/types/resourceTypes";
 import { ResourceDisplay } from "./ResourceDisplay";
 
 export default function ResourceBar() {
-  const { resources, hexes } = useGameContext();
-  const [displayedResources, setDisplayedResources] = useState<
-    Partial<Resources>
-  >({});
+  const resources = useGameContextSelector((ctx) => ctx.resources);
+  const hexes = useGameContextSelector((ctx) => ctx.hexes);
+  const [displayedResources, setDisplayedResources] = useState<Partial<Resources>>({});
 
   useEffect(() => {
     if (!resources || !hexes || hexes.length === 0) {

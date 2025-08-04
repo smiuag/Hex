@@ -1,4 +1,4 @@
-import { useGameContext } from "@/src/context/GameContext";
+import { useGameContextSelector } from "@/src/context/GameContext";
 import { getSystemImage } from "@/utils/starSystemUtils";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -20,8 +20,8 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onCance
   const { t } = useTranslation("common");
   const { t: tShip } = useTranslation("ship");
   const { t: tPlanets } = useTranslation("planets");
-  const { universe } = useGameContext();
-  const { fleet } = useGameContext();
+  const fleet = useGameContextSelector((ctx) => ctx.fleet);
+  const universe = useGameContextSelector((ctx) => ctx.universe);
   const router = useRouter();
 
   console.log(system);

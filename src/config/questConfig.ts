@@ -65,7 +65,7 @@ export const questConfig: Record<
     order: 6,
     backgroundImage: IMAGES.KRYSTALMINE_BACKGROUND,
     requiredQuest: ["BUILDING_METALLURGY1", "BUILDING_QUARRY1"],
-    reward: { STONE: 12000, METAL: 12000, CRYSTAL: 10000 },
+    reward: { STONE: 12000, METAL: 12000, CRYSTAL: 15000 },
     contextType: "BUILD",
     persist: false,
   },

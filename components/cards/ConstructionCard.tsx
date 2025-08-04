@@ -36,6 +36,7 @@ export const ConstructionCard: React.FC<Props> = ({ item, onBuild, research }) =
   const { t } = useTranslation("common");
   const { t: tResearch } = useTranslation("research");
   const { t: tBuilding } = useTranslation("buildings");
+  console.log("Montado ConstructionCard");
 
   const filteredRequirements = Object.values(
     item.requirements
@@ -70,12 +71,14 @@ export const ConstructionCard: React.FC<Props> = ({ item, onBuild, research }) =
             <ResourceDisplay resources={item.cost} fontSize={13} />
             {unmetVisible ? (
               <View style={commonStyles.actionBar}>
-                {filteredRequirements.map((r, i) => (
-                  <Text key={i} style={commonStyles.errorTextRed}>
-                    🔒 {tResearch(`researchName.${r.researchType}`)} {t("level")}{" "}
-                    {r.researchLevelRequired}
-                  </Text>
-                ))}
+                <View>
+                  {filteredRequirements.map((r, i) => (
+                    <Text key={i} style={commonStyles.errorTextRed}>
+                      🔒 {tResearch(`researchName.${r.researchType}`)} {t("level")}{" "}
+                      {r.researchLevelRequired}
+                    </Text>
+                  ))}
+                </View>
                 <TouchableOpacity
                   style={[commonStyles.buttonPrimary, commonStyles.buttonDisabled]}
                   disabled={true}

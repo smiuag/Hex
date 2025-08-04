@@ -13,7 +13,7 @@ import { scaleKeys, ScaleSize } from "../../src/types/configTypes";
 
 import Toast from "react-native-toast-message";
 import { IMAGES } from "../../src/constants/images";
-import { useGameContext } from "../../src/context/GameContext";
+import { useGameContextSelector } from "../../src/context/GameContext";
 import { BuildingType } from "../../src/types/buildingTypes";
 import { Hex } from "../../src/types/hexTypes";
 import { getScaleValues } from "../../utils/configUtils";
@@ -30,16 +30,17 @@ export default function PlanetComponent() {
   const [cameraOffset, setCameraOffset] = useState({ x: 0, y: 0 });
 
   const router = useRouter();
-  const {
-    hexes,
-    research,
-    playerConfig,
-    handleBuild,
-    handleDestroyBuilding,
-    handleCancelBuild,
-    handleTerraform,
-    handleUpdateConfig,
-  } = useGameContext();
+  const hexes = useGameContextSelector((ctx) => ctx.hexes);
+  const research = useGameContextSelector((ctx) => ctx.research);
+  const playerConfig = useGameContextSelector((ctx) => ctx.playerConfig);
+
+  const handleBuild = useGameContextSelector((ctx) => ctx.handleBuild);
+  const handleDestroyBuilding = useGameContextSelector((ctx) => ctx.handleDestroyBuilding);
+  const handleCancelBuild = useGameContextSelector((ctx) => ctx.handleCancelBuild);
+  const handleTerraform = useGameContextSelector((ctx) => ctx.handleTerraform);
+  const handleUpdateConfig = useGameContextSelector((ctx) => ctx.handleUpdateConfig);
+
+  console.log("Montado PlanetComponent");
 
   const scale = getScaleValues(playerConfig);
 
@@ -189,7 +190,7 @@ export default function PlanetComponent() {
           "Este terreno parece distinto. Las primeras inspecciones indican de una gran cantidad de humedad en el subsuelo. ¡Quizá sea agua!"
         );
       }
-      await handleTerraform(selectedHex.q, selectedHex.r);
+      handleTerraform(selectedHex.q, selectedHex.r);
       setModalTerraformVisible(false);
     }
   };

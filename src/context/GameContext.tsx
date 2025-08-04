@@ -1,6 +1,7 @@
+// GameProvider.tsx
 import { useUniverse } from "@/hooks/useUniverse";
 import { getRandomStartSystem } from "@/utils/starSystemUtils";
-import React, { createContext, useContext, useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useConfig } from "../../hooks/useConfig";
 import { useHexes } from "../../hooks/useHexes";
@@ -20,6 +21,9 @@ import { FleetData } from "../types/fleetType";
 import { Research, ResearchType } from "../types/researchTypes";
 import { StarSystem, StarSystemMap } from "../types/starSystemTypes";
 
+import { createContext, useContextSelector } from "use-context-selector";
+
+// 🎯 Contexto único con suscripción selectiva
 type ProviderContextType = {
   fleet: FleetData[];
   resources: StoredResources;
@@ -63,14 +67,14 @@ type ProviderContextType = {
   handleDestroyBuilding: (q: number, r: number) => void;
 };
 
-const { t: tResearch } = useTranslation("research");
+// 🎯 Contexto único creado con use-context-selector
+const GameContext = createContext<ProviderContextType>(null as any);
 
-const ResourceContext = createContext<ProviderContextType | undefined>(undefined);
+// 🧠 Provider
+export const GameProvider = ({ children }: { children: React.ReactNode }) => {
+  const { t: tResearch } = useTranslation("research");
+  const { universe } = useUniverse();
 
-const { universe } = useUniverse();
-
-export const Provider = ({ children }: { children: React.ReactNode }) => {
-  //USE RESOURCES
   const {
     resources,
     resetResources,
@@ -80,7 +84,6 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     enoughResources,
   } = useResources();
 
-  //USE HEXES
   const {
     hexes,
     handleBuild,
@@ -91,10 +94,8 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     handleDestroyBuilding,
   } = useHexes(addProduction, addResources, subtractResources, enoughResources);
 
-  //USE QUEST
   const { playerQuests, completeQuest, markQuestsAsViewed, resetQuests } = useQuest(addResources);
 
-  //USE SHIP
   const {
     shipBuildQueue,
     handleBuildShip,
@@ -105,11 +106,9 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     handleCreateShips,
   } = useShip(addResources, subtractResources, enoughResources);
 
-  //USE RESEARCH
   const { research, handleResearch, handleCancelResearch, processResearchTick, resetResearch } =
     useResearch(addResources, subtractResources, enoughResources);
 
-  //USE STAR SYSTEM
   const {
     fleet,
     starSystems,
@@ -132,7 +131,6 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
     cancelScanStarSystem,
   } = useStarSystem(universe, handleDestroyShip, handleCreateShips, subtractResources);
 
-  //USE CONFIG
   const { playerConfig, handleUpdateConfig, resetPlayerConfig, updatePlayerConfig } = useConfig();
 
   useEffect(() => {
@@ -144,10 +142,14 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
       processColonialTick();
     }, 1000);
 
-    return () => {
-      clearInterval(interval);
-    };
-  }, [processConstructionTick, processResearchTick, processFleeTick, processShipTick]);
+    return () => clearInterval(interval);
+  }, [
+    processConstructionTick,
+    processResearchTick,
+    processShipTick,
+    processFleeTick,
+    processColonialTick,
+  ]);
 
   const endGame = async () => {
     await NotificationManager.cancelAllNotifications();
@@ -163,61 +165,104 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
 
   const startGame = async () => {
     await endGame();
-
     await handleUpdateConfig({ key: "GAME_STARTED", value: "true" });
     await handleUpdateConfig({ key: "MAP_SIZE", value: "SMALL" });
     await handleUpdateConfig({ key: "STARTING_SYSTEM", value: getRandomStartSystem(universe).id });
   };
 
-  const contextValue = {
-    fleet,
-    starSystems,
-    playerConfig,
-    resources,
-    shipBuildQueue,
-    hexes,
-    research,
-    playerQuests,
-    universe,
-    startStarSystemExploration,
-    startPlanetExploration,
-    discardStarSystem,
-    handleUpdateConfig,
-    updatePlayerConfig,
-    addProduction,
-    addResources,
-    subtractResources,
-    handleBuild,
-    handleCancelBuild,
-    handleTerraform,
-    handleResearch,
-    handleCancelResearch,
-    handleBuildShip,
-    handleCancelShip,
-    resetShip,
-    completeQuest,
-    markQuestsAsViewed,
-    endGame,
-    startGame,
-    cancelExploreSystem,
-    stelarPortStartBuild,
-    extractionStartBuild,
-    defenseStartBuild,
-    cancelExplorePlanet,
-    startAttack,
-    cancelAttack,
-    enoughResources,
-    scanStarSystem,
-    recoverStarSystem,
-    cancelScanStarSystem,
-    handleDestroyBuilding,
-  };
+  const contextValue = useMemo<ProviderContextType>(
+    () => ({
+      fleet,
+      starSystems,
+      playerConfig,
+      resources,
+      shipBuildQueue,
+      hexes,
+      research,
+      playerQuests,
+      universe,
+      startStarSystemExploration,
+      startPlanetExploration,
+      discardStarSystem,
+      handleUpdateConfig,
+      updatePlayerConfig,
+      addProduction,
+      addResources,
+      subtractResources,
+      handleBuild,
+      handleCancelBuild,
+      handleTerraform,
+      handleResearch,
+      handleCancelResearch,
+      handleBuildShip,
+      handleCancelShip,
+      completeQuest,
+      markQuestsAsViewed,
+      endGame,
+      startGame,
+      cancelExploreSystem,
+      stelarPortStartBuild,
+      extractionStartBuild,
+      defenseStartBuild,
+      cancelExplorePlanet,
+      startAttack,
+      cancelAttack,
+      enoughResources,
+      scanStarSystem,
+      recoverStarSystem,
+      cancelScanStarSystem,
+      handleDestroyBuilding,
+    }),
+    [
+      fleet,
+      starSystems,
+      playerConfig,
+      resources,
+      shipBuildQueue,
+      hexes,
+      research,
+      playerQuests,
+      universe,
+      startStarSystemExploration,
+      startPlanetExploration,
+      discardStarSystem,
+      handleUpdateConfig,
+      updatePlayerConfig,
+      addProduction,
+      addResources,
+      subtractResources,
+      handleBuild,
+      handleCancelBuild,
+      handleTerraform,
+      handleResearch,
+      handleCancelResearch,
+      handleBuildShip,
+      handleCancelShip,
+      completeQuest,
+      markQuestsAsViewed,
+      endGame,
+      startGame,
+      cancelExploreSystem,
+      stelarPortStartBuild,
+      extractionStartBuild,
+      defenseStartBuild,
+      cancelExplorePlanet,
+      startAttack,
+      cancelAttack,
+      enoughResources,
+      scanStarSystem,
+      recoverStarSystem,
+      cancelScanStarSystem,
+      handleDestroyBuilding,
+    ]
+  );
 
-  return <ResourceContext.Provider value={contextValue}>{children}</ResourceContext.Provider>;
+  return <GameContext.Provider value={contextValue}>{children}</GameContext.Provider>;
 };
 
-export const useGameContext = () => {
-  const context = useContext(ResourceContext);
-  if (!context) throw new Error("useResources debe usarse dentro de ResourceProvider");
-  return context;
+// 🔎 Hook para seleccionar partes específicas del contexto
+export const useGameContextSelector = <T,>(selector: (ctx: ProviderContextType) => T): T => {
+  const value = useContextSelector(GameContext, selector);
+  if (value === null) throw new Error("useGameContextSelector debe usarse dentro de GameProvider");
+  return value;
 };

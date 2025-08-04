@@ -2,7 +2,7 @@ import { IMAGES } from "@/src/constants/images";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, FlatList, ImageBackground, Text } from "react-native";
-import { useGameContext } from "../../src/context/GameContext";
+import { useGameContextSelector } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { SystemDefendedCard } from "../cards/SystemDefendedCard";
 import { SystemExploredCard } from "../cards/SystemExploredCard";
@@ -10,18 +10,19 @@ import { SystemUnknownCard } from "../cards/SystemUnkownCard";
 
 export default function StarSystemComponent() {
   const { t } = useTranslation("common");
-  const {
-    starSystems,
-    discardStarSystem,
-    startPlanetExploration,
-    cancelExplorePlanet,
-    stelarPortStartBuild,
-    defenseStartBuild,
-    extractionStartBuild,
-    cancelAttack,
-    startStarSystemExploration,
-    cancelExploreSystem,
-  } = useGameContext();
+  const starSystems = useGameContextSelector((ctx) => ctx.starSystems);
+  const discardStarSystem = useGameContextSelector((ctx) => ctx.discardStarSystem);
+  const startPlanetExploration = useGameContextSelector((ctx) => ctx.startPlanetExploration);
+  const cancelExplorePlanet = useGameContextSelector((ctx) => ctx.cancelExplorePlanet);
+  const stelarPortStartBuild = useGameContextSelector((ctx) => ctx.stelarPortStartBuild);
+  const defenseStartBuild = useGameContextSelector((ctx) => ctx.defenseStartBuild);
+  const extractionStartBuild = useGameContextSelector((ctx) => ctx.extractionStartBuild);
+  const cancelAttack = useGameContextSelector((ctx) => ctx.cancelAttack);
+  const startStarSystemExploration = useGameContextSelector(
+    (ctx) => ctx.startStarSystemExploration
+  );
+  const cancelExploreSystem = useGameContextSelector((ctx) => ctx.cancelExploreSystem);
+  console.log("Montado StarSystemComponent");
 
   const exploredSystems = starSystems.filter((s) => !s.scanStartedAt && !s.discarded);
 

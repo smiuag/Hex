@@ -78,31 +78,33 @@ export const useStarSystem = (
       handleDestroyShip(ship.type, ship.amount);
     });
 
-    await updateFleet([...fleetRef.current, newFleet]);
+    await modifyFleet((prevFleet) => [...prevFleet, newFleet]);
   };
 
   //La manda de vuelta
-  const cancelFleet = async (id: string, currentFleet: FleetData[]): Promise<FleetData[]> => {
+  const cancelFleet = async (id: string) => {
     const now = Date.now();
 
-    return currentFleet.map((f) => {
-      if (f.id !== id) return f;
+    await modifyFleet((fleet) =>
+      fleet.map((f) => {
+        if (f.id !== id) return f;
 
-      const timeSpent = now - f.startTime;
-      return {
-        ...f,
-        startTime: now,
-        endTime: now + timeSpent,
-        destinationSystemId: f.origin,
-        origin: f.destinationSystemId,
-        destinationPlanetId: undefined,
-        movementType: "RETURN" as MovementType,
-      };
-    });
+        const timeSpent = now - f.startTime;
+        return {
+          ...f,
+          startTime: now,
+          endTime: now + timeSpent,
+          destinationSystemId: f.origin,
+          origin: f.destinationSystemId,
+          destinationPlanetId: undefined,
+          movementType: "RETURN" as MovementType,
+        };
+      })
+    );
   };
 
-  const destroyFleet = async (id: string, currentFleet: FleetData[]): Promise<FleetData[]> => {
-    return currentFleet.filter((f) => f.id !== id);
+  const destroyFleet = async (id: string) => {
+    await modifyFleet((fleet) => fleet.filter((f) => f.id !== id));
   };
 
   const processColonialTick = async () => {
@@ -131,29 +133,22 @@ export const useStarSystem = (
     }
   };
 
-  const attackResolution = async (
-    fleetId: string,
-    currentFleet: FleetData[],
-    currentSystems: StarSystem[]
-  ): Promise<{ updatedFleet: FleetData[]; updatedSystems: StarSystem[] }> => {
-    const attackingFleetData = currentFleet.find((f) => f.id === fleetId);
-    if (!attackingFleetData) {
-      return { updatedFleet: currentFleet, updatedSystems: currentSystems };
-    }
+  const attackResolution = async (fleetId: string) => {
+    const attackingFleetData = fleetRef.current.find((f) => f.id === fleetId);
+    if (!attackingFleetData) return;
 
-    const targetSystem = currentSystems.find(
+    const targetSystem = systemsRef.current.find(
       (sys) => sys.id === attackingFleetData.destinationSystemId
     );
-    if (!targetSystem) {
-      currentFleet = await cancelFleet(fleetId, currentFleet);
-      return { updatedFleet: currentFleet, updatedSystems: currentSystems };
-    }
+    if (!targetSystem) return;
 
     // Actualiza el sistema como no atacado
-    let updatedSystems = currentSystems.map((sys) =>
-      sys.id === targetSystem.id
-        ? { ...sys, attackStartedAt: undefined, attackFleetId: undefined }
-        : sys
+    await modifySystems((sys) =>
+      sys.map((sys) =>
+        sys.id === targetSystem.id
+          ? { ...sys, attackStartedAt: undefined, attackFleetId: undefined }
+          : sys
+      )
     );
 
     // Simula la batalla
@@ -164,100 +159,88 @@ export const useStarSystem = (
     const updatedDefenseShips = battleResult.remaining.fleetB;
 
     // Actualiza la defensa del sistema usando updatedSystems (no currentSystems)
-    updatedSystems = updatedSystems.map((sys) =>
-      sys.id === targetSystem.id ? { ...sys, defense: updatedDefenseShips } : sys
+    modifySystems((systems) =>
+      systems.map((system) =>
+        system.id === targetSystem.id ? { ...system, defense: updatedDefenseShips } : system
+      )
     );
 
     // Actualiza la flota atacante: si no quedan naves la elimina, si quedan actualiza
-    let updatedFleet = currentFleet.filter((f) => f.id !== fleetId);
+    await modifyFleet((fleet) => fleet.filter((f) => f.id !== fleetId));
 
     if (updatedAttackingFleetShips.length > 0) {
       if (battleResult.winner === "A") {
         // Ganaron los atacantes: flota regresa y sistema queda sin defensa ni ataque en curso
-        updatedFleet.push({
-          ...attackingFleetData,
-          ships: updatedAttackingFleetShips,
-          startTime: Date.now(),
-          endTime: Date.now() + (attackingFleetData.endTime - attackingFleetData.startTime),
-          destinationSystemId: attackingFleetData.origin,
-          origin: attackingFleetData.destinationSystemId,
-          movementType: "RETURN",
+        await modifyFleet((fleet) => {
+          const now = Date.now();
+          const updated = [...fleet]; // Copia defensiva
+          const index = updated.findIndex((f) => f.id === attackingFleetData.id);
+
+          if (index !== -1) {
+            const timeSpent = attackingFleetData.endTime - attackingFleetData.startTime;
+
+            updated[index] = {
+              ...attackingFleetData,
+              ships: updatedAttackingFleetShips,
+              startTime: now,
+              endTime: now + timeSpent,
+              destinationSystemId: attackingFleetData.origin,
+              origin: attackingFleetData.destinationSystemId,
+              movementType: "RETURN",
+            };
+          }
+
+          return updated;
         });
 
-        updatedSystems = updatedSystems.map((sys) =>
-          sys.id === targetSystem.id
-            ? {
-                ...sys,
-                defense: [],
-                attackFleetId: undefined,
-                attackStartedAt: undefined,
-                starPortStartedAt: undefined,
-                defended: false,
-                conquered: true,
-              }
-            : sys
+        await modifySystems((systems) =>
+          systems.map((sys) =>
+            sys.id === targetSystem.id
+              ? {
+                  ...sys,
+                  defense: [],
+                  attackFleetId: undefined,
+                  attackStartedAt: undefined,
+                  starPortStartedAt: undefined,
+                  defended: false,
+                  conquered: true,
+                }
+              : sys
+          )
         );
       } else {
         // Perdieron los atacantes: flota eliminada, sistema con defensa actualizada
         // Ya filtramos la flota atacante arriba, nada más que hacer aquí
       }
     }
-
-    return {
-      updatedFleet,
-      updatedSystems,
-    };
   };
 
   const processFleeTick = async () => {
     const now = Date.now();
     let changed = false;
 
-    let workingFleet = [...fleet];
-    let workingSystems = [...starSystems];
-    let result: { updatedFleet: FleetData[]; updatedSystems: StarSystem[] };
     const shipsToCreateMap: Partial<Record<ShipType, number>> = {};
 
-    for (let i = workingFleet.length - 1; i >= 0; i--) {
-      const f = workingFleet[i];
+    for (let i = fleetRef.current.length - 1; i >= 0; i--) {
+      const f = fleetRef.current[i];
       if (f.endTime > now) continue;
       changed = true;
 
       switch (f.movementType) {
         case "RETURN":
-          f.ships.forEach((ship) => {
-            shipsToCreateMap[ship.type] = (shipsToCreateMap[ship.type] ?? 0) + ship.amount;
-          });
-          workingFleet = await destroyFleet(f.id, workingFleet);
+          handleCreateShips(f.ships);
           break;
 
         case "EXPLORE SYSTEM":
-          result = await exploreStarSystem(
-            f.destinationSystemId,
-            workingFleet,
-            workingSystems,
-            f.id
-          );
-          workingFleet = result.updatedFleet;
-          workingSystems = result.updatedSystems;
+          await exploreStarSystem(f.destinationSystemId, f.id);
           break;
 
         case "EXPLORE PLANET":
-          result = await explorePlanet(
-            f.destinationSystemId,
-            f.destinationPlanetId!,
-            workingFleet,
-            workingSystems,
-            f.id
-          );
-          workingFleet = result.updatedFleet;
-          workingSystems = result.updatedSystems;
+          await explorePlanet(f.destinationSystemId, f.destinationPlanetId!, f.id);
           break;
 
         case "ATTACK":
-          result = await attackResolution(f.id, workingFleet, workingSystems);
-          workingFleet = result.updatedFleet;
-          workingSystems = result.updatedSystems;
+          await attackResolution(f.id);
           break;
 
         default:
@@ -269,12 +252,6 @@ export const useStarSystem = (
       type: type as ShipType,
       amount,
     }));
-
-    if (changed) {
-      if (shipsToCreate.length > 0) await handleCreateShips(shipsToCreate);
-      await updateFleet(workingFleet);
-      await updateSystems(workingSystems);
-    }
   };
 
   const discardStarSystem = async (id: string) => {
@@ -285,7 +262,7 @@ export const useStarSystem = (
 
   const startStarSystemExploration = async (id: string) => {
     const system = systemsRef.current.find((system) => system.id === id);
-    if (!system) return;
+    if (!system || system.explorationFleetId) return;
 
     const probeSpeed = shipConfig["PROBE"].speed;
     const timeToExplore = getFlyTime(probeSpeed, system.distance);
@@ -311,31 +288,34 @@ export const useStarSystem = (
     );
   };
 
-  const exploreStarSystem = async (
-    id: string,
-    currentFleet: FleetData[],
-    currentSystems: StarSystem[],
-    fleetId: string
-  ): Promise<{ updatedFleet: FleetData[]; updatedSystems: StarSystem[] }> => {
-    const system = currentSystems.find((s) => s.id === id);
+  const exploreStarSystem = async (systemId: string, fleetId: string) => {
+    const system = systemsRef.current.find((s) => s.id === systemId);
+
     if (!system) {
-      currentFleet = await cancelFleet(fleetId, currentFleet);
-      return { updatedFleet: currentFleet, updatedSystems: currentSystems };
+      await cancelFleet(fleetId);
+      return;
     }
-    const updatedSystems = currentSystems.map((s) =>
-      s.id === id ? { ...s, explored: true, conquered: s.defense.length === 0 } : s
+
+    await modifySystems((systems) =>
+      systems.map((s) =>
+        s.id === systemId
+          ? {
+              ...s,
+              explored: true,
+              explorationFleetId: undefined,
+              conquered: s.defense.length === 0,
+            }
+          : s
+      )
     );
 
-    let updatedFleet = [...currentFleet];
-
     if (system.defense.length > 0) {
-      updatedFleet = updatedFleet.filter((f) => f.id !== system.explorationFleetId);
+      await modifyFleet((fleet) => fleet.filter((f) => f.id !== fleetId));
     } else {
-      updatedFleet = await cancelFleet(system.explorationFleetId!, currentFleet);
+      await cancelFleet(fleetId!);
     }
-
-    return { updatedFleet, updatedSystems };
   };
+
   const stelarPortBuild = async (id: string) => {
     const system = systemsRef.current.find((s) => s.id === id);
     if (!system) return;
@@ -412,53 +392,25 @@ export const useStarSystem = (
     );
   };
 
-  const explorePlanet = async (
-    systemId: string,
-    planetId: string,
-    currentFleet: FleetData[],
-    currentSystems: StarSystem[],
-    fleetId: string
-  ): Promise<{ updatedFleet: FleetData[]; updatedSystems: StarSystem[] }> => {
-    const system = currentSystems.find((s) => s.id === systemId);
-    if (!system) {
-      currentFleet = await cancelFleet(fleetId, currentFleet);
-      return {
-        updatedFleet: currentFleet,
-        updatedSystems: currentSystems,
-      };
-    }
+  const explorePlanet = async (systemId: string, planetId: string, fleetId: string) => {
+    await cancelFleet(fleetId);
+
+    const system = systemsRef.current.find((s) => s.id === systemId);
+    if (!system) return;
+
     const planet = system.planets.find((p) => p.id === planetId);
-    if (!planet) {
-      currentFleet = await cancelFleet(fleetId, currentFleet);
-      return { updatedFleet: currentFleet, updatedSystems: currentSystems };
-    }
-    const updatedSystems = currentSystems.map((s) =>
-      s.id === systemId
-        ? {
-            ...s,
-            planets: s.planets.map((p) => (p.id === planetId ? { ...p, explored: true } : p)),
-          }
-        : s
+    if (!planet) return;
+
+    await modifySystems((systems) =>
+      systems.map((s) =>
+        s.id === systemId
+          ? {
+              ...s,
+              planets: s.planets.map((p) => (p.id === planetId ? { ...p, explored: true } : p)),
+            }
+          : s
+      )
     );
-
-    let updatedFleet = [...currentFleet];
-
-    // actualizar flota para que regrese
-    updatedFleet = updatedFleet.map((f) =>
-      f.id !== planet.explorationFleetId
-        ? f
-        : {
-            ...f,
-            startTime: Date.now(),
-            endTime: Date.now() + (f.endTime - f.startTime),
-            destinationSystemId: f.origin,
-            origin: f.destinationSystemId,
-            destinationPlanetId: undefined,
-            movementType: "RETURN",
-          }
-    );
-
-    return { updatedFleet, updatedSystems };
   };
 
   const startPlanetExploration = async (systemId: string, planetId: string) => {
@@ -466,7 +418,7 @@ export const useStarSystem = (
     if (!system) return;
 
     const planet = system.planets.find((planet) => planet.id === planetId);
-    if (!planet) return;
+    if (!planet || planet.explorationFleetId) return;
 
     const probeSpeed = shipConfig["PROBE"].speed;
     const timeToExplore = getFlyTime(probeSpeed, system.distance);
@@ -508,8 +460,7 @@ export const useStarSystem = (
     const system = systemsRef.current.find((s) => s.id === id);
     if (!system || !system.explorationFleetId) return;
 
-    const updatedFleet = await cancelFleet(system.explorationFleetId, fleetRef.current);
-    await updateFleet(updatedFleet);
+    await cancelFleet(system.explorationFleetId);
 
     await modifySystems((systems) =>
       systems.map((s) =>
@@ -517,6 +468,7 @@ export const useStarSystem = (
       )
     );
   };
+
   const cancelExplorePlanet = async (systemId: string, planetId: string) => {
     const system = systemsRef.current.find((s) => s.id === systemId);
     if (!system) return;
@@ -524,8 +476,7 @@ export const useStarSystem = (
     const planet = system.planets.find((p) => p.id === planetId);
     if (!planet || !planet.explorationFleetId) return;
 
-    const updatedFleet = await cancelFleet(planet.explorationFleetId, fleetRef.current);
-    await updateFleet(updatedFleet);
+    await cancelFleet(planet.explorationFleetId);
 
     await modifySystems((systems) =>
       systems.map((s) =>
@@ -547,8 +498,7 @@ export const useStarSystem = (
     const system = systemsRef.current.find((s) => s.id === id);
     if (!system || !system.attackFleetId) return;
 
-    const updatedFleet = await cancelFleet(system.attackFleetId, fleetRef.current);
-    await updateFleet(updatedFleet);
+    await cancelFleet(system.attackFleetId);
 
     await modifySystems((systems) =>
       systems.map((s) =>
@@ -556,6 +506,7 @@ export const useStarSystem = (
       )
     );
   };
+
   const startAttack = async (systemId: string, fleet: Ship[]) => {
     const system = systemsRef.current.find((s) => s.id === systemId);
     if (!system) return;
@@ -589,7 +540,7 @@ export const useStarSystem = (
       scanStartedAt: Date.now(),
     };
 
-    await updateSystems([...systemsRef.current, generated]);
+    await modifySystems((systems) => [...systems, generated]);
   };
 
   const recoverStarSystem = async (id: string) => {
@@ -602,13 +553,10 @@ export const useStarSystem = (
   };
 
   const cancelScanStarSystem = async (id: string) => {
-    const system = systemsRef.current.find((system) => system.id === id);
-    if (!system) return;
-
-    await updateSystems(systemsRef.current.filter((s) => s.id !== id));
+    await modifySystems((systems) => systems.filter((s) => s.id !== id));
   };
 
-  const resetFleet = async () => updateFleet([]);
+  const resetFleet = async () => await modifyFleet((fleet) => []);
 
   const resetStarSystem = async () => {
     await deleteStarSystem();
