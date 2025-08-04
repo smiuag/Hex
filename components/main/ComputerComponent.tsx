@@ -18,7 +18,7 @@ export default function ComputerComponent() {
   const [showConfirm, setShowConfirm] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
 
-  const markQuestsAsViewed = useGameContextSelector((ctx) => ctx.markQuestsAsViewed);
+  const updateQuest = useGameContextSelector((ctx) => ctx.updateQuest);
 
   useEffect(() => {
     setAllLines([]);
@@ -33,8 +33,14 @@ export default function ComputerComponent() {
 
   const router = useRouter();
 
+  const questType = type as QuestType;
   const onConfirm = async () => {
-    await markQuestsAsViewed(type as QuestType);
+    await updateQuest({
+      type: questType,
+      viewed: true,
+      completed: questType == "START" ? true : undefined, //en el hook se procesa esta y cobra la quest
+      rewardClaimed: questType == "START" ? true : undefined, //en el hook se procesa esta especial y cobra la quest
+    });
     router.replace(`/(tabs)/quests?reload=${type}`);
   };
 

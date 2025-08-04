@@ -21,9 +21,19 @@ export type Quest = {
 };
 
 export type PlayerQuest = {
-  type: QuestType;
-  completed: boolean;
+  available: boolean;
   viewed: boolean;
+  completed: boolean;
+  rewardClaimed: boolean;
+  type: QuestType;
+};
+
+export type UpdateQuestOptions = {
+  type: QuestType;
+  available?: boolean;
+  viewed?: boolean;
+  completed?: boolean;
+  rewardClaimed?: boolean;
 };
 
 export type ContextType = "GENERAL" | "RESEARCH" | "BUILD" | "FLEET" | "ATTACK" | "DEFENSE";

@@ -229,6 +229,7 @@ export const useStarSystem = (
       switch (f.movementType) {
         case "RETURN":
           handleCreateShips(f.ships);
+          destroyFleet(f.id);
           break;
 
         case "EXPLORE SYSTEM":

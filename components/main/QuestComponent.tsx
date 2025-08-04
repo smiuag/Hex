@@ -5,36 +5,22 @@ import { FlatList, ImageBackground } from "react-native";
 import { questConfig } from "../../src/config/questConfig";
 import { useGameContextSelector } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
-import { canCompleteQuest, shouldShowQuest } from "../../utils/questUtils";
 import { QuestCard } from "../cards/QuestCard";
 
 export default function QuestComponent() {
   const { reload } = useLocalSearchParams();
   const playerQuests = useGameContextSelector((ctx) => ctx.playerQuests);
-  const hexes = useGameContextSelector((ctx) => ctx.hexes);
-  const research = useGameContextSelector((ctx) => ctx.research);
-  const shipBuildQueue = useGameContextSelector((ctx) => ctx.shipBuildQueue);
-  const completeQuest = useGameContextSelector((ctx) => ctx.completeQuest);
+  const updateQuest = useGameContextSelector((ctx) => ctx.updateQuest);
   const router = useRouter();
-  const completedTypes = playerQuests
-    .filter((q) => q.completed)
-    .map((q) => q.type)
-    .flat();
 
   const availableQuests = Object.values(questConfig)
-    .filter((quest) => shouldShowQuest(quest.type, completedTypes))
+    .filter((quest) => playerQuests.some((q) => q.available && q.type == quest.type))
     .sort((a, b) => b.order - a.order);
+
   console.log("Montado QuestComponent");
 
   useEffect(() => {
-    const completedQuestTypes = playerQuests.filter((q) => q.completed).map((q) => q.type);
-
-    const newQuest = Object.values(questConfig).find((quest) => {
-      const isCompleted = completedQuestTypes.includes(quest.type);
-      const isAvailable = shouldShowQuest(quest.type, completedQuestTypes);
-      const isViewed = playerQuests.some((q) => q.type === quest.type && q.viewed);
-      return !isCompleted && !isViewed && isAvailable;
-    });
+    const newQuest = playerQuests.find((quest) => quest.available && !quest.viewed);
     if (newQuest) {
       router.replace(`/(tabs)/quests/computer?type=${newQuest.type}`);
     }
@@ -51,17 +37,18 @@ export default function QuestComponent() {
         data={availableQuests}
         keyExtractor={(item) => item.type}
         renderItem={({ item }) => {
-          const completed = canCompleteQuest(item.type, hexes, research, shipBuildQueue);
-
-          const isAlreadyClaimed = playerQuests.some((pq) => pq.completed && pq.type == item.type);
+          const isAlreadyClaimed = playerQuests.some(
+            (pq) => pq.rewardClaimed && pq.type == item.type
+          );
+          const isComppleted = playerQuests.some((pq) => pq.completed && pq.type == item.type);
 
           return (
             <QuestCard
               key={item.type}
               item={item}
-              completed={completed}
+              completed={isComppleted}
               isAlreadyClaimed={isAlreadyClaimed}
-              onComplete={() => completeQuest(item.type)}
+              onClaimReward={() => updateQuest({ type: item.type, rewardClaimed: true })}
             />
           );
         }}

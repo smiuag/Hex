@@ -1,9 +1,10 @@
 import { buildingConfig } from "@/src/config/buildingConfig";
 import { deleteMap, loadMap, saveMap } from "@/src/services/storage";
 import { BuildingType } from "@/src/types/buildingTypes";
+import { ConfigEntry } from "@/src/types/configTypes";
 import { Hex } from "@/src/types/hexTypes";
+import { UpdateQuestOptions } from "@/src/types/questType";
 import { Resources } from "@/src/types/resourceTypes";
-import * as Notifications from "expo-notifications";
 import { useEffect, useRef, useState } from "react";
 import Toast from "react-native-toast-message";
 import { getBuildCost, getBuildTime, getProductionPerSecond } from "../utils/buildingUtils";
@@ -18,31 +19,36 @@ export const useHexes = (
   addProduction: (modifications: Partial<Resources>) => void,
   addResources: (modifications: Partial<Resources>) => void,
   subtractResources: (modifications: Partial<Resources>) => void,
-  enoughResources: (cost: Partial<Resources>) => boolean
+  enoughResources: (cost: Partial<Resources>) => boolean,
+  handleUpdateConfig: (config: ConfigEntry) => void,
+  updateQuest: (options: UpdateQuestOptions) => void
 ) => {
   const [hexes, setHexes] = useState<Hex[]>([]);
   const hexRef = useRef<Hex[]>([]);
 
-  const syncAndSave = (newHexes: Hex[]) => {
+  const updateHexes = async (newHexes: Hex[]) => {
+    const prev = hexRef.current;
+
+    // Comparación superficial por referencia
+    const isEqual = prev === newHexes || JSON.stringify(prev) === JSON.stringify(newHexes);
+    if (isEqual) return; // No hacer nada si no cambió
+
     hexRef.current = newHexes;
     setHexes(newHexes);
-    saveMap(newHexes);
+    await saveMap(newHexes);
   };
 
-  const updateMap = async (updater: Hex[] | ((prev: Hex[]) => Hex[])) => {
-    setHexes((prev) => {
-      const next = typeof updater === "function" ? updater(hexRef.current) : updater;
-      syncAndSave(next);
-      return next;
-    });
+  const modifyHexes = async (modifier: (prev: Hex[]) => Hex[]) => {
+    const next = modifier(hexRef.current);
+    await updateHexes(next);
   };
 
   const loadInitialMap = async () => {
     const saved = await loadMap();
     if (saved) {
-      syncAndSave(saved);
+      await updateHexes(saved);
     } else {
-      syncAndSave([]);
+      await updateHexes([]);
     }
   };
 
@@ -52,14 +58,13 @@ export const useHexes = (
 
   const resetBuild = async () => {
     await deleteMap();
-    const newMap = generateInitialHexMap();
-    syncAndSave(newMap);
+    await modifyHexes(() => generateInitialHexMap());
   };
 
   const handleBuild = async (q: number, r: number, type: BuildingType) => {
     let notificationId: string | undefined;
 
-    await updateMap((prevHexes) => {
+    await modifyHexes((prevHexes) => {
       const hex = prevHexes.find((h) => h.q === q && h.r === r);
       if (!hex) return prevHexes;
 
@@ -107,50 +112,39 @@ export const useHexes = (
   };
 
   const handleDestroyBuilding = async (q: number, r: number) => {
-    const hex = hexRef.current.find((h) => h.q === q && h.r === r);
-    if (!hex) return;
-
-    const updatedHexes = hexRef.current.map((h) => {
-      if (h.q === q && h.r === r) {
-        return {
-          ...h,
-          building: null,
-          previousBuilding: null,
-          construction: undefined,
-          isTerraformed: true,
-        };
-      }
-      return h;
+    await modifyHexes((prev) => {
+      const updatedHexes = prev.map((h) =>
+        h.q === q && h.r === r
+          ? {
+              ...h,
+              building: null,
+              previousBuilding: null,
+              construction: undefined,
+              isTerraformed: true,
+            }
+          : h
+      );
+      return recalculateHexMapVisibility(updatedHexes);
     });
-
-    const recalculatedHexes = recalculateHexMapVisibility(updatedHexes);
-    syncAndSave(recalculatedHexes);
   };
 
   const handleTerraform = async (q: number, r: number) => {
-    const hex = hexRef.current.find((h) => h.q === q && h.r === r);
-    if (!hex) return;
+    const targetHex = hexRef.current.find((h) => h.q === q && h.r === r);
+    if (!targetHex) return;
 
-    const resources = hex.resources;
+    const resources = targetHex.resources;
 
-    const updated = hexRef.current.map((h) => {
-      if (h.q === q && h.r === r) {
-        return {
-          ...h,
-          resources: undefined,
-          isTerraformed: true,
-        };
-      }
-      return h;
-    });
-
-    syncAndSave(updated);
+    await modifyHexes((prev) =>
+      prev.map((h) =>
+        h.q === q && h.r === r ? { ...h, resources: undefined, isTerraformed: true } : h
+      )
+    );
 
     if (resources) addResources(resources);
   };
 
   const handleCancelBuild = async (q: number, r: number) => {
-    await updateMap((prevHexes) => {
+    await modifyHexes((prevHexes) => {
       const hex = prevHexes.find((h) => h.q === q && h.r === r);
       if (!hex || !hex.construction) return prevHexes;
 
@@ -164,82 +158,97 @@ export const useHexes = (
       }
 
       addResources(scaledCost);
+      if (notificationId) NotificationManager.cancelNotification(notificationId);
 
-      if (notificationId) {
-        NotificationManager.cancelNotification(notificationId);
-      }
-
-      return prevHexes.map((h) => {
-        if (h.q === q && h.r === r) {
-          const { construction, previousBuilding, ...rest } = h;
-          return {
-            ...rest,
-            construction: undefined,
-            building: previousBuilding ?? null,
-            previousBuilding: undefined,
-          };
-        }
-        return h;
-      });
+      return prevHexes.map((h) =>
+        h.q === q && h.r === r
+          ? {
+              ...h,
+              construction: undefined,
+              building: h.previousBuilding ?? null,
+              previousBuilding: undefined,
+            }
+          : h
+      );
     });
   };
 
-  const processConstructionTick = () => {
-    const now = Date.now();
-    let changed = false;
+  const processConstructionTick = async () => {
+    let antennaBuild = false;
+    let hangarBuild = false;
+    let quarryBuild = false;
+    let metalBuild = false;
+    let krystalmineBuild = false;
+    let baseBuild = false;
+    let labBuild = false;
+    let waterExtractorBuild = false;
 
-    const updatedHexes = hexRef.current.map((hex) => {
-      if (!hex.construction) return hex;
+    await modifyHexes((prevHexes) => {
+      const now = Date.now();
+      let changed = false;
 
-      const { building, startedAt, targetLevel } = hex.construction;
-      const buildTime = getBuildTime(building, targetLevel);
+      const updatedHexes = prevHexes.map((hex) => {
+        if (!hex.construction) return hex;
 
-      if (now - startedAt < buildTime) return hex;
+        const { building, startedAt, targetLevel } = hex.construction;
+        const buildTime = getBuildTime(building, targetLevel);
+        if (now - startedAt < buildTime) return hex;
 
-      changed = true;
+        changed = true;
 
-      const prevProd =
-        targetLevel === 1
-          ? ({} as Partial<Resources>)
-          : getProductionPerSecond(building, targetLevel - 1);
-      const newProd = getProductionPerSecond(building, targetLevel);
-      const diff: Partial<Resources> = {};
+        const prevProd: Partial<Resources> =
+          targetLevel === 1 ? {} : getProductionPerSecond(building, targetLevel - 1);
+        const newProd: Partial<Resources> = getProductionPerSecond(building, targetLevel);
+        const diff: Partial<Resources> = {};
 
-      const keys = new Set([...Object.keys(prevProd), ...Object.keys(newProd)]) as Set<
-        keyof Resources
-      >;
-      for (const key of keys) {
-        const before = prevProd[key] || 0;
-        const after = newProd[key] || 0;
-        const d = after - before;
-        if (d !== 0) diff[key] = d;
-      }
+        const keys = new Set([...Object.keys(prevProd), ...Object.keys(newProd)]) as Set<
+          keyof Resources
+        >;
 
-      if (Object.keys(diff).length > 0) addProduction(diff);
+        for (const key of keys) {
+          const before = prevProd[key] || 0;
+          const after = newProd[key] || 0;
+          const d = after - before;
+          if (d !== 0) diff[key] = d;
+        }
 
-      Notifications.scheduleNotificationAsync({
-        content: {
-          title: "✅ Construcción terminada",
-          body: `Tu edificio \"${building}\" ha finalizado su construcción.`,
-          sound: true,
-        },
-        trigger: null,
+        if (Object.keys(diff).length > 0) addProduction(diff);
+
+        if (building === "QUARRY") quarryBuild = true;
+        if (building === "METALLURGY") metalBuild = true;
+        if (building === "KRYSTALMINE") krystalmineBuild = true;
+        if (building === "BASE") baseBuild = true;
+        if (building === "ANTENNA") antennaBuild = true;
+        if (building === "HANGAR") hangarBuild = true;
+        if (building === "LAB") labBuild = true;
+        if (building === "WATEREXTRACTOR") waterExtractorBuild = true;
+
+        return {
+          ...hex,
+          construction: undefined,
+          building: {
+            type: building,
+            level: targetLevel,
+          },
+        };
       });
 
-      return {
-        ...hex,
-        construction: undefined,
-        building: {
-          type: building,
-          level: targetLevel,
-        },
-      };
+      return changed ? expandHexMapFromBuiltHexes(updatedHexes) : prevHexes;
     });
 
-    if (changed) {
-      const recalculated = expandHexMapFromBuiltHexes(updatedHexes);
-      syncAndSave(recalculated);
-    }
+    //config para mostrar tabs
+    if (antennaBuild) await handleUpdateConfig({ key: "HAS_ANTENNA", value: "true" });
+    if (hangarBuild) await handleUpdateConfig({ key: "HAS_HANGAR", value: "true" });
+
+    //update de quests
+    if (labBuild) await updateQuest({ type: "BUILDING_LAB1", completed: true });
+    if (quarryBuild) await updateQuest({ type: "BUILDING_QUARRY1", completed: true });
+    if (metalBuild) await updateQuest({ type: "BUILDING_METALLURGY1", completed: true });
+    if (krystalmineBuild) await updateQuest({ type: "BUILDING_KRYSTALMINE1", completed: true });
+    if (baseBuild) await updateQuest({ type: "BUILDING_BASE2", completed: true });
+    if (antennaBuild) await updateQuest({ type: "BUILDING_ANTENNA", completed: true });
+    if (hangarBuild) await updateQuest({ type: "BUILDING_QUARRY1", completed: true });
+    if (waterExtractorBuild) await updateQuest({ type: "H2O_FOUND", completed: true });
   };
 
   return {

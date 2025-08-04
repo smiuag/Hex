@@ -21,7 +21,7 @@ export default function IndexRedirect() {
     const requestPermissions = async () => {
       const granted = await NotificationManager.requestPermissions?.();
       if (!granted) {
-        console.warn("🔕 No se concedieron permisos para notificaciones");
+        // console.warn("🔕 No se concedieron permisos para notificaciones");
       }
     };
 

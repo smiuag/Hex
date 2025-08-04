@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import Animated, {
   runOnJS,
@@ -39,6 +39,7 @@ export default function PlanetComponent() {
   const handleCancelBuild = useGameContextSelector((ctx) => ctx.handleCancelBuild);
   const handleTerraform = useGameContextSelector((ctx) => ctx.handleTerraform);
   const handleUpdateConfig = useGameContextSelector((ctx) => ctx.handleUpdateConfig);
+  const updateQuest = useGameContextSelector((ctx) => ctx.updateQuest);
 
   console.log("Montado PlanetComponent");
 
@@ -185,12 +186,22 @@ export default function PlanetComponent() {
         visibilityTime: 2000,
       });
     } else if (selectedHex) {
-      if (selectedHex.terrain == "water") {
-        alert(
-          "Este terreno parece distinto. Las primeras inspecciones indican de una gran cantidad de humedad en el subsuelo. ¡Quizá sea agua!"
+      handleTerraform(selectedHex.q, selectedHex.r);
+      if (selectedHex.terrain === "water") {
+        Alert.alert(
+          "Terreno misterioso",
+          "Este terreno parece distinto. Las primeras inspecciones indican una gran cantidad de humedad en el subsuelo. ¡Quizá sea agua!",
+          [
+            {
+              text: "Aceptar",
+              onPress: () => {
+                updateQuest({ type: "H2O_SEARCH", completed: true });
+              },
+            },
+          ],
+          { cancelable: false }
         );
       }
-      handleTerraform(selectedHex.q, selectedHex.r);
       setModalTerraformVisible(false);
     }
   };

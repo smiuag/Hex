@@ -1,7 +1,7 @@
 import { loadResearch, saveResearch } from "@/src/services/storage";
+import { UpdateQuestOptions } from "@/src/types/questType";
 import { Research, ResearchType } from "@/src/types/researchTypes";
 import { Resources } from "@/src/types/resourceTypes";
-import * as Notifications from "expo-notifications";
 import { useEffect, useRef, useState } from "react";
 import Toast from "react-native-toast-message";
 import { NotificationManager } from "../utils/notificacionUtils";
@@ -10,7 +10,8 @@ import { getResearchCost, getResearchTime } from "../utils/researchUtils";
 export const useResearch = (
   addResources: (mod: Partial<Resources>) => void,
   subtractResources: (mod: Partial<Resources>) => void,
-  enoughResources: (cost: Partial<Resources>) => boolean
+  enoughResources: (cost: Partial<Resources>) => boolean,
+  updateQuest: (options: UpdateQuestOptions) => void
 ) => {
   const [research, setResearch] = useState<Research[]>([]);
   const researchRef = useRef<Research[]>([]);
@@ -105,6 +106,7 @@ export const useResearch = (
   const processResearchTick = async (tResearch: (key: string) => string) => {
     const now = Date.now();
     let changed = false;
+    let miningResearch = false;
 
     const updated = researchRef.current.map((item) => {
       if (item.progress) {
@@ -114,16 +116,18 @@ export const useResearch = (
         if (elapsed >= totalTime) {
           changed = true;
 
-          Notifications.scheduleNotificationAsync({
-            content: {
-              title: "🧠 Investigación completada",
-              body: `Has finalizado la investigación "${tResearch(
-                `researchName.${item.data.type}`
-              )}".`,
-              sound: true,
-            },
-            trigger: null,
-          });
+          // Notifications.scheduleNotificationAsync({
+          //   content: {
+          //     title: "🧠 Investigación completada",
+          //     body: `Has finalizado la investigación "${tResearch(
+          //       `researchName.${item.data.type}`
+          //     )}".`,
+          //     sound: true,
+          //   },
+          //   trigger: null,
+          // });
+
+          if (item.data.type == "MINING") miningResearch = true;
 
           return {
             data: {
@@ -137,9 +141,9 @@ export const useResearch = (
       return item;
     });
 
-    if (changed) {
-      await updateResearchState(updated);
-    }
+    if (changed) await updateResearchState(updated);
+
+    if (miningResearch) await updateQuest({ type: "RESEARCH_MINING1", completed: true });
   };
 
   const loadData = async () => {

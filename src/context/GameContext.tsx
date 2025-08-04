@@ -12,7 +12,7 @@ import { useShip } from "../../hooks/useShip";
 import { useStarSystem } from "../../hooks/useStarSystem";
 import { BuildingType } from "../../src/types/buildingTypes";
 import { Hex } from "../../src/types/hexTypes";
-import { PlayerQuest, QuestType } from "../../src/types/questType";
+import { PlayerQuest, UpdateQuestOptions } from "../../src/types/questType";
 import { Resources, StoredResources } from "../../src/types/resourceTypes";
 import { Ship, ShipType } from "../../src/types/shipType";
 import { NotificationManager } from "../../utils/notificacionUtils";
@@ -46,8 +46,7 @@ type ProviderContextType = {
   handleCancelResearch: (type: ResearchType) => void;
   handleBuildShip: (type: ShipType, amount: number) => void;
   handleCancelShip: (type: ShipType) => void;
-  completeQuest: (type: QuestType) => void;
-  markQuestsAsViewed: (types: QuestType) => void;
+  updateQuest: (options: UpdateQuestOptions) => void;
   handleUpdateConfig: (config: ConfigEntry) => void;
   updatePlayerConfig: (config: PlayerConfig) => void;
   endGame: () => void;
@@ -75,6 +74,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   const { t: tResearch } = useTranslation("research");
   const { universe } = useUniverse();
 
+  const { playerConfig, handleUpdateConfig, resetPlayerConfig, updatePlayerConfig } = useConfig();
+
   const {
     resources,
     resetResources,
@@ -84,6 +85,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     enoughResources,
   } = useResources();
 
+  const { playerQuests, updateQuest, resetQuests } = useQuest(addResources);
+
   const {
     hexes,
     handleBuild,
@@ -92,9 +95,14 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     resetBuild,
     handleTerraform,
     handleDestroyBuilding,
-  } = useHexes(addProduction, addResources, subtractResources, enoughResources);
-
-  const { playerQuests, completeQuest, markQuestsAsViewed, resetQuests } = useQuest(addResources);
+  } = useHexes(
+    addProduction,
+    addResources,
+    subtractResources,
+    enoughResources,
+    handleUpdateConfig,
+    updateQuest
+  );
 
   const {
     shipBuildQueue,
@@ -104,10 +112,10 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     resetShip,
     handleDestroyShip,
     handleCreateShips,
-  } = useShip(addResources, subtractResources, enoughResources);
+  } = useShip(playerQuests, addResources, subtractResources, enoughResources, updateQuest);
 
   const { research, handleResearch, handleCancelResearch, processResearchTick, resetResearch } =
-    useResearch(addResources, subtractResources, enoughResources);
+    useResearch(addResources, subtractResources, enoughResources, updateQuest);
 
   const {
     fleet,
@@ -130,8 +138,6 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     recoverStarSystem,
     cancelScanStarSystem,
   } = useStarSystem(universe, handleDestroyShip, handleCreateShips, subtractResources);
-
-  const { playerConfig, handleUpdateConfig, resetPlayerConfig, updatePlayerConfig } = useConfig();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -168,6 +174,13 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     await handleUpdateConfig({ key: "GAME_STARTED", value: "true" });
     await handleUpdateConfig({ key: "MAP_SIZE", value: "SMALL" });
     await handleUpdateConfig({ key: "STARTING_SYSTEM", value: getRandomStartSystem(universe).id });
+    await updateQuest({
+      type: "START",
+      available: true,
+      completed: false,
+      viewed: false,
+      rewardClaimed: false,
+    });
   };
 
   const contextValue = useMemo<ProviderContextType>(
@@ -196,8 +209,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       handleCancelResearch,
       handleBuildShip,
       handleCancelShip,
-      completeQuest,
-      markQuestsAsViewed,
+      updateQuest,
       endGame,
       startGame,
       cancelExploreSystem,
@@ -238,8 +250,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       handleCancelResearch,
       handleBuildShip,
       handleCancelShip,
-      completeQuest,
-      markQuestsAsViewed,
+      updateQuest,
       endGame,
       startGame,
       cancelExploreSystem,

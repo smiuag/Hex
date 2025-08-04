@@ -12,10 +12,15 @@ type Props = {
   item: (typeof questConfig)[keyof typeof questConfig];
   completed: boolean;
   isAlreadyClaimed: boolean;
-  onComplete: () => void;
+  onClaimReward: () => void;
 };
 
-export const QuestCard: React.FC<Props> = ({ item, completed, isAlreadyClaimed, onComplete }) => {
+export const QuestCard: React.FC<Props> = ({
+  item,
+  completed,
+  isAlreadyClaimed,
+  onClaimReward,
+}) => {
   const { t } = useTranslation("common");
   const { t: tQuests } = useTranslation("quests");
   const scale = useRef(new Animated.Value(1)).current;
@@ -43,7 +48,7 @@ export const QuestCard: React.FC<Props> = ({ item, completed, isAlreadyClaimed, 
 
   const handlePress = async () => {
     triggerAnimation();
-    onComplete();
+    onClaimReward();
   };
 
   if (!item.persist && isAlreadyClaimed) return null;

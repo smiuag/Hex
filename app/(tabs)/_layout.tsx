@@ -10,46 +10,22 @@ import {
   ResearchIcon,
   ShipIcon,
 } from "../../components/auxiliar/MenuIcons";
-import { questConfig } from "../../src/config/questConfig";
 import { useGameContextSelector } from "../../src/context/GameContext";
 import { questIconView, tabStyles } from "../../src/styles/tabsStyles";
-import { gameStarted } from "../../utils/configUtils";
-import { canCompleteQuest, shouldShowQuest } from "../../utils/questUtils";
+import { gameStarted, hasAntennaBuilt, hasHangarBuilt } from "../../utils/configUtils";
 
 export default function TabLayout() {
   const playerQuests = useGameContextSelector((ctx) => ctx.playerQuests);
-  const hexes = useGameContextSelector((ctx) => ctx.hexes);
-  const research = useGameContextSelector((ctx) => ctx.research);
-  const shipBuildQueue = useGameContextSelector((ctx) => ctx.shipBuildQueue);
   const playerConfig = useGameContextSelector((ctx) => ctx.playerConfig);
-  const starSystems = useGameContextSelector((ctx) => ctx.starSystems);
   const partidaIniciada = gameStarted(playerConfig);
   const router = useRouter();
 
   console.log("Montado TabLayout");
-  const hasHangar = hexes.length > 0 && hexes.some((h) => h.building?.type == "HANGAR");
-  const hasAntenna = hexes.length > 0 && hexes.some((h) => h.building?.type == "ANTENNA");
-  const completedQuestTypes = playerQuests.filter((q) => q.completed).map((q) => q.type);
-
-  const unexploretdSystems = starSystems.some(
-    (s) => !s.scanStartedAt && !s.explored && !s.explorationFleetId && !s.discarded
-  );
-
-  const hasCompletedQuest = Object.values(questConfig).some((quest) => {
-    const pq = playerQuests.find((q) => q.type === quest.type);
-    const isAvailable = shouldShowQuest(quest.type, completedQuestTypes);
-    const isCompleted = canCompleteQuest(quest.type, hexes, research, shipBuildQueue);
-
-    return pq && !pq.completed && isAvailable && isCompleted;
-  });
-
-  const newQuest = Object.values(questConfig).find((quest) => {
-    const isCompleted = completedQuestTypes.includes(quest.type);
-    const isAvailable = shouldShowQuest(quest.type, completedQuestTypes);
-    const isViewed = playerQuests.some((q) => q.type === quest.type && q.viewed);
-    return !isCompleted && !isViewed && isAvailable;
-  });
-
+  const hasHangar = hasHangarBuilt(playerConfig);
+  const hasAntenna = hasAntennaBuilt(playerConfig);
+  console.log(playerQuests);
+  const hasCompletedQuest = playerQuests.some((q) => q.completed && !q.rewardClaimed);
+  const newQuest = playerQuests.find((q) => q.available && !q.viewed);
   const hasNewQuest = !!newQuest;
   const newQuestId = newQuest?.type as string;
 
@@ -108,16 +84,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="galaxy"
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <View>
-              <GalaxyIcon color={color} size={size} />
-              {unexploretdSystems && (
-                <View style={questIconView("green")}>
-                  <Text style={tabStyles.questIconText}>!</Text>
-                </View>
-              )}
-            </View>
-          ),
+          tabBarIcon: ({ color, size }) => <GalaxyIcon color={color} size={size} />,
           tabBarLabel: "Galaxia",
           tabBarButton: hasAntenna && partidaIniciada ? undefined : () => null,
           tabBarItemStyle: hasAntenna && partidaIniciada ? {} : tabStyles.hidden,

@@ -34,6 +34,14 @@ export function gameStartingSystem(playerConfig: PlayerConfig): string {
   return system?.value!;
 }
 
+export function hasHangarBuilt(playerConfig: PlayerConfig): boolean {
+  return playerConfig.some((entry) => entry.key === "HAS_HANGAR" && entry.value);
+}
+
+export function hasAntennaBuilt(playerConfig: PlayerConfig): boolean {
+  return playerConfig.some((entry) => entry.key === "HAS_ANTENNA" && entry.value);
+}
+
 export function getStartingConfig(universe: StarSystemMap) {
   const startingSystem = getRandomStartSystem(universe);
   const startingPlayerConfig: PlayerConfig = [
