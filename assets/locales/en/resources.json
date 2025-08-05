@@ -3,11 +3,12 @@
     "METAL": "Metal",
     "STONE": "Regolito",
     "ILMENITA": "Ilmenita",
-    "REGOLITO": "Regolito",
+    "AETHERIUM": "Aetherium",
     "NEBULITA": "Nebulita",
     "THARNIO": "Tharnio",
     "KAIROX": "Kairox",
     "CRYSTAL": "Cristal",
-    "ENERGY": "Energía"
+    "ENERGY": "Energía",
+    "ADN": "ADN"
   }
 }

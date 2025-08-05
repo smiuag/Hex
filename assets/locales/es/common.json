@@ -69,10 +69,11 @@
   "Close": "Cerrar",
 
   "Attack": "Atacar",
-  "CelestialBodys": "Cuerpos estelares encontrados: ",
+  "CelestialBodies": "Cuerpos estelares encontrados: ",
 
   "BuildStelarPort": "Construcción de un puerto estelar",
   "StelarPortCostMessage": "Para construir un puerto estelar necesitaremos enviar 2 cargueros, que se quedarán en el sistema para juntar recursos de la zona. Además es necesario enviar 120K de cristal y 120K de metal. ¿Estas seguro de que quieres continuar?",
   "Fly": "Volar",
-  "Collect": "Recolectar"
+  "Collect": "Recolectar",
+  "combatStats": "Estadísticas de combate"
 }

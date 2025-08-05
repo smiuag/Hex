@@ -3,7 +3,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { ImageBackground, Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
-import { resourceEmojis } from "../../src/config/resourceConfig";
+import { resourceEmojis } from "../../src/config/emojisConfig";
 import { shipConfig } from "../../src/config/shipConfig";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { ResourceType, SpecialResourceType } from "../../src/types/resourceTypes";

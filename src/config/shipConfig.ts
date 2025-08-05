@@ -38,7 +38,7 @@ export const shipConfig: Record<
     hp: SHIP_STATS.PROBE.HP,
   },
   LIGHTFIGHTER: {
-    orden: 1,
+    orden: 2,
     baseBuildTime: SHIP_TIME.LIGHTFIGHTER,
     imageBackground: SHIP_BACKGROUND_IMAGE.LIGHTFIGHTER,
     baseCost: SHIP_COST.LIGHTFIGHTER,
@@ -50,7 +50,7 @@ export const shipConfig: Record<
     hp: SHIP_STATS.LIGHTFIGHTER.HP,
   },
   INTERCEPTOR: {
-    orden: 2,
+    orden: 3,
     baseBuildTime: SHIP_TIME.INTERCEPTOR,
     imageBackground: SHIP_BACKGROUND_IMAGE.INTERCEPTOR,
     baseCost: SHIP_COST.INTERCEPTOR,
@@ -62,7 +62,7 @@ export const shipConfig: Record<
     hp: SHIP_STATS.INTERCEPTOR.HP,
   },
   ESCORTFRIGATE: {
-    orden: 3,
+    orden: 4,
     baseBuildTime: SHIP_TIME.ESCORTFRIGATE,
     imageBackground: SHIP_BACKGROUND_IMAGE.ESCORTFRIGATE,
     baseCost: SHIP_COST.ESCORTFRIGATE,
@@ -74,7 +74,7 @@ export const shipConfig: Record<
     hp: SHIP_STATS.ESCORTFRIGATE.HP,
   },
   BATTLECRUISER: {
-    orden: 4,
+    orden: 5,
     baseBuildTime: SHIP_TIME.BATTLECRUISER,
     imageBackground: SHIP_BACKGROUND_IMAGE.BATTLECRUISER,
     baseCost: SHIP_COST.BATTLECRUISER,
@@ -86,7 +86,7 @@ export const shipConfig: Record<
     hp: SHIP_STATS.BATTLECRUISER.HP,
   },
   SPACEDESTROYER: {
-    orden: 5,
+    orden: 6,
     baseBuildTime: SHIP_TIME.SPACEDESTROYER,
     imageBackground: SHIP_BACKGROUND_IMAGE.SPACEDESTROYER,
     baseCost: SHIP_COST.SPACEDESTROYER,
@@ -98,7 +98,7 @@ export const shipConfig: Record<
     hp: SHIP_STATS.SPACEDESTROYER.HP,
   },
   ASSAULTBATTLESHIP: {
-    orden: 6,
+    orden: 7,
     baseBuildTime: SHIP_TIME.ASSAULTBATTLESHIP,
     imageBackground: SHIP_BACKGROUND_IMAGE.ASSAULTBATTLESHIP,
     baseCost: SHIP_COST.ASSAULTBATTLESHIP,
@@ -110,7 +110,7 @@ export const shipConfig: Record<
     hp: SHIP_STATS.ASSAULTBATTLESHIP.HP,
   },
   STARCARRIER: {
-    orden: 7,
+    orden: 8,
     baseBuildTime: SHIP_TIME.STARCARRIER,
     imageBackground: SHIP_BACKGROUND_IMAGE.STARCARRIER,
     baseCost: SHIP_COST.STARCARRIER,
@@ -122,7 +122,7 @@ export const shipConfig: Record<
     hp: SHIP_STATS.STARCARRIER.HP,
   },
   HEAVYASSAULTSHIP: {
-    orden: 8,
+    orden: 9,
     baseBuildTime: SHIP_TIME.HEAVYASSAULTSHIP,
     imageBackground: SHIP_BACKGROUND_IMAGE.HEAVYASSAULTSHIP,
     baseCost: SHIP_COST.HEAVYASSAULTSHIP,
@@ -134,7 +134,7 @@ export const shipConfig: Record<
     hp: SHIP_STATS.HEAVYASSAULTSHIP.HP,
   },
   ORBITALASSAULTSHIP: {
-    orden: 9,
+    orden: 10,
     baseBuildTime: SHIP_TIME.ORBITALASSAULTSHIP,
     imageBackground: SHIP_BACKGROUND_IMAGE.ORBITALASSAULTSHIP,
     baseCost: SHIP_COST.ORBITALASSAULTSHIP,
@@ -146,7 +146,7 @@ export const shipConfig: Record<
     hp: SHIP_STATS.ORBITALASSAULTSHIP.HP,
   },
   PLANETARYDESTROYER: {
-    orden: 10,
+    orden: 11,
     baseBuildTime: SHIP_TIME.PLANETARYDESTROYER,
     imageBackground: SHIP_BACKGROUND_IMAGE.PLANETARYDESTROYER,
     baseCost: SHIP_COST.PLANETARYDESTROYER,
@@ -158,7 +158,7 @@ export const shipConfig: Record<
     hp: SHIP_STATS.PLANETARYDESTROYER.HP,
   },
   FREIGHTER: {
-    orden: 10,
+    orden: 2,
     baseBuildTime: SHIP_TIME.FREIGHTER,
     imageBackground: SHIP_BACKGROUND_IMAGE.FREIGHTER,
     baseCost: SHIP_COST.FREIGHTER,

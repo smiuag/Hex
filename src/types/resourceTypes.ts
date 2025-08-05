@@ -1,5 +1,11 @@
 export type ResourceType = "METAL" | "STONE" | "ENERGY" | "CRYSTAL";
-export type SpecialResourceType = "ILMENITA" | "REGOLITO" | "THARNIO" | "KAIROX" | "NEBULITA";
+export type SpecialResourceType =
+  | "ILMENITA"
+  | "AETHERIUM"
+  | "THARNIO"
+  | "KAIROX"
+  | "NEBULITA"
+  | "ADN";
 
 export type Resources = Record<ResourceType, number>;
 export type SpecialResources = Record<SpecialResourceType, number>;

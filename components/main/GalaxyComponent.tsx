@@ -23,7 +23,6 @@ export default function StarSystemComponent() {
     (ctx) => ctx.startStarSystemExploration
   );
   const cancelExploreSystem = useGameContextSelector((ctx) => ctx.cancelExploreSystem);
-  console.log("Montado StarSystemComponent");
 
   const isFocused = useIsFocused();
   if (!isFocused) return null;

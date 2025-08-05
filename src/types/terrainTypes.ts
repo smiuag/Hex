@@ -1,4 +1,4 @@
-export type TerrainType = "water" | "base" | "initial" | "border";
+export type TerrainType = "WATER" | "BASE" | "INITIAL" | "BORDER" | "ANCIENT_ALIEN_STRUCTURES";
 
 export type TerrainData = {
   image?: number;

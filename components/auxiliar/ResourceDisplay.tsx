@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { resourceEmojis } from "../../src/config/resourceConfig";
+import { resourceEmojis } from "../../src/config/emojisConfig";
 import { ResourceType, Resources, SpecialResources } from "../../src/types/resourceTypes";
 import { formatAmount } from "../../utils/generalUtils";
 

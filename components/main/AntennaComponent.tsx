@@ -33,7 +33,6 @@ export default function AntennaComponent() {
   const scanStarSystem = useGameContextSelector((ctx) => ctx.scanStarSystem);
   const recoverStarSystem = useGameContextSelector((ctx) => ctx.recoverStarSystem);
   const cancelScanStarSystem = useGameContextSelector((ctx) => ctx.cancelScanStarSystem);
-  console.log("Montado Antenna");
 
   const { t } = useTranslation("common");
 

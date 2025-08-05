@@ -246,7 +246,7 @@ export const useHexes = (
     if (krystalmineBuild) await updateQuest({ type: "BUILDING_KRYSTALMINE1", completed: true });
     if (baseBuild) await updateQuest({ type: "BUILDING_BASE2", completed: true });
     if (antennaBuild) await updateQuest({ type: "BUILDING_ANTENNA", completed: true });
-    if (hangarBuild) await updateQuest({ type: "BUILDING_QUARRY1", completed: true });
+    if (hangarBuild) await updateQuest({ type: "BUILDING_HANGAR", completed: true });
     if (waterExtractorBuild) await updateQuest({ type: "H2O_FOUND", completed: true });
   };
 

@@ -18,8 +18,6 @@ export default function QuestComponent() {
     .filter((quest) => playerQuests.some((q) => q.available && q.type == quest.type))
     .sort((a, b) => b.order - a.order);
 
-  console.log("Montado QuestComponent");
-
   useEffect(() => {
     const newQuest = playerQuests.find((quest) => quest.available && !quest.viewed);
     if (newQuest) {

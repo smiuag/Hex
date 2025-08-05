@@ -6,8 +6,16 @@ export const resourceEmojis: Record<ResourceType | SpecialResourceType, string> 
   ENERGY: "⚡", // rayo
   CRYSTAL: "💎", // diamante
   ILMENITA: "🪨", // roca densa / mineral
-  REGOLITO: "🌑", // superficie lunar / polvo espacial
+  AETHERIUM: "💠", // superficie lunar / polvo espacial
   THARNIO: "☢️", // material reactivo / radiactivo
   KAIROX: "🧬", // recurso biotecnológico o genético
   NEBULITA: "🌀", // energía o gas espacial, forma inestable
+  ADN: "🦠", // energía o gas espacial, forma inestable
+};
+
+export const shipStatsEmojis: Record<string, string> = {
+  speed: "⏩", // Velocidad
+  attack: "🎯", // Ataque
+  defense: "🛡️", // Defensa
+  health: "❤️", // Vida
 };

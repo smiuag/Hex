@@ -302,4 +302,10 @@ export const commonStyles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+
+  smallSubtitle: {
+    fontSize: 12,
+    color: "white",
+    marginTop: 1,
+  },
 });

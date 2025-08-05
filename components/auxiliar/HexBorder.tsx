@@ -35,7 +35,7 @@ const isOccupied = (q: number, r: number, hexes: Hex[]) => {
 };
 
 export default function BorderHexTile({ hex, hexes, points, px, py, index, hexSize }: Props) {
-  const config = terrainConfig["border"];
+  const config = terrainConfig["BORDER"];
   const corners = getHexCornerPoints(px, py, hexSize);
 
   return (

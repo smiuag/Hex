@@ -118,7 +118,7 @@ export const generateInitialHexMap = (): Hex[] => {
     });
   });
 
-  // Recoger vecinos de los "initial"
+  // Recoger vecinos de los "INITIAL"
   Array.from(initialHexesSet).forEach((coord) => {
     const [q, r] = coord.split(",").map(Number);
     getNeighbors(q, r).forEach(({ q: nq, r: nr }) => {
@@ -137,7 +137,7 @@ export const generateInitialHexMap = (): Hex[] => {
     hexMap.push({
       q,
       r,
-      terrain: "base",
+      terrain: "BASE",
       isVisible: true,
       isTerraformed: true,
       isRadius: false,
@@ -156,7 +156,7 @@ export const generateInitialHexMap = (): Hex[] => {
     hexMap.push({
       q,
       r,
-      terrain: index === 0 ? "water" : "initial",
+      terrain: index === 0 ? "WATER" : "INITIAL",
       isVisible: true,
       isTerraformed: false,
       isRadius: false,
@@ -173,7 +173,7 @@ export const generateInitialHexMap = (): Hex[] => {
     hexMap.push({
       q,
       r,
-      terrain: "border",
+      terrain: "BORDER",
       isVisible: false,
       isTerraformed: false,
       isRadius: true,
@@ -238,7 +238,7 @@ export function expandHexMapFromBuiltHexes(hexes: Hex[]): Hex[] {
         ...h,
         isVisible: true,
         isRadius: false,
-        terrain: h.terrain === "border" ? "initial" : h.terrain,
+        terrain: h.terrain.toUpperCase() === "BORDER" ? "INITIAL" : h.terrain,
       });
     } else {
       const [q, r] = key.split(",").map(Number);
@@ -248,7 +248,7 @@ export function expandHexMapFromBuiltHexes(hexes: Hex[]): Hex[] {
         isVisible: true,
         isTerraformed: false,
         isRadius: false,
-        terrain: "initial",
+        terrain: "INITIAL",
         building: null,
         construction: undefined,
         previousBuilding: null,
@@ -267,7 +267,7 @@ export function expandHexMapFromBuiltHexes(hexes: Hex[]): Hex[] {
         isVisible: false,
         isTerraformed: false,
         isRadius: true,
-        terrain: "border",
+        terrain: "BORDER",
         building: null,
         construction: undefined,
         previousBuilding: null,
@@ -278,7 +278,7 @@ export function expandHexMapFromBuiltHexes(hexes: Hex[]): Hex[] {
         hexMap.set(key, {
           ...h,
           isRadius: true,
-          terrain: "border",
+          terrain: "BORDER",
         });
       }
     }
@@ -374,14 +374,14 @@ export function recalculateHexMapVisibility(hexes: Hex[]): Hex[] {
         ...hex,
         isVisible: true,
         isRadius: false,
-        terrain: hex.terrain === "border" ? "initial" : hex.terrain,
+        terrain: hex.terrain.toUpperCase() === "BORDER" ? "INITIAL" : hex.terrain,
       });
     } else if (toBorder.has(key)) {
       newHexes.push({
         ...hex,
         isVisible: false,
         isRadius: true,
-        terrain: "border",
+        terrain: "BORDER",
       });
     } else if (builtHexes.some((h) => h.q === hex.q && h.r === hex.r)) {
       newHexes.push({
@@ -394,7 +394,7 @@ export function recalculateHexMapVisibility(hexes: Hex[]): Hex[] {
         ...hex,
         isVisible: false,
         isRadius: false,
-        terrain: hex.terrain === "initial" ? "border" : hex.terrain,
+        terrain: hex.terrain.toUpperCase() === "INITIAL" ? "BORDER" : hex.terrain,
       });
     }
   }

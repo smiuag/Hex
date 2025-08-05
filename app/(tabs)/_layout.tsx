@@ -20,10 +20,11 @@ export default function TabLayout() {
   const partidaIniciada = gameStarted(playerConfig);
   const router = useRouter();
 
-  console.log("Montado TabLayout");
   const hasHangar = hasHangarBuilt(playerConfig);
   const hasAntenna = hasAntennaBuilt(playerConfig);
-  const hasCompletedQuest = playerQuests.some((q) => q.completed && !q.rewardClaimed);
+  const hasCompletedQuest = playerQuests.some(
+    (q) => q.completed && !q.rewardClaimed && q.available
+  );
   const newQuest = playerQuests.find((q) => q.available && !q.viewed);
   const hasNewQuest = !!newQuest;
   const newQuestId = newQuest?.type as string;

@@ -17,7 +17,6 @@ export default function ResearchComponent() {
 
   const isFocused = useIsFocused();
   if (!isFocused) return null;
-  console.log("Montado ResearchComponent");
   const researchItems = Object.entries(researchConfig)
     .map(([key, config]) => {
       const type = key as ResearchType;

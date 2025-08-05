@@ -34,7 +34,6 @@ export default function ConstructionComponent() {
   const router = useRouter();
   const { t } = useTranslation("common");
   const { t: tBuilding } = useTranslation("buildings");
-  console.log("Montado ConstructionComponent");
 
   const isFocused = useIsFocused();
   if (!isFocused) return null;
@@ -50,7 +49,7 @@ export default function ConstructionComponent() {
     router.replace("/(tabs)/planet");
   };
 
-  const isWater = terrain === "water";
+  const isWater = terrain === "WATER";
 
   const buildings: BuildingItem[] = Object.entries(buildingConfig)
     .filter(([type]) => {

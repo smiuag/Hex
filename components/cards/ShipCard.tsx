@@ -1,3 +1,4 @@
+import { SHIP_STATS } from "@/src/constants/ship";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Animated, ImageBackground, Text, TouchableOpacity, View } from "react-native";
@@ -6,6 +7,7 @@ import { ShipType } from "../../src/types/shipType";
 import { formatDuration } from "../../utils/generalUtils";
 import { CountdownTimer } from "../auxiliar/CountdownTimer";
 import { ResourceDisplay } from "../auxiliar/ResourceDisplay";
+import { ShipStatsDisplay } from "../auxiliar/ShipStatsDisplay";
 
 type Props = {
   item: {
@@ -85,6 +87,18 @@ export const ShipCard: React.FC<Props> = ({ item, disableButton, onBuild, onCanc
             <View style={commonStyles.rowSpaceBetween}>
               <Text style={commonStyles.whiteText}>{t("timePerUnit")}</Text>
               <Text style={commonStyles.whiteText}>{formatDuration(item.unitTime)}</Text>
+            </View>
+            <View style={commonStyles.rowSpaceBetween}>
+              <Text style={commonStyles.whiteText}>{t("combatStats")} </Text>
+              <ShipStatsDisplay
+                stats={{
+                  speed: SHIP_STATS[item.type].SPEED,
+                  attack: SHIP_STATS[item.type].ATTACK,
+                  defense: SHIP_STATS[item.type].DEFENSE,
+                  health: SHIP_STATS[item.type].HP,
+                }}
+                fontSize={13}
+              />
             </View>
 
             <View style={commonStyles.actionBar}>

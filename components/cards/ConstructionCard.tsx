@@ -36,7 +36,6 @@ export const ConstructionCard: React.FC<Props> = ({ item, onBuild, research }) =
   const { t } = useTranslation("common");
   const { t: tResearch } = useTranslation("research");
   const { t: tBuilding } = useTranslation("buildings");
-  console.log("Montado ConstructionCard");
 
   const filteredRequirements = Object.values(
     item.requirements

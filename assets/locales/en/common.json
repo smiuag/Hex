@@ -38,10 +38,11 @@
   "Close": "Close",
 
   "Attack": "Attack",
-  "CelestialBodys": "Celestial bodys found: ",
+  "CelestialBodies": "Celestial bodies found: ",
 
   "BuildStelarPort": "Building a stellar port",
   "StelarPortCostMessage": "To build a stellar port, we will need to send 2 freighters, which will remain in the system to gather local resources. Additionally, 1,200,000 crystal and 1,200,000 metal are required. Are you sure you want to continue?",
   "Fly": "Fly",
-  "Collect": "Collect"
+  "Collect": "Collect",
+  "combatStats": "Combat stats"
 }

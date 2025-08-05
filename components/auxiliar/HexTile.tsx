@@ -116,7 +116,7 @@ export default function HexTile({ hex, px, py, points, factor, fontSize }: Props
         </>
       )}
 
-      {!building && !construction && terrain == "water" && hex.isTerraformed && (
+      {!building && !construction && terrain == "WATER" && hex.isTerraformed && (
         <SvgImage
           href={IMAGES.WATER_DROP}
           x={px - 20 * factor} // Ajusta la posición según necesites

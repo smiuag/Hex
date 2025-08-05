@@ -29,7 +29,6 @@ export const SystemExploredCard: React.FC<Props> = ({
   onDefenseStartBuild,
   onExtractionStartBuild,
 }) => {
-  console.log("Montado SystemExploredCard");
   const { t } = useTranslation("common");
   const { t: tPlanets } = useTranslation("planets");
   //const enoughResources = useGameContextSelector((ctx) => ctx.enoughResources);
@@ -114,18 +113,22 @@ export const SystemExploredCard: React.FC<Props> = ({
         imageStyle={commonStyles.imageCover}
       >
         <View style={commonStyles.overlayDark}>
-          <Text style={commonStyles.titleBlueText}>
-            {systemName}{" "}
-            <Text style={[commonStyles.whiteText, { fontSize: 16 }]}>
-              {" "}
-              ({tPlanets(`systemType.${system.type}`)}){" "}
+          <View>
+            <Text style={commonStyles.titleBlueText}>
+              {systemName}{" "}
+              <Text style={[commonStyles.whiteText, { fontSize: 16 }]}>
+                {" "}
+                ({tPlanets(`systemType.${system.type}`)}){" "}
+              </Text>
             </Text>
-          </Text>
-
+            <Text style={commonStyles.smallSubtitle}>
+              {system.distance} {t("parsecs")}
+            </Text>
+          </View>
           <Text style={[commonStyles.titleText, { textAlign: "center", marginTop: 10 }]}>
-            Cuerpos celestes
+            {t("CelestialBodies")}
           </Text>
-          <View style={{ marginTop: 10 }}>
+          <View style={{ marginTop: 5 }}>
             {system.planets.map((planet, index) => (
               <ExploredCelestialBody
                 key={planet.id}

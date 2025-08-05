@@ -181,7 +181,7 @@ export const SHIP_STATS: Record<ShipType, any> = {
   FREIGHTER: {
     ATTACK: 1,
     DEFENSE: 2,
-    SPEED: 100,
-    HP: 60,
+    SPEED: 50,
+    HP: 20,
   },
 };

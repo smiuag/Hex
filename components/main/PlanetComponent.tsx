@@ -42,8 +42,6 @@ export default function PlanetComponent() {
   const handleUpdateConfig = useGameContextSelector((ctx) => ctx.handleUpdateConfig);
   const updateQuest = useGameContextSelector((ctx) => ctx.updateQuest);
 
-  console.log("Montado PlanetComponent");
-
   const scale = getScaleValues(playerConfig);
 
   const { SCREEN_WIDTH, SCREEN_HEIGHT, SVG_WIDTH, SVG_HEIGHT, CENTER_X, CENTER_Y } =
@@ -188,7 +186,7 @@ export default function PlanetComponent() {
       });
     } else if (selectedHex) {
       handleTerraform(selectedHex.q, selectedHex.r);
-      if (selectedHex.terrain === "water") {
+      if (selectedHex.terrain === "WATER") {
         Alert.alert(
           "Terreno misterioso",
           "Este terreno parece distinto. Las primeras inspecciones indican una gran cantidad de humedad en el subsuelo. ¡Quizá sea agua!",
