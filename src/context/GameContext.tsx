@@ -15,12 +15,12 @@ import { Hex } from "../../src/types/hexTypes";
 import { PlayerQuest, UpdateQuestOptions } from "../../src/types/questType";
 import { Resources, StoredResources } from "../../src/types/resourceTypes";
 import { Ship, ShipType } from "../../src/types/shipType";
-import { NotificationManager } from "../../utils/notificacionUtils";
 import { ConfigEntry, PlayerConfig } from "../types/configTypes";
 import { FleetData } from "../types/fleetType";
 import { Research, ResearchType } from "../types/researchTypes";
 import { StarSystem, StarSystemMap } from "../types/starSystemTypes";
 
+import { NotificationManager } from "@/utils/notificacionUtils";
 import { createContext, useContextSelector } from "use-context-selector";
 
 // 🎯 Contexto único con suscripción selectiva
@@ -35,7 +35,7 @@ type ProviderContextType = {
   starSystems: StarSystem[];
   universe: StarSystemMap;
   startStarSystemExploration: (id: string) => void;
-  startPlanetExploration: (systemId: string, planetId: string) => void;
+  startCelestialBodyExploration: (systemId: string, planetId: string) => void;
   addProduction: (modifications: Partial<Resources>) => void;
   addResources: (modifications: Partial<Resources>) => void;
   subtractResources: (modifications: Partial<Resources>) => void;
@@ -63,6 +63,7 @@ type ProviderContextType = {
   recoverStarSystem: (id: string) => void;
   cancelScanStarSystem: (id: string) => void;
   handleDestroyBuilding: (q: number, r: number) => void;
+  startCollectSystem: (systemId: string) => void;
 };
 
 // 🎯 Contexto único creado con use-context-selector
@@ -121,7 +122,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     starSystems,
     discardStarSystem,
     resetStarSystem,
-    startPlanetExploration,
+    startCelestialBodyExploration,
     cancelExploreSystem,
     cancelExplorePlanet,
     startStarSystemExploration,
@@ -136,6 +137,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     scanStarSystem,
     recoverStarSystem,
     cancelScanStarSystem,
+    startCollectSystem,
   } = useStarSystem(
     playerQuests,
     universe,
@@ -208,7 +210,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       playerQuests,
       universe,
       startStarSystemExploration,
-      startPlanetExploration,
+      startCelestialBodyExploration,
       discardStarSystem,
       handleUpdateConfig,
       addProduction,
@@ -236,6 +238,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       recoverStarSystem,
       cancelScanStarSystem,
       handleDestroyBuilding,
+      startCollectSystem,
     }),
     [
       fleet,
@@ -248,7 +251,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       playerQuests,
       universe,
       startStarSystemExploration,
-      startPlanetExploration,
+      startCelestialBodyExploration,
       discardStarSystem,
       handleUpdateConfig,
       addProduction,
@@ -276,6 +279,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       recoverStarSystem,
       cancelScanStarSystem,
       handleDestroyBuilding,
+      startCollectSystem,
     ]
   );
 

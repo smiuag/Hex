@@ -1,5 +1,6 @@
 import background from "../../assets/images/background.jpg";
 import backgroundMenu from "../../assets/images/backgroundMenu.jpg";
+import collect from "../../assets/images/collect.png";
 import unterraformed from "../../assets/images/hex/unterraformed.png";
 import backgroundQuest from "../../assets/images/nebulosa.png";
 
@@ -151,4 +152,5 @@ export const IMAGES = {
   NEBULA: nebula,
   BLANK: blank,
   UNTERRAFORMED: unterraformed,
+  COLLECT: collect,
 };

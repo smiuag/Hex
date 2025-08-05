@@ -1,4 +1,4 @@
-import { Resources, SpecialResources } from "./resourceTypes";
+import { CombinedResources, StoredResources } from "./resourceTypes";
 import { ShipData } from "./shipType";
 
 export type CelestialBodyType = "PLANET" | "ASTEROID" | "MOON" | "NEBULA_FRAGMENT";
@@ -21,7 +21,7 @@ export type PlanetType =
 export type CelestialBody = {
   type: CelestialBodyType;
   planetType?: PlanetType;
-  resources: Partial<Resources | SpecialResources>;
+  production: CombinedResources;
   explored: boolean;
   baseBuilt: boolean;
   id: string;
@@ -31,26 +31,27 @@ export type CelestialBody = {
 export type StarSystem = {
   discarded: boolean;
 
-  extractionBuildingBuilt: boolean;
   extractionStartedAt?: number;
+  starPortStartedAt?: number;
+  defenseStartedAt?: number;
+  collectStartedAt?: number;
+  attackStartedAt?: number;
+  scanStartedAt?: number;
+
+  explorationFleetId?: string;
+  attackFleetId?: string;
 
   starPortBuilt: boolean;
-  starPortStartedAt?: number;
-
+  extractionBuildingBuilt: boolean;
   defenseBuildingBuilt: boolean;
-  defenseStartedAt?: number;
 
-  scanStartedAt?: number;
   type: StarSystemType;
-  planets: CelestialBody[];
+  celestialBodies: CelestialBody[];
   discovered: boolean;
   conquered: boolean;
-
   explored: boolean;
-  explorationFleetId?: string;
 
-  attackStartedAt?: number;
-  attackFleetId?: string;
+  storedResources: StoredResources;
 
   distance: number;
   defense: ShipData[];

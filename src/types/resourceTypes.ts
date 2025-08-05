@@ -7,6 +7,14 @@ export type SpecialResourceType =
   | "NEBULITA"
   | "ADN";
 
+export const SPECIAL_TYPES = [
+  "ILMENITA",
+  "AETHERIUM",
+  "THARNIO",
+  "KAIROX",
+  "NEBULITA",
+  "ADN",
+] as const;
 export type Resources = Record<ResourceType, number>;
 export type SpecialResources = Record<SpecialResourceType, number>;
 export type CombinedResourcesType = ResourceType | SpecialResourceType;

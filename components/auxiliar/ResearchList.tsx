@@ -8,7 +8,7 @@ import { ResearchType } from "../../src/types/researchTypes";
 import { getResearchCost, getResearchTime, isUnlocked } from "../../utils/researchUtils";
 import { ResearchCard } from "../cards/ResearchCard";
 
-export default function ResearchComponent() {
+export default function ResearchList() {
   const research = useGameContextSelector((ctx) => ctx.research);
   const hexes = useGameContextSelector((ctx) => ctx.hexes);
   const handleResearch = useGameContextSelector((ctx) => ctx.handleResearch);

@@ -2,7 +2,13 @@ import { buildingConfig } from "@/src/config/buildingConfig";
 import { resourceEmojis } from "@/src/config/emojisConfig";
 import { PRODUCTION_INCREMENT } from "@/src/constants/general";
 import { Hex } from "@/src/types/hexTypes";
-import { CombinedResourcesType, Resources, StoredResources } from "@/src/types/resourceTypes";
+import {
+  CombinedResources,
+  CombinedResourcesType,
+  Resources,
+  SPECIAL_TYPES,
+  StoredResources,
+} from "@/src/types/resourceTypes";
 
 export const getProductionForBuilding = (
   type: keyof typeof buildingConfig,
@@ -68,3 +74,21 @@ export const generateRandomResources = (): Partial<Resources> => {
 export const isCombinedResourcesType = (key: string): key is CombinedResourcesType => {
   return key in resourceEmojis;
 };
+
+export const sumCombinedResources = (
+  a: CombinedResources,
+  b: CombinedResources
+): CombinedResources => {
+  const result: CombinedResources = { ...a };
+
+  (Object.keys(b) as CombinedResourcesType[]).forEach((key) => {
+    const valueA = result[key] ?? 0;
+    const valueB = (b[key] ?? 0) / 10;
+    result[key] = valueA + valueB;
+  });
+
+  return result;
+};
+
+export const isSpecialResourceType = (key: string): key is (typeof SPECIAL_TYPES)[number] =>
+  SPECIAL_TYPES.includes(key as (typeof SPECIAL_TYPES)[number]);

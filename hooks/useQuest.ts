@@ -205,7 +205,9 @@ export const useQuest = (addResources: (modifications: Partial<Resources>) => vo
         updateQuest({
           type: "EXPLORE_SYSTEM",
           available: true,
-          completed: playerQuests.some((q) => q.type == "SHIP_FIRST" && q.completed) ? true : false,
+          completed: playerQuests.some((q) => q.type == "EXPLORE_SYSTEM" && q.completed)
+            ? true
+            : false,
           rewardClaimed: false,
           viewed: false,
         });
@@ -214,7 +216,50 @@ export const useQuest = (addResources: (modifications: Partial<Resources>) => vo
         updateQuest({
           type: "ALIEN_TECH_FOUND",
           available: true,
-          completed: playerQuests.some((q) => q.type == "H2O_FOUND" && q.completed) ? true : false,
+          completed: playerQuests.some((q) => q.type == "ALIEN_TECH_FOUND" && q.completed)
+            ? true
+            : false,
+          rewardClaimed: false,
+          viewed: false,
+        });
+        break;
+      case "EXPLORE_SYSTEM":
+        updateQuest({
+          type: "SYSTEM_BUILT_EXTRACTION",
+          available: true,
+          completed: playerQuests.some((q) => q.type == "SYSTEM_BUILT_EXTRACTION" && q.completed)
+            ? true
+            : false,
+          rewardClaimed: false,
+          viewed: false,
+        });
+        break;
+      case "SYSTEM_BUILT_EXTRACTION":
+        updateQuest({
+          type: "SYSTEM_BUILT_STARPORT",
+          available: true,
+          completed: playerQuests.some((q) => q.type == "SYSTEM_BUILT_STARPORT" && q.completed)
+            ? true
+            : false,
+          rewardClaimed: false,
+          viewed: false,
+        });
+        break;
+      case "SYSTEM_BUILT_STARPORT":
+        updateQuest({
+          type: "COLLECT",
+          available: true,
+          completed: playerQuests.some((q) => q.type == "COLLECT" && q.completed) ? true : false,
+          rewardClaimed: false,
+          viewed: false,
+        });
+      case "COLLECT":
+        updateQuest({
+          type: "SYSTEM_BUILT_DEFENSE",
+          available: true,
+          completed: playerQuests.some((q) => q.type == "SYSTEM_BUILT_DEFENSE" && q.completed)
+            ? true
+            : false,
           rewardClaimed: false,
           viewed: false,
         });

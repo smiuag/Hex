@@ -54,7 +54,7 @@ export const BUILDING_TIME = {
 
 export const BUILDING_MAX_IN_PLANET = {
   LAB: 1,
-  KRYSTALMINE: 3,
+  KRYSTALMINE: 5,
   METALLURGY: 7,
   QUARRY: 7,
   BASE: 1,

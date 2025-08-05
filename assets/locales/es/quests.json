@@ -138,12 +138,20 @@
     ]
   },
   "SCAN_FIRST": {
-    "name": "Explorando la galaxia",
+    "name": "Buscando un sistema estelar libre",
     "shortDescription": "Utiliza la antena para escanear otros sistemas estelares. Necesitamos conocer el vecindario.",
     "descriptions": [
       "Capitán, los sensores indican que nos encontramos en una región rica en posibilidades. Variaciones en la radiación cósmica sugieren que algunos sistemas cercanos podrían albergar recursos valiosos, formas de vida desconocidas o incluso restos de tecnología olvidada.",
       "Explorar más allá de nuestra posición actual no solo ampliará nuestro conocimiento del sector, sino que podría brindarnos una ventaja decisiva para el desarrollo de la colonia. Cada escaneo nos acerca un paso más a comprender este mundo y sus secretos.",
       "Los sistemas de escaneo están listos y a su disposición. ¿Quién sabe qué maravillas se esconden más allá de nuestro alcance visual? El universo no espera. Actívese el protocolo de exploración."
+    ]
+  },
+  "EXPLORE_SYSTEM": {
+    "name": "Explorando la galaxia",
+    "shortDescription": "Explora algún sistema estelar. En el apartado Galaxia puedes ver todos los sistemas ya escaneados.",
+    "descriptions": [
+      "El resultado del escaneo indica que podemos haber localizado un sistema apto para la conolización, pero es necesaria una investigación más a fondo.",
+      "Envía una sonda a investigar más de cerca el sistema. Necesitamos saber si es un sistema ocupado o si está libre como para formar allí nuestra primera colonia."
     ]
   },
   "EXPLORE_FIRST": {
@@ -153,6 +161,41 @@
       "Capitán, los registros estelares han sido actualizados. Varios sistemas cercanos presentan condiciones prometedoras para una primera exploración. Las señales gravitacionales y térmicas indican actividad inusual, digna de una sonda de reconocimiento.",
       "Enviar una sonda al sistema que elija marcará el inicio oficial de nuestra expansión. Esta primera misión no solo revelará datos valiosos sobre posibles recursos, sino que también sentará las bases para futuras operaciones interplanetarias.",
       "El equipo de navegación está preparado. Basta una orden suya para lanzar la primera mirada más allá de nuestra estrella. Que este sea el comienzo de nuestro mapa en las estrellas, capitán."
+    ]
+  },
+  "SYSTEM_BUILT_EXTRACTION": {
+    "name": "Instalación de extracción de recursos",
+    "shortDescription": "Construye un sistema de extracción de recursos para poder empezar a aprovechar los recursos del sistema",
+    "descriptions": [
+      "Capitán, hemos completado el escaneo inicial del sistema. Los análisis muestran múltiples objetos celestes con concentraciones valiosas de recursos: metales pesados, cristales energéticos y compuestos raros no identificados hasta ahora",
+      "Para proceder con la extracción, será necesario construir las instalaciones adecuadas en cada ubicación estratégica. Recomiendo desplegar módulos de minería automatizada, refinerías orbitales y plataformas de procesamiento en superficie.",
+      "Para la construcción deberemos enviar 2 cargueros con mucho material y personal especializado. Asegurate de que es un sistema rentable y si no busca otro que nos proporcino un mayor beneficio."
+    ]
+  },
+  "SYSTEM_BUILT_DEFENSE": {
+    "name": "Sistema de defensa",
+    "shortDescription": "Las colonias son lugares dificiles de defender. Construye un sistema defensivo que permita dar más seguridad a nuestros colonos.",
+    "descriptions": [
+      "El primer carguero ha regresado con éxito. Sin duda estos recursos nos ayudarán a evolucionar la colonia.",
+      "Las colonias son importantes y además, son puntos alejados dificiles de defender. Construye un sistema defensivo que permita defenderse de posibles bandidos espaciales."
+    ]
+  },
+  "SYSTEM_BUILT_STARPORT": {
+    "name": "Investigando un sistema cercano",
+    "shortDescription": "Envía una sonda al sistema que acabas de scanear. Necesitamos averiguar si está habitado.",
+    "descriptions": [
+      "¡Perfecto! Los sistemas de extracción han comenzado a almacenar recursos.",
+      "Tendremos que enviar naves a recolectar el material producido, pero ahora mismo el viaje es peligroso.",
+      "Necesitamos construir un puerto estelar para asegurar poder enviar naves de manera segura."
+    ]
+  },
+  "COLLECT": {
+    "name": "Recolección de recursos",
+    "shortDescription": "Envía un carguero a recolectar a uno de los sistemas estelares controlados",
+    "descriptions": [
+      "Está todo preparado para la extracción de recursos. Con suerte, pronto comenzaremos a recoger el fruto de tanto esfuerzo.",
+      "Pero no nos precipitemos, tenemos que sincronizarnos con las colonias para aprovechar los viajes.",
+      "Espera que el sistema acumule recursos y envía un carguero a recolectar."
     ]
   }
 }

@@ -13,7 +13,11 @@ export type QuestType =
   | "H2O_FOUND"
   | "ALIEN_TECH_FOUND"
   | "SCAN_FIRST"
-  | "EXPLORE_SYSTEM";
+  | "EXPLORE_SYSTEM"
+  | "SYSTEM_BUILT_EXTRACTION"
+  | "SYSTEM_BUILT_STARPORT"
+  | "SYSTEM_BUILT_DEFENSE"
+  | "COLLECT";
 
 export type Quest = {
   type: QuestType;
@@ -38,4 +42,11 @@ export type UpdateQuestOptions = {
   rewardClaimed?: boolean;
 };
 
-export type ContextType = "GENERAL" | "RESEARCH" | "BUILD" | "FLEET" | "ATTACK" | "DEFENSE";
+export type ContextType =
+  | "GENERAL"
+  | "RESEARCH"
+  | "BUILD"
+  | "FLEET"
+  | "ATTACK"
+  | "DEFENSE"
+  | "SYSTEM";

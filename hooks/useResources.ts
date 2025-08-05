@@ -6,7 +6,6 @@ import { hasEnoughResources } from "../utils/resourceUtils";
 
 export function useResources() {
   const [resources, setResources] = useState<StoredResources>(getInitialResources());
-
   const reservedRef = useRef<Partial<CombinedResources>>({});
 
   useEffect(() => {

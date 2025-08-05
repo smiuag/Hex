@@ -1,11 +1,6 @@
 import { IMAGES } from "@/src/constants/images";
 import { celestialResourceChances, starSystemConfig } from "@/src/constants/starSystem";
-import {
-  Resources,
-  ResourceType,
-  SpecialResources,
-  SpecialResourceType,
-} from "@/src/types/resourceTypes";
+import { CombinedResources, ResourceType, SpecialResourceType } from "@/src/types/resourceTypes";
 import { ALL_SHIP_TYPES, ShipData, ShipType } from "@/src/types/shipType";
 import {
   CelestialBody,
@@ -39,22 +34,22 @@ function getLogBiasedRandom(min: number, max: number): number {
   return Math.round(scaled);
 }
 
-function generateResources(
+function generateProduction(
   bodyType: CelestialBodyType,
   planetType?: PlanetType
-): { resources: Partial<Resources | SpecialResources> } {
+): CombinedResources {
   const base = celestialResourceChances[bodyType];
   const config = planetType && base[planetType] ? base[planetType]! : base.default;
-  const resources: Partial<Resources> = {};
+  const production: CombinedResources = {};
 
   Object.entries(config).forEach(([resType, [chance, range]]) => {
     if (shouldInclude(chance)) {
       const amount = getRandomFromRange(range);
-      resources[resType as ResourceType] = amount;
+      production[resType as ResourceType] = amount;
     }
   });
 
-  return { resources };
+  return production;
 }
 
 function generateCelestialBody(type: CelestialBodyType): CelestialBody {
@@ -69,13 +64,13 @@ function generateCelestialBody(type: CelestialBodyType): CelestialBody {
     ]);
   }
 
-  const { resources } = generateResources(type, planetType);
+  const production = generateProduction(type, planetType);
   const id = uuid.v4();
 
   return {
     type,
     planetType,
-    resources,
+    production,
     explored: false,
     baseBuilt: false,
     id: id,
@@ -86,7 +81,7 @@ function shuffleArray<T>(array: T[]): T[] {
   return [...array].sort(() => Math.random() - 0.5);
 }
 
-function generatePlanetDefense(decay: number): ShipData[] {
+function generateStarSystemDefense(decay: number): ShipData[] {
   const maxShipTypes = getRandomFromRange([2, 6]);
   if (decay > 0.8) decay = 0.8;
   const selectedShips = shuffleArray(ALL_SHIP_TYPES).slice(0, maxShipTypes);
@@ -122,7 +117,7 @@ export function getExpectedResourceProbabilities(
   for (const key in base) {
     const typedKey = key as ResourceType | SpecialResourceType;
     const baseProb = base[typedKey] ?? 0;
-    adjusted[typedKey] = Math.min(baseProb * multiplier, 1);
+    adjusted[typedKey] = Math.min(baseProb * multiplier, 0.99);
   }
 
   return adjusted;
@@ -164,30 +159,31 @@ export const generateSystem = (currentSystemId: string, system: StarSystemDetect
   const config = starSystemConfig[type];
   const celestialBodies: CelestialBody[] = [];
 
-  let numPlanets = 0;
+  let numCelestialBodies = 0;
   Object.entries(config.bodyCounts).forEach(([bodyTypeKey, range]) => {
     const bodyType = bodyTypeKey as CelestialBodyType;
     const prob = config.celestialProbabilities[bodyType] ?? 0;
     if (!shouldInclude(prob)) return;
 
-    numPlanets = getRandomFromRange(range);
+    numCelestialBodies = getRandomFromRange(range);
 
-    for (let i = 0; i < numPlanets; i++) {
+    for (let i = 0; i < numCelestialBodies; i++) {
       celestialBodies.push(generateCelestialBody(bodyType));
     }
   });
 
-  const decay = 1 - 0.1 * numPlanets;
-  const starPort = shouldInclude(0.1 * numPlanets);
-  const defenseShip = starPort ? generatePlanetDefense(decay) : [];
+  const decay = 1 - 0.1 * numCelestialBodies;
+  const starPort = shouldInclude(0.1 * numCelestialBodies);
+  const defenseShip = starPort ? generateStarSystemDefense(decay) : [];
   const distance = getDistance(currentSystemId, system.id);
 
   return {
     type,
-    planets: celestialBodies,
+    celestialBodies: celestialBodies,
     discovered: false,
     explored: false,
     conquered: false,
+    storedResources: { production: {}, resources: {}, lastUpdate: Date.now() },
     distance,
     starPortBuilt: starPort,
     defenseBuildingBuilt: false,

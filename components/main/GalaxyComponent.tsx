@@ -12,12 +12,15 @@ export default function StarSystemComponent() {
   const { t } = useTranslation("common");
   const starSystems = useGameContextSelector((ctx) => ctx.starSystems);
   const discardStarSystem = useGameContextSelector((ctx) => ctx.discardStarSystem);
-  const startPlanetExploration = useGameContextSelector((ctx) => ctx.startPlanetExploration);
+  const startCelestialBodyExploration = useGameContextSelector(
+    (ctx) => ctx.startCelestialBodyExploration
+  );
   const cancelExplorePlanet = useGameContextSelector((ctx) => ctx.cancelExplorePlanet);
   const starPortStartBuild = useGameContextSelector((ctx) => ctx.starPortStartBuild);
   const defenseStartBuild = useGameContextSelector((ctx) => ctx.defenseStartBuild);
   const extractionStartBuild = useGameContextSelector((ctx) => ctx.extractionStartBuild);
   const cancelAttack = useGameContextSelector((ctx) => ctx.cancelAttack);
+  const startCollectSystem = useGameContextSelector((ctx) => ctx.startCollectSystem);
   const startStarSystemExploration = useGameContextSelector(
     (ctx) => ctx.startStarSystemExploration
   );
@@ -61,11 +64,12 @@ export default function StarSystemComponent() {
           <SystemExploredCard
             system={item}
             onDiscard={onDiscard}
-            onExplorePlanet={startPlanetExploration}
+            onExplorePlanet={startCelestialBodyExploration}
             onCancelExplorePlanet={cancelExplorePlanet}
             onStarPortBuild={starPortStartBuild}
             onDefenseStartBuild={defenseStartBuild}
             onExtractionStartBuild={extractionStartBuild}
+            onStartCollectSystem={startCollectSystem}
           />
         ) : item.explored ? (
           <SystemDefendedCard system={item} onDiscard={onDiscard} onCancelAttack={cancelAttack} />

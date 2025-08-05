@@ -15,6 +15,7 @@ const iconMap: Record<ContextType, React.ReactNode> = {
   FLEET: <MaterialCommunityIcons name="rocket-launch" size={30} color="#00ff90" />,
   ATTACK: <Ionicons name="flame" size={30} color="#ff3b30" />,
   DEFENSE: <MaterialCommunityIcons name="shield-check" size={30} color="#66ccff" />,
+  SYSTEM: <MaterialCommunityIcons name="orbit-variant" size={30} color="#ffd700" />,
 };
 
 export const QuestHeader: React.FC<Props> = ({ type }) => {

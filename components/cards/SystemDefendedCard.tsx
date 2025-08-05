@@ -55,7 +55,7 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onCance
           </Text>
           <View>
             <Text style={commonStyles.whiteText}>
-              {t("CelestialBodies")} {system.planets.length}
+              {t("CelestialBodies")} {system.celestialBodies.length}
             </Text>
           </View>
           {system.defense.map((ship) => {

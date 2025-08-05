@@ -1,3 +1,4 @@
+import { isSpecialResourceType } from "@/utils/resourceUtils";
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import { useGameContextSelector } from "../../src/context/GameContext";
@@ -11,8 +12,10 @@ import { ResourceDisplay } from "./ResourceDisplay";
 
 interface Props {
   storedResources: StoredResources;
+  showSpecial?: boolean;
 }
-export default function ResourceBar({ storedResources }: Props) {
+
+export default function ResourceBar({ storedResources, showSpecial = true }: Props) {
   const hexes = useGameContextSelector((ctx) => ctx.hexes);
   const [displayedResources, setDisplayedResources] = useState<Partial<CombinedResources>>({});
 
@@ -27,6 +30,9 @@ export default function ResourceBar({ storedResources }: Props) {
         const updatedResources: Partial<CombinedResources> = { ...storedResources.resources };
 
         (Object.keys(storedResources.production) as CombinedResourcesType[]).forEach((key) => {
+          const isSpecial = isSpecialResourceType(key);
+          if (!showSpecial && isSpecial) return;
+
           const produced = (storedResources.production[key] ?? 0) * elapsedSeconds;
           updatedResources[key] = (updatedResources[key] ?? 0) + produced;
         });
@@ -34,12 +40,12 @@ export default function ResourceBar({ storedResources }: Props) {
         setDisplayedResources(updatedResources);
       };
 
-      updateResources(); // initial call
-      const interval = setInterval(updateResources, 1000); // update every second
+      updateResources();
+      const interval = setInterval(updateResources, 1000);
 
       return () => clearInterval(interval);
     }
-  }, [storedResources]);
+  }, [storedResources, showSpecial, hexes]);
 
   if (!storedResources) return null;
 

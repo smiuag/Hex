@@ -136,7 +136,7 @@ export const getFleetProcesses = (fleetData: FleetData[]): Process[] => {
         type = "ATTACK FLEET";
         name = fleetShips + " nave" + (fleetShips > 1 ? "s" : "") + " rumbo a atacar un systema ";
         break;
-      case "EXPLORE PLANET":
+      case "EXPLORE CELESTIALBODY":
         type = "EXPLORATION PLANET FLEET";
         name =
           fleetShips +
@@ -157,11 +157,11 @@ export const getFleetProcesses = (fleetData: FleetData[]): Process[] => {
       duration: totalTime,
       startedAt: fleet.startTime,
       explorationSystemId:
-        fleet.movementType == "EXPLORE SYSTEM" || fleet.movementType == "EXPLORE PLANET"
+        fleet.movementType == "EXPLORE SYSTEM" || fleet.movementType == "EXPLORE CELESTIALBODY"
           ? fleet.destinationSystemId
           : undefined,
       explorationPlanetId:
-        fleet.movementType == "EXPLORE PLANET" ? fleet.destinationPlanetId : undefined,
+        fleet.movementType == "EXPLORE CELESTIALBODY" ? fleet.destinationPlanetId : undefined,
       attackSystemId: fleet.movementType == "ATTACK" ? fleet.destinationSystemId : undefined,
       image: config.imageBackground,
     };

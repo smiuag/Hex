@@ -1,6 +1,13 @@
+import { CombinedResources } from "./resourceTypes";
 import { ShipData } from "./shipType";
 
-export type MovementType = "MOVEMENT" | "ATTACK" | "EXPLORE SYSTEM" | "RETURN" | "EXPLORE PLANET";
+export type MovementType =
+  | "MOVEMENT"
+  | "ATTACK"
+  | "EXPLORE SYSTEM"
+  | "RETURN"
+  | "EXPLORE CELESTIALBODY"
+  | "COLLECT";
 
 export type FleetData = {
   movementType: MovementType;
@@ -11,4 +18,5 @@ export type FleetData = {
   destinationPlanetId?: string;
   origin: string;
   id: string;
+  resources: CombinedResources;
 };

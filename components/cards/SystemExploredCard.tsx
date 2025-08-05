@@ -1,4 +1,8 @@
-import { STAR_BUILDINGS_COST, STAR_BUILDINGS_DURATION } from "@/src/constants/general";
+import {
+  COLLECT_COST,
+  STAR_BUILDINGS_COST,
+  STAR_BUILDINGS_DURATION,
+} from "@/src/constants/general";
 import { getSystemImage } from "@/utils/starSystemUtils";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -9,6 +13,7 @@ import { commonStyles } from "../../src/styles/commonStyles";
 import { StarSystem } from "../../src/types/starSystemTypes";
 import { CountdownTimer } from "../auxiliar/CountdownTimer";
 import ExploredCelestialBody from "../auxiliar/ExploredCelestialBody";
+import ResourceBar from "../auxiliar/ResourceBar";
 
 type Props = {
   system: StarSystem;
@@ -18,6 +23,7 @@ type Props = {
   onStarPortBuild: (id: string) => void;
   onDefenseStartBuild: (id: string) => void;
   onExtractionStartBuild: (id: string) => void;
+  onStartCollectSystem: (id: string) => void;
 };
 
 export const SystemExploredCard: React.FC<Props> = ({
@@ -28,10 +34,10 @@ export const SystemExploredCard: React.FC<Props> = ({
   onStarPortBuild,
   onDefenseStartBuild,
   onExtractionStartBuild,
+  onStartCollectSystem,
 }) => {
   const { t } = useTranslation("common");
   const { t: tPlanets } = useTranslation("planets");
-  //const enoughResources = useGameContextSelector((ctx) => ctx.enoughResources);
   const universe = useGameContextSelector((ctx) => ctx.universe);
   const shipBuildQueue = useGameContextSelector((ctx) => ctx.shipBuildQueue);
   const enoughResources = useGameContextSelector((ctx) => ctx.enoughResources);
@@ -102,6 +108,28 @@ export const SystemExploredCard: React.FC<Props> = ({
     ]);
   };
 
+  const handleCollect = () => {
+    Alert.alert(t("CollectAlert"), t("CollectMessage"), [
+      { text: t("cancel"), style: "cancel" },
+      {
+        text: t("confirm"),
+        style: "destructive",
+        onPress: async () => {
+          const lockedByResources = !enoughResources(COLLECT_COST);
+          const enoughFreighter = shipBuildQueue.find((f) => f.type == "FREIGHTER" && f.amount > 0);
+          if (enoughFreighter && !lockedByResources) onStartCollectSystem(system.id);
+          else
+            Toast.show({
+              type: "info", // "success" | "info" | "error"
+              text1: t("NotEnoughForCollect"),
+              position: "top",
+              visibilityTime: 2000,
+            });
+        },
+      },
+    ]);
+  };
+
   const image = getSystemImage(system.type);
   const systemData = universe[system.id];
   const systemName = systemData?.name ?? system.id;
@@ -130,7 +158,7 @@ export const SystemExploredCard: React.FC<Props> = ({
             {t("CelestialBodies")}
           </Text>
           <View style={{ marginTop: 5 }}>
-            {system.planets.map((planet, index) => (
+            {system.celestialBodies.map((planet, index) => (
               <ExploredCelestialBody
                 key={planet.id}
                 celestialBody={planet}
@@ -140,7 +168,7 @@ export const SystemExploredCard: React.FC<Props> = ({
               ></ExploredCelestialBody>
             ))}
           </View>
-          {system.planets.length == 0 ? (
+          {system.celestialBodies.length == 0 ? (
             <Text style={[commonStyles.subtitleText, { textAlign: "center" }]}>
               {t("VoidSystem")}
             </Text>
@@ -233,11 +261,19 @@ export const SystemExploredCard: React.FC<Props> = ({
             </>
           )}
           <View style={commonStyles.actionBar}>
-            <View></View>
+            {system.extractionBuildingBuilt ? (
+              <ResourceBar storedResources={system.storedResources} showSpecial={true} />
+            ) : (
+              <></>
+            )}
 
             <TouchableOpacity
-              style={commonStyles.buttonPrimary}
-              onPress={() => onDiscard(system.id)}
+              style={[
+                commonStyles.buttonPrimary,
+                !system.starPortBuilt && commonStyles.buttonDisabled,
+              ]}
+              onPress={() => handleCollect()}
+              disabled={!system.starPortBuilt}
             >
               <Text style={commonStyles.buttonTextLight}>{t("Collect")}</Text>
             </TouchableOpacity>

@@ -9,5 +9,6 @@ export const BUILD_TIME_INCREMENT = 2.3;
 export const RESEARCH_TIME_INCREMENT = 1.7;
 
 export const SCAN_DURATION = 1000 * 30;
-export const STAR_BUILDINGS_DURATION = 1000 * 60; //* 60 * 24;
+export const STAR_BUILDINGS_DURATION = 1000 * 60 * 60 * 2;
 export const STAR_BUILDINGS_COST: Partial<Resources> = { METAL: 120000, CRYSTAL: 120000 };
+export const COLLECT_COST: Partial<Resources> = { ENERGY: 50000 };

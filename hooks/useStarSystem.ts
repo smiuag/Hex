@@ -13,10 +13,11 @@ import {
 } from "@/src/services/storage";
 import { FleetData, MovementType } from "@/src/types/fleetType";
 import { PlayerQuest, UpdateQuestOptions } from "@/src/types/questType";
-import { Resources } from "@/src/types/resourceTypes";
+import { CombinedResources, Resources } from "@/src/types/resourceTypes";
 import { Ship, ShipType } from "@/src/types/shipType";
 import { StarSystem, StarSystemMap } from "@/src/types/starSystemTypes";
 import { simulateBattle } from "@/utils/combat";
+import { sumCombinedResources } from "@/utils/resourceUtils";
 import { getFlyTime } from "@/utils/shipUtils";
 import { generateSystem } from "@/utils/starSystemUtils";
 import { useEffect, useRef, useState } from "react";
@@ -85,12 +86,12 @@ export const useStarSystem = (
   };
 
   //La manda de vuelta
-  const cancelFleet = async (id: string) => {
+  const cancelFleet = async (fleetId: string, resources?: CombinedResources) => {
     const now = Date.now();
 
     await modifyFleet((fleet) =>
       fleet.map((f) => {
-        if (f.id !== id) return f;
+        if (f.id !== fleetId) return f;
 
         const timeSpent = now - f.startTime;
         return {
@@ -101,6 +102,7 @@ export const useStarSystem = (
           origin: f.destinationSystemId,
           destinationPlanetId: undefined,
           movementType: "RETURN" as MovementType,
+          resources: resources ? resources : {},
         };
       })
     );
@@ -239,12 +241,16 @@ export const useStarSystem = (
           await exploreStarSystem(f.destinationSystemId, f.id);
           break;
 
-        case "EXPLORE PLANET":
-          await explorePlanet(f.destinationSystemId, f.destinationPlanetId!, f.id);
+        case "EXPLORE CELESTIALBODY":
+          await exploreCelestialBody(f.destinationSystemId, f.destinationPlanetId!, f.id);
           break;
 
         case "ATTACK":
           await attackResolution(f.id);
+          break;
+
+        case "COLLECT":
+          await collectSystem(f.id);
           break;
 
         default:
@@ -279,6 +285,7 @@ export const useStarSystem = (
       ships: [{ type: "PROBE", amount: 1 }],
       startTime: Date.now(),
       id: uuid.v4() as string,
+      resources: {},
     };
 
     await newFleet(fleetData);
@@ -332,6 +339,9 @@ export const useStarSystem = (
         s.id === id ? { ...s, starPortStartedAt: undefined, starPortBuilt: true } : s
       )
     );
+
+    if (!playerQuests.some((pq) => pq.type == "SYSTEM_BUILT_STARPORT" && pq.completed))
+      await updateQuest({ type: "SYSTEM_BUILT_STARPORT", completed: true });
   };
 
   const extractionBuild = async (id: string) => {
@@ -340,9 +350,23 @@ export const useStarSystem = (
 
     await modifySystems((systems) =>
       systems.map((s) =>
-        s.id === id ? { ...s, extractionStartedAt: undefined, extractionBuildingBuilt: true } : s
+        s.id === id
+          ? {
+              ...s,
+              extractionStartedAt: undefined,
+              extractionBuildingBuilt: true,
+              storedResources: {
+                lastUpdate: Date.now(),
+                production: s.storedResources.production,
+                resources: {},
+              },
+            }
+          : s
       )
     );
+
+    if (!playerQuests.some((pq) => pq.type == "SYSTEM_BUILT_EXTRACTION" && pq.completed))
+      await updateQuest({ type: "SYSTEM_BUILT_EXTRACTION", completed: true });
   };
 
   const defenseBuild = async (id: string) => {
@@ -354,6 +378,9 @@ export const useStarSystem = (
         s.id === id ? { ...s, defenseStartedAt: undefined, defenseBuildingBuilt: true } : s
       )
     );
+
+    if (!playerQuests.some((pq) => pq.type == "SYSTEM_BUILT_DEFENSE" && pq.completed))
+      await updateQuest({ type: "SYSTEM_BUILT_DEFENSE", completed: true });
   };
 
   const scanFinished = async (id: string) => {
@@ -404,46 +431,49 @@ export const useStarSystem = (
     );
   };
 
-  const explorePlanet = async (systemId: string, planetId: string, fleetId: string) => {
-    await cancelFleet(fleetId);
+  const collectSystem = async (fleetId: string) => {
+    const fleet = fleetRef.current.find((f) => f.id == fleetId);
+    if (!fleet) return;
 
-    const system = systemsRef.current.find((s) => s.id === systemId);
+    const system = systemsRef.current.find((s) => s.id === fleet.destinationSystemId);
+
+    cancelFleet(fleet.id, system?.storedResources.resources);
+
     if (!system) return;
-
-    const planet = system.planets.find((p) => p.id === planetId);
-    if (!planet) return;
 
     await modifySystems((systems) =>
       systems.map((s) =>
-        s.id === systemId
+        s.id === system.id
           ? {
               ...s,
-              planets: s.planets.map((p) => (p.id === planetId ? { ...p, explored: true } : p)),
+              collectStartedAt: undefined,
+              storedResources: {
+                lastUpdate: Date.now(),
+                production: s.storedResources.production,
+                resources: {},
+              },
             }
           : s
       )
     );
   };
 
-  const startPlanetExploration = async (systemId: string, planetId: string) => {
+  const startCollectSystem = async (systemId: string) => {
     const system = systemsRef.current.find((system) => system.id === systemId);
     if (!system) return;
 
-    const planet = system.planets.find((planet) => planet.id === planetId);
-    if (!planet || planet.explorationFleetId) return;
-
-    const probeSpeed = shipConfig["PROBE"].speed;
-    const timeToExplore = getFlyTime(probeSpeed, system.distance);
+    const freighterSpeed = shipConfig["FREIGHTER"].speed;
+    const timeToCollect = getFlyTime(freighterSpeed, system.distance);
 
     const fleetData: FleetData = {
       destinationSystemId: systemId,
-      destinationPlanetId: planetId,
-      endTime: Date.now() + timeToExplore,
-      movementType: "EXPLORE PLANET",
+      endTime: Date.now() + timeToCollect,
+      movementType: "COLLECT",
       origin: "PLANET",
-      ships: [{ type: "PROBE", amount: 1 }],
+      ships: [{ type: "FREIGHTER", amount: 1 }],
       startTime: Date.now(),
       id: uuid.v4() as string,
+      resources: {},
     };
 
     await newFleet(fleetData);
@@ -453,8 +483,76 @@ export const useStarSystem = (
         s.id === systemId
           ? {
               ...s,
-              planets: s.planets.map((p) =>
-                p.id === planetId
+              collectStartedAt: Date.now(),
+            }
+          : s
+      )
+    );
+  };
+
+  const exploreCelestialBody = async (
+    systemId: string,
+    celestialBodyId: string,
+    fleetId: string
+  ) => {
+    await cancelFleet(fleetId);
+
+    const system = systemsRef.current.find((s) => s.id === systemId);
+    if (!system) return;
+
+    const planet = system.celestialBodies.find((p) => p.id === celestialBodyId);
+    if (!planet) return;
+
+    await modifySystems((systems) =>
+      systems.map((s) =>
+        s.id === systemId
+          ? {
+              ...s,
+              storedResources: {
+                lastUpdate: Date.now(),
+                production: sumCombinedResources(s.storedResources.production, planet.production),
+                resources: s.storedResources.resources,
+              },
+              celestialBodies: s.celestialBodies.map((p) =>
+                p.id === celestialBodyId ? { ...p, explored: true } : p
+              ),
+            }
+          : s
+      )
+    );
+  };
+
+  const startCelestialBodyExploration = async (systemId: string, celestialBodyId: string) => {
+    const system = systemsRef.current.find((system) => system.id === systemId);
+    if (!system) return;
+
+    const celestialBody = system.celestialBodies.find((cb) => cb.id === celestialBodyId);
+    if (!celestialBody || celestialBody.explorationFleetId) return;
+
+    const probeSpeed = shipConfig["PROBE"].speed;
+    const timeToExplore = getFlyTime(probeSpeed, system.distance);
+
+    const fleetData: FleetData = {
+      destinationSystemId: systemId,
+      destinationPlanetId: celestialBodyId,
+      endTime: Date.now() + timeToExplore,
+      movementType: "EXPLORE CELESTIALBODY",
+      origin: "PLANET",
+      ships: [{ type: "PROBE", amount: 1 }],
+      startTime: Date.now(),
+      id: uuid.v4() as string,
+      resources: {},
+    };
+
+    await newFleet(fleetData);
+
+    await modifySystems((systems) =>
+      systems.map((s) =>
+        s.id === systemId
+          ? {
+              ...s,
+              celestialBodies: s.celestialBodies.map((p) =>
+                p.id === celestialBodyId
                   ? {
                       ...p,
                       explorationStartedAt: Date.now(),
@@ -485,7 +583,7 @@ export const useStarSystem = (
     const system = systemsRef.current.find((s) => s.id === systemId);
     if (!system) return;
 
-    const planet = system.planets.find((p) => p.id === planetId);
+    const planet = system.celestialBodies.find((p) => p.id === planetId);
     if (!planet || !planet.explorationFleetId) return;
 
     await cancelFleet(planet.explorationFleetId);
@@ -495,7 +593,7 @@ export const useStarSystem = (
         s.id === systemId
           ? {
               ...s,
-              planets: s.planets.map((p) =>
+              celestialBodies: s.celestialBodies.map((p) =>
                 p.id === planetId
                   ? { ...p, explorationFleetId: undefined, explorationStartedAt: undefined }
                   : p
@@ -534,6 +632,7 @@ export const useStarSystem = (
       ships: fleet,
       startTime: Date.now(),
       id: uuid.v4() as string,
+      resources: {},
     };
 
     await newFleet(fleetData);
@@ -588,7 +687,7 @@ export const useStarSystem = (
     cancelExplorePlanet,
     resetStarSystem,
     discardStarSystem,
-    startPlanetExploration,
+    startCelestialBodyExploration,
     processFleeTick,
     processColonialTick,
     newFleet,
@@ -603,5 +702,6 @@ export const useStarSystem = (
     scanStarSystem,
     recoverStarSystem,
     cancelScanStarSystem,
+    startCollectSystem,
   };
 };

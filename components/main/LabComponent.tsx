@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useGameContextSelector } from "../../src/context/GameContext";
-import ResearchComponent from "../auxiliar/ResearchComponent";
+import ResearchList from "../auxiliar/ResearchList";
 import { UnderConstructionCard } from "../cards/UnderConstructionCard";
 import { UpgradeCard } from "../cards/UpgradeCard";
 
@@ -63,7 +63,7 @@ export default function LabComponent() {
         <Text style={commonStyles.closeXText}>✕</Text>
       </TouchableOpacity>
       {getMainArea()}
-      <ResearchComponent></ResearchComponent>
+      <ResearchList></ResearchList>
     </View>
   );
 }

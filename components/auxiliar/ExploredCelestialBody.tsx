@@ -26,7 +26,7 @@ export default function ExploredCelestialBody({
   const { t } = useTranslation("common");
   const { t: tPlanets } = useTranslation("planets");
   const isBeingExplored = !!celestialBody.explorationFleetId;
-
+  console.log(system);
   const shipBuildQueue = useGameContextSelector((ctx) => ctx.shipBuildQueue);
   const fleet = useGameContextSelector((ctx) => ctx.fleet);
 
@@ -58,9 +58,7 @@ export default function ExploredCelestialBody({
               ? tPlanets(`planetType.${celestialBody.planetType}`)
               : tPlanets(`stelarBody.${celestialBody.type}`)}
           </Text>
-          <Text>
-            <ResourceDisplay resources={celestialBody.resources} fontSize={12} />
-          </Text>
+          <ResourceDisplay resources={celestialBody.production}></ResourceDisplay>
         </View>
       ) : isBeingExplored ? (
         <View style={[commonStyles.actionBar]}>

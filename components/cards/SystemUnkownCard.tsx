@@ -28,7 +28,7 @@ export const SystemUnknownCard: React.FC<Props> = ({
   const { t } = useTranslation("common");
   const { t: tPlanets } = useTranslation("planets");
   const { t: tResources } = useTranslation("resources");
-  const expected = getExpectedResourceProbabilities(system.type, system.planets.length);
+  const expected = getExpectedResourceProbabilities(system.type, system.celestialBodies.length);
 
   const isBeingExplored = !!system.explorationFleetId;
 
