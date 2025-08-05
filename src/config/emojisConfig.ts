@@ -1,6 +1,6 @@
-import { ResourceType, SpecialResourceType } from "../types/resourceTypes";
+import { CombinedResourcesType } from "../types/resourceTypes";
 
-export const resourceEmojis: Record<ResourceType | SpecialResourceType, string> = {
+export const resourceEmojis: Record<CombinedResourcesType, string> = {
   METAL: "🔩", // tornillo
   STONE: "⛏️", // roca
   ENERGY: "⚡", // rayo
@@ -19,3 +19,7 @@ export const shipStatsEmojis: Record<string, string> = {
   defense: "🛡️", // Defensa
   health: "❤️", // Vida
 };
+
+export function getEmojiForResource(key: CombinedResourcesType) {
+  return resourceEmojis[key];
+}

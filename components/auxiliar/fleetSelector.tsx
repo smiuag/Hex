@@ -1,38 +1,57 @@
+import { IMAGES } from "@/src/constants/images";
+import { useGameContextSelector } from "@/src/context/GameContext";
 import { commonStyles } from "@/src/styles/commonStyles";
 import { Ship } from "@/src/types/shipType";
+import { getSystemImage } from "@/utils/starSystemUtils";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   FlatList,
   Image,
   ImageBackground,
-  ImageSourcePropType,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import Toast from "react-native-toast-message";
 import { shipConfig } from "../../src/config/shipConfig";
 
 type Props = {
-  fleets: Ship[];
-  onConfirm: (selectedFleets: Ship[]) => void;
-  onCancel: () => void;
-  originImage: ImageSourcePropType;
-  destinationImage: ImageSourcePropType;
+  origin: string;
+  destination: string;
 };
 
-export default function FleetSelector({
-  fleets,
-  onConfirm,
-  onCancel,
-  originImage,
-  destinationImage,
-}: Props) {
+export default function FleetSelector({ origin, destination }: Props) {
   const [selected, setSelected] = useState<Record<string, number>>({});
   const [available, setAvailable] = useState<Record<string, number>>({});
+
+  const router = useRouter();
+  const shipBuildQueue = useGameContextSelector((ctx) => ctx.shipBuildQueue);
+  const starSystems = useGameContextSelector((ctx) => ctx.starSystems);
+  const startAttack = useGameContextSelector((ctx) => ctx.startAttack);
+  const fleets = shipBuildQueue;
+  const system = starSystems.find((s) => s.id == destination);
+
+  const originImage =
+    origin == "PLANET" ? IMAGES.BACKGROUND_MENU_IMAGE : IMAGES.BACKGROUND_MENU_IMAGE;
+  const destinationImage = getSystemImage(system!.type);
+
+  const sendAttack = (selectedFleets: Ship[]) => {
+    if (selectedFleets.length > 0) {
+      startAttack(system!.id, selectedFleets);
+      router.replace("/(tabs)/galaxy");
+    } else
+      Toast.show({
+        type: "info",
+        text1: "No se puede enviar una flota vacía",
+        position: "top",
+        visibilityTime: 2000,
+      });
+  };
 
   useFocusEffect(
     React.useCallback(() => {
@@ -86,6 +105,10 @@ export default function FleetSelector({
       });
       setAvailable((prev) => ({ ...prev, [fleetId]: (prev[fleetId] || 0) + amountToMove }));
     }
+  };
+
+  const onCancel = () => {
+    router.replace("/(tabs)/galaxy");
   };
 
   const originFleets = fleets.filter((f) => (available[f.type] ?? 0) > 0);
@@ -152,7 +175,7 @@ export default function FleetSelector({
             const selectedFleets = fleets
               .filter((f) => selected[f.type] > 0)
               .map((f) => ({ ...f, amount: selected[f.type] }));
-            onConfirm(selectedFleets);
+            sendAttack(selectedFleets);
           }}
         >
           <Text style={commonStyles.buttonTextLight}>{t("Confirm")}</Text>

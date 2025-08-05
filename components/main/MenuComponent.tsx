@@ -1,6 +1,5 @@
 import { ResearchType } from "@/src/types/researchTypes";
 import { ShipType } from "@/src/types/shipType";
-import { useIsFocused } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Button, ImageBackground, ScrollView, Text, View } from "react-native";
@@ -58,9 +57,6 @@ export default function MenuComponent() {
     ];
     setProcesses(allProcesses);
   }, [hexes, research, shipBuildQueue, fleet]);
-
-  const isFocused = useIsFocused();
-  if (!isFocused) return null;
 
   const handleReset = () => {
     Alert.alert(t("endGameTitle"), t("endGameConfirmation"), [

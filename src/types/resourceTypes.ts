@@ -9,12 +9,13 @@ export type SpecialResourceType =
 
 export type Resources = Record<ResourceType, number>;
 export type SpecialResources = Record<SpecialResourceType, number>;
+export type CombinedResourcesType = ResourceType | SpecialResourceType;
+export type CombinedResources = Partial<Record<CombinedResourcesType, number>>;
 
 export type StoredResources = {
-  resources: Partial<Resources>;
+  resources: Partial<CombinedResources>;
   lastUpdate: number;
-  production: Partial<Resources>;
+  production: Partial<CombinedResources>;
 };
 
 export type ResourceChance = [number, [number, number]]; // [%, [min, max]]
-export type CombinedResources = Partial<Record<ResourceType | SpecialResourceType, number>>;

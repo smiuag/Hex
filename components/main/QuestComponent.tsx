@@ -1,5 +1,4 @@
 import { IMAGES } from "@/src/constants/images";
-import { useIsFocused } from "@react-navigation/native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect } from "react";
 import { FlatList, ImageBackground } from "react-native";
@@ -24,9 +23,6 @@ export default function QuestComponent() {
       router.replace(`/(tabs)/quests/computer?type=${newQuest.type}`);
     }
   }, [playerQuests, reload]);
-
-  const isFocused = useIsFocused();
-  if (!isFocused) return null;
 
   return (
     <ImageBackground

@@ -1,4 +1,4 @@
-import { STELAR_BUILDINGS_COST, STELAR_BUILDINGS_DURATION } from "@/src/constants/general";
+import { STAR_BUILDINGS_COST, STAR_BUILDINGS_DURATION } from "@/src/constants/general";
 import { getSystemImage } from "@/utils/starSystemUtils";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -15,7 +15,7 @@ type Props = {
   onDiscard: (id: string) => void;
   onExplorePlanet: (systemId: string, planetId: string) => void;
   onCancelExplorePlanet: (systemId: string, planetId: string) => void;
-  onStelarPortBuild: (id: string) => void;
+  onStarPortBuild: (id: string) => void;
   onDefenseStartBuild: (id: string) => void;
   onExtractionStartBuild: (id: string) => void;
 };
@@ -25,7 +25,7 @@ export const SystemExploredCard: React.FC<Props> = ({
   onDiscard,
   onExplorePlanet,
   onCancelExplorePlanet,
-  onStelarPortBuild,
+  onStarPortBuild,
   onDefenseStartBuild,
   onExtractionStartBuild,
 }) => {
@@ -43,9 +43,9 @@ export const SystemExploredCard: React.FC<Props> = ({
         text: t("confirm"),
         style: "destructive",
         onPress: async () => {
-          const lockedByResources = !enoughResources(STELAR_BUILDINGS_COST);
+          const lockedByResources = !enoughResources(STAR_BUILDINGS_COST);
           const enoughFreighter = shipBuildQueue.find((f) => f.type == "FREIGHTER" && f.amount > 1);
-          if (enoughFreighter && !lockedByResources) onStelarPortBuild(system.id);
+          if (enoughFreighter && !lockedByResources) onStarPortBuild(system.id);
           else
             Toast.show({
               type: "info", // "success" | "info" | "error"
@@ -65,7 +65,7 @@ export const SystemExploredCard: React.FC<Props> = ({
         text: t("confirm"),
         style: "destructive",
         onPress: async () => {
-          const lockedByResources = !enoughResources(STELAR_BUILDINGS_COST);
+          const lockedByResources = !enoughResources(STAR_BUILDINGS_COST);
           const enoughFreighter = shipBuildQueue.find((f) => f.type == "FREIGHTER" && f.amount > 1);
           if (enoughFreighter && !lockedByResources) onDefenseStartBuild(system.id);
           else
@@ -87,7 +87,7 @@ export const SystemExploredCard: React.FC<Props> = ({
         text: t("confirm"),
         style: "destructive",
         onPress: async () => {
-          const lockedByResources = !enoughResources(STELAR_BUILDINGS_COST);
+          const lockedByResources = !enoughResources(STAR_BUILDINGS_COST);
           const enoughFreighter = shipBuildQueue.find((f) => f.type == "FREIGHTER" && f.amount > 1);
           if (enoughFreighter && !lockedByResources) onExtractionStartBuild(system.id);
           else
@@ -160,7 +160,7 @@ export const SystemExploredCard: React.FC<Props> = ({
                     ⏳ {t("inProgress")}:{" "}
                     <CountdownTimer
                       startedAt={system.starPortStartedAt}
-                      duration={STELAR_BUILDINGS_DURATION}
+                      duration={STAR_BUILDINGS_DURATION}
                     />
                   </Text>
                   <Text style={commonStyles.whiteText}>{t("StelarPort")}</Text>
@@ -187,7 +187,7 @@ export const SystemExploredCard: React.FC<Props> = ({
                     ⏳ {t("inProgress")}:{" "}
                     <CountdownTimer
                       startedAt={system.defenseStartedAt}
-                      duration={STELAR_BUILDINGS_DURATION}
+                      duration={STAR_BUILDINGS_DURATION}
                     />
                   </Text>
                   <Text style={commonStyles.whiteText}>{t("DefenseSystem")}</Text>
@@ -214,7 +214,7 @@ export const SystemExploredCard: React.FC<Props> = ({
                     ⏳ {t("inProgress")}:{" "}
                     <CountdownTimer
                       startedAt={system.extractionStartedAt}
-                      duration={STELAR_BUILDINGS_DURATION}
+                      duration={STAR_BUILDINGS_DURATION}
                     />
                   </Text>
                   <Text style={commonStyles.whiteText}>{t("ExtractionSystem")}</Text>

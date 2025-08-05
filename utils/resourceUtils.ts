@@ -1,7 +1,8 @@
 import { buildingConfig } from "@/src/config/buildingConfig";
+import { resourceEmojis } from "@/src/config/emojisConfig";
 import { PRODUCTION_INCREMENT } from "@/src/constants/general";
 import { Hex } from "@/src/types/hexTypes";
-import { Resources, StoredResources } from "@/src/types/resourceTypes";
+import { CombinedResourcesType, Resources, StoredResources } from "@/src/types/resourceTypes";
 
 export const getProductionForBuilding = (
   type: keyof typeof buildingConfig,
@@ -62,4 +63,8 @@ export const generateRandomResources = (): Partial<Resources> => {
     CRYSTAL: roll(),
     STONE: roll(),
   };
+};
+
+export const isCombinedResourcesType = (key: string): key is CombinedResourcesType => {
+  return key in resourceEmojis;
 };

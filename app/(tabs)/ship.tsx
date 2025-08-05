@@ -1,3 +1,4 @@
+import { useIsFocused } from "@react-navigation/native";
 import React from "react";
 import { SafeAreaView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -11,8 +12,11 @@ import { ShipType } from "../../src/types/shipType";
 export default function ShipScreen() {
   const totalShipCounts: Partial<Record<ShipType, number>> = {};
   const insets = useSafeAreaInsets();
-
   const shipBuildQueue = useGameContextSelector((ctx) => ctx.shipBuildQueue);
+  const resources = useGameContextSelector((ctx) => ctx.resources);
+
+  const isFocused = useIsFocused();
+  if (!isFocused) return null;
 
   shipBuildQueue.forEach((ship) => {
     const type = ship.type;
@@ -23,7 +27,7 @@ export default function ShipScreen() {
     <SafeAreaView style={[commonStyles.safeArea, { paddingTop: insets.top }]}>
       <ShipSummaryBar shipCounts={totalShipCounts} />
       <ShipComponent />
-      <ResourceBar />
+      <ResourceBar storedResources={resources} />
     </SafeAreaView>
   );
 }

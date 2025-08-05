@@ -2,26 +2,32 @@ import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import { useGameContextSelector } from "../../src/context/GameContext";
 import { resourceBarStyles } from "../../src/styles/resourceBarStyles";
-import { Resources, ResourceType } from "../../src/types/resourceTypes";
+import {
+  CombinedResources,
+  CombinedResourcesType,
+  StoredResources,
+} from "../../src/types/resourceTypes";
 import { ResourceDisplay } from "./ResourceDisplay";
 
-export default function ResourceBar() {
-  const resources = useGameContextSelector((ctx) => ctx.resources);
+interface Props {
+  storedResources: StoredResources;
+}
+export default function ResourceBar({ storedResources }: Props) {
   const hexes = useGameContextSelector((ctx) => ctx.hexes);
-  const [displayedResources, setDisplayedResources] = useState<Partial<Resources>>({});
+  const [displayedResources, setDisplayedResources] = useState<Partial<CombinedResources>>({});
 
   useEffect(() => {
-    if (!resources || !hexes || hexes.length === 0) {
+    if (!storedResources || !hexes || hexes.length === 0) {
       setDisplayedResources({});
     } else {
       const updateResources = () => {
         const now = Date.now();
-        const elapsedSeconds = Math.floor((now - resources.lastUpdate) / 1000);
+        const elapsedSeconds = Math.floor((now - storedResources.lastUpdate) / 1000);
 
-        const updatedResources: Partial<Resources> = { ...resources.resources };
+        const updatedResources: Partial<CombinedResources> = { ...storedResources.resources };
 
-        (Object.keys(resources.production) as ResourceType[]).forEach((key) => {
-          const produced = (resources.production[key] ?? 0) * elapsedSeconds;
+        (Object.keys(storedResources.production) as CombinedResourcesType[]).forEach((key) => {
+          const produced = (storedResources.production[key] ?? 0) * elapsedSeconds;
           updatedResources[key] = (updatedResources[key] ?? 0) + produced;
         });
 
@@ -33,9 +39,9 @@ export default function ResourceBar() {
 
       return () => clearInterval(interval);
     }
-  }, [resources]);
+  }, [storedResources]);
 
-  if (!resources) return null;
+  if (!storedResources) return null;
 
   return (
     <View style={resourceBarStyles.container}>

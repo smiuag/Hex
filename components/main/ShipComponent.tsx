@@ -1,4 +1,3 @@
-import { useIsFocused } from "@react-navigation/native";
 import React from "react";
 import { FlatList } from "react-native";
 import { shipConfig } from "../../src/config/shipConfig";
@@ -13,9 +12,6 @@ export default function ShipComponent() {
   const handleCancelShip = useGameContextSelector((ctx) => ctx.handleCancelShip);
   const enoughResources = useGameContextSelector((ctx) => ctx.enoughResources);
   const hexes = useGameContextSelector((ctx) => ctx.hexes);
-
-  const isFocused = useIsFocused();
-  if (!isFocused) return null;
 
   const hasSpaceStation = hexes.some((h) => h.building?.type === "SPACESTATION");
 

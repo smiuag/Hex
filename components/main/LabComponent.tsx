@@ -1,6 +1,5 @@
 import { commonStyles } from "@/src/styles/commonStyles";
 import { getBuildTime } from "@/utils/buildingUtils";
-import { useIsFocused } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -19,8 +18,6 @@ export default function LabComponent() {
 
   const data = hexes.find((h) => h.building?.type == "LAB" || h.construction?.building == "LAB");
 
-  const isFocused = useIsFocused();
-  if (!isFocused) return null;
   if (!data) return;
 
   const onBuild = () => {

@@ -1,5 +1,4 @@
 import { IMAGES } from "@/src/constants/images";
-import { useIsFocused } from "@react-navigation/native";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, FlatList, ImageBackground, Text } from "react-native";
@@ -15,7 +14,7 @@ export default function StarSystemComponent() {
   const discardStarSystem = useGameContextSelector((ctx) => ctx.discardStarSystem);
   const startPlanetExploration = useGameContextSelector((ctx) => ctx.startPlanetExploration);
   const cancelExplorePlanet = useGameContextSelector((ctx) => ctx.cancelExplorePlanet);
-  const stelarPortStartBuild = useGameContextSelector((ctx) => ctx.stelarPortStartBuild);
+  const starPortStartBuild = useGameContextSelector((ctx) => ctx.starPortStartBuild);
   const defenseStartBuild = useGameContextSelector((ctx) => ctx.defenseStartBuild);
   const extractionStartBuild = useGameContextSelector((ctx) => ctx.extractionStartBuild);
   const cancelAttack = useGameContextSelector((ctx) => ctx.cancelAttack);
@@ -23,9 +22,6 @@ export default function StarSystemComponent() {
     (ctx) => ctx.startStarSystemExploration
   );
   const cancelExploreSystem = useGameContextSelector((ctx) => ctx.cancelExploreSystem);
-
-  const isFocused = useIsFocused();
-  if (!isFocused) return null;
 
   const exploredSystems = starSystems.filter((s) => !s.scanStartedAt && !s.discarded);
 
@@ -67,7 +63,7 @@ export default function StarSystemComponent() {
             onDiscard={onDiscard}
             onExplorePlanet={startPlanetExploration}
             onCancelExplorePlanet={cancelExplorePlanet}
-            onStelarPortBuild={stelarPortStartBuild}
+            onStarPortBuild={starPortStartBuild}
             onDefenseStartBuild={defenseStartBuild}
             onExtractionStartBuild={extractionStartBuild}
           />

@@ -1,8 +1,8 @@
 import { shipConfig } from "@/src/config/shipConfig";
 import {
   SCAN_DURATION,
-  STELAR_BUILDINGS_COST,
-  STELAR_BUILDINGS_DURATION,
+  STAR_BUILDINGS_COST,
+  STAR_BUILDINGS_DURATION,
 } from "@/src/constants/general";
 import {
   deleteStarSystem,
@@ -118,15 +118,15 @@ export const useStarSystem = (
       const extractionStartTime = starSystems[i].extractionStartedAt;
       const defenseStartTime = starSystems[i].defenseStartedAt;
 
-      if (starPortStartTime && now - starPortStartTime > STELAR_BUILDINGS_DURATION) {
-        stelarPortBuild(starSystems[i].id);
+      if (starPortStartTime && now - starPortStartTime > STAR_BUILDINGS_DURATION) {
+        starPortBuild(starSystems[i].id);
       }
 
-      if (extractionStartTime && now - extractionStartTime > STELAR_BUILDINGS_DURATION) {
+      if (extractionStartTime && now - extractionStartTime > STAR_BUILDINGS_DURATION) {
         extractionBuild(starSystems[i].id);
       }
 
-      if (defenseStartTime && now - defenseStartTime > STELAR_BUILDINGS_DURATION) {
+      if (defenseStartTime && now - defenseStartTime > STAR_BUILDINGS_DURATION) {
         defenseBuild(starSystems[i].id);
       }
 
@@ -323,12 +323,14 @@ export const useStarSystem = (
       await updateQuest({ type: "EXPLORE_SYSTEM", completed: true });
   };
 
-  const stelarPortBuild = async (id: string) => {
+  const starPortBuild = async (id: string) => {
     const system = systemsRef.current.find((s) => s.id === id);
     if (!system) return;
 
     await modifySystems((systems) =>
-      systems.map((s) => (s.id === id ? { ...s, starPortStartedAt: undefined, starPort: true } : s))
+      systems.map((s) =>
+        s.id === id ? { ...s, starPortStartedAt: undefined, starPortBuilt: true } : s
+      )
     );
   };
 
@@ -366,11 +368,11 @@ export const useStarSystem = (
       await updateQuest({ type: "SCAN_FIRST", completed: true });
   };
 
-  const stelarPortStartBuild = async (id: string) => {
+  const starPortStartBuild = async (id: string) => {
     const system = systemsRef.current.find((s) => s.id === id);
     if (!system) return;
 
-    await subtractResources(STELAR_BUILDINGS_COST);
+    await subtractResources(STAR_BUILDINGS_COST);
     await handleDestroyShip("FREIGHTER", 2);
 
     await modifySystems((systems) =>
@@ -382,7 +384,7 @@ export const useStarSystem = (
     const system = systemsRef.current.find((s) => s.id === id);
     if (!system) return;
 
-    await subtractResources(STELAR_BUILDINGS_COST);
+    await subtractResources(STAR_BUILDINGS_COST);
     await handleDestroyShip("FREIGHTER", 2);
 
     await modifySystems((systems) =>
@@ -394,7 +396,7 @@ export const useStarSystem = (
     const system = systemsRef.current.find((s) => s.id === id);
     if (!system) return;
 
-    await subtractResources(STELAR_BUILDINGS_COST);
+    await subtractResources(STAR_BUILDINGS_COST);
     await handleDestroyShip("FREIGHTER", 2);
 
     await modifySystems((systems) =>
@@ -592,7 +594,7 @@ export const useStarSystem = (
     newFleet,
     cancelFleet,
     resetFleet,
-    stelarPortStartBuild,
+    starPortStartBuild,
     extractionStartBuild,
     defenseStartBuild,
     startAttack,

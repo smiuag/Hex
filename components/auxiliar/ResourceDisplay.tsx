@@ -1,11 +1,12 @@
+import { isCombinedResourcesType } from "@/utils/resourceUtils";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { resourceEmojis } from "../../src/config/emojisConfig";
-import { ResourceType, Resources, SpecialResources } from "../../src/types/resourceTypes";
+import { CombinedResources } from "../../src/types/resourceTypes";
 import { formatAmount } from "../../utils/generalUtils";
 
 interface Props {
-  resources: Partial<Resources | SpecialResources>;
+  resources: CombinedResources;
   fontSize?: number;
   fontColor?: string;
 }
@@ -14,9 +15,9 @@ export const ResourceDisplay = ({ resources, fontSize = 16, fontColor = "white" 
   return (
     <View style={[styles.container, { gap: 12 }]}>
       {[...Object.entries(resources)].reverse().map(([key, value]) => {
-        const emoji = resourceEmojis[key as ResourceType];
-        if (!emoji || value == null || value === 0) return null;
-
+        if (!isCombinedResourcesType(key) || value == null || value === 0) return null;
+        const emoji = resourceEmojis[key];
+        if (!emoji) return null;
         return (
           <Text key={key} style={[styles.item, { fontSize, color: fontColor }]}>
             {emoji} {formatAmount(value)}

@@ -52,7 +52,7 @@ type ProviderContextType = {
   startGame: () => void;
   discardStarSystem: (id: string) => void;
   cancelExploreSystem: (id: string) => void;
-  stelarPortStartBuild: (id: string) => void;
+  starPortStartBuild: (id: string) => void;
   extractionStartBuild: (id: string) => void;
   defenseStartBuild: (id: string) => void;
   cancelExplorePlanet: (systemId: string, planetId: string) => void;
@@ -128,7 +128,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     processFleeTick,
     processColonialTick,
     resetFleet,
-    stelarPortStartBuild,
+    starPortStartBuild,
     extractionStartBuild,
     defenseStartBuild,
     startAttack,
@@ -225,7 +225,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       endGame,
       startGame,
       cancelExploreSystem,
-      stelarPortStartBuild,
+      starPortStartBuild,
       extractionStartBuild,
       defenseStartBuild,
       cancelExplorePlanet,
@@ -265,7 +265,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       endGame,
       startGame,
       cancelExploreSystem,
-      stelarPortStartBuild,
+      starPortStartBuild,
       extractionStartBuild,
       defenseStartBuild,
       cancelExplorePlanet,

@@ -12,7 +12,6 @@ import {
   getSystemImage,
   getSystemsFromRegion,
 } from "@/utils/starSystemUtils";
-import { useIsFocused } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -70,9 +69,6 @@ export default function AntennaComponent() {
   const onCancel = () => {
     handleCancelBuild(data.q, data.r);
   };
-
-  const isFocused = useIsFocused();
-  if (!isFocused) return null;
 
   if (!startingSystem) return null;
 
