@@ -72,6 +72,9 @@ export const SystemUnknownCard: React.FC<Props> = ({
               ({tPlanets(`systemType.${system.type}`)}){" "}
             </Text>
           </Text>
+          <Text style={commonStyles.smallSubtitle}>
+            {system.distance} {t("parsecs")}
+          </Text>
           <View style={{ marginTop: 10 }}>
             <Text style={commonStyles.subtitleText}>{t("ExpectedResources")}:</Text>
             {Object.entries(expected)
@@ -105,9 +108,7 @@ export const SystemUnknownCard: React.FC<Props> = ({
             </View>
           ) : (
             <View style={commonStyles.actionBar}>
-              <Text style={commonStyles.whiteText}>
-                {system.distance} {t("parsecs")}
-              </Text>
+              <View></View>
 
               <TouchableOpacity
                 style={commonStyles.buttonPrimary}

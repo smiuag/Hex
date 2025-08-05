@@ -20,7 +20,7 @@ export const ShipStatsDisplay = ({ stats, fontSize = 16, fontColor = "white" }: 
     <View style={[styles.container, { gap: 12 }]}>
       {Object.entries(stats).map(([key, value]) => {
         const emoji = shipStatsEmojis[key];
-        if (!emoji || value == null || value === 0) return null;
+        if (!emoji || value == null) return null;
 
         return (
           <Text key={key} style={[styles.item, { fontSize, color: fontColor }]}>
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "rgba(255, 255, 255, 0.28)",
     borderRadius: 12,
-    paddingHorizontal: 6,
+    paddingHorizontal: 4,
     paddingVertical: 6,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   item: {
-    marginRight: 4,
+    marginRight: 2,
     color: "white",
     fontWeight: "600",
     flexDirection: "row",

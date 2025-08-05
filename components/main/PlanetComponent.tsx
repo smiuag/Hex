@@ -100,6 +100,11 @@ export default function PlanetComponent() {
       return;
     }
 
+    if (hexToUse.building?.type == "LAB") {
+      router.replace("/(tabs)/planet/lab");
+      return;
+    }
+
     const isEmpty = !hexToUse.building && !hexToUse.construction;
     if (!hexToUse.isTerraformed) {
       setSelectedHex(hexToUse);

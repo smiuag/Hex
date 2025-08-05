@@ -1,4 +1,4 @@
-import FleetSelector from "@/components/auxiliar/fleetSelector";
+import FleetSelector from "@/components/auxiliar/FleetSelector";
 import { useGameContextSelector } from "@/src/context/GameContext";
 import { Ship } from "@/src/types/shipType";
 import { getSystemImage } from "@/utils/starSystemUtils";

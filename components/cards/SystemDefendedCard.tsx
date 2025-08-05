@@ -50,6 +50,9 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onCance
               ({tPlanets(`systemType.${system.type}`)}){" "}
             </Text>
           </Text>
+          <Text style={commonStyles.whiteText}>
+            {system.distance} {t("parsecs")}
+          </Text>
           <View>
             <Text style={commonStyles.whiteText}>
               {t("CelestialBodies")} {system.planets.length}
@@ -83,9 +86,7 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onCance
             </View>
           ) : (
             <View style={commonStyles.actionBar}>
-              <Text style={commonStyles.whiteText}>
-                {system.distance} {t("parsecs")}
-              </Text>
+              <View></View>
 
               <TouchableOpacity
                 style={commonStyles.buttonPrimary}

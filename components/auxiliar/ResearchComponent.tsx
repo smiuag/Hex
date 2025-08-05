@@ -55,9 +55,6 @@ export default function ResearchComponent() {
       if (a.isMaxed && !b.isMaxed) return 1;
       if (!a.isMaxed && b.isMaxed) return -1;
 
-      if (!a.isAvailable && b.isAvailable) return 1;
-      if (a.isAvailable && !b.isAvailable) return -1;
-
       return a.order - b.order;
     });
 
