@@ -105,7 +105,7 @@ export default function PlanetComponent() {
       hexToUse.building?.type == "ANTENNA" ||
       (hexToUse.construction?.building == "ANTENNA" && hexToUse.construction.targetLevel > 1)
     ) {
-      router.replace(`/(tabs)/planet/lab?q=${tappedHex.q}&r=${tappedHex.r}`);
+      router.replace(`/(tabs)/planet/antenna?q=${tappedHex.q}&r=${tappedHex.r}`);
       return;
     }
 
@@ -214,7 +214,20 @@ export default function PlanetComponent() {
 
       if (!ancientStructuresAlreadyFound) {
         if (getAncientAlienStructuresFound(currentHexesTerraformed))
-          setHexAncientStructure(selectedHex);
+          Alert.alert(
+            "Terreno misterioso",
+            "Este terreno parece distinto. Las primeras inspecciones indican una gran cantidad de humedad en el subsuelo. ¡Quizá sea agua!",
+            [
+              {
+                text: "Aceptar",
+                onPress: () => {
+                  updateQuest({ type: "ALIEN_TECH_FOUND", completed: true });
+                  setHexAncientStructure(selectedHex);
+                },
+              },
+            ],
+            { cancelable: false }
+          );
       }
 
       handleTerraform(selectedHex.q, selectedHex.r);

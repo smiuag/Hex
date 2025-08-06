@@ -9,7 +9,12 @@
     "PLASMA": "Tecnología de plasma",
     "LASER": "Tecnología láser",
     "SHIELD": "Escudos de energía",
-    "GRAVITY": "El gravitón"
+    "GRAVITY": "El gravitón",
+    "FLUXION": "Fluxión de Vacío",
+    "SELENOGRAFIA": "Selenografía Prisma",
+    "HEXOXIDO": "Blindaje Hexóxido",
+    "ONTOCUANTICA": "Inflexión Ontocuántica",
+    "KELSIANO": "Núcleo Kelsiano"
   },
   "researchDescription": {
     "TERRAFORMING": "Permite mejorar la base, algo necesario para ampliar su alcance y conseguir más área construible.",
@@ -21,6 +26,11 @@
     "PLASMA": "Tecnología para el armamento de naves espaciales pesadas.",
     "LASER": "Tecnología base para el armamento ligero de naves espaciales.",
     "SHIELD": "Imprescindible para la construcción de destructores espaciales y naves orbitales.",
-    "GRAVITY": "Tecnología final para el dominio de las bases espaciales y motores WARP."
+    "GRAVITY": "Tecnología final para el dominio de las bases espaciales y motores WARP.",
+    "FLUXION": "Técnica de generación energética a partir de diferencias de presión cuántica",
+    "SELENOGRAFIA": "Estudia cuerpos planetarios usando refracción espacial.",
+    "HEXOXIDO": "Optimiza el uso de metales estructurales, reduciendo costes de construcción",
+    "ONTOCUANTICA": "Ciencia que permite la manipulaión de la materia transformandola en un quinto estado cuántico.",
+    "KELSIANO": "Motor de impulso mejorado para viajes interplanetarios rápidos"
   }
 }

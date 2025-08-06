@@ -160,6 +160,15 @@ export const useQuest = (addResources: (modifications: Partial<Resources>) => vo
           rewardClaimed: false,
           viewed: false,
         });
+        updateQuest({
+          type: "ALIEN_TECH_FOUND",
+          available: true,
+          completed: playerQuests.some((q) => q.type == "ALIEN_TECH_FOUND" && q.completed)
+            ? true
+            : false,
+          rewardClaimed: false,
+          viewed: false,
+        });
         break;
       case "BUILDING_BASE2":
         updateQuest({

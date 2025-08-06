@@ -34,7 +34,7 @@ export const questConfig: Record<
     order: 3,
     type: "RESEARCH_MINING1",
     backgroundImage: IMAGES.RESEARCH_MINING,
-    reward: { STONE: 18000, METAL: 18000 },
+    reward: { STONE: 18000, METAL: 24000 },
     contextType: "RESEARCH",
     persist: false,
   },

@@ -8,7 +8,12 @@ export type ResearchType =
   | "PLASMA"
   | "LASER"
   | "SHIELD"
-  | "GRAVITY";
+  | "GRAVITY"
+  | "FLUXION"
+  | "SELENOGRAFIA"
+  | "HEXOXIDO"
+  | "ONTOCUANTICA"
+  | "KELSIANO";
 
 export type ResearchData = {
   type: ResearchType;

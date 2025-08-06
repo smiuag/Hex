@@ -53,7 +53,7 @@ export default function ConstructionComponent() {
       const buildingType = type as BuildingType;
       if (isWater) return buildingType === "WATEREXTRACTOR";
       if (isAlienLab) return buildingType === "ALIEN_LAB";
-      return buildingType !== "WATEREXTRACTOR";
+      return buildingType !== "WATEREXTRACTOR" && buildingType !== "ALIEN_LAB";
     })
     .map(([type, config]) => {
       const buildingType = type as BuildingType;

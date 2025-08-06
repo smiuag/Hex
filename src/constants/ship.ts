@@ -10,16 +10,16 @@ export const SHIP_COST: Record<ShipType, Partial<Resources>> = {
   ESCORTFRIGATE: { METAL: 5000, CRYSTAL: 25000, ENERGY: 500 },
   BATTLECRUISER: { METAL: 15000, CRYSTAL: 7000, ENERGY: 1500 },
   SPACEDESTROYER: { METAL: 40000, CRYSTAL: 20000, ENERGY: 4000 },
-  ASSAULTBATTLESHIP: { METAL: 90000, CRYSTAL: 50000, ENERGY: 9000 },
-  STARCARRIER: { METAL: 180000, CRYSTAL: 100000, ENERGY: 18000 },
-  HEAVYASSAULTSHIP: { METAL: 120000, CRYSTAL: 65000, ENERGY: 12000 },
-  ORBITALASSAULTSHIP: { METAL: 220000, CRYSTAL: 120000, ENERGY: 25000 },
-  PLANETARYDESTROYER: { METAL: 500000, CRYSTAL: 250000, ENERGY: 60000 },
+  ASSAULTBATTLESHIP: { METAL: 900000, CRYSTAL: 500000, ENERGY: 9000 },
+  STARCARRIER: { METAL: 1800000, CRYSTAL: 1000000, ENERGY: 18000 },
+  HEAVYASSAULTSHIP: { METAL: 1200000, CRYSTAL: 650000, ENERGY: 12000 },
+  ORBITALASSAULTSHIP: { METAL: 1300000, CRYSTAL: 1200000, ENERGY: 25000 },
+  PLANETARYDESTROYER: { METAL: 2000000, CRYSTAL: 2500000, ENERGY: 60000 },
   FREIGHTER: { METAL: 15000, CRYSTAL: 7000, ENERGY: 1500 },
 };
 
 export const SHIP_TIME: Record<ShipType, number> = {
-  PROBE: 1000 * 60 * 3,
+  PROBE: 1000 * 60 * 1,
   LIGHTFIGHTER: 1000 * 60 * 3,
   INTERCEPTOR: 1000 * 60 * 4,
   ESCORTFRIGATE: 1000 * 60 * 15,
@@ -30,7 +30,7 @@ export const SHIP_TIME: Record<ShipType, number> = {
   HEAVYASSAULTSHIP: 1000 * 60 * 60 * 12,
   ORBITALASSAULTSHIP: 1000 * 60 * 60 * 24,
   PLANETARYDESTROYER: 1000 * 60 * 60 * 24 * 2,
-  FREIGHTER: 1000 * 60 * 7,
+  FREIGHTER: 1000 * 60 * 3,
 };
 
 export const SHIP_REQUIRED_RESEARCH: Record<ShipType, ShipResearchRequiredData[]> = {
@@ -57,24 +57,29 @@ export const SHIP_REQUIRED_RESEARCH: Record<ShipType, ShipResearchRequiredData[]
     { researchType: "FUELREFINEMENT", researchLevelRequired: 1 },
     { researchType: "LASER", researchLevelRequired: 2 },
     { researchType: "SHIELD", researchLevelRequired: 1 },
+    { researchType: "ONTOCUANTICA", researchLevelRequired: 1 },
   ],
   ASSAULTBATTLESHIP: [
     { researchType: "SHIPENGINEERING", researchLevelRequired: 3 },
     { researchType: "FUELREFINEMENT", researchLevelRequired: 2 },
     { researchType: "LASER", researchLevelRequired: 3 },
     { researchType: "SHIELD", researchLevelRequired: 2 },
+    { researchType: "KELSIANO", researchLevelRequired: 1 },
   ],
   STARCARRIER: [
     { researchType: "SHIPENGINEERING", researchLevelRequired: 4 },
     { researchType: "FUELREFINEMENT", researchLevelRequired: 2 },
     { researchType: "PLASMA", researchLevelRequired: 1 },
     { researchType: "SHIELD", researchLevelRequired: 2 },
+    { researchType: "HEXOXIDO", researchLevelRequired: 1 },
   ],
   HEAVYASSAULTSHIP: [
     { researchType: "SHIPENGINEERING", researchLevelRequired: 4 },
     { researchType: "FUELREFINEMENT", researchLevelRequired: 3 },
     { researchType: "PLASMA", researchLevelRequired: 2 },
     { researchType: "SHIELD", researchLevelRequired: 3 },
+    { researchType: "HEXOXIDO", researchLevelRequired: 1 },
+    { researchType: "KELSIANO", researchLevelRequired: 1 },
   ],
   ORBITALASSAULTSHIP: [
     { researchType: "SHIPENGINEERING", researchLevelRequired: 5 },
@@ -82,6 +87,8 @@ export const SHIP_REQUIRED_RESEARCH: Record<ShipType, ShipResearchRequiredData[]
     { researchType: "PLASMA", researchLevelRequired: 3 },
     { researchType: "GRAVITY", researchLevelRequired: 1 },
     { researchType: "SHIELD", researchLevelRequired: 3 },
+    { researchType: "SELENOGRAFIA", researchLevelRequired: 1 },
+    { researchType: "HEXOXIDO", researchLevelRequired: 1 },
   ],
   PLANETARYDESTROYER: [
     { researchType: "SHIPENGINEERING", researchLevelRequired: 6 },
@@ -89,6 +96,8 @@ export const SHIP_REQUIRED_RESEARCH: Record<ShipType, ShipResearchRequiredData[]
     { researchType: "PLASMA", researchLevelRequired: 3 },
     { researchType: "GRAVITY", researchLevelRequired: 2 },
     { researchType: "SHIELD", researchLevelRequired: 3 },
+    { researchType: "SELENOGRAFIA", researchLevelRequired: 1 },
+    { researchType: "FLUXION", researchLevelRequired: 1 },
   ],
   FREIGHTER: [
     { researchType: "SHIPENGINEERING", researchLevelRequired: 1 },

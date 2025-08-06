@@ -12,6 +12,11 @@ export const RESEARCH_COST = {
   PLASMA: { CRYSTAL: 3000, METAL: 15000, ENERGY: 150000 },
   SHIELD: { CRYSTAL: 6000, METAL: 20000, ENERGY: 150000 },
   GRAVITY: { CRYSTAL: 30000, METAL: 20000, ENERGY: 200000, AETHERIUM: 2000, THARNIO: 5000 },
+  FLUXION: { CRYSTAL: 30000, METAL: 50000, ENERGY: 100000, KAIROX: 2000, NEBULITA: 5000 },
+  HEXOXIDO: { CRYSTAL: 30000, METAL: 50000, ENERGY: 300000, THARNIO: 20000, AETHERIUM: 5000 },
+  KELSIANO: { CRYSTAL: 30000, METAL: 50000, ENERGY: 300000, KAIROX: 20000, ILMENITA: 5000 },
+  ONTOCUANTICA: { CRYSTAL: 30000, METAL: 50000, ENERGY: 400000, THARNIO: 20000, AETHERIUM: 5000 },
+  SELENOGRAFIA: { CRYSTAL: 30000, NEBULITA: 50000, ENERGY: 500000, KAIROX: 10000, ILMENITA: 5000 },
 };
 
 export const RESEARCH_TIME = {
@@ -22,9 +27,14 @@ export const RESEARCH_TIME = {
   ENERGYEFFICIENCY: 1000 * 60,
   SHIPENGINEERING: 1000 * 60 * 60 * 1,
   LASER: 1000 * 60 * 60 * 4,
-  PLASMA: 1000 * 60 * 60 * 24,
-  SHIELD: 1000 * 60 * 60 * 24,
-  GRAVITY: 1000 * 60 * 60 * 24 * 7,
+  PLASMA: 1000 * 60 * 60 * 5,
+  SHIELD: 1000 * 60 * 60 * 6,
+  GRAVITY: 1000 * 60 * 60 * 12,
+  FLUXION: 1000 * 60 * 60 * 24 * 2,
+  HEXOXIDO: 1000 * 60 * 60 * 24 * 2,
+  KELSIANO: 1000 * 60 * 60 * 24 * 2,
+  ONTOCUANTICA: 1000 * 60 * 60 * 24 * 3,
+  SELENOGRAFIA: 1000 * 60 * 60 * 24 * 5,
 };
 
 export const MAX_LVL = {
@@ -38,6 +48,11 @@ export const MAX_LVL = {
   PLASMA: 3,
   SHIELD: 3,
   GRAVITY: 2,
+  FLUXION: 1,
+  HEXOXIDO: 1,
+  KELSIANO: 1,
+  ONTOCUANTICA: 1,
+  SELENOGRAFIA: 1,
 };
 
 export const RESEARCH_REQUIRED_BUILDING: Record<ResearchType, ResearchRequiredBuilding> = {
@@ -60,4 +75,9 @@ export const RESEARCH_REQUIRED_BUILDING: Record<ResearchType, ResearchRequiredBu
     { buildingLevelRequired: 2, buildingType: "GREENHOUSE", researchLevel: 3 },
   ],
   WATERPURIFICATION: [{ buildingLevelRequired: 4, buildingType: "LAB", researchLevel: 1 }],
+  FLUXION: [{ buildingLevelRequired: 2, buildingType: "ALIEN_LAB", researchLevel: 1 }],
+  HEXOXIDO: [{ buildingLevelRequired: 2, buildingType: "ALIEN_LAB", researchLevel: 1 }],
+  KELSIANO: [{ buildingLevelRequired: 3, buildingType: "ALIEN_LAB", researchLevel: 1 }],
+  ONTOCUANTICA: [{ buildingLevelRequired: 3, buildingType: "ALIEN_LAB", researchLevel: 1 }],
+  SELENOGRAFIA: [{ buildingLevelRequired: 3, buildingType: "ALIEN_LAB", researchLevel: 1 }],
 };

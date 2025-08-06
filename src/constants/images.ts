@@ -24,11 +24,16 @@ import spaceStation from "../../assets/images/buildings/spaceStation.png";
 import waterBackground from "../../assets/images/buildings/water.png";
 
 import energy from "../../assets/images/research/Energy.png";
+import fluxion from "../../assets/images/research/Fluxion.png";
 import fuel from "../../assets/images/research/Fuel.png";
 import gravity from "../../assets/images/research/Gravity.png";
+import hexoxido from "../../assets/images/research/Hexoxido.png";
+import kelsiano from "../../assets/images/research/Kelsiano.png";
 import laser from "../../assets/images/research/Laser.png";
 import mining from "../../assets/images/research/Mining.png";
+import ontocuantica from "../../assets/images/research/Ontocuantica.png";
 import plasma from "../../assets/images/research/Plasma.png";
+import selenografia from "../../assets/images/research/Selenografia.png";
 import shield from "../../assets/images/research/Shield.png";
 import ships from "../../assets/images/research/Ships.png";
 import terraforming from "../../assets/images/research/Terraforming.png";
@@ -162,4 +167,10 @@ export const IMAGES = {
   ALIEN_STRUCTURE: alienStructure,
   ALIEN_LAB_BACKGROUND: alienLabBackground,
   BUILDING_ALIEN_LAB: buildingAlienLab,
+
+  RESEARCH_SELENOGRAFIA: selenografia,
+  RESEARCH_KELSIANO: kelsiano,
+  RESEARCH_ONTOCUANTICA: ontocuantica,
+  RESEARCH_HEXOXIDO: hexoxido,
+  RESEARCH_FLUXION: fluxion,
 };
