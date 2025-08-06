@@ -75,7 +75,7 @@
   "StelarPortCostMessage": "Para construir un puerto estelar necesitaremos enviar 2 cargueros, que se quedarán en el sistema para juntar recursos de la zona. Además es necesario enviar 120K de cristal y 120K de metal. ¿Estas seguro de que quieres continuar?",
   "Fly": "Volar",
   "Collect": "Recolectar",
-  "combatStats": "Estadísticas de combate",
+  "combatStats": "Estadísticas:",
   "CollectAlert": "Recolecctión de recursos",
   "CollectMessage": "¿Estás seguro de quieres iniciar la recolección del sistema? Requiere 50K de energía, 1 cargueros disponible y no se puede cancelar.",
   "NotEnoughForCollect": "No hay suficiente energía para comenzar la recolección"

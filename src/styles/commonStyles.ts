@@ -308,4 +308,5 @@ export const commonStyles = StyleSheet.create({
     color: "white",
     marginTop: 1,
   },
+  minWidth25: { minWidth: 25 },
 });

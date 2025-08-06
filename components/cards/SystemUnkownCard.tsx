@@ -30,7 +30,7 @@ export const SystemUnknownCard: React.FC<Props> = ({
   const { t: tResources } = useTranslation("resources");
   const expected = getExpectedResourceProbabilities(system.type, system.celestialBodies.length);
 
-  const isBeingExplored = !!system.explorationFleetId;
+  const isBeingExplored = !!system.explorationStartedAt;
 
   const fleet = useGameContextSelector((ctx) => ctx.fleet);
   const shipBuildQueue = useGameContextSelector((ctx) => ctx.shipBuildQueue);
@@ -38,10 +38,6 @@ export const SystemUnknownCard: React.FC<Props> = ({
 
   const probeSpeed = shipConfig["PROBE"].speed;
   const timeToExplore = getFlyTime(probeSpeed, system.distance);
-
-  const startTime = system.explorationFleetId
-    ? fleet.find((f) => f.id === system.explorationFleetId)?.startTime
-    : undefined;
 
   const handleExplorePress = (systemId: string) => {
     if (shipBuildQueue.find((s) => s.type == "PROBE" && s.amount > 0)) onExplore(systemId);
@@ -97,7 +93,7 @@ export const SystemUnknownCard: React.FC<Props> = ({
             <View style={commonStyles.actionBar}>
               <Text style={commonStyles.statusTextYellow}>
                 ⏳ {t("inProgress")}:{" "}
-                <CountdownTimer startedAt={startTime} duration={timeToExplore} />
+                <CountdownTimer startedAt={system.explorationStartedAt} duration={timeToExplore} />
               </Text>
               <TouchableOpacity
                 style={commonStyles.cancelButton}

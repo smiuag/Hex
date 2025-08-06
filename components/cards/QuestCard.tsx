@@ -1,15 +1,16 @@
+import { questConfig } from "@/src/config/questConfig";
 import { useGameContextSelector } from "@/src/context/GameContext";
+import { PlayerQuest } from "@/src/types/questType";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Animated, ImageBackground, Text, TouchableOpacity, View } from "react-native";
-import { questConfig } from "../../src/config/questConfig";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { ResourceDisplay } from "../auxiliar/ResourceDisplay";
 
 type Props = {
-  item: (typeof questConfig)[keyof typeof questConfig];
+  item: PlayerQuest;
   completed: boolean;
   isAlreadyClaimed: boolean;
   onClaimReward: () => void;
@@ -25,11 +26,9 @@ export const QuestCard: React.FC<Props> = ({
   const { t: tQuests } = useTranslation("quests");
   const scale = useRef(new Animated.Value(1)).current;
   const router = useRouter();
-
-  const questType = item.type.toString();
   const playerQuests = useGameContextSelector((ctx) => ctx.playerQuests);
-
-  const isViewed = playerQuests.some((pq) => pq.type == questType && pq.viewed);
+  const config = questConfig[item.type];
+  const isViewed = playerQuests.some((pq) => pq.type == item.type && pq.viewed);
 
   const triggerAnimation = () => {
     Animated.sequence([
@@ -51,12 +50,12 @@ export const QuestCard: React.FC<Props> = ({
     onClaimReward();
   };
 
-  if (!item.persist && isAlreadyClaimed) return null;
+  if (!config.persist && isAlreadyClaimed) return null;
 
   return (
     <Animated.View style={[commonStyles.containerCenter, { transform: [{ scale }] }]}>
       <ImageBackground
-        source={item.backgroundImage}
+        source={config.backgroundImage}
         style={isAlreadyClaimed ? commonStyles.cardMini : commonStyles.card}
         imageStyle={{ borderRadius: 10 }}
       >
@@ -71,7 +70,7 @@ export const QuestCard: React.FC<Props> = ({
               <Text style={commonStyles.titleText}>{tQuests(`${item.type}.name`)}</Text>
               <TouchableOpacity
                 onPress={() => {
-                  router.replace(`/(tabs)/quests/computer?type=${questType}`);
+                  router.replace(`/(tabs)/quests/computer?type=${item.type}`);
                 }}
                 style={{
                   position: "absolute",
@@ -99,7 +98,7 @@ export const QuestCard: React.FC<Props> = ({
                 <View style={commonStyles.rowSpaceBetween}>
                   <Text style={commonStyles.whiteText}>{t("reward")}</Text>
                   <View style={commonStyles.rowResources}>
-                    <ResourceDisplay resources={item.reward} fontSize={13} />
+                    <ResourceDisplay resources={config.reward} fontSize={13} />
                   </View>
                 </View>
                 <View style={commonStyles.actionBar}>

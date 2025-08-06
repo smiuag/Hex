@@ -264,7 +264,7 @@ export const SystemExploredCard: React.FC<Props> = ({
             {system.extractionBuildingBuilt ? (
               <ResourceBar storedResources={system.storedResources} showSpecial={true} />
             ) : (
-              <></>
+              <View></View>
             )}
 
             <TouchableOpacity

@@ -62,6 +62,7 @@ export default function StarSystemComponent() {
       renderItem={({ item }) =>
         item.conquered ? (
           <SystemExploredCard
+            key={item.id}
             system={item}
             onDiscard={onDiscard}
             onExplorePlanet={startCelestialBodyExploration}
@@ -72,9 +73,15 @@ export default function StarSystemComponent() {
             onStartCollectSystem={startCollectSystem}
           />
         ) : item.explored ? (
-          <SystemDefendedCard system={item} onDiscard={onDiscard} onCancelAttack={cancelAttack} />
+          <SystemDefendedCard
+            key={item.id}
+            system={item}
+            onDiscard={onDiscard}
+            onCancelAttack={cancelAttack}
+          />
         ) : (
           <SystemUnknownCard
+            key={item.id}
             system={item}
             onDiscard={onDiscard}
             onExplore={startStarSystemExploration}

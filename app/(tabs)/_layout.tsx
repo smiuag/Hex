@@ -7,7 +7,6 @@ import {
   MenuIcon,
   PlanetIcon,
   QuestIcon,
-  ResearchIcon,
   ShipIcon,
 } from "../../components/auxiliar/MenuIcons";
 import { useGameContextSelector } from "../../src/context/GameContext";
@@ -62,15 +61,6 @@ export default function TabLayout() {
         }}
       />
 
-      <Tabs.Screen
-        name="research"
-        options={{
-          tabBarIcon: ({ color, size }) => <ResearchIcon color={color} size={size} />,
-          tabBarLabel: "Investigación",
-          tabBarButton: partidaIniciada ? undefined : () => null,
-          tabBarItemStyle: partidaIniciada ? {} : tabStyles.hidden,
-        }}
-      />
       <Tabs.Screen
         name="ship"
         options={{

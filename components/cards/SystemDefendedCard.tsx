@@ -1,14 +1,14 @@
+import { SHIP_STATS } from "@/src/constants/ship";
 import { useGameContextSelector } from "@/src/context/GameContext";
 import { getSystemImage } from "@/utils/starSystemUtils";
 import { useRouter } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { ImageBackground, Text, TouchableOpacity, View } from "react-native";
-import { shipConfig } from "../../src/config/shipConfig";
 import { commonStyles } from "../../src/styles/commonStyles";
-import { ShipType } from "../../src/types/shipType";
 import { StarSystem } from "../../src/types/starSystemTypes";
 import { CountdownTimer } from "../auxiliar/CountdownTimer";
+import { ShipStatsDisplay } from "../auxiliar/ShipStatsDisplay";
 
 type Props = {
   system: StarSystem;
@@ -24,13 +24,10 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onCance
   const universe = useGameContextSelector((ctx) => ctx.universe);
   const router = useRouter();
 
-  const duration = system.attackFleetId
-    ? (() => {
-        const f = fleet.find((f) => f.id === system.attackFleetId);
-        if (!f) return 0;
-        return f.endTime - f.startTime;
-      })()
-    : 0;
+  const attackingFleet = fleet.find(
+    (f) => f.destinationSystemId === system.id && f.movementType == "ATTACK"
+  );
+  const duration = attackingFleet ? attackingFleet.startTime - attackingFleet.endTime : 0;
 
   const image = getSystemImage(system.type);
   const systemName = universe[system.id].name;
@@ -43,13 +40,12 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onCance
         imageStyle={commonStyles.imageCover}
       >
         <View style={commonStyles.overlayDark}>
-          <Text style={commonStyles.titleBlueText}>
-            {systemName}{" "}
+          <View>
+            <Text style={commonStyles.titleBlueText}>{systemName}</Text>
             <Text style={[commonStyles.whiteText, { fontSize: 16 }]}>
-              {" "}
               ({tPlanets(`systemType.${system.type}`)}){" "}
             </Text>
-          </Text>
+          </View>
           <Text style={commonStyles.whiteText}>
             {system.distance} {t("parsecs")}
           </Text>
@@ -59,18 +55,29 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onCance
             </Text>
           </View>
           {system.defense.map((ship) => {
-            const config = shipConfig[ship.type as ShipType];
             const name = tShip(`shipName.${ship.type}`);
             return (
-              <Text
-                key={ship.type}
-                style={[commonStyles.subtitleText, { fontSize: 12, marginVertical: 1 }]}
-              >
-                {ship.amount} {name} (at:{config.attack} de:{config.defense} vel:{config.speed})
-              </Text>
+              <View style={commonStyles.rowSpaceBetween} key={ship.type}>
+                <Text
+                  key={ship.type}
+                  style={[commonStyles.subtitleText, { fontSize: 12, marginVertical: 1 }]}
+                >
+                  {ship.amount} {name}
+                </Text>
+                <ShipStatsDisplay
+                  stats={{
+                    SPEED: SHIP_STATS[ship.type].SPEED,
+                    ATTACK: SHIP_STATS[ship.type].ATTACK,
+                    DEFENSE: SHIP_STATS[ship.type].DEFENSE,
+                    HP: SHIP_STATS[ship.type].HP,
+                  }}
+                  showSpeed={false}
+                  fontSize={13}
+                />
+              </View>
             );
           })}
-          {system.attackFleetId ? (
+          {attackingFleet ? (
             <View style={commonStyles.actionBar}>
               <Text style={commonStyles.statusTextYellow}>
                 ⏳ {t("inProgress")}:{" "}

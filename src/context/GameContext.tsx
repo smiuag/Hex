@@ -144,6 +144,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     handleDestroyShip,
     handleCreateShips,
     subtractResources,
+    addResources,
     updateQuest
   );
 

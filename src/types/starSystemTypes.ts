@@ -24,22 +24,20 @@ export type CelestialBody = {
   production: CombinedResources;
   explored: boolean;
   baseBuilt: boolean;
+  explorationStartedAt?: number;
   id: string;
-  explorationFleetId?: string;
 };
 
 export type StarSystem = {
   discarded: boolean;
 
+  explorationStartedAt?: number;
   extractionStartedAt?: number;
   starPortStartedAt?: number;
   defenseStartedAt?: number;
   collectStartedAt?: number;
   attackStartedAt?: number;
   scanStartedAt?: number;
-
-  explorationFleetId?: string;
-  attackFleetId?: string;
 
   starPortBuilt: boolean;
   extractionBuildingBuilt: boolean;

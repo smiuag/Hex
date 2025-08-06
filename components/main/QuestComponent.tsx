@@ -2,7 +2,6 @@ import { IMAGES } from "@/src/constants/images";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect } from "react";
 import { FlatList, ImageBackground } from "react-native";
-import { questConfig } from "../../src/config/questConfig";
 import { useGameContextSelector } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { QuestCard } from "../cards/QuestCard";
@@ -13,9 +12,7 @@ export default function QuestComponent() {
   const updateQuest = useGameContextSelector((ctx) => ctx.updateQuest);
   const router = useRouter();
 
-  const availableQuests = Object.values(questConfig)
-    .filter((quest) => playerQuests.some((q) => q.available && q.type == quest.type))
-    .sort((a, b) => b.order - a.order);
+  const availableQuests = playerQuests.filter((q) => q.available);
 
   useEffect(() => {
     const newQuest = playerQuests.find((quest) => quest.available && !quest.viewed);

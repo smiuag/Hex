@@ -92,10 +92,10 @@ export const ShipCard: React.FC<Props> = ({ item, disableButton, onBuild, onCanc
               <Text style={commonStyles.whiteText}>{t("combatStats")} </Text>
               <ShipStatsDisplay
                 stats={{
-                  speed: SHIP_STATS[item.type].SPEED,
-                  attack: SHIP_STATS[item.type].ATTACK,
-                  defense: SHIP_STATS[item.type].DEFENSE,
-                  health: SHIP_STATS[item.type].HP,
+                  SPEED: SHIP_STATS[item.type].SPEED,
+                  ATTACK: SHIP_STATS[item.type].ATTACK,
+                  DEFENSE: SHIP_STATS[item.type].DEFENSE,
+                  HP: SHIP_STATS[item.type].HP,
                 }}
                 fontSize={13}
               />

@@ -1,21 +1,28 @@
 import { shipStatsEmojis } from "@/src/config/emojisConfig";
+import { commonStyles } from "@/src/styles/commonStyles";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 interface ShipStats {
-  speed: number;
-  attack: number;
-  defense: number;
-  health: number;
+  SPEED: number;
+  ATTACK: number;
+  DEFENSE: number;
+  HP: number;
 }
 
 interface Props {
   stats: Partial<ShipStats>;
   fontSize?: number;
   fontColor?: string;
+  showSpeed?: boolean;
 }
 
-export const ShipStatsDisplay = ({ stats, fontSize = 16, fontColor = "white" }: Props) => {
+export const ShipStatsDisplay = ({
+  stats,
+  fontSize = 16,
+  fontColor = "white",
+  showSpeed = true,
+}: Props) => {
   return (
     <View style={[styles.container, { gap: 12 }]}>
       {Object.entries(stats).map(([key, value]) => {
@@ -23,9 +30,14 @@ export const ShipStatsDisplay = ({ stats, fontSize = 16, fontColor = "white" }: 
         if (!emoji || value == null) return null;
 
         return (
-          <Text key={key} style={[styles.item, { fontSize, color: fontColor }]}>
-            {emoji} {value}
-          </Text>
+          (showSpeed || key !== "SPEED") && (
+            <View key={key} style={{ flexDirection: "row", alignItems: "center" }}>
+              <Text style={[styles.item, { fontSize, color: fontColor }]}>{emoji}</Text>
+              <View style={[commonStyles.minWidth25, { marginLeft: 4 }]}>
+                <Text style={commonStyles.whiteText}>{value}</Text>
+              </View>
+            </View>
+          )
         );
       })}
     </View>

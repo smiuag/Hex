@@ -25,17 +25,11 @@ export default function ExploredCelestialBody({
 }: Props) {
   const { t } = useTranslation("common");
   const { t: tPlanets } = useTranslation("planets");
-  const isBeingExplored = !!celestialBody.explorationFleetId;
-  console.log(system);
+  const isBeingExplored = !!celestialBody.explorationStartedAt;
   const shipBuildQueue = useGameContextSelector((ctx) => ctx.shipBuildQueue);
-  const fleet = useGameContextSelector((ctx) => ctx.fleet);
 
   const probeSpeed = shipConfig["PROBE"].speed;
   const timeToExplore = getFlyTime(probeSpeed, system.distance);
-
-  const startTime = celestialBody.explorationFleetId
-    ? fleet.find((f) => f.id === celestialBody.explorationFleetId)?.startTime
-    : undefined;
 
   const handleExplorePress = () => {
     if (shipBuildQueue.find((s) => s.type == "PROBE" && s.amount > 0))
@@ -62,9 +56,14 @@ export default function ExploredCelestialBody({
         </View>
       ) : isBeingExplored ? (
         <View style={[commonStyles.actionBar]}>
-          <Text style={commonStyles.statusTextYellow}>
-            ⏳ {t("inProgress")}: <CountdownTimer startedAt={startTime} duration={timeToExplore} />
-          </Text>
+          <View>
+            <Text style={commonStyles.statusTextYellow}>⏳ {t("inProgress")}: </Text>
+            <CountdownTimer
+              startedAt={celestialBody.explorationStartedAt}
+              duration={timeToExplore}
+            />
+          </View>
+
           <TouchableOpacity
             style={commonStyles.cancelButton}
             onPress={() => onCancelExplorePlanet(system.id, celestialBody.id)}

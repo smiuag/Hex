@@ -143,7 +143,7 @@ export const questConfig: Record<
     persist: false,
   },
   SYSTEM_BUILT_EXTRACTION: {
-    type: "SHIP_FIRST",
+    type: "SYSTEM_BUILT_EXTRACTION",
     order: 14,
     backgroundImage: IMAGES.DEAD_STAR,
     reward: { STONE: 10000, METAL: 10000, CRYSTAL: 10000 },
@@ -151,7 +151,7 @@ export const questConfig: Record<
     persist: false,
   },
   SYSTEM_BUILT_STARPORT: {
-    type: "SHIP_FIRST",
+    type: "SYSTEM_BUILT_STARPORT",
     order: 15,
     backgroundImage: IMAGES.BINARY,
     reward: { STONE: 10000, METAL: 10000, CRYSTAL: 10000 },
