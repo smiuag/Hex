@@ -4,7 +4,7 @@ import { Research, ResearchType } from "@/src/types/researchTypes";
 import { Resources } from "@/src/types/resourceTypes";
 import { useEffect, useRef, useState } from "react";
 import Toast from "react-native-toast-message";
-import { NotificationManager } from "../utils/notificacionUtils";
+//import { NotificationManager } from "../utils/notificacionUtils";
 import { getResearchCost, getResearchTime } from "../utils/researchUtils";
 
 export const useResearch = (
@@ -47,11 +47,11 @@ export const useResearch = (
       return;
     }
 
-    const notificationId = await NotificationManager.scheduleNotification({
-      title: "🧪 Investigación terminada",
-      body: `Has completado "${type}" nivel ${nextLevel}.`,
-      delayMs: durationMs,
-    });
+    // const notificationId = await NotificationManager.scheduleNotification({
+    //   title: "🧪 Investigación terminada",
+    //   body: `Has completado "${type}" nivel ${nextLevel}.`,
+    //   delayMs: durationMs,
+    // });
 
     await updateResearchState((prev) => {
       const updated = [...prev];
@@ -65,7 +65,7 @@ export const useResearch = (
                 progress: {
                   startedAt: Date.now(),
                   targetLevel: nextLevel,
-                  notificationId: notificationId ?? undefined,
+                  //notificationId: notificationId ?? undefined,
                 },
               }
             : r
@@ -77,7 +77,7 @@ export const useResearch = (
         progress: {
           startedAt: Date.now(),
           targetLevel: nextLevel,
-          notificationId: notificationId ?? undefined,
+          // notificationId: notificationId ?? undefined,
         },
       });
 
@@ -94,9 +94,9 @@ export const useResearch = (
     const scaledCost = getResearchCost(type, target.progress?.targetLevel ?? 1);
     addResources(scaledCost);
 
-    if (target.progress?.notificationId) {
-      await NotificationManager.cancelNotification(target.progress.notificationId);
-    }
+    // if (target.progress?.notificationId) {
+    //   await NotificationManager.cancelNotification(target.progress.notificationId);
+    // }
 
     await updateResearchState((prev) =>
       prev.map((r) => (r.data.type === type ? { ...r, progress: undefined } : r))

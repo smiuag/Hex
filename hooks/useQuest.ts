@@ -264,6 +264,17 @@ export const useQuest = (addResources: (modifications: Partial<Resources>) => vo
           viewed: false,
         });
         break;
+      case "ALIEN_TECH_FOUND":
+        updateQuest({
+          type: "BUILDING_ALIENT_LAB",
+          available: true,
+          completed: playerQuests.some((q) => q.type == "ALIEN_TECH_FOUND" && q.completed)
+            ? true
+            : false,
+          rewardClaimed: false,
+          viewed: false,
+        });
+        break;
     }
   };
 

@@ -5,11 +5,11 @@ export const resourceEmojis: Record<CombinedResourcesType, string> = {
   STONE: "⛏️", // roca
   ENERGY: "⚡", // rayo
   CRYSTAL: "💎", // diamante
-  ILMENITA: "🪨", // roca densa / mineral
+  ILMENITA: "🌀", // roca densa / mineral
   AETHERIUM: "💠", // superficie lunar / polvo espacial
   THARNIO: "☢️", // material reactivo / radiactivo
   KAIROX: "🧬", // recurso biotecnológico o genético
-  NEBULITA: "🌀", // energía o gas espacial, forma inestable
+  NEBULITA: "☁️", // energía o gas espacial, forma inestable
   ADN: "🦠", // energía o gas espacial, forma inestable
 };
 

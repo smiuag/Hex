@@ -16,8 +16,14 @@ import { IMAGES } from "../../src/constants/images";
 import { useGameContextSelector } from "../../src/context/GameContext";
 import { BuildingType } from "../../src/types/buildingTypes";
 import { Hex } from "../../src/types/hexTypes";
-import { getScaleValues } from "../../utils/configUtils";
-import { axialToPixel, getHexPoints, pixelToAxial, SCREEN_DIMENSIONS } from "../../utils/hexUtils";
+import { getAncientAlienStructuresAlreadyFound, getScaleValues } from "../../utils/configUtils";
+import {
+  axialToPixel,
+  getAncientAlienStructuresFound,
+  getHexPoints,
+  pixelToAxial,
+  SCREEN_DIMENSIONS,
+} from "../../utils/hexUtils";
 import BorderHexTile from "../auxiliar/HexBorder";
 import HexTile from "../auxiliar/HexTile";
 import ModalConstruction from "../auxiliar/ModalConstruction";
@@ -40,6 +46,7 @@ export default function PlanetComponent() {
   const handleTerraform = useGameContextSelector((ctx) => ctx.handleTerraform);
   const handleUpdateConfig = useGameContextSelector((ctx) => ctx.handleUpdateConfig);
   const updateQuest = useGameContextSelector((ctx) => ctx.updateQuest);
+  const setHexAncientStructure = useGameContextSelector((ctx) => ctx.setHexAncientStructure);
 
   const scale = getScaleValues(playerConfig);
 
@@ -77,7 +84,7 @@ export default function PlanetComponent() {
   }));
 
   const handleTap = (x: number, y: number) => {
-    const axial = pixelToAxial(x - CENTER_X, y - CENTER_Y, scale.HEX_SIZE);
+    const axial = pixelToAxial(x - CENTER_X, y - CENTER_Y - scale.Y_ADJUST, scale.HEX_SIZE); //scale.HEX_SIZE en Y para compensar elas barras que salen abajo y no tiene en cuenta
     const tappedHex = hexes.find((h) => h.q === axial!.q && h.r === axial!.r);
 
     if (!tappedHex) return;
@@ -94,13 +101,27 @@ export default function PlanetComponent() {
       return;
     }
 
-    if (hexToUse.building?.type == "ANTENNA") {
-      router.replace("/(tabs)/planet/antenna");
+    if (
+      hexToUse.building?.type == "ANTENNA" ||
+      (hexToUse.construction?.building == "ANTENNA" && hexToUse.construction.targetLevel > 1)
+    ) {
+      router.replace(`/(tabs)/planet/lab?q=${tappedHex.q}&r=${tappedHex.r}`);
       return;
     }
 
-    if (hexToUse.building?.type == "LAB") {
-      router.replace("/(tabs)/planet/lab");
+    if (
+      hexToUse.building?.type == "LAB" ||
+      (hexToUse.construction?.building == "LAB" && hexToUse.construction.targetLevel > 1)
+    ) {
+      router.replace(`/(tabs)/planet/lab?q=${tappedHex.q}&r=${tappedHex.r}`);
+      return;
+    }
+
+    if (
+      hexToUse.building?.type == "ALIEN_LAB" ||
+      (hexToUse.construction?.building == "ALIEN_LAB" && hexToUse.construction.targetLevel > 1)
+    ) {
+      router.replace(`/(tabs)/planet/lab?q=${tappedHex.q}&r=${tappedHex.r}`);
       return;
     }
 
@@ -189,6 +210,13 @@ export default function PlanetComponent() {
         visibilityTime: 2000,
       });
     } else if (selectedHex) {
+      const ancientStructuresAlreadyFound = getAncientAlienStructuresAlreadyFound(playerConfig);
+
+      if (!ancientStructuresAlreadyFound) {
+        if (getAncientAlienStructuresFound(currentHexesTerraformed))
+          setHexAncientStructure(selectedHex);
+      }
+
       handleTerraform(selectedHex.q, selectedHex.r);
       if (selectedHex.terrain === "WATER") {
         Alert.alert(

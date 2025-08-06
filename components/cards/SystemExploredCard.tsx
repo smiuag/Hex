@@ -1,8 +1,10 @@
+import { shipConfig } from "@/src/config/shipConfig";
 import {
   COLLECT_COST,
   STAR_BUILDINGS_COST,
   STAR_BUILDINGS_DURATION,
 } from "@/src/constants/general";
+import { getFlyTime } from "@/utils/shipUtils";
 import { getSystemImage } from "@/utils/starSystemUtils";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -24,6 +26,7 @@ type Props = {
   onDefenseStartBuild: (id: string) => void;
   onExtractionStartBuild: (id: string) => void;
   onStartCollectSystem: (id: string) => void;
+  onCancelCollectSystem: (id: string) => void;
 };
 
 export const SystemExploredCard: React.FC<Props> = ({
@@ -35,12 +38,16 @@ export const SystemExploredCard: React.FC<Props> = ({
   onDefenseStartBuild,
   onExtractionStartBuild,
   onStartCollectSystem,
+  onCancelCollectSystem,
 }) => {
   const { t } = useTranslation("common");
   const { t: tPlanets } = useTranslation("planets");
   const universe = useGameContextSelector((ctx) => ctx.universe);
   const shipBuildQueue = useGameContextSelector((ctx) => ctx.shipBuildQueue);
   const enoughResources = useGameContextSelector((ctx) => ctx.enoughResources);
+
+  const freighterSpeed = shipConfig["FREIGHTER"].speed;
+  const timeToCollect = getFlyTime(freighterSpeed, system.distance);
 
   const handleBuildPort = () => {
     Alert.alert(t("BuildStelarPort"), t("StelarPortCostMessage"), [
@@ -128,6 +135,10 @@ export const SystemExploredCard: React.FC<Props> = ({
         },
       },
     ]);
+  };
+
+  const handleCancelCollect = () => {
+    onCancelCollectSystem(system.id);
   };
 
   const image = getSystemImage(system.type);
@@ -261,22 +272,47 @@ export const SystemExploredCard: React.FC<Props> = ({
             </>
           )}
           <View style={commonStyles.actionBar}>
-            {system.extractionBuildingBuilt ? (
-              <ResourceBar storedResources={system.storedResources} showSpecial={true} />
+            <View>
+              <Text style={commonStyles.whiteText}>{t("Stored")} </Text>
+            </View>
+            <ResourceBar
+              storedResources={system.storedResources}
+              miniSyle={true}
+              showSpecial={true}
+            />
+          </View>
+
+          <View style={commonStyles.actionBar}>
+            {system.collectStartedAt ? (
+              <View>
+                <Text style={commonStyles.statusTextYellow}>
+                  ⏳ {t("inProgress")}:{" "}
+                  <CountdownTimer startedAt={system.collectStartedAt} duration={timeToCollect} />
+                </Text>
+              </View>
             ) : (
               <View></View>
             )}
 
-            <TouchableOpacity
-              style={[
-                commonStyles.buttonPrimary,
-                !system.starPortBuilt && commonStyles.buttonDisabled,
-              ]}
-              onPress={() => handleCollect()}
-              disabled={!system.starPortBuilt}
-            >
-              <Text style={commonStyles.buttonTextLight}>{t("Collect")}</Text>
-            </TouchableOpacity>
+            {system.collectStartedAt ? (
+              <TouchableOpacity
+                style={commonStyles.cancelButton}
+                onPress={() => handleCancelCollect()}
+              >
+                <Text style={commonStyles.cancelButtonText}>{t("Cancel")}</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={[
+                  commonStyles.buttonPrimary,
+                  !system.starPortBuilt && commonStyles.buttonDisabled,
+                ]}
+                onPress={() => handleCollect()}
+                disabled={!system.starPortBuilt}
+              >
+                <Text style={commonStyles.buttonTextLight}>{t("Collect")}</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </ImageBackground>

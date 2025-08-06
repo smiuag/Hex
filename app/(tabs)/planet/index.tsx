@@ -16,7 +16,8 @@ export default function PlanetScreen() {
   return (
     <SafeAreaView style={[commonStyles.safeArea, { paddingTop: insets.top }]}>
       <PlanetComponent />
-      <ResourceBar storedResources={resources} />
+      <ResourceBar storedResources={resources} showOnlyNormal={true} />
+      <ResourceBar storedResources={resources} showOnlySpecial={true} />
     </SafeAreaView>
   );
 }

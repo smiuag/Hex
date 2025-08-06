@@ -4,6 +4,7 @@ export type ScaleValues = {
   HEX_SIZE: number;
   FACTOR: number;
   FONT_SIZE: number;
+  Y_ADJUST: number;
 };
 
 export type ScaleType = {
@@ -15,7 +16,8 @@ export type ConfigType =
   | "GAME_STARTED"
   | "STARTING_SYSTEM"
   | "HAS_ANTENNA"
-  | "HAS_HANGAR";
+  | "HAS_HANGAR"
+  | "ALIEN_STRUCTURE_FOUND";
 
 export type ConfigEntry = {
   key: ConfigType;
@@ -34,16 +36,19 @@ export const SCALE: ScaleType = {
     HEX_SIZE: 41,
     FACTOR: 0.8,
     FONT_SIZE: 22,
+    Y_ADJUST: 40,
   },
   MEDIUM: {
     HEX_SIZE: 60,
     FACTOR: 1.2,
     FONT_SIZE: 34,
+    Y_ADJUST: 40,
   },
   LARGE: {
     HEX_SIZE: 78,
     FACTOR: 1.5,
     FONT_SIZE: 38,
+    Y_ADJUST: 40,
   },
 };
 

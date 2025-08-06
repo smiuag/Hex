@@ -6,19 +6,20 @@ import {
   RESEARCH_REQUIRED_BUILDING,
   RESEARCH_TIME,
 } from "../constants/research";
-import { ResearchRequiredBuilding } from "../types/buildingTypes";
+import { BuildingType, ResearchRequiredBuilding } from "../types/buildingTypes";
 import { ResearchType } from "../types/researchTypes";
-import { Resources } from "../types/resourceTypes";
+import { CombinedResources } from "../types/resourceTypes";
 
 export const researchConfig: Record<
   ResearchType,
   {
     image: ImageSourcePropType;
     maxLevel: number;
-    baseCost: Partial<Resources>;
+    baseCost: Partial<CombinedResources>;
     baseResearchTime: number;
     requiredBuilding: ResearchRequiredBuilding;
     order: number;
+    labNeeded: BuildingType;
   }
 > = {
   MINING: {
@@ -28,6 +29,7 @@ export const researchConfig: Record<
     maxLevel: MAX_LVL.MINING,
     requiredBuilding: RESEARCH_REQUIRED_BUILDING.MINING,
     order: 1,
+    labNeeded: "LAB",
   },
   TERRAFORMING: {
     image: IMAGES.RESEARCH_TERRAFORMING,
@@ -36,6 +38,7 @@ export const researchConfig: Record<
     maxLevel: MAX_LVL.TERRAFORMING,
     requiredBuilding: RESEARCH_REQUIRED_BUILDING.TERRAFORMING,
     order: 2,
+    labNeeded: "LAB",
   },
   WATERPURIFICATION: {
     image: IMAGES.RESEARCH_WATER,
@@ -44,6 +47,7 @@ export const researchConfig: Record<
     maxLevel: MAX_LVL.WATERPURIFICATION,
     requiredBuilding: RESEARCH_REQUIRED_BUILDING.WATERPURIFICATION,
     order: 3,
+    labNeeded: "LAB",
   },
   FUELREFINEMENT: {
     image: IMAGES.RESEARCH_FUEL,
@@ -52,6 +56,7 @@ export const researchConfig: Record<
     maxLevel: MAX_LVL.FUELREFINEMENT,
     requiredBuilding: RESEARCH_REQUIRED_BUILDING.FUELREFINEMENT,
     order: 4,
+    labNeeded: "LAB",
   },
   ENERGYEFFICIENCY: {
     image: IMAGES.RESEARCH_ENERGY,
@@ -60,6 +65,7 @@ export const researchConfig: Record<
     maxLevel: MAX_LVL.ENERGYEFFICIENCY,
     requiredBuilding: RESEARCH_REQUIRED_BUILDING.ENERGYEFFICIENCY,
     order: 5,
+    labNeeded: "LAB",
   },
   SHIPENGINEERING: {
     image: IMAGES.RESEARCH_SHIPS,
@@ -68,6 +74,7 @@ export const researchConfig: Record<
     maxLevel: MAX_LVL.SHIPENGINEERING,
     requiredBuilding: RESEARCH_REQUIRED_BUILDING.SHIPENGINEERING,
     order: 6,
+    labNeeded: "LAB",
   },
   PLASMA: {
     image: IMAGES.RESEARCH_PLASMA,
@@ -76,6 +83,7 @@ export const researchConfig: Record<
     maxLevel: MAX_LVL.PLASMA,
     requiredBuilding: RESEARCH_REQUIRED_BUILDING.PLASMA,
     order: 7,
+    labNeeded: "LAB",
   },
   LASER: {
     image: IMAGES.RESEARCH_LASER,
@@ -84,6 +92,7 @@ export const researchConfig: Record<
     maxLevel: MAX_LVL.LASER,
     requiredBuilding: RESEARCH_REQUIRED_BUILDING.LASER,
     order: 8,
+    labNeeded: "LAB",
   },
   SHIELD: {
     image: IMAGES.RESEARCH_SHIELD,
@@ -92,6 +101,7 @@ export const researchConfig: Record<
     maxLevel: MAX_LVL.SHIELD,
     requiredBuilding: RESEARCH_REQUIRED_BUILDING.SHIELD,
     order: 9,
+    labNeeded: "LAB",
   },
   GRAVITY: {
     image: IMAGES.RESEARCH_GRAVITY,
@@ -100,5 +110,6 @@ export const researchConfig: Record<
     maxLevel: MAX_LVL.GRAVITY,
     requiredBuilding: RESEARCH_REQUIRED_BUILDING.GRAVITY,
     order: 10,
+    labNeeded: "ALIEN_LAB",
   },
 };

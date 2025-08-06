@@ -16,7 +16,8 @@ export default function ConstructionScreen() {
   return (
     <SafeAreaView style={[commonStyles.safeArea, { paddingTop: insets.top }]}>
       <ConstructionComponent />
-      <ResourceBar storedResources={resources} />
+      <ResourceBar storedResources={resources} showOnlyNormal={true} />
+      <ResourceBar storedResources={resources} showOnlySpecial={true} />
     </SafeAreaView>
   );
 }

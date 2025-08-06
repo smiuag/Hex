@@ -27,7 +27,8 @@ export default function ShipScreen() {
     <SafeAreaView style={[commonStyles.safeArea, { paddingTop: insets.top }]}>
       <ShipSummaryBar shipCounts={totalShipCounts} />
       <ShipComponent />
-      <ResourceBar storedResources={resources} />
+      <ResourceBar storedResources={resources} showOnlyNormal={true} />
+      <ResourceBar storedResources={resources} showOnlySpecial={true} />
     </SafeAreaView>
   );
 }

@@ -13,9 +13,18 @@ import { ResourceDisplay } from "./ResourceDisplay";
 interface Props {
   storedResources: StoredResources;
   showSpecial?: boolean;
+  showOnlySpecial?: boolean;
+  showOnlyNormal?: boolean;
+  miniSyle?: boolean;
 }
 
-export default function ResourceBar({ storedResources, showSpecial = true }: Props) {
+export default function ResourceBar({
+  storedResources,
+  showSpecial = true,
+  showOnlySpecial = false,
+  showOnlyNormal = false,
+  miniSyle = false,
+}: Props) {
   const hexes = useGameContextSelector((ctx) => ctx.hexes);
   const [displayedResources, setDisplayedResources] = useState<Partial<CombinedResources>>({});
 
@@ -50,9 +59,15 @@ export default function ResourceBar({ storedResources, showSpecial = true }: Pro
   if (!storedResources) return null;
 
   return (
-    <View style={resourceBarStyles.container}>
+    <View style={!miniSyle && resourceBarStyles.container}>
       <View>
-        <ResourceDisplay resources={displayedResources} fontSize={16} />
+        <ResourceDisplay
+          resources={displayedResources}
+          showOnlyNormal={showOnlyNormal}
+          showOnlySpecial={showOnlySpecial}
+          fontSize={miniSyle ? 14 : 16}
+          miniSyle={miniSyle}
+        />
       </View>
     </View>
   );

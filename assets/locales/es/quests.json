@@ -197,5 +197,14 @@
       "Pero no nos precipitemos, tenemos que sincronizarnos con las colonias para aprovechar los viajes.",
       "Espera que el sistema acumule recursos y envía un carguero a recolectar."
     ]
+  },
+  "BUILDING_ALIENT_LAB": {
+    "name": "Laboratorio de tecnología alien",
+    "shortDescription": "Construye un laboratorio sobre las ruinas para poder investigar los restos de tecnología alien.",
+    "descriptions": [
+      "Está todo preparado para la extracción de recursos. Con suerte, pronto comenzaremos a recoger el fruto de tanto esfuerzo.",
+      "Pero no nos precipitemos, tenemos que sincronizarnos con las colonias para aprovechar los viajes.",
+      "Espera que el sistema acumule recursos y envía un carguero a recolectar."
+    ]
   }
 }

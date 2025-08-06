@@ -41,42 +41,45 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onCance
       >
         <View style={commonStyles.overlayDark}>
           <View>
-            <Text style={commonStyles.titleBlueText}>{systemName}</Text>
-            <Text style={[commonStyles.whiteText, { fontSize: 16 }]}>
-              ({tPlanets(`systemType.${system.type}`)}){" "}
+            <Text style={commonStyles.titleBlueText}>
+              {systemName}{" "}
+              <Text style={[commonStyles.whiteText, { fontSize: 16 }]}>
+                {" "}
+                ({tPlanets(`systemType.${system.type}`)}){" "}
+              </Text>
+            </Text>
+            <Text style={commonStyles.smallSubtitle}>
+              {system.distance} {t("parsecs")}
             </Text>
           </View>
-          <Text style={commonStyles.whiteText}>
-            {system.distance} {t("parsecs")}
+          <Text style={[commonStyles.titleText, { textAlign: "center", marginTop: 5 }]}>
+            {t("CelestialBodies")}
           </Text>
-          <View>
-            <Text style={commonStyles.whiteText}>
-              {t("CelestialBodies")} {system.celestialBodies.length}
-            </Text>
+          <View style={{ marginTop: 5 }}>
+            {system.defense.map((ship) => {
+              const name = tShip(`shipName.${ship.type}`);
+              return (
+                <View style={[commonStyles.rowSpaceBetween, { marginTop: 3 }]} key={ship.type}>
+                  <Text
+                    key={ship.type}
+                    style={[commonStyles.subtitleText, { fontSize: 12, marginVertical: 1 }]}
+                  >
+                    {ship.amount} {name}
+                  </Text>
+                  <ShipStatsDisplay
+                    stats={{
+                      SPEED: SHIP_STATS[ship.type].SPEED,
+                      ATTACK: SHIP_STATS[ship.type].ATTACK,
+                      DEFENSE: SHIP_STATS[ship.type].DEFENSE,
+                      HP: SHIP_STATS[ship.type].HP,
+                    }}
+                    showSpeed={false}
+                    fontSize={13}
+                  />
+                </View>
+              );
+            })}
           </View>
-          {system.defense.map((ship) => {
-            const name = tShip(`shipName.${ship.type}`);
-            return (
-              <View style={commonStyles.rowSpaceBetween} key={ship.type}>
-                <Text
-                  key={ship.type}
-                  style={[commonStyles.subtitleText, { fontSize: 12, marginVertical: 1 }]}
-                >
-                  {ship.amount} {name}
-                </Text>
-                <ShipStatsDisplay
-                  stats={{
-                    SPEED: SHIP_STATS[ship.type].SPEED,
-                    ATTACK: SHIP_STATS[ship.type].ATTACK,
-                    DEFENSE: SHIP_STATS[ship.type].DEFENSE,
-                    HP: SHIP_STATS[ship.type].HP,
-                  }}
-                  showSpeed={false}
-                  fontSize={13}
-                />
-              </View>
-            );
-          })}
           {attackingFleet ? (
             <View style={commonStyles.actionBar}>
               <Text style={commonStyles.statusTextYellow}>

@@ -25,6 +25,7 @@ export default function StarSystemComponent() {
     (ctx) => ctx.startStarSystemExploration
   );
   const cancelExploreSystem = useGameContextSelector((ctx) => ctx.cancelExploreSystem);
+  const cancelCollect = useGameContextSelector((ctx) => ctx.cancelCollect);
 
   const exploredSystems = starSystems.filter((s) => !s.scanStartedAt && !s.discarded);
 
@@ -71,6 +72,7 @@ export default function StarSystemComponent() {
             onDefenseStartBuild={defenseStartBuild}
             onExtractionStartBuild={extractionStartBuild}
             onStartCollectSystem={startCollectSystem}
+            onCancelCollectSystem={cancelCollect}
           />
         ) : item.explored ? (
           <SystemDefendedCard

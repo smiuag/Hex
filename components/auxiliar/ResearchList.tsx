@@ -1,3 +1,4 @@
+import { BuildingType } from "@/src/types/buildingTypes";
 import { useIsFocused } from "@react-navigation/native";
 import React from "react";
 import { FlatList } from "react-native";
@@ -8,7 +9,10 @@ import { ResearchType } from "../../src/types/researchTypes";
 import { getResearchCost, getResearchTime, isUnlocked } from "../../utils/researchUtils";
 import { ResearchCard } from "../cards/ResearchCard";
 
-export default function ResearchList() {
+interface Props {
+  labType: BuildingType;
+}
+export default function ResearchList({ labType }: Props) {
   const research = useGameContextSelector((ctx) => ctx.research);
   const hexes = useGameContextSelector((ctx) => ctx.hexes);
   const handleResearch = useGameContextSelector((ctx) => ctx.handleResearch);
@@ -18,6 +22,7 @@ export default function ResearchList() {
   const isFocused = useIsFocused();
   if (!isFocused) return null;
   const researchItems = Object.entries(researchConfig)
+    .filter(([key, value]) => value.labNeeded == labType)
     .map(([key, config]) => {
       const type = key as ResearchType;
       const data = (research || []).find((r) => r.data.type === type);

@@ -10,7 +10,7 @@ import {
 import { IMAGES } from "../constants/images";
 import { BuildingType } from "../types/buildingTypes";
 import { BuildingRequiredResearch } from "../types/researchTypes";
-import { Resources } from "../types/resourceTypes";
+import { CombinedResources } from "../types/resourceTypes";
 
 export const buildingConfig: Record<
   BuildingType,
@@ -19,8 +19,8 @@ export const buildingConfig: Record<
     image: ImageSourcePropType;
     imageBackground: ImageSourcePropType;
     underConstructionImage: ImageSourcePropType;
-    baseCost: Partial<Resources>;
-    production: Partial<Resources>;
+    baseCost: Partial<CombinedResources>;
+    production: Partial<CombinedResources>;
     requiredResearch: BuildingRequiredResearch;
     maxNumberInPlanet: number;
     maxLvl: number;
@@ -179,5 +179,16 @@ export const buildingConfig: Record<
     requiredResearch: BUILDING_REQUIRED_RESEARCH.WATEREXTRACTOR,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.WATEREXTRACTOR,
     maxLvl: BUILDING_MAX_LVL.WATEREXTRACTOR,
+  },
+  ALIEN_LAB: {
+    baseBuildTime: BUILDING_TIME.ALIEN_LAB,
+    image: IMAGES.ALIEN_LAB,
+    imageBackground: IMAGES.ALIEN_LAB_BACKGROUND,
+    underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
+    baseCost: BUILDING_COST.ALIEN_LAB,
+    production: BUILDING_PRODUCTION.ALIEN_LAB,
+    requiredResearch: BUILDING_REQUIRED_RESEARCH.ALIEN_LAB,
+    maxNumberInPlanet: BUILDING_MAX_IN_PLANET.ALIEN_LAB,
+    maxLvl: BUILDING_MAX_LVL.ALIEN_LAB,
   },
 };

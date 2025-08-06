@@ -2,7 +2,7 @@ import { loadResources, saveResources } from "@/src/services/storage";
 import { CombinedResources, StoredResources } from "@/src/types/resourceTypes";
 import { useEffect, useRef, useState } from "react";
 import { getInitialResources } from "../utils/hexUtils";
-import { hasEnoughResources } from "../utils/resourceUtils";
+import { getAccumulatedResources, hasEnoughResources } from "../utils/resourceUtils";
 
 export function useResources() {
   const [resources, setResources] = useState<StoredResources>(getInitialResources());
@@ -38,14 +38,7 @@ export function useResources() {
 
     const now = Date.now();
     const prev = resources;
-    const elapsedSeconds = (now - prev.lastUpdate) / 1000;
-    const updated: Partial<CombinedResources> = { ...prev.resources };
-
-    for (const key in prev.production) {
-      const typedKey = key as keyof CombinedResources;
-      const produced = (prev.production[typedKey] || 0) * elapsedSeconds;
-      updated[typedKey] = (updated[typedKey] || 0) + produced;
-    }
+    const updated = getAccumulatedResources(resources);
 
     for (const key in modifications) {
       const typedKey = key as keyof CombinedResources;
@@ -65,14 +58,7 @@ export function useResources() {
   const addResources = async (modifications: Partial<CombinedResources>) => {
     const now = Date.now();
     const prev = resources;
-    const elapsedSeconds = (now - prev.lastUpdate) / 1000;
-    const updated: Partial<CombinedResources> = { ...prev.resources };
-
-    for (const key in prev.production) {
-      const typedKey = key as keyof CombinedResources;
-      const produced = (prev.production[typedKey] || 0) * elapsedSeconds;
-      updated[typedKey] = (updated[typedKey] || 0) + produced;
-    }
+    const updated = getAccumulatedResources(resources);
 
     for (const key in modifications) {
       const typedKey = key as keyof CombinedResources;
@@ -91,6 +77,7 @@ export function useResources() {
 
   const addProduction = async (extraProduction: Partial<CombinedResources>) => {
     const updatedProduction: Partial<CombinedResources> = { ...resources.production };
+    const updated = getAccumulatedResources(resources);
 
     for (const key in extraProduction) {
       const typedKey = key as keyof CombinedResources;
@@ -100,6 +87,8 @@ export function useResources() {
 
     const updatedState: StoredResources = {
       ...resources,
+      resources: updated,
+      lastUpdate: Date.now(),
       production: updatedProduction,
     };
 

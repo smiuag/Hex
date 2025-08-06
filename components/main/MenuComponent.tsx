@@ -40,6 +40,7 @@ export default function MenuComponent() {
   const startGame = useGameContextSelector((ctx) => ctx.startGame);
   const cancelExploreSystem = useGameContextSelector((ctx) => ctx.cancelExploreSystem);
   const cancelAttack = useGameContextSelector((ctx) => ctx.cancelAttack);
+  const cancelCollect = useGameContextSelector((ctx) => ctx.cancelCollect);
 
   const started = gameStarted(playerConfig);
   const { t: tBuilding } = useTranslation("buildings");
@@ -89,6 +90,10 @@ export default function MenuComponent() {
 
   const onCancelAttack = async (id: string) => {
     await cancelAttack(id);
+  };
+
+  const onCancelCollect = async (id: string) => {
+    await cancelCollect(id);
   };
 
   const productionPerHour = Object.fromEntries(
@@ -171,6 +176,7 @@ export default function MenuComponent() {
                   onCancelShip={onCancelShip}
                   onCancelExploreSystem={onCancelExploreSystem}
                   onCancelAttack={onCancelAttack}
+                  onCancelCollect={onCancelCollect}
                 />
               ))}
             </View>

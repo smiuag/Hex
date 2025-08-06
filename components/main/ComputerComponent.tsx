@@ -39,7 +39,7 @@ export default function ComputerComponent() {
       type: questType,
       viewed: true,
       completed: questType == "START" ? true : undefined, //en el hook se procesa esta y cobra la quest
-      rewardClaimed: questType == "START" ? true : undefined, //en el hook se procesa esta especial y cobra la quest
+      rewardClaimed: false, //questType == "START" ? true : undefined, //en el hook se procesa esta especial y cobra la quest
     });
     router.replace(`/(tabs)/quests?reload=${type}`);
   };

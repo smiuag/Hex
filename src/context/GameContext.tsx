@@ -20,7 +20,6 @@ import { FleetData } from "../types/fleetType";
 import { Research, ResearchType } from "../types/researchTypes";
 import { StarSystem, StarSystemMap } from "../types/starSystemTypes";
 
-import { NotificationManager } from "@/utils/notificacionUtils";
 import { createContext, useContextSelector } from "use-context-selector";
 
 // 🎯 Contexto único con suscripción selectiva
@@ -64,6 +63,8 @@ type ProviderContextType = {
   cancelScanStarSystem: (id: string) => void;
   handleDestroyBuilding: (q: number, r: number) => void;
   startCollectSystem: (systemId: string) => void;
+  setHexAncientStructure: (hex: Hex) => void;
+  cancelCollect: (systemId: string) => void;
 };
 
 // 🎯 Contexto único creado con use-context-selector
@@ -95,6 +96,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     resetBuild,
     handleTerraform,
     handleDestroyBuilding,
+    setHexAncientStructure,
   } = useHexes(
     addProduction,
     addResources,
@@ -138,6 +140,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     recoverStarSystem,
     cancelScanStarSystem,
     startCollectSystem,
+    cancelCollect,
   } = useStarSystem(
     playerQuests,
     universe,
@@ -167,7 +170,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   ]);
 
   const endGame = async () => {
-    await NotificationManager.cancelAllNotifications();
+    //await NotificationManager.cancelAllNotifications();
     await resetBuild();
     await resetPlayerConfig();
     await resetResearch();
@@ -240,6 +243,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       cancelScanStarSystem,
       handleDestroyBuilding,
       startCollectSystem,
+      setHexAncientStructure,
+      cancelCollect,
     }),
     [
       fleet,
@@ -281,6 +286,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       cancelScanStarSystem,
       handleDestroyBuilding,
       startCollectSystem,
+      setHexAncientStructure,
+      cancelCollect,
     ]
   );
 

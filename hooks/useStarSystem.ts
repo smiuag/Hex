@@ -17,7 +17,7 @@ import { CombinedResources, Resources } from "@/src/types/resourceTypes";
 import { Ship, ShipType } from "@/src/types/shipType";
 import { StarSystem, StarSystemMap } from "@/src/types/starSystemTypes";
 import { simulateBattle } from "@/utils/combat";
-import { sumCombinedResources } from "@/utils/resourceUtils";
+import { getAccumulatedResources, sumCombinedResources } from "@/utils/resourceUtils";
 import { getFlyTime } from "@/utils/shipUtils";
 import { generateSystem } from "@/utils/starSystemUtils";
 import { useEffect, useRef, useState } from "react";
@@ -112,7 +112,12 @@ export const useStarSystem = (
   const destroyFleet = async (fleetId: string) => {
     const currentFleet = fleetRef.current.find((f) => f.id == fleetId);
     if (!currentFleet) return;
-    if (Object.keys(currentFleet.resources).length > 0) await addResources(currentFleet.resources);
+    if (
+      Object.keys(currentFleet.resources).length > 0 &&
+      currentFleet.destinationSystemId == "PLANET"
+    )
+      await addResources(currentFleet.resources);
+
     await modifyFleet((fleet) => fleet.filter((f) => f.id !== fleetId));
   };
 
@@ -423,7 +428,11 @@ export const useStarSystem = (
 
     const system = systemsRef.current.find((s) => s.id === fleet.destinationSystemId);
 
-    cancelFleet(fleet.id, system?.storedResources.resources);
+    const resources = system?.storedResources.resources
+      ? getAccumulatedResources(system?.storedResources)
+      : {};
+
+    cancelFleet(fleet.id, resources);
 
     if (!system) return;
 
@@ -565,6 +574,20 @@ export const useStarSystem = (
     if (fleet) await cancelFleet(fleet.id);
   };
 
+  const cancelCollect = async (systemId: string) => {
+    const system = systemsRef.current.find((s) => s.id === systemId);
+    if (system)
+      await modifySystems((systems) =>
+        systems.map((s) => (s.id === systemId ? { ...s, collectStartedAt: undefined } : s))
+      );
+
+    const fleet = fleetRef.current.find(
+      (f) => f.destinationSystemId == systemId && f.movementType == "COLLECT"
+    );
+
+    if (fleet) await cancelFleet(fleet.id);
+  };
+
   const cancelExplorePlanet = async (systemId: string, planetId: string) => {
     const system = systemsRef.current.find((s) => s.id === systemId);
     if (system) {
@@ -687,5 +710,6 @@ export const useStarSystem = (
     recoverStarSystem,
     cancelScanStarSystem,
     startCollectSystem,
+    cancelCollect,
   };
 };

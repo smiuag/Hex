@@ -61,33 +61,35 @@ export const SystemUnknownCard: React.FC<Props> = ({
         imageStyle={commonStyles.imageCover}
       >
         <View style={commonStyles.overlayDark}>
-          <Text style={commonStyles.titleBlueText}>
-            {systemName}{" "}
-            <Text style={[commonStyles.whiteText, { fontSize: 16 }]}>
-              {" "}
-              ({tPlanets(`systemType.${system.type}`)}){" "}
+          <View>
+            <Text style={commonStyles.titleBlueText}>
+              {systemName}{" "}
+              <Text style={[commonStyles.whiteText, { fontSize: 16 }]}>
+                {" "}
+                ({tPlanets(`systemType.${system.type}`)}){" "}
+              </Text>
             </Text>
-          </Text>
-          <Text style={commonStyles.smallSubtitle}>
-            {system.distance} {t("parsecs")}
-          </Text>
-          <View style={{ marginTop: 10 }}>
-            <Text style={commonStyles.subtitleText}>{t("ExpectedResources")}:</Text>
-            {Object.entries(expected)
-              .sort(([, a], [, b]) => b - a)
-              .map(([resType, chance]) => {
-                const emoji = resourceEmojis[resType as ResourceType | SpecialResourceType] ?? "❔";
-                const percent = Math.round(chance * 100);
-                return (
-                  <Text
-                    key={resType}
-                    style={[commonStyles.subtitleText, { fontSize: 12, marginVertical: 1 }]}
-                  >
-                    {emoji} {percent}% {t("chanceToGet")} {tResources(`resourceType.${resType}`)}
-                  </Text>
-                );
-              })}
+            <Text style={commonStyles.smallSubtitle}>
+              {system.distance} {t("parsecs")}
+            </Text>
           </View>
+          <Text style={[commonStyles.titleText, { textAlign: "center", marginTop: 5 }]}>
+            {t("ExpectedResources")}:
+          </Text>
+          {Object.entries(expected)
+            .sort(([, a], [, b]) => b - a)
+            .map(([resType, chance]) => {
+              const emoji = resourceEmojis[resType as ResourceType | SpecialResourceType] ?? "❔";
+              const percent = Math.round(chance * 100);
+              return (
+                <Text
+                  key={resType}
+                  style={[commonStyles.subtitleText, { fontSize: 12, marginVertical: 1 }]}
+                >
+                  {emoji} {percent}% {t("chanceToGet")} {tResources(`resourceType.${resType}`)}
+                </Text>
+              );
+            })}
 
           {isBeingExplored ? (
             <View style={commonStyles.actionBar}>

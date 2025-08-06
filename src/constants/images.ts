@@ -1,9 +1,13 @@
 import background from "../../assets/images/background.jpg";
 import backgroundMenu from "../../assets/images/backgroundMenu.jpg";
 import collect from "../../assets/images/collect.png";
-import unterraformed from "../../assets/images/hex/unterraformed.png";
 import backgroundQuest from "../../assets/images/nebulosa.png";
 
+import alienStructure from "../../assets/images/hex/alienStructure.png";
+import unterraformed from "../../assets/images/hex/unterraformed.png";
+import waterDrop from "../../assets/images/hex/waterDrop.png";
+
+import alienLabBackground from "../../assets/images/buildings/alienLabBackground.png";
 import antennaBackground from "../../assets/images/buildings/antenna.png";
 import baseBackground from "../../assets/images/buildings/base.png";
 import crystalmineBackground from "../../assets/images/buildings/crystal.png";
@@ -53,6 +57,7 @@ import trinary from "../../assets/images/starSystems/Trinary.png";
 import antenna from "../../assets/images/mini/antenna.png";
 import base from "../../assets/images/mini/base.png";
 import blank from "../../assets/images/mini/blank.png";
+import buildingAlienLab from "../../assets/images/mini/buildingAlienLab.png";
 import crystal from "../../assets/images/mini/crystal.png";
 import greenhouse from "../../assets/images/mini/greenhouse.png";
 import hangar from "../../assets/images/mini/hangar.png";
@@ -68,10 +73,10 @@ import spaceStationBase from "../../assets/images/mini/spaceStation.png";
 import underConstruction from "../../assets/images/mini/underConstruction.png";
 import underConstructionBase from "../../assets/images/mini/underconstructionBase.png";
 import waterExtractor from "../../assets/images/mini/water.png";
-import waterDrop from "../../assets/images/waterDrop.png";
 
 import alienTechFound from "../../assets/images//quests/alienTechFound.png";
 import waterFound from "../../assets/images//quests/waterFound.png";
+import alienLab from "../../assets/images/quests/alienLab.png";
 import waterSearch from "../../assets/images/quests/waterSearch.png";
 import backgroundCluster from "../../assets/images/starSystems/backgroundCluster.png";
 import backgroundGalaxy from "../../assets/images/starSystems/backgroundGalaxy.png";
@@ -153,4 +158,8 @@ export const IMAGES = {
   BLANK: blank,
   UNTERRAFORMED: unterraformed,
   COLLECT: collect,
+  ALIEN_LAB: alienLab,
+  ALIEN_STRUCTURE: alienStructure,
+  ALIEN_LAB_BACKGROUND: alienLabBackground,
+  BUILDING_ALIEN_LAB: buildingAlienLab,
 };

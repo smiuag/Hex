@@ -44,7 +44,7 @@ export default function ExploredCelestialBody({
   };
 
   return (
-    <View>
+    <View key={celestialBody.id}>
       {celestialBody.explored ? (
         <View style={[commonStyles.actionBar]}>
           <Text style={commonStyles.subtitleText}>
@@ -57,11 +57,13 @@ export default function ExploredCelestialBody({
       ) : isBeingExplored ? (
         <View style={[commonStyles.actionBar]}>
           <View>
-            <Text style={commonStyles.statusTextYellow}>⏳ {t("inProgress")}: </Text>
-            <CountdownTimer
-              startedAt={celestialBody.explorationStartedAt}
-              duration={timeToExplore}
-            />
+            <Text style={commonStyles.statusTextYellow}>
+              ⏳ {t("inProgress")}:
+              <CountdownTimer
+                startedAt={celestialBody.explorationStartedAt}
+                duration={timeToExplore}
+              />
+            </Text>
           </View>
 
           <TouchableOpacity

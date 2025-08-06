@@ -22,6 +22,12 @@ export function getScaleValues(playerConfig: PlayerConfig): ScaleValues {
   return SCALE[key];
 }
 
+export function getAncientAlienStructuresAlreadyFound(playerConfig: PlayerConfig): boolean {
+  const started = playerConfig.find((entry) => entry.key === "ALIEN_STRUCTURE_FOUND");
+
+  return started?.value === "true";
+}
+
 export function gameStarted(playerConfig: PlayerConfig): boolean {
   const started = playerConfig.find((entry) => entry.key === "GAME_STARTED");
 

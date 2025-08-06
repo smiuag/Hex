@@ -148,14 +148,20 @@ export const getFleetProcesses = (fleetData: FleetData[]): Process[] => {
         type = "MOVEMENT FLEET";
         name = fleetShips + " nave" + (fleetShips > 1 ? "s" : "") + " viajando a otro sistema ";
         break;
+      case "COLLECT":
+        type = "COLLECT";
+        name = "Carguero rumbo a una colonia a por recursos.";
+        break;
     }
 
     const proc: Process = {
       name,
       type,
       id: "FLEET-" + fleet.id,
+      resources: fleet.resources,
       duration: totalTime,
       startedAt: fleet.startTime,
+      collectSystemId: fleet.movementType == "COLLECT" ? fleet.destinationSystemId : undefined,
       explorationSystemId:
         fleet.movementType == "EXPLORE SYSTEM" || fleet.movementType == "EXPLORE CELESTIALBODY"
           ? fleet.destinationSystemId

@@ -11,7 +11,7 @@ export const RESEARCH_COST = {
   LASER: { CRYSTAL: 3000, METAL: 20000, ENERGY: 100000 },
   PLASMA: { CRYSTAL: 3000, METAL: 15000, ENERGY: 150000 },
   SHIELD: { CRYSTAL: 6000, METAL: 20000, ENERGY: 150000 },
-  GRAVITY: { CRYSTAL: 30000, METAL: 20000, ENERGY: 200000 },
+  GRAVITY: { CRYSTAL: 30000, METAL: 20000, ENERGY: 200000, AETHERIUM: 2000, THARNIO: 5000 },
 };
 
 export const RESEARCH_TIME = {
@@ -46,7 +46,10 @@ export const RESEARCH_REQUIRED_BUILDING: Record<ResearchType, ResearchRequiredBu
     { buildingLevelRequired: 2, buildingType: "LAB", researchLevel: 1 },
     { buildingLevelRequired: 1, buildingType: "RESIDUE", researchLevel: 1 },
   ],
-  GRAVITY: [{ buildingLevelRequired: 4, buildingType: "LAB", researchLevel: 1 }],
+  GRAVITY: [
+    { buildingLevelRequired: 2, buildingType: "ALIEN_LAB", researchLevel: 1 },
+    { buildingLevelRequired: 3, buildingType: "ALIEN_LAB", researchLevel: 2 },
+  ],
   LASER: [{ buildingLevelRequired: 2, buildingType: "LAB", researchLevel: 1 }],
   MINING: [{ buildingLevelRequired: 1, buildingType: "LAB", researchLevel: 1 }],
   PLASMA: [{ buildingLevelRequired: 3, buildingType: "LAB", researchLevel: 1 }],

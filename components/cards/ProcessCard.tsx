@@ -6,6 +6,7 @@ import { Process } from "../../src/types/processTypes";
 import { ResearchType } from "../../src/types/researchTypes";
 import { ShipType } from "../../src/types/shipType";
 import { CountdownTimer } from "../auxiliar/CountdownTimer";
+import { ResourceDisplay } from "../auxiliar/ResourceDisplay";
 
 type ProcessCardProps = {
   item: Process;
@@ -14,6 +15,7 @@ type ProcessCardProps = {
   onCancelShip: (shipType: ShipType) => Promise<void>;
   onCancelExploreSystem: (id: string) => Promise<void>;
   onCancelAttack: (id: string) => Promise<void>;
+  onCancelCollect: (id: string) => Promise<void>;
 };
 
 export function ProcessCard({
@@ -23,6 +25,7 @@ export function ProcessCard({
   onCancelShip,
   onCancelExploreSystem,
   onCancelAttack,
+  onCancelCollect,
 }: ProcessCardProps) {
   const { t } = useTranslation("common");
 
@@ -37,6 +40,8 @@ export function ProcessCard({
       await onCancelExploreSystem(item.explorationSystemId!);
     } else if (item.type === "ATTACK FLEET") {
       await onCancelAttack(item.attackSystemId!);
+    } else if (item.type === "COLLECT") {
+      await onCancelCollect(item.collectSystemId!);
     }
   };
 
@@ -57,10 +62,15 @@ export function ProcessCard({
                 ⏳ <CountdownTimer startedAt={item.startedAt} duration={item.duration} />
               </Text>
             </View>
-            {item.type !== "RETURN FLEET" && (
-              <TouchableOpacity style={commonStyles.buttonDanger} onPress={handleCancel}>
-                <Text style={commonStyles.buttonTextLight}>{t("cancel")}</Text>
-              </TouchableOpacity>
+            {item.type !== "RETURN FLEET" ? (
+              <View style={commonStyles.rowSpaceBetween}>
+                <TouchableOpacity style={commonStyles.buttonDanger} onPress={handleCancel}>
+                  <Text style={commonStyles.buttonTextLight}>{t("cancel")}</Text>
+                </TouchableOpacity>
+                {item.resources ? <ResourceDisplay resources={item.resources} /> : <View></View>}
+              </View>
+            ) : (
+              <View></View>
             )}
           </View>
         </View>

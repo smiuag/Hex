@@ -401,3 +401,8 @@ export function recalculateHexMapVisibility(hexes: Hex[]): Hex[] {
 
   return newHexes;
 }
+
+export const getAncientAlienStructuresFound = (numTerraformedHexes: number): boolean => {
+  const chance = numTerraformedHexes < 20 ? 0 : numTerraformedHexes * 0.05;
+  return Math.random() < chance;
+};

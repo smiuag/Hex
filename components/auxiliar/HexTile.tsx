@@ -127,6 +127,17 @@ export default function HexTile({ hex, px, py, points, factor, fontSize }: Props
         />
       )}
 
+      {!building && !construction && terrain == "ANCIENT_ALIEN_STRUCTURES" && hex.isTerraformed && (
+        <SvgImage
+          href={IMAGES.ALIEN_STRUCTURE}
+          x={px - 20 * factor} // Ajusta la posición según necesites
+          y={py - 20 * factor}
+          width={40 * factor} // Tamaño de la gota
+          height={40 * factor}
+          preserveAspectRatio="xMidYMid meet"
+        />
+      )}
+
       {/* Borde solo si NO es parte de grupo */}
       {!groupId && <Polygon points={points} fill="none" stroke="white" strokeWidth={3 * factor} />}
     </>

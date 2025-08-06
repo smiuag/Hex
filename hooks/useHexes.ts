@@ -5,6 +5,7 @@ import { ConfigEntry } from "@/src/types/configTypes";
 import { Hex } from "@/src/types/hexTypes";
 import { UpdateQuestOptions } from "@/src/types/questType";
 import { Resources } from "@/src/types/resourceTypes";
+import { TerrainType } from "@/src/types/terrainTypes";
 import { useEffect, useRef, useState } from "react";
 import Toast from "react-native-toast-message";
 import { getBuildCost, getBuildTime, getProductionPerSecond } from "../utils/buildingUtils";
@@ -13,7 +14,6 @@ import {
   generateInitialHexMap,
   recalculateHexMapVisibility,
 } from "../utils/hexUtils";
-import { NotificationManager } from "../utils/notificacionUtils";
 
 export const useHexes = (
   addProduction: (modifications: Partial<Resources>) => void,
@@ -61,7 +61,7 @@ export const useHexes = (
   };
 
   const handleBuild = async (q: number, r: number, type: BuildingType) => {
-    let notificationId: string | undefined;
+    //let notificationId: string | undefined;
 
     await modifyHexes((prevHexes) => {
       const hex = prevHexes.find((h) => h.q === q && h.r === r);
@@ -84,13 +84,13 @@ export const useHexes = (
 
       subtractResources(scaledCost);
 
-      NotificationManager.scheduleNotification({
-        title: "✅ Construcción terminada",
-        body: `Tu edificio \"${type}\" está listo.`,
-        delayMs: durationMs,
-      }).then((id) => {
-        notificationId = id ?? undefined;
-      });
+      // NotificationManager.scheduleNotification({
+      //   title: "✅ Construcción terminada",
+      //   body: `Tu edificio \"${type}\" está listo.`,
+      //   delayMs: durationMs,
+      // }).then((id) => {
+      //   notificationId = id ?? undefined;
+      // });
 
       return prevHexes.map((h) =>
         h.q === q && h.r === r
@@ -101,7 +101,7 @@ export const useHexes = (
                 building: type,
                 startedAt: Date.now(),
                 targetLevel: nextLevel,
-                notificationId,
+                // notificationId,
               },
               building: null,
             }
@@ -125,6 +125,27 @@ export const useHexes = (
       );
       return recalculateHexMapVisibility(updatedHexes);
     });
+  };
+  const setHexAncientStructure = async (hex: Hex) => {
+    await modifyHexes((prev) => {
+      const updatedHexes = prev.map((h) =>
+        h.q === hex.q && h.r === hex.r
+          ? {
+              ...h,
+              building: null,
+              previousBuilding: null,
+              construction: undefined,
+              isTerraformed: true,
+              terrain: "ANCIENT_ALIEN_STRUCTURES" as TerrainType,
+            }
+          : h
+      );
+
+      return recalculateHexMapVisibility(updatedHexes);
+    });
+
+    await handleUpdateConfig({ key: "ALIEN_STRUCTURE_FOUND", value: "true" });
+    await updateQuest({ type: "ALIEN_TECH_FOUND", completed: true });
   };
 
   const handleTerraform = async (q: number, r: number) => {
@@ -157,7 +178,7 @@ export const useHexes = (
       }
 
       addResources(scaledCost);
-      if (notificationId) NotificationManager.cancelNotification(notificationId);
+      //if (notificationId) NotificationManager.cancelNotification(notificationId);
 
       return prevHexes.map((h) =>
         h.q === q && h.r === r
@@ -258,5 +279,6 @@ export const useHexes = (
     resetBuild,
     handleTerraform,
     handleDestroyBuilding,
+    setHexAncientStructure,
   };
 };

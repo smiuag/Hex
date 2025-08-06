@@ -46,11 +46,13 @@ export default function ConstructionComponent() {
   };
 
   const isWater = terrain === "WATER";
+  const isAlienLab = terrain === "ANCIENT_ALIEN_STRUCTURES";
 
   const buildings: BuildingItem[] = Object.entries(buildingConfig)
     .filter(([type]) => {
       const buildingType = type as BuildingType;
       if (isWater) return buildingType === "WATEREXTRACTOR";
+      if (isAlienLab) return buildingType === "ALIEN_LAB";
       return buildingType !== "WATEREXTRACTOR";
     })
     .map(([type, config]) => {

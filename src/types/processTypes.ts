@@ -1,5 +1,6 @@
 import { ImageSourcePropType } from "react-native";
 import { ResearchType } from "./researchTypes";
+import { CombinedResources } from "./resourceTypes";
 import { ShipType } from "./shipType";
 
 export type ProcessType =
@@ -10,7 +11,8 @@ export type ProcessType =
   | "ATTACK FLEET"
   | "RETURN FLEET"
   | "MOVEMENT FLEET"
-  | "SHIP";
+  | "SHIP"
+  | "COLLECT";
 
 export class Process {
   id: string;
@@ -24,6 +26,8 @@ export class Process {
   explorationSystemId?: string;
   attackSystemId?: string;
   explorationPlanetId?: string;
+  collectSystemId?: string;
+  resources?: CombinedResources;
   q?: number;
   r?: number;
 

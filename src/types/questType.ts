@@ -12,6 +12,7 @@ export type QuestType =
   | "H2O_SEARCH"
   | "H2O_FOUND"
   | "ALIEN_TECH_FOUND"
+  | "BUILDING_ALIENT_LAB"
   | "SCAN_FIRST"
   | "EXPLORE_SYSTEM"
   | "SYSTEM_BUILT_EXTRACTION"

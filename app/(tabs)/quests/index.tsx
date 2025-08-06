@@ -16,7 +16,8 @@ export default function QuestScreen() {
   return (
     <SafeAreaView style={[commonStyles.safeArea, { paddingTop: insets.top }]}>
       <QuestComponent />
-      <ResourceBar storedResources={resources} />
+      <ResourceBar storedResources={resources} showOnlyNormal={true} />
+      <ResourceBar storedResources={resources} showOnlySpecial={true} />
     </SafeAreaView>
   );
 }
