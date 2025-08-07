@@ -21,10 +21,10 @@
 
   "DefenseSystem": "Sistema defensivo",
   "ExtractionSystem": "Sistemas de extracción",
-  "StelarPort": "Puerto estelar",
+  "StarPort": "Puerto estelar",
   "DefenseSystemBuilt": "SISTEMA DEFENSIVO CONSTRUÍDO",
   "ExtractionSystemBuilt": "SISTEMAS DE EXTRACCIÓN CONSTRUÍDOS",
-  "StelarPortBuilt": "PUERTO ESTELAR CONSTRUÍDO",
+  "StarPortBuilt": "PUERTO ESTELAR CONSTRUÍDO",
   "BuildExtractionBuilding": "Construcción del sistema de extracción de recursos",
   "BuildDefense": "Construcción del sistema de defensa",
   "ExtractionBuildingCostMessage": "Para construir un sistema de extracción de recursos necesitaremos enviar 2 cargueros, que se quedarán en el sistema para juntar recursos de la zona. Además es necesario enviar 120K de cristal y 120K de metal. ¿Estas seguro de que quieres continuar?",
@@ -72,8 +72,8 @@
   "Attack": "Atacar",
   "CelestialBodies": "Cuerpos estelares encontrados",
 
-  "BuildStelarPort": "Construcción de un puerto estelar",
-  "StelarPortCostMessage": "Para construir un puerto estelar necesitaremos enviar 2 cargueros, que se quedarán en el sistema para juntar recursos de la zona. Además es necesario enviar 120K de cristal y 120K de metal. ¿Estas seguro de que quieres continuar?",
+  "BuildStarPort": "Construcción de un puerto estelar",
+  "StarPortCostMessage": "Para construir un puerto estelar necesitaremos enviar 2 cargueros, que se quedarán en el sistema para juntar recursos de la zona. Además es necesario enviar 120K de cristal y 120K de metal. ¿Estas seguro de que quieres continuar?",
   "Fly": "Volar",
   "Collect": "Recolectar",
   "combatStats": "Estadísticas:",

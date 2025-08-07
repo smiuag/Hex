@@ -48,7 +48,7 @@ export const ConstructionCard: React.FC<Props> = ({ item, onBuild, research }) =
         return acc;
       }, {})
   ).filter((req) => {
-    const currentLevel = research.find((r) => r.data.type === req.researchType)?.data.level ?? 0;
+    const currentLevel = research.find((r) => r?.data?.type === req.researchType)?.data?.level ?? 0;
     return currentLevel < req.researchLevelRequired;
   });
 
@@ -72,7 +72,7 @@ export const ConstructionCard: React.FC<Props> = ({ item, onBuild, research }) =
               <View style={commonStyles.actionBar}>
                 <View>
                   {filteredRequirements.map((r, i) => (
-                    <Text key={i} style={commonStyles.errorTextRed}>
+                    <Text key={r.researchType} style={commonStyles.errorTextRed}>
                       🔒 {tResearch(`researchName.${r.researchType}`)} {t("level")}{" "}
                       {r.researchLevelRequired}
                     </Text>

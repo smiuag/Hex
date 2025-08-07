@@ -1,3 +1,5 @@
+import ModalConstruction from "@/components/auxiliar/ModalConstruction";
+import ModalTerraform from "@/components/auxiliar/ModalTerraform";
 import { GameProvider } from "@/src/context/GameContext";
 import { useFonts } from "expo-font";
 import { Slot } from "expo-router";
@@ -21,6 +23,8 @@ export default function RootLayout() {
         <StatusBar barStyle="light-content" backgroundColor="#000" />
         <Slot></Slot>
         <Toast />
+        <ModalConstruction />
+        <ModalTerraform />
       </GameProvider>
     </SafeAreaProvider>
   );

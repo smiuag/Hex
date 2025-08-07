@@ -52,8 +52,10 @@ export function ShipSummaryBar({ shipCounts }: Props) {
     setExpanded((prev) => !prev);
   };
 
+  if (shipItems.length === 0) return null;
+
   return (
-    <View style={shipItems.length == 0 && shipSummaryStyle.hidden}>
+    <View>
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={toggleExpanded}

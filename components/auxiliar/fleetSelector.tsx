@@ -38,11 +38,12 @@ export default function FleetSelector({ origin, destination }: Props) {
 
   const originImage =
     origin == "PLANET" ? IMAGES.BACKGROUND_MENU_IMAGE : IMAGES.BACKGROUND_MENU_IMAGE;
-  const destinationImage = getSystemImage(system!.type);
+  const destinationImage = system ? getSystemImage(system.type) : IMAGES.BACKGROUND_MENU_IMAGE;
 
   const sendAttack = (selectedFleets: Ship[]) => {
     if (selectedFleets.length > 0) {
-      startAttack(system!.id, selectedFleets);
+      if (!system) return;
+      startAttack(system.id, selectedFleets);
       router.replace("/(tabs)/galaxy");
     } else
       Toast.show({

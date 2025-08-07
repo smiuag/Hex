@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { Alert, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import Animated, {
   runOnJS,
@@ -11,48 +11,28 @@ import Animated, {
 import Svg from "react-native-svg";
 import { scaleKeys, ScaleSize } from "../../src/types/configTypes";
 
-import Toast from "react-native-toast-message";
+import { useConstructionModalStore } from "@/src/store/modalStore";
+import { useTerraformModalStore } from "@/src/store/terraformModalStore";
 import { IMAGES } from "../../src/constants/images";
 import { useGameContextSelector } from "../../src/context/GameContext";
-import { BuildingType } from "../../src/types/buildingTypes";
-import { Hex } from "../../src/types/hexTypes";
-import { getAncientAlienStructuresAlreadyFound, getScaleValues } from "../../utils/configUtils";
-import {
-  axialToPixel,
-  getAncientAlienStructuresFound,
-  getHexPoints,
-  pixelToAxial,
-  SCREEN_DIMENSIONS,
-} from "../../utils/hexUtils";
+import { getScaleValues } from "../../utils/configUtils";
+import { axialToPixel, getHexPoints, pixelToAxial, SCREEN_DIMENSIONS } from "../../utils/hexUtils";
 import BorderHexTile from "../auxiliar/HexBorder";
 import HexTile from "../auxiliar/HexTile";
-import ModalConstruction from "../auxiliar/ModalConstruction";
-import ModalTerraform from "../auxiliar/ModalTerraform";
 
 export default function PlanetComponent() {
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalTerraformVisible, setModalTerraformVisible] = useState(false);
-  const [selectedHex, setSelectedHex] = useState<Hex | null>(null);
   const [cameraOffset, setCameraOffset] = useState({ x: 0, y: 0 });
 
   const router = useRouter();
   const hexes = useGameContextSelector((ctx) => ctx.hexes);
-  const research = useGameContextSelector((ctx) => ctx.research);
   const playerConfig = useGameContextSelector((ctx) => ctx.playerConfig);
-
-  const handleBuild = useGameContextSelector((ctx) => ctx.handleBuild);
-  const handleDestroyBuilding = useGameContextSelector((ctx) => ctx.handleDestroyBuilding);
-  const handleCancelBuild = useGameContextSelector((ctx) => ctx.handleCancelBuild);
-  const handleTerraform = useGameContextSelector((ctx) => ctx.handleTerraform);
   const handleUpdateConfig = useGameContextSelector((ctx) => ctx.handleUpdateConfig);
-  const updateQuest = useGameContextSelector((ctx) => ctx.updateQuest);
-  const setHexAncientStructure = useGameContextSelector((ctx) => ctx.setHexAncientStructure);
 
   const scale = getScaleValues(playerConfig);
-
   const { SCREEN_WIDTH, SCREEN_HEIGHT, SVG_WIDTH, SVG_HEIGHT, CENTER_X, CENTER_Y } =
     SCREEN_DIMENSIONS;
 
+  console.log("planet");
   // Cámara
   const offsetX = useSharedValue(SCREEN_WIDTH / 2 - CENTER_X);
   const offsetY = useSharedValue(SCREEN_HEIGHT / 2 - CENTER_Y);
@@ -68,6 +48,9 @@ export default function PlanetComponent() {
     },
     []
   );
+
+  const showConstruction = useConstructionModalStore.getState().showConstruction;
+  const showTerraform = useTerraformModalStore.getState().showTerraform;
 
   const panGesture = Gesture.Pan()
     .onStart(() => {
@@ -127,15 +110,13 @@ export default function PlanetComponent() {
 
     const isEmpty = !hexToUse.building && !hexToUse.construction;
     if (!hexToUse.isTerraformed) {
-      setSelectedHex(hexToUse);
-      setModalTerraformVisible(true);
+      showTerraform(hexToUse);
     } else if (isEmpty) {
       router.replace(
         `/(tabs)/planet/construction?terrain=${hexToUse.terrain}&q=${hexToUse.q}&r=${hexToUse.r}`
       );
     } else {
-      setSelectedHex(hexToUse);
-      setModalVisible(true);
+      if (hexToUse) showConstruction(hexToUse);
     }
   };
 
@@ -173,82 +154,6 @@ export default function PlanetComponent() {
     });
 
   const composedGesture = Gesture.Simultaneous(Gesture.Exclusive(tapGesture, panGesture));
-
-  const onBuild = async (type: BuildingType) => {
-    if (selectedHex) {
-      await handleBuild(selectedHex.q, selectedHex.r, type);
-      setModalVisible(false);
-    }
-  };
-
-  const onCancel = () => {
-    if (selectedHex) {
-      handleCancelBuild(selectedHex.q, selectedHex.r);
-      setModalVisible(false);
-    }
-  };
-
-  const onDestroy = (q: number, r: number) => {
-    handleDestroyBuilding(q, r);
-    setModalVisible(false);
-  };
-
-  const onTerraform = async () => {
-    const currentHexesTerraformed = hexes.filter((hex) => hex.isTerraformed).length;
-    const baseLevel = hexes.find((hex) => hex.building?.type === "BASE")?.building?.level;
-    const baseUpgradeLevel = hexes.find((hex) => hex.construction?.building === "BASE")
-      ?.construction?.targetLevel;
-    const effectiveLevel = baseUpgradeLevel ?? baseLevel ?? 0;
-    const terraformLimit = effectiveLevel * 10 + 3;
-    const maxTerraformReached = currentHexesTerraformed >= terraformLimit;
-
-    if (maxTerraformReached) {
-      Toast.show({
-        type: "info", // "success" | "info" | "error"
-        text1: "Límite alcanzado",
-        position: "top",
-        visibilityTime: 2000,
-      });
-    } else if (selectedHex) {
-      const ancientStructuresAlreadyFound = getAncientAlienStructuresAlreadyFound(playerConfig);
-
-      if (!ancientStructuresAlreadyFound) {
-        if (getAncientAlienStructuresFound(currentHexesTerraformed))
-          Alert.alert(
-            "Terreno misterioso",
-            "Este terreno parece distinto. Las primeras inspecciones indican una gran cantidad de humedad en el subsuelo. ¡Quizá sea agua!",
-            [
-              {
-                text: "Aceptar",
-                onPress: () => {
-                  updateQuest({ type: "ALIEN_TECH_FOUND", completed: true });
-                  setHexAncientStructure(selectedHex);
-                },
-              },
-            ],
-            { cancelable: false }
-          );
-      }
-
-      handleTerraform(selectedHex.q, selectedHex.r);
-      if (selectedHex.terrain === "WATER") {
-        Alert.alert(
-          "Terreno misterioso",
-          "Este terreno parece distinto. Las primeras inspecciones indican una gran cantidad de humedad en el subsuelo. ¡Quizá sea agua!",
-          [
-            {
-              text: "Aceptar",
-              onPress: () => {
-                updateQuest({ type: "H2O_SEARCH", completed: true });
-              },
-            },
-          ],
-          { cancelable: false }
-        );
-      }
-      setModalTerraformVisible(false);
-    }
-  };
 
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: "white" }}>
@@ -309,23 +214,6 @@ export default function PlanetComponent() {
                     />
                   );
                 })}
-
-                <ModalConstruction
-                  visible={modalVisible}
-                  research={research}
-                  onClose={() => setModalVisible(false)}
-                  data={selectedHex}
-                  onBuild={onBuild}
-                  onCancelBuild={onCancel}
-                  onDestroy={onDestroy}
-                />
-
-                <ModalTerraform
-                  visible={modalTerraformVisible}
-                  onClose={() => setModalTerraformVisible(false)}
-                  data={selectedHex}
-                  onTerraform={onTerraform}
-                />
               </Svg>
             </Animated.View>
           </View>

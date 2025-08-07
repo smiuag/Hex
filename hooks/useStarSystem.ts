@@ -305,7 +305,7 @@ export const useStarSystem = (
               ...s,
               explored: true,
               explorationStartedAt: undefined,
-              conquered: s.defense.length === 0,
+              conquered: !s.defense || s.defense.length === 0,
             }
           : s
       )

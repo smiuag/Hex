@@ -49,67 +49,25 @@ export const SystemExploredCard: React.FC<Props> = ({
   const freighterSpeed = shipConfig["FREIGHTER"].speed;
   const timeToCollect = getFlyTime(freighterSpeed, system.distance);
 
-  const handleBuildPort = () => {
-    Alert.alert(t("BuildStelarPort"), t("StelarPortCostMessage"), [
+  const confirmBuild = (title: string, message: string, action: () => void) => {
+    Alert.alert(title, message, [
       { text: t("cancel"), style: "cancel" },
       {
         text: t("confirm"),
         style: "destructive",
-        onPress: async () => {
+        onPress: () => {
           const lockedByResources = !enoughResources(STAR_BUILDINGS_COST);
           const enoughFreighter = shipBuildQueue.find((f) => f.type == "FREIGHTER" && f.amount > 1);
-          if (enoughFreighter && !lockedByResources) onStarPortBuild(system.id);
-          else
+          if (enoughFreighter && !lockedByResources) {
+            action();
+          } else {
             Toast.show({
-              type: "info", // "success" | "info" | "error"
+              type: "info",
               text1: t("NotEnoughForConstruction"),
               position: "top",
               visibilityTime: 2000,
             });
-        },
-      },
-    ]);
-  };
-
-  const handleDefenseBuild = () => {
-    Alert.alert(t("BuildDefense"), t("DefenseBuildingCostMessage"), [
-      { text: t("cancel"), style: "cancel" },
-      {
-        text: t("confirm"),
-        style: "destructive",
-        onPress: async () => {
-          const lockedByResources = !enoughResources(STAR_BUILDINGS_COST);
-          const enoughFreighter = shipBuildQueue.find((f) => f.type == "FREIGHTER" && f.amount > 1);
-          if (enoughFreighter && !lockedByResources) onDefenseStartBuild(system.id);
-          else
-            Toast.show({
-              type: "info", // "success" | "info" | "error"
-              text1: t("NotEnoughForConstruction"),
-              position: "top",
-              visibilityTime: 2000,
-            });
-        },
-      },
-    ]);
-  };
-
-  const handleExtractBuild = () => {
-    Alert.alert(t("BuildExtractionBuilding"), t("ExtractionBuildingCostMessage"), [
-      { text: t("cancel"), style: "cancel" },
-      {
-        text: t("confirm"),
-        style: "destructive",
-        onPress: async () => {
-          const lockedByResources = !enoughResources(STAR_BUILDINGS_COST);
-          const enoughFreighter = shipBuildQueue.find((f) => f.type == "FREIGHTER" && f.amount > 1);
-          if (enoughFreighter && !lockedByResources) onExtractionStartBuild(system.id);
-          else
-            Toast.show({
-              type: "info", // "success" | "info" | "error"
-              text1: t("NotEnoughForConstruction"),
-              position: "top",
-              visibilityTime: 2000,
-            });
+          }
         },
       },
     ]);
@@ -191,7 +149,7 @@ export const SystemExploredCard: React.FC<Props> = ({
 
               {system.starPortBuilt ? (
                 <View style={[commonStyles.actionBar]}>
-                  <Text style={commonStyles.subtitleText}>{t("StelarPortBuilt")}</Text>
+                  <Text style={commonStyles.subtitleText}>{t("StarPortBuilt")}</Text>
                 </View>
               ) : system.starPortStartedAt ? (
                 <View style={[commonStyles.actionBar]}>
@@ -202,14 +160,18 @@ export const SystemExploredCard: React.FC<Props> = ({
                       duration={STAR_BUILDINGS_DURATION}
                     />
                   </Text>
-                  <Text style={commonStyles.whiteText}>{t("StelarPort")}</Text>
+                  <Text style={commonStyles.whiteText}>{t("StarPort")}</Text>
                 </View>
               ) : (
                 <View style={[commonStyles.actionBar]}>
-                  <Text style={commonStyles.subtitleText}>{t("StelarPort")}</Text>
+                  <Text style={commonStyles.subtitleText}>{t("StarPort")}</Text>
                   <TouchableOpacity
                     style={commonStyles.buttonPrimary}
-                    onPress={() => handleBuildPort()}
+                    onPress={() =>
+                      confirmBuild(t("BuildStarPort"), t("StarPortCostMessage"), () =>
+                        onStarPortBuild(system.id)
+                      )
+                    }
                   >
                     <Text style={commonStyles.buttonTextLight}>{t("Build")}</Text>
                   </TouchableOpacity>
@@ -236,7 +198,11 @@ export const SystemExploredCard: React.FC<Props> = ({
                   <Text style={commonStyles.subtitleText}>{t("DefenseSystem")}</Text>
                   <TouchableOpacity
                     style={commonStyles.buttonPrimary}
-                    onPress={() => handleDefenseBuild()}
+                    onPress={() =>
+                      confirmBuild(t("BuildDefense"), t("DefenseBuildingCostMessage"), () =>
+                        onDefenseStartBuild(system.id)
+                      )
+                    }
                   >
                     <Text style={commonStyles.buttonTextLight}>{t("Build")}</Text>
                   </TouchableOpacity>
@@ -263,7 +229,11 @@ export const SystemExploredCard: React.FC<Props> = ({
                   <Text style={commonStyles.subtitleText}>{t("ExtractionSystem")}</Text>
                   <TouchableOpacity
                     style={commonStyles.buttonPrimary}
-                    onPress={() => handleExtractBuild()}
+                    onPress={() =>
+                      confirmBuild(t("BuildExtraction"), t("ExtractionBuildingCostMessage"), () =>
+                        onExtractionStartBuild(system.id)
+                      )
+                    }
                   >
                     <Text style={commonStyles.buttonTextLight}>{t("Build")}</Text>
                   </TouchableOpacity>
@@ -271,16 +241,19 @@ export const SystemExploredCard: React.FC<Props> = ({
               )}
             </>
           )}
-          <View style={commonStyles.actionBar}>
-            <View>
-              <Text style={commonStyles.whiteText}>{t("Stored")} </Text>
+
+          {system.extractionBuildingBuilt && (
+            <View style={commonStyles.actionBar}>
+              <View>
+                <Text style={commonStyles.whiteText}>{t("Stored")} </Text>
+              </View>
+              <ResourceBar
+                storedResources={system.storedResources}
+                miniSyle={true}
+                showSpecial={true}
+              />
             </View>
-            <ResourceBar
-              storedResources={system.storedResources}
-              miniSyle={true}
-              showSpecial={true}
-            />
-          </View>
+          )}
 
           <View style={commonStyles.actionBar}>
             {system.collectStartedAt ? (
