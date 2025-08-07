@@ -1,14 +1,14 @@
 {
   "resourceType": {
     "METAL": "Metal",
-    "STONE": "Regolito",
-    "ILMENITA": "Ilmenita",
+    "STONE": "Regolith",
+    "ILMENITA": "Ilmenite",
     "AETHERIUM": "Aetherium",
-    "NEBULITA": "Nebulita",
-    "THARNIO": "Tharnio",
+    "NEBULITA": "Nebulite",
+    "THARNIO": "Tharnium",
     "KAIROX": "Kairox",
-    "CRYSTAL": "Cristal",
-    "ENERGY": "Energía",
-    "ADN": "ADN"
+    "CRYSTAL": "Crystal",
+    "ENERGY": "Energy",
+    "ADN": "DNA"
   }
 }

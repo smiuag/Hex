@@ -4,7 +4,7 @@ import { initReactI18next } from "react-i18next";
 i18n.use(initReactI18next).init({
   //compatibilityJSON: 'v3', // <= solo si necesario por los archivos
   lng: "es",
-  fallbackLng: "en",
+  fallbackLng: "es",
   ns: ["common", "resources", "planets", "buildings", "quests", "tech"],
   defaultNS: "common",
   resources: {

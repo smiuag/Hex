@@ -51,17 +51,25 @@ export const useStarSystem = (
 
   const loadFleetData = async () => {
     const saved = await loadFleet();
-    if (saved) {
+    if (Array.isArray(saved)) {
       fleetRef.current = saved;
       setFleet(saved);
+    } else {
+      console.warn("⚠️ loadFleet devolvió datos inválidos:", saved);
+      fleetRef.current = [];
+      setFleet([]);
     }
   };
 
   const loadStarSystems = async () => {
     const saved = await loadStarSystem();
-    if (saved) {
+    if (Array.isArray(saved)) {
       systemsRef.current = saved;
       setPlayerStarSystems(saved);
+    } else {
+      console.warn("⚠️ loadStarSystem devolvió datos inválidos:", saved);
+      systemsRef.current = [];
+      setPlayerStarSystems([]);
     }
   };
 
@@ -115,14 +123,17 @@ export const useStarSystem = (
     if (
       Object.keys(currentFleet.resources).length > 0 &&
       currentFleet.destinationSystemId == "PLANET"
-    )
+    ) {
       await addResources(currentFleet.resources);
-
+      await updateQuest({ type: "COLLECT", completed: true });
+    }
     await modifyFleet((fleet) => fleet.filter((f) => f.id !== fleetId));
   };
 
   const processColonialTick = async () => {
     const now = Date.now();
+    if (!Array.isArray(starSystems)) return;
+
     for (let i = 0; i < starSystems.length; i++) {
       const starPortStartTime = starSystems[i].starPortStartedAt;
       const scanStartTime = starSystems[i].scanStartedAt;
@@ -227,6 +238,7 @@ export const useStarSystem = (
   const processFleeTick = async () => {
     const now = Date.now();
 
+    if (!Array.isArray(fleetRef.current)) return;
     for (let i = fleetRef.current.length - 1; i >= 0; i--) {
       const f = fleetRef.current[i];
       if (f.endTime > now) continue;
@@ -678,6 +690,7 @@ export const useStarSystem = (
 
   const resetStarSystem = async () => {
     await deleteStarSystem();
+    systemsRef.current = [];
     setPlayerStarSystems([]);
   };
 

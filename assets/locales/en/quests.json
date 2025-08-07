@@ -1,44 +1,210 @@
 {
-  "quests": {
-    "START": {
-      "name": "Comenzando la colonia",
-      "description": "Visita tu diario de misiones. Completar las misiones te proporcionará beneficios, completalas para conseguir más."
-    },
-    "BUILDING_LAB1": {
-      "name": "Laboratorio",
-      "description": "Construye un laboratorio de nivel 1 en el planeta."
-    },
-    "RESEARCH_MINING1": {
-      "name": "Primera investigación",
-      "description": "Investiga la minería de nivel 1"
-    },
-    "BUILDING_METALLURGY1": {
-      "name": "Mina de metales",
-      "description": "Construye una mina de metales en el planeta."
-    },
-    "BUILDING_QUARRY1": {
-      "name": "Cantera",
-      "description": "Construye una cantera para la extracción de minerales sólidos en el planeta."
-    },
-    "BUILDING_KRYSTALMINE1": {
-      "name": "Mina de cristal",
-      "description": "Construye una mina de cristal en el planeta."
-    },
-    "BUILDING_BASE2": {
-      "name": "Base de nivel 2",
-      "description": "Mejora el nivel de la base a nivel 2."
-    },
-    "BUILDING_ANTENNA": {
-      "name": "Antenas de radio",
-      "description": "Construye una antena para intentar encontrar otros sistemas planetarios accesibles"
-    },
-    "BUILDING_HANGAR": {
-      "name": "Hangar",
-      "description": "Construye un hangar para poder comenzar la fabricación de naves"
-    },
-    "SHIP_FIRST": {
-      "name": "Primera flota",
-      "description": "Construye una nave de algún tipo."
-    }
+  "START": {
+    "name": "Starting the colony",
+    "shortDescription": "Initiate the settlement protocol and access the mission log.",
+    "descriptions": [
+      "CAPTAIN: LUCAS VERA",
+      "STATUS: DECRYOGENESIS COMPLETE [✓]",
+      "TIME SINCE THE 'SOLAR EXODUS' EVENT: 18 YEARS, 241 DAYS",
+      "SYNCHRONIZING SHIP MEMORY...",
+      "UPDATE COMPLETE.",
+      "<>",
+      "Welcome back, Captain Vera. I'm pleased to report your cryostasis has been successfully completed with no neurological or physiological anomalies detected.",
+      "I'm sorry to be the bearer of this news: Earth, and much of human civilization, no longer exists as we knew it. The threat known as Omega Entity completed the annihilation of the inner solar system 11 years after our departure. The last transmissions received indicate failed resistance on Titan and Ceres.",
+      "Our primary mission has been rewritten under Alpha Ark protocol: Preserve and rebuild the human species.",
+      "We have arrived at an unknown planet in sector Lyra-94, provisionally designated Exilon. The atmosphere is breathable with minimal modifications. Stable gravity. Resources detected.",
+      "<>",
+      "Surface scans detected regular formations of unnatural origin 2.4 kilometers from the landing site. Angular geometry. Axial symmetry. Unknown materials, not matching Martian rock or human alloys.",
+      "The ship has landed safely after an automated maneuver. Support systems operating at 82%. Remaining crew in cryosleep.",
+      "You are the first, Captain. The future depends on your decisions.",
+      "Recommendation: initiate initial exploration, reactivate mission team, and begin base module deployment.",
+      "I’m with you. Always."
+    ]
+  },
+  "BUILDING_LAB1": {
+    "name": "Laboratory",
+    "shortDescription": "Build a lab to begin scientific research.",
+    "descriptions": [
+      "Our scientific data is insufficient.",
+      "Building a tech lab is essential to understand this planet’s resources and threats.",
+      "Prioritize its construction. Knowledge is power."
+    ]
+  },
+  "RESEARCH_MINING1": {
+    "name": "First research",
+    "shortDescription": "Research mining to identify resource-rich zones.",
+    "descriptions": [
+      "Scanners show large mineral deposits beneath the surface.",
+      "But we can’t just start digging. We need to analyze the planet’s geology to decide where to begin excavations.",
+      "Start basic mining technology research immediately."
+    ]
+  },
+  "BUILDING_METALLURGY1": {
+    "name": "Metal mine",
+    "shortDescription": "Establish a mine to extract essential metals.",
+    "descriptions": [
+      "Our reserve of metal alloys is depleting quickly.",
+      "We must begin separating the few metals we obtain from underground.",
+      "Act urgently. Every second counts."
+    ]
+  },
+  "BUILDING_QUARRY1": {
+    "name": "Quarry",
+    "shortDescription": "Build a quarry to obtain structural materials.",
+    "descriptions": [
+      "Our colony’s foundations require solid materials.",
+      "We need a quarry to extract structural minerals from the ground.",
+      "Make it happen. This planet won’t give us another chance."
+    ]
+  },
+  "BUILDING_KRYSTALMINE1": {
+    "name": "Crystal mine",
+    "shortDescription": "Extract energy crystals to power our technologies.",
+    "descriptions": [
+      "We’ve detected crystalline formations with exceptional energy potential.",
+      "A crystal mine will open new technological possibilities.",
+      "Set up the operation as soon as possible. The stars are watching."
+    ]
+  },
+  "BUILDING_BASE2": {
+    "name": "Level 2 base",
+    "shortDescription": "Upgrade the base to increase capacity and life support.",
+    "descriptions": [
+      "Things are going well, our colony population is growing and our goals are becoming more ambitious.",
+      "Expanding the base is essential for our continued growth.",
+      "The colony’s future depends on this step."
+    ]
+  },
+  "BUILDING_ANTENNA": {
+    "name": "Radio antenna",
+    "shortDescription": "Build an antenna to try contacting the outside.",
+    "descriptions": [
+      "There are still no signs of the rest of humanity...",
+      "Building an antenna could be our only way to reach out.",
+      "If anyone’s out there... we must try."
+    ]
+  },
+  "BUILDING_HANGAR": {
+    "name": "Hangar",
+    "shortDescription": "Prepare a hangar to build and launch ships.",
+    "descriptions": [
+      "We’ve detected some potentially interesting systems. Ship construction blueprints are ready, but without a hangar, we’re bound to this planet.",
+      "Build one as soon as possible. We need to start building probes to confirm our findings.",
+      "The universe won’t wait for us."
+    ]
+  },
+  "SHIP_FIRST": {
+    "name": "First fleet",
+    "shortDescription": "Build the first ship of our colony.",
+    "descriptions": [
+      "The hangar is operational. The prototype ship is nearly ready.",
+      "This will be the first ship built in this system.",
+      "Commander, authorize the construction. Our expansion begins now."
+    ]
+  },
+  "H2O_FOUND": {
+    "name": "Water extraction",
+    "shortDescription": "Build a water processing plant.",
+    "descriptions": [
+      "Captain, we’ve located an area with extensive subsurface ice deposits in quadrant Delta-7.",
+      "Average depth is just 12 meters, and density exceeds the threshold needed for sustained extraction and processing.",
+      "Composition is stable: 91% H₂O, with minimal impurities. Data suggests the area could supply water for several standard cycles.",
+      "This is the first discovery of this magnitude since landing.",
+      "Recommendation: establish a drilling station, begin purification system assembly, and secure the zone.",
+      "We have water, Captain. We have a future."
+    ]
+  },
+  "ALIEN_TECH_FOUND": {
+    "name": "Alien technology",
+    "shortDescription": "Build a lab to investigate alien tech remains.",
+    "descriptions": [
+      "Captain, during a routine exploration in sector Kappa-3, the team discovered non-human material remains.",
+      "Partially collapsed structures, unnatural geometric patterns, and an unknown alloy unmatched in Earth or Martian databases.",
+      "No signs of recent activity, but the degradation suggests millennia of age... or something that doesn’t degrade easily.",
+      "This finding should not be disclosed to the general crew until its nature is confirmed.",
+      "Recommendation: establish a restricted perimeter, assign a small analysis team, and label the discovery internally as: “Echoes”.",
+      "We don’t know who they were. But they were here."
+    ]
+  },
+  "H2O_SEARCH": {
+    "name": "Water search",
+    "shortDescription": "Build a water processing plant.",
+    "descriptions": [
+      "Captain, recycled water reserves have dropped below operational thresholds.",
+      "Current consumption rate exceeds system regeneration capacity. Continuing without an external source will compromise colony survival.",
+      "Planetary subsurface shows signs of trapped moisture, but detailed exploration is needed to confirm viability.",
+      "Immediate recommendation: deploy survey drones and prioritize the search for ice deposits or aquifers.",
+      "Without water, there is no colony."
+    ]
+  },
+  "SCAN_FIRST": {
+    "name": "Searching for a free star system",
+    "shortDescription": "Use the antenna to scan nearby star systems. We need to know the neighborhood.",
+    "descriptions": [
+      "Captain, sensors show we are in a region full of possibilities. Cosmic radiation variations suggest nearby systems may harbor valuable resources, unknown life forms, or even forgotten technologies.",
+      "Exploring beyond our current position will not only expand our knowledge but also give us a vital edge in developing the colony. Every scan brings us closer to understanding this world and its secrets.",
+      "Scanning systems are ready. Who knows what wonders lie beyond our visual range? The universe won’t wait. Activate exploration protocol."
+    ]
+  },
+  "EXPLORE_SYSTEM": {
+    "name": "Exploring the galaxy",
+    "shortDescription": "Explore a star system. In the Galaxy tab you can view all scanned systems.",
+    "descriptions": [
+      "Scan results indicate we may have located a system suitable for colonization, but further investigation is needed.",
+      "Send a probe to inspect the system more closely. We need to know if it’s occupied or free to establish our first colony."
+    ]
+  },
+  "EXPLORE_FIRST": {
+    "name": "Investigating a nearby system",
+    "shortDescription": "Send a probe to the recently scanned system. We need to know if it’s inhabited.",
+    "descriptions": [
+      "Captain, stellar records have been updated. Several nearby systems show promising conditions for early exploration. Gravitational and thermal signals indicate unusual activity worth investigating.",
+      "Sending a probe to your chosen system will mark the official start of our expansion. This first mission will not only reveal valuable resource data but also lay the groundwork for future operations.",
+      "The navigation team is ready. Just give the order to launch our first look beyond our star. Let this be the beginning of our map in the stars, Captain."
+    ]
+  },
+  "SYSTEM_BUILT_EXTRACTION": {
+    "name": "Resource extraction facility",
+    "shortDescription": "Build a system to extract resources and start exploiting the system’s potential.",
+    "descriptions": [
+      "Captain, we’ve completed the system’s initial scan. Analyses show multiple celestial objects with valuable concentrations of metals, energy crystals, and rare compounds.",
+      "To proceed with extraction, we need to build appropriate facilities at each strategic location. I recommend deploying automated mining modules, orbital refineries, and surface processing platforms.",
+      "Construction will require sending two freighters loaded with materials and specialized personnel. Make sure this system is profitable — if not, look for one that offers greater benefits."
+    ]
+  },
+  "SYSTEM_BUILT_DEFENSE": {
+    "name": "Defense system",
+    "shortDescription": "Colonies are hard to defend. Build a defense system to give our settlers more security.",
+    "descriptions": [
+      "The first freighter has returned successfully. These resources will surely help us advance the colony.",
+      "Colonies are important, and they’re distant points that are difficult to defend. Build a defense system to help protect against space bandits."
+    ]
+  },
+  "SYSTEM_BUILT_STARPORT": {
+    "name": "Investigating a nearby system",
+    "shortDescription": "Send a probe to the recently scanned system. We need to know if it’s inhabited.",
+    "descriptions": [
+      "Perfect! The extraction systems have started storing resources.",
+      "We’ll need to send ships to collect the produced materials, but right now the journey is dangerous.",
+      "We need to build a starport to ensure we can safely dispatch ships."
+    ]
+  },
+  "COLLECT": {
+    "name": "Resource collection",
+    "shortDescription": "Send a freighter to collect from one of your controlled star systems.",
+    "descriptions": [
+      "Everything is ready for resource collection. Hopefully, we’ll soon reap the rewards of our efforts.",
+      "But let’s not rush it — we need to synchronize with the colonies to optimize trips.",
+      "Wait until the system has stored resources, then send a freighter to collect them."
+    ]
+  },
+  "BUILDING_ALIENT_LAB": {
+    "name": "Alien technology lab",
+    "shortDescription": "Build a lab on the ruins to research alien tech remains.",
+    "descriptions": [
+      "Everything is ready for resource collection. Hopefully, we’ll soon reap the rewards of our efforts.",
+      "But let’s not rush it — we need to synchronize with the colonies to optimize trips.",
+      "Wait until the system has stored resources, then send a freighter to collect them."
+    ]
   }
 }

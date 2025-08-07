@@ -8,23 +8,23 @@
     "SPACEDESTROYER": "Space Destroyer",
     "ASSAULTBATTLESHIP": "Assault Battleship",
     "STARCARRIER": "Star Carrier",
-    "HEAVYASSAULTSHIP": "Heavy Assault Frigate",
+    "HEAVYASSAULTSHIP": "Heavy Assault Ship",
     "ORBITALASSAULTSHIP": "Orbital Assault Ship",
     "PLANETARYDESTROYER": "Planetary Destroyer",
-    "FREIGHTER": "Fighter"
+    "FREIGHTER": "Freighter"
   },
   "shipDescription": {
-    "PROBE": "Space exploration probe. It has great speed but no attack or defense capabilities.",
-    "LIGHTFIGHTER": "A fast and agile ship designed for aerial combat and defense patrols.",
-    "INTERCEPTOR": "Specialized in intercepting and eliminating enemy threats before they approach.",
+    "PROBE": "Space exploration probe. Extremely fast but with no attack or defense capabilities.",
+    "LIGHTFIGHTER": "A fast and agile ship designed for dogfights and defense patrols.",
+    "INTERCEPTOR": "Specialized in intercepting and eliminating enemy threats before they get close.",
     "ESCORTFRIGATE": "Protects larger ships and convoys, combining defense with efficient maneuverability.",
-    "BATTLECRUISER": "A powerful ship capable of dealing strong attacks and withstanding significant damage.",
-    "SPACEDESTROYER": "Designed to eliminate enemy ships and guard strategic space zones.",
+    "BATTLECRUISER": "A powerful ship capable of striking hard and withstanding significant damage in battle.",
+    "SPACEDESTROYER": "Designed to eliminate enemy ships and defend strategic areas in space.",
     "ASSAULTBATTLESHIP": "A heavy ship equipped for direct assaults and breaking enemy defensive lines.",
-    "STARCARRIER": "A mobile base for launching fighters and providing tactical support in space battles.",
-    "HEAVYASSAULTSHIP": "A robust vessel with heavy weaponry for aggressive raids and prolonged sieges.",
-    "ORBITALASSAULTSHIP": "Specialized in orbital assaults for fast planetary objective takeovers.",
+    "STARCARRIER": "A mobile base for launching fighters and providing tactical support in space combat.",
+    "HEAVYASSAULTSHIP": "A sturdy ship with heavy weaponry for aggressive raids and prolonged sieges.",
+    "ORBITALASSAULTSHIP": "Specialized in orbital assaults to quickly take control of planetary objectives.",
     "PLANETARYDESTROYER": "A massive unit designed to destroy structures and bases on a planetary scale.",
-    "FREIGHTER": "A massive cargoo ship."
+    "FREIGHTER": "A massive freighter for transporting goods."
   }
 }
