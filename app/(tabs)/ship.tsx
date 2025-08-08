@@ -8,6 +8,7 @@ import ShipComponent from "../../components/main/ShipComponent";
 import { useGameContextSelector } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { ShipType } from "../../src/types/shipType";
+7;
 
 export default function ShipScreen() {
   const totalShipCounts: Partial<Record<ShipType, number>> = {};

@@ -128,5 +128,7 @@ const styles = StyleSheet.create({
     width: "90%",
     borderRadius: 12,
     overflow: "hidden", // para que la imagen y bordes redondeados funcionen bien
+    borderWidth: 1, // grosor mínimo del borde
+    borderColor: "#fff", // color blanco
   },
 });

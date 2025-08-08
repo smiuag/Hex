@@ -11,7 +11,7 @@ import { Resources } from "@/src/types/resourceTypes";
 
 export const getResearchTime = (research: ResearchType, level: number): number => {
   const baseTime = researchConfig[research].baseResearchTime;
-  return Math.round((baseTime / GENERAL_FACTOR) * Math.pow(RESEARCH_TIME_INCREMENT, level - 1));
+  return Math.round(baseTime * Math.pow(RESEARCH_TIME_INCREMENT, level - 1)) / GENERAL_FACTOR;
 };
 
 export const getResearchCost = (type: ResearchType, level: number): Resources => {
@@ -22,7 +22,8 @@ export const getResearchCost = (type: ResearchType, level: number): Resources =>
   for (const key in base) {
     const resource = key as keyof Resources;
     const baseValue = base[resource]!;
-    result[resource] = Math.ceil(baseValue * Math.pow(RESEARCH_COST_INCREMENT, level - 1));
+    result[resource] =
+      Math.ceil(baseValue * Math.pow(RESEARCH_COST_INCREMENT, level - 1)) / GENERAL_FACTOR;
   }
 
   return result;

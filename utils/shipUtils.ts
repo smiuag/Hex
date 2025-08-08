@@ -1,4 +1,5 @@
 import { shipConfig } from "@/src/config/shipConfig";
+import { GENERAL_FACTOR } from "@/src/constants/general";
 import { Research } from "@/src/types/researchTypes";
 import { Resources } from "@/src/types/resourceTypes";
 import { ShipType } from "@/src/types/shipType";
@@ -25,12 +26,12 @@ export const getTotalShipCost = (type: ShipType, amount: number): Resources => {
   for (const key in base) {
     const resource = key as keyof Resources;
     const baseValue = base[resource]!;
-    result[resource] = baseValue * amount;
+    result[resource] = (baseValue * amount) / GENERAL_FACTOR;
   }
 
   return result;
 };
 
 export const getFlyTime = (speed: number, distance: number) => {
-  return Math.round(distance / (speed / 10)) * 10000;
+  return (Math.round(distance / (speed / 10)) * 10000) / GENERAL_FACTOR;
 };

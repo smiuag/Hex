@@ -142,7 +142,7 @@ export default function MenuComponent() {
             </View>
           </View>
 
-          {processes.length == 0 ? (
+          {Array.isArray(processes) && processes.length === 0 ? (
             <View>
               {researchItems.map((item) => {
                 const maxDots = 80;

@@ -182,7 +182,7 @@ export const buildingConfig: Record<
   },
   ALIEN_LAB: {
     baseBuildTime: BUILDING_TIME.ALIEN_LAB,
-    image: IMAGES.ALIEN_LAB,
+    image: IMAGES.BUILDING_ALIEN_LAB,
     imageBackground: IMAGES.ALIEN_LAB_BACKGROUND,
     underConstructionImage: IMAGES.BUILDING_UNDER_CONSTRUCTION,
     baseCost: BUILDING_COST.ALIEN_LAB,

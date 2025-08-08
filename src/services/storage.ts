@@ -25,7 +25,7 @@ export const saveMap = async (hexes: Hex[]) => {
 
 export const loadMap = async (): Promise<Hex[] | null> => {
   const data = await AsyncStorage.getItem(MAP_KEY);
-  return data ? JSON.parse(data) : null;
+  return data ? JSON.parse(data) : [];
 };
 
 export const deleteMap = async () => {
@@ -59,7 +59,7 @@ export const saveResearch = async (researchList: Research[]) => {
 
 export const loadResearch = async (): Promise<Research[] | null> => {
   const data = await AsyncStorage.getItem(RESEARCH_KEY);
-  return data ? JSON.parse(data) : null;
+  return data ? JSON.parse(data) : [];
 };
 
 export const deleteResearch = async () => {
@@ -73,7 +73,7 @@ export const saveShip = async (researchList: Ship[]) => {
 
 export const loadShip = async (): Promise<Ship[] | null> => {
   const data = await AsyncStorage.getItem(SHIP_KEY);
-  return data ? JSON.parse(data) : null;
+  return data ? JSON.parse(data) : [];
 };
 
 export const deleteShip = async () => {
@@ -87,7 +87,7 @@ export const saveQuests = async (quests: PlayerQuest[]): Promise<void> => {
 
 export const loadQuests = async (): Promise<PlayerQuest[] | null> => {
   const data = await AsyncStorage.getItem(QUESTS_KEY);
-  return data ? JSON.parse(data) : null;
+  return data ? JSON.parse(data) : [];
 };
 
 export const deleteQuests = async (): Promise<void> => {
@@ -101,7 +101,7 @@ export const saveConfig = async (config: PlayerConfig): Promise<void> => {
 
 export const loadConfig = async (): Promise<PlayerConfig | null> => {
   const data = await AsyncStorage.getItem(CONFIG_KEY);
-  return data ? JSON.parse(data) : null;
+  return data ? JSON.parse(data) : [];
 };
 
 export const deleteConfig = async (): Promise<void> => {
@@ -115,7 +115,7 @@ export const saveStarSystem = async (starSystem: StarSystem[] | null): Promise<v
 
 export const loadStarSystem = async (): Promise<StarSystem[] | null> => {
   const data = await AsyncStorage.getItem(STAR_SYSTEM_KEY);
-  return data ? JSON.parse(data) : null;
+  return data ? JSON.parse(data) : [];
 };
 
 export const deleteStarSystem = async (): Promise<void> => {
@@ -129,7 +129,7 @@ export const saveFleet = async (fleet: FleetData[] | null): Promise<void> => {
 
 export const loadFleet = async (): Promise<FleetData[] | null> => {
   const data = await AsyncStorage.getItem(FLEET_KEY);
-  return data ? JSON.parse(data) : null;
+  return data ? JSON.parse(data) : [];
 };
 
 export const deleteFleet = async (): Promise<void> => {

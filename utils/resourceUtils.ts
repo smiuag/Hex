@@ -97,15 +97,24 @@ export const isSpecialResourceType = (key: string): key is (typeof SPECIAL_TYPES
   SPECIAL_TYPES.includes(key as (typeof SPECIAL_TYPES)[number]);
 
 export const getAccumulatedResources = (
-  storedResources: StoredResources
+  stored: StoredResources,
+  until?: number
 ): Partial<CombinedResources> => {
-  const elapsedSeconds = (Date.now() - storedResources.lastUpdate) / 1000;
-  const updated: Partial<CombinedResources> = { ...storedResources.resources };
+  const target = Math.min(until ?? Date.now(), Date.now());
+  const start = stored.lastUpdate ?? target;
 
-  for (const key in storedResources.production) {
-    const typedKey = key as keyof CombinedResources;
-    const produced = (storedResources.production[typedKey] || 0) * elapsedSeconds;
-    updated[typedKey] = (updated[typedKey] || 0) + produced;
+  const elapsedMs = Math.max(0, target - start);
+  if (elapsedMs === 0) return { ...stored.resources };
+
+  const elapsedSeconds = elapsedMs / 1000;
+  const updated: Partial<CombinedResources> = { ...stored.resources };
+
+  const prod = stored.production ?? {};
+  for (const key in prod) {
+    const k = key as keyof CombinedResources;
+    const rate = prod[k] || 0;
+    if (!rate) continue;
+    updated[k] = (updated[k] ?? 0) + rate * elapsedSeconds;
   }
 
   return updated;

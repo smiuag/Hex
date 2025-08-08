@@ -70,6 +70,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     width: "90%",
     maxHeight: "90%",
-    backgroundColor: "white", // por si lo necesitas
+    borderWidth: 1, // grosor mínimo del borde
+    borderColor: "#fff", // color blanco
   },
 });

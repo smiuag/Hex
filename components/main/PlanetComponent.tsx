@@ -32,7 +32,6 @@ export default function PlanetComponent() {
   const { SCREEN_WIDTH, SCREEN_HEIGHT, SVG_WIDTH, SVG_HEIGHT, CENTER_X, CENTER_Y } =
     SCREEN_DIMENSIONS;
 
-  console.log("planet");
   // Cámara
   const offsetX = useSharedValue(SCREEN_WIDTH / 2 - CENTER_X);
   const offsetY = useSharedValue(SCREEN_HEIGHT / 2 - CENTER_Y);

@@ -1,8 +1,9 @@
 // GameProvider.tsx
 import { useUniverse } from "@/hooks/useUniverse";
+import i18n from "@/i18n";
 import { getRandomStartSystem } from "@/utils/starSystemUtils";
 import React, { useEffect, useMemo } from "react";
-import { useTranslation } from "react-i18next";
+
 import { useConfig } from "../../hooks/useConfig";
 import { useHexes } from "../../hooks/useHexes";
 import { useQuest } from "../../hooks/useQuest";
@@ -35,7 +36,7 @@ type ProviderContextType = {
   universe: StarSystemMap;
   startStarSystemExploration: (id: string) => void;
   startCelestialBodyExploration: (systemId: string, planetId: string) => void;
-  addProduction: (modifications: Partial<Resources>) => void;
+  addProduction: (modifications: Partial<Resources>, effectiveAt: number) => void;
   addResources: (modifications: Partial<Resources>) => void;
   subtractResources: (modifications: Partial<Resources>) => void;
   handleBuild: (q: number, r: number, type: BuildingType) => void;
@@ -72,7 +73,9 @@ const GameContext = createContext<ProviderContextType>(null as any);
 
 // 🧠 Provider
 export const GameProvider = ({ children }: { children: React.ReactNode }) => {
-  const { t: tResearch } = useTranslation("research");
+  //const { t: tResearch } = useTranslation("research");
+
+  const tResearch = React.useMemo(() => i18n.getFixedT(null, "research"), []);
   const { universe } = useUniverse();
 
   const { playerConfig, handleUpdateConfig, resetPlayerConfig } = useConfig();

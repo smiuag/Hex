@@ -24,20 +24,20 @@ export const ShipStatsDisplay = ({
   showSpeed = true,
 }: Props) => {
   return (
-    <View style={[styles.container, { gap: 12 }]}>
+    <View style={[styles.container]}>
       {Object.entries(stats).map(([key, value]) => {
-        const emoji = shipStatsEmojis[key];
+        const emoji = shipStatsEmojis[key as keyof typeof shipStatsEmojis];
+
         if (!emoji || value == null) return null;
+        if (!showSpeed && key === "SPEED") return null;
 
         return (
-          (showSpeed || key !== "SPEED") && (
-            <View key={key} style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text style={[styles.item, { fontSize, color: fontColor }]}>{emoji}</Text>
-              <View style={[commonStyles.minWidth25, { marginLeft: 4 }]}>
-                <Text style={commonStyles.whiteText}>{value}</Text>
-              </View>
+          <View key={key} style={{ flexDirection: "row", alignItems: "center" }}>
+            <Text style={[styles.item, { fontSize, color: fontColor }]}>{emoji}</Text>
+            <View style={[commonStyles.minWidth25, { marginLeft: 4 }]}>
+              <Text style={commonStyles.whiteText}>{value}</Text>
             </View>
-          )
+          </View>
         );
       })}
     </View>

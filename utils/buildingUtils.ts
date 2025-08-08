@@ -23,7 +23,8 @@ export const getBuildCost = (building: BuildingType, level: number): Resources =
   for (const key in base) {
     const resource = key as keyof Resources;
     const baseValue = base[resource]!;
-    result[resource] = Math.ceil(baseValue * Math.pow(BUILD_COST_INCREMENT, level - 1));
+    result[resource] =
+      Math.ceil(baseValue * Math.pow(BUILD_COST_INCREMENT, level - 1)) / GENERAL_FACTOR;
   }
 
   return result;

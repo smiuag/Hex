@@ -117,6 +117,7 @@ export const IMAGES = {
   BUILDING_UNDER_CONSTRUCTION_BASE: underConstructionBase,
   BUILDING_WATEREXTRACTOR: waterExtractor,
   BUILDING_RESIDUE: residue,
+  BUILDING_ALIEN_LAB: buildingAlienLab,
   HEX_LUNAR: lunar,
   RESEARCH_MINING: mining,
   RESEARCH_TERRAFORMING: terraforming,
@@ -166,7 +167,6 @@ export const IMAGES = {
   ALIEN_LAB: alienLab,
   ALIEN_STRUCTURE: alienStructure,
   ALIEN_LAB_BACKGROUND: alienLabBackground,
-  BUILDING_ALIEN_LAB: buildingAlienLab,
 
   RESEARCH_SELENOGRAFIA: selenografia,
   RESEARCH_KELSIANO: kelsiano,

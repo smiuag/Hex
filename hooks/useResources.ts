@@ -75,25 +75,31 @@ export function useResources() {
     await saveResources(updatedState);
   };
 
-  const addProduction = async (extraProduction: Partial<CombinedResources>) => {
-    const updatedProduction: Partial<CombinedResources> = { ...resources.production };
-    const updated = getAccumulatedResources(resources);
+  const addProduction = async (
+    extraProduction: Partial<CombinedResources>,
+    effectiveAt: number
+  ) => {
+    const targetTime = Math.min(effectiveAt, Date.now());
 
-    for (const key in extraProduction) {
-      const typedKey = key as keyof CombinedResources;
-      updatedProduction[typedKey] =
-        (updatedProduction[typedKey] || 0) + (extraProduction[typedKey] || 0);
-    }
+    setResources((prev) => {
+      const accumulated = getAccumulatedResources(prev, targetTime);
 
-    const updatedState: StoredResources = {
-      ...resources,
-      resources: updated,
-      lastUpdate: Date.now(),
-      production: updatedProduction,
-    };
+      const newProduction: Partial<CombinedResources> = { ...prev.production };
+      for (const key in extraProduction) {
+        const k = key as keyof CombinedResources;
+        newProduction[k] = (newProduction[k] || 0) + (extraProduction[k] || 0);
+      }
 
-    setResources(updatedState);
-    await saveResources(updatedState);
+      const next: StoredResources = {
+        ...prev,
+        resources: accumulated,
+        production: newProduction,
+        lastUpdate: targetTime,
+      };
+
+      saveResources(next).catch(() => {});
+      return next;
+    });
   };
 
   const enoughResources = (cost: Partial<CombinedResources>) => {

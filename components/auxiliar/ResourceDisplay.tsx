@@ -26,6 +26,8 @@ export const ResourceDisplay = ({
   fontColor = "white",
   miniSyle = false,
 }: Props) => {
+  if (!resources) return null;
+
   const hasAnySpecialResource = SPECIAL_TYPES.some((type) => (resources[type] || 0) > 0);
 
   //Mostrar solo especiales

@@ -2,10 +2,9 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
 i18n.use(initReactI18next).init({
-  //compatibilityJSON: 'v3', // <= solo si necesario por los archivos
   lng: "es",
   fallbackLng: "es",
-  ns: ["common", "resources", "planets", "buildings", "quests", "tech"],
+  ns: ["common", "resources", "planets", "buildings", "quests", "tech", "research", "ship"],
   defaultNS: "common",
   resources: {
     en: {
@@ -28,3 +27,5 @@ i18n.use(initReactI18next).init({
     },
   },
 });
+
+export default i18n;

@@ -90,7 +90,7 @@ export default function AntennaComponent() {
     currentCluster,
     currentGalaxy,
     currentRegion
-  );
+  ).filter((s) => s.id != startingSystemId);
 
   visibleClusters =
     antennaLevel >= 4 ? [...new Set(Object.values(universe).map((s) => s.cluster))] : [cluster];

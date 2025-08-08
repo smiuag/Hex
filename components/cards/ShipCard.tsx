@@ -132,7 +132,7 @@ export const ShipCard: React.FC<Props> = ({ item, disableButton, onBuild, onCanc
                 disabled={!item.canBuild || disableButton}
                 onPress={() => onBuild(item.type, 1)}
               >
-                <Text style={commonStyles.buttonTextLight}>{t("build")}</Text>
+                <Text style={commonStyles.buttonTextLight}>{t("Build")}</Text>
               </TouchableOpacity>
             </View>
           </View>

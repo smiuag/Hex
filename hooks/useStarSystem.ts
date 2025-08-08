@@ -102,16 +102,41 @@ export const useStarSystem = (
       fleet.map((f) => {
         if (f.id !== fleetId) return f;
 
-        const timeSpent = now - f.startTime;
+        const D = Math.max(0, f.endTime - f.startTime); // duración total de la ida
+        const hasArrivedToDestination = now >= f.endTime;
+
+        // 1) Todavía iba de ida: cancelo y vuelvo
+        if (!hasArrivedToDestination) {
+          const elapsed = Math.max(0, now - f.startTime);
+          const returnDuration = elapsed;
+          const returnEnd = now + returnDuration;
+
+          return {
+            ...f,
+            startTime: now,
+            endTime: returnEnd,
+            origin: f.destinationSystemId,
+            destinationSystemId: f.origin,
+            destinationPlanetId: undefined,
+            movementType: "RETURN" as MovementType,
+            resources: resources ?? {},
+          };
+        }
+
+        // 2) Ya llegó al destino: el retorno empieza en la hora real de llegada
+        const returnStart = f.endTime;
+        const returnDuration = D;
+        const returnEnd = returnStart + returnDuration;
+
         return {
           ...f,
-          startTime: now,
-          endTime: now + timeSpent,
-          destinationSystemId: f.origin,
+          startTime: returnStart,
+          endTime: returnEnd,
           origin: f.destinationSystemId,
+          destinationSystemId: f.origin,
           destinationPlanetId: undefined,
           movementType: "RETURN" as MovementType,
-          resources: resources ? resources : {},
+          resources: resources ?? {},
         };
       })
     );
@@ -244,11 +269,6 @@ export const useStarSystem = (
       if (f.endTime > now) continue;
 
       switch (f.movementType) {
-        case "RETURN":
-          handleCreateShips(f.ships);
-          destroyFleet(f.id);
-          break;
-
         case "EXPLORE SYSTEM":
           await exploreStarSystem(f.destinationSystemId, f.id);
           break;
@@ -263,6 +283,11 @@ export const useStarSystem = (
 
         case "COLLECT":
           await collectSystem(f.id);
+          break;
+
+        case "RETURN":
+          handleCreateShips(f.ships);
+          destroyFleet(f.id);
           break;
 
         default:
@@ -348,28 +373,34 @@ export const useStarSystem = (
   };
 
   const extractionBuild = async (id: string) => {
-    const system = systemsRef.current.find((s) => s.id === id);
-    if (!system) return;
+    await modifySystems((systems) => {
+      const now = Date.now();
 
-    await modifySystems((systems) =>
-      systems.map((s) =>
-        s.id === id
-          ? {
-              ...s,
-              extractionStartedAt: undefined,
-              extractionBuildingBuilt: true,
-              storedResources: {
-                lastUpdate: Date.now(),
-                production: s.storedResources.production,
-                resources: {},
-              },
-            }
-          : s
-      )
-    );
+      return systems.map((s) => {
+        if (s.id !== id) return s;
 
-    if (!playerQuests.some((pq) => pq.type == "SYSTEM_BUILT_EXTRACTION" && pq.completed))
+        const started = s.extractionStartedAt ?? now;
+        const finishedAt = started + STAR_BUILDINGS_DURATION;
+        const effectiveAt = Math.min(finishedAt, now);
+        const resAtFinish = getAccumulatedResources(s.storedResources, effectiveAt);
+
+        return {
+          ...s,
+          extractionStartedAt: undefined,
+          extractionBuildingBuilt: true,
+          storedResources: {
+            ...s.storedResources,
+            resources: resAtFinish,
+            production: s.storedResources.production,
+            lastUpdate: effectiveAt,
+          },
+        };
+      });
+    });
+
+    if (!playerQuests.some((pq) => pq.type === "SYSTEM_BUILT_EXTRACTION" && pq.completed)) {
       await updateQuest({ type: "SYSTEM_BUILT_EXTRACTION", completed: true });
+    }
   };
 
   const defenseBuild = async (id: string) => {

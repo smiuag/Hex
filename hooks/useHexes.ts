@@ -16,7 +16,7 @@ import {
 } from "../utils/hexUtils";
 
 export const useHexes = (
-  addProduction: (modifications: Partial<Resources>) => void,
+  addProduction: (modifications: Partial<Resources>, effectiveAt: number) => void,
   addResources: (modifications: Partial<Resources>) => void,
   subtractResources: (modifications: Partial<Resources>) => void,
   enoughResources: (cost: Partial<Resources>) => boolean,
@@ -203,6 +203,12 @@ export const useHexes = (
     let labBuild = false;
     let waterExtractorBuild = false;
 
+    const completed: Array<{
+      diff: Partial<Resources>;
+      finishedAt: number;
+      building: BuildingType;
+    }> = [];
+
     await modifyHexes((prevHexes) => {
       const now = Date.now();
       let changed = false;
@@ -212,7 +218,9 @@ export const useHexes = (
 
         const { building, startedAt, targetLevel } = hex.construction;
         const buildTime = getBuildTime(building, targetLevel);
-        if (now - startedAt < buildTime) return hex;
+
+        const finishedAt = startedAt + buildTime;
+        if (now < finishedAt) return hex;
 
         changed = true;
 
@@ -232,7 +240,9 @@ export const useHexes = (
           if (d !== 0) diff[key] = d;
         }
 
-        if (Object.keys(diff).length > 0) addProduction(diff);
+        if (Object.keys(diff).length > 0) {
+          completed.push({ diff, finishedAt, building });
+        }
 
         if (building === "QUARRY") quarryBuild = true;
         if (building === "METALLURGY") metalBuild = true;
@@ -256,6 +266,12 @@ export const useHexes = (
       return changed ? expandHexMapFromBuiltHexes(updatedHexes) : prevHexes;
     });
 
+    if (completed.length) {
+      completed.sort((a, b) => a.finishedAt - b.finishedAt);
+      for (const c of completed) {
+        await addProduction(c.diff, c.finishedAt);
+      }
+    }
     //config para mostrar tabs
     if (antennaBuild) await handleUpdateConfig({ key: "HAS_ANTENNA", value: "true" });
     if (hangarBuild) await handleUpdateConfig({ key: "HAS_HANGAR", value: "true" });
