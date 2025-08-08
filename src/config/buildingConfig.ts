@@ -24,6 +24,7 @@ export const buildingConfig: Record<
     requiredResearch: BuildingRequiredResearch;
     maxNumberInPlanet: number;
     maxLvl: number;
+    order: number;
   }
 > = {
   BASE: {
@@ -36,6 +37,7 @@ export const buildingConfig: Record<
     requiredResearch: BUILDING_REQUIRED_RESEARCH.BASE,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.BASE,
     maxLvl: BUILDING_MAX_LVL.BASE,
+    order: 1,
   },
   RECYCLE: {
     baseBuildTime: BUILDING_TIME.RECYCLE,
@@ -47,6 +49,7 @@ export const buildingConfig: Record<
     requiredResearch: BUILDING_REQUIRED_RESEARCH.RECYCLE,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.RECYCLE,
     maxLvl: BUILDING_MAX_LVL.RECYCLE,
+    order: 9,
   },
   LAB: {
     baseBuildTime: BUILDING_TIME.LAB,
@@ -58,6 +61,7 @@ export const buildingConfig: Record<
     requiredResearch: BUILDING_REQUIRED_RESEARCH.LAB,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.LAB,
     maxLvl: BUILDING_MAX_LVL.LAB,
+    order: 2,
   },
   METALLURGY: {
     baseBuildTime: BUILDING_TIME.METALLURGY,
@@ -69,6 +73,7 @@ export const buildingConfig: Record<
     requiredResearch: BUILDING_REQUIRED_RESEARCH.METALLURGY,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.METALLURGY,
     maxLvl: BUILDING_MAX_LVL.METALLURGY,
+    order: 4,
   },
   QUARRY: {
     baseBuildTime: BUILDING_TIME.QUARRY,
@@ -80,6 +85,7 @@ export const buildingConfig: Record<
     requiredResearch: BUILDING_REQUIRED_RESEARCH.QUARRY,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.QUARRY,
     maxLvl: BUILDING_MAX_LVL.QUARRY,
+    order: 3,
   },
   KRYSTALMINE: {
     baseBuildTime: BUILDING_TIME.KRYSTALMINE,
@@ -91,6 +97,7 @@ export const buildingConfig: Record<
     requiredResearch: BUILDING_REQUIRED_RESEARCH.KRYSTALMINE,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.KRYSTALMINE,
     maxLvl: BUILDING_MAX_LVL.KRYSTALMINE,
+    order: 5,
   },
   ANTENNA: {
     baseBuildTime: BUILDING_TIME.ANTENNA,
@@ -102,6 +109,7 @@ export const buildingConfig: Record<
     requiredResearch: BUILDING_REQUIRED_RESEARCH.ANTENNA,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.ANTENNA,
     maxLvl: BUILDING_MAX_LVL.ANTENNA,
+    order: 6,
   },
   HANGAR: {
     baseBuildTime: BUILDING_TIME.HANGAR,
@@ -113,6 +121,7 @@ export const buildingConfig: Record<
     requiredResearch: BUILDING_REQUIRED_RESEARCH.HANGAR,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.HANGAR,
     maxLvl: BUILDING_MAX_LVL.HANGAR,
+    order: 7,
   },
   ROCKET: {
     baseBuildTime: BUILDING_TIME.ROCKET,
@@ -124,6 +133,7 @@ export const buildingConfig: Record<
     requiredResearch: BUILDING_REQUIRED_RESEARCH.ROCKET,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.ROCKET,
     maxLvl: BUILDING_MAX_LVL.ROCKET,
+    order: 12,
   },
   ENERGY: {
     baseBuildTime: BUILDING_TIME.ENERGY,
@@ -135,6 +145,7 @@ export const buildingConfig: Record<
     requiredResearch: BUILDING_REQUIRED_RESEARCH.ENERGY,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.ENERGY,
     maxLvl: BUILDING_MAX_LVL.ENERGY,
+    order: 8,
   },
   SPACESTATION: {
     baseBuildTime: BUILDING_TIME.SPACESTATION,
@@ -146,6 +157,7 @@ export const buildingConfig: Record<
     requiredResearch: BUILDING_REQUIRED_RESEARCH.SPACESTATION,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.SPACESTATION,
     maxLvl: BUILDING_MAX_LVL.SPACESTATION,
+    order: 13,
   },
   RESIDUE: {
     baseBuildTime: BUILDING_TIME.RESIDUE,
@@ -157,6 +169,7 @@ export const buildingConfig: Record<
     requiredResearch: BUILDING_REQUIRED_RESEARCH.RESIDUE,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.RESIDUE,
     maxLvl: BUILDING_MAX_LVL.RESIDUE,
+    order: 10,
   },
   GREENHOUSE: {
     baseBuildTime: BUILDING_TIME.GREENHOUSE,
@@ -168,6 +181,7 @@ export const buildingConfig: Record<
     requiredResearch: BUILDING_REQUIRED_RESEARCH.GREENHOUSE,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.GREENHOUSE,
     maxLvl: BUILDING_MAX_LVL.GREENHOUSE,
+    order: 11,
   },
   WATEREXTRACTOR: {
     baseBuildTime: BUILDING_TIME.WATEREXTRACTOR,
@@ -179,6 +193,7 @@ export const buildingConfig: Record<
     requiredResearch: BUILDING_REQUIRED_RESEARCH.WATEREXTRACTOR,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.WATEREXTRACTOR,
     maxLvl: BUILDING_MAX_LVL.WATEREXTRACTOR,
+    order: 14,
   },
   ALIEN_LAB: {
     baseBuildTime: BUILDING_TIME.ALIEN_LAB,
@@ -190,5 +205,6 @@ export const buildingConfig: Record<
     requiredResearch: BUILDING_REQUIRED_RESEARCH.ALIEN_LAB,
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.ALIEN_LAB,
     maxLvl: BUILDING_MAX_LVL.ALIEN_LAB,
+    order: 15,
   },
 };

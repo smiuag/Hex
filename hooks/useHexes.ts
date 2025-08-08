@@ -160,7 +160,7 @@ export const useHexes = (
       )
     );
 
-    //if (resources) addResources(resources);
+    if (resources) addResources(resources);
   };
 
   const handleCancelBuild = async (q: number, r: number) => {

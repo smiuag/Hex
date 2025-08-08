@@ -76,18 +76,14 @@ export default function ConstructionComponent() {
         unmetRequirements,
         requirements: config.requiredResearch,
         lockedByResources,
+        order: config.order,
       };
     })
     .sort((a, b) => {
-      const getPriority = (building: BuildingItem) => {
-        if (building.lockedByMax) return 3;
-        if (building.unmetRequirements.length > 0) return 2;
-        if (building.lockedByResources) return 1;
-        if (building.available) return 0;
-        return 3;
-      };
+      if (a.lockedByMax && !b.lockedByMax) return 1;
+      if (!a.lockedByMax && b.lockedByMax) return -1;
 
-      return getPriority(a) - getPriority(b);
+      return a.order - b.order;
     });
 
   return (

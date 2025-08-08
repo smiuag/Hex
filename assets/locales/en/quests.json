@@ -116,7 +116,7 @@
   },
   "ALIEN_TECH_FOUND": {
     "name": "Alien technology",
-    "shortDescription": "Build a lab to investigate alien tech remains.",
+    "shortDescription": "Search and inspect alien structures.",
     "descriptions": [
       "Captain, during a routine exploration in sector Kappa-3, the team discovered non-human material remains.",
       "Partially collapsed structures, unnatural geometric patterns, and an unknown alloy unmatched in Earth or Martian databases.",

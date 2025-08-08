@@ -84,7 +84,7 @@ export const getProductionPerSecond = (building: BuildingType, level: number): R
   for (const key in base) {
     const resource = key as keyof Resources;
     const baseValue = base[resource]!;
-    result[resource] = Math.ceil(baseValue * Math.pow(PRODUCTION_INCREMENT, level - 1));
+    result[resource] = baseValue * Math.pow(PRODUCTION_INCREMENT, level - 1);
   }
 
   return result;

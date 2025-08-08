@@ -1,3 +1,4 @@
+import { BUILDING_PRODUCTION } from "@/src/constants/building";
 import { BuildingType } from "@/src/types/buildingTypes";
 import { Hex } from "@/src/types/hexTypes";
 import { StoredResources } from "@/src/types/resourceTypes";
@@ -69,12 +70,7 @@ export const getInitialResources = (): StoredResources => ({
     STONE: 0,
   },
   lastUpdate: Date.now(),
-  production: {
-    METAL: 10,
-    ENERGY: 5,
-    CRYSTAL: 0,
-    STONE: 10,
-  },
+  production: BUILDING_PRODUCTION.BASE,
 });
 
 export const axialDistance = (a: { q: number; r: number }, b: { q: number; r: number }): number => {

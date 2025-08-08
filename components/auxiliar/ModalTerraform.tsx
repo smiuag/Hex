@@ -32,7 +32,7 @@ export default function ModalTerraform() {
     if (maxTerraformReached) {
       Toast.show({
         type: "info", // "success" | "info" | "error"
-        text1: "Límite alcanzado",
+        text1: "Límite de exploración alcanzado. Mejora la base",
         position: "top",
         visibilityTime: 2000,
       });
