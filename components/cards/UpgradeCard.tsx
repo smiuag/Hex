@@ -1,5 +1,5 @@
 import { useGameContextSelector } from "@/src/context/GameContext";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, ImageBackground, Pressable, Text, TouchableOpacity, View } from "react-native";
 import { buildingConfig } from "../../src/config/buildingConfig";
@@ -28,6 +28,26 @@ export const UpgradeCard: React.FC<Props> = ({ data, research, onBuild, onDestro
   const { t: tBuilding } = useTranslation("buildings");
   const { t: tResearch } = useTranslation("research");
   const enoughResources = useGameContextSelector((ctx) => ctx.enoughResources);
+  const [lockedByResources, setLockedByResources] = useState(true);
+
+  useEffect(() => {
+    if (!data.building) return;
+
+    const locked = !enoughResources(getBuildCost(data.building.type, data.building.level + 1));
+    setLockedByResources(locked);
+  }, [data.building, enoughResources]);
+
+  useEffect(() => {
+    const check = () => {
+      if (!data.building) return;
+      const locked = !enoughResources(getBuildCost(data.building.type, data.building.level + 1));
+
+      if (locked != lockedByResources) setLockedByResources(locked);
+    };
+
+    const interval = setInterval(check, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   if (!data.building) return null;
 
@@ -35,7 +55,7 @@ export const UpgradeCard: React.FC<Props> = ({ data, research, onBuild, onDestro
   const nextLevel = data.building.level + 1;
   const cost = getBuildCost(data.building.type, nextLevel);
   const time = getBuildTime(data.building.type, nextLevel);
-  const lockedByResources = !enoughResources(cost);
+  //const lockedByResources = !enoughResources(cost);
   const currentProduction = getProductionPerHour(data.building.type, data.building.level);
   const nextProduction = getProductionPerHour(data.building.type, nextLevel);
   const hasProduction = Object.values(nextProduction).some((v) => v > 0);

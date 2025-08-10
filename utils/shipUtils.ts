@@ -1,6 +1,6 @@
 import { shipConfig } from "@/src/config/shipConfig";
 import { GENERAL_FACTOR } from "@/src/constants/general";
-import { Research } from "@/src/types/researchTypes";
+import { Research, ShipRequiredResearch } from "@/src/types/researchTypes";
 import { Resources } from "@/src/types/resourceTypes";
 import { ShipType } from "@/src/types/shipType";
 
@@ -34,4 +34,17 @@ export const getTotalShipCost = (type: ShipType, amount: number): Resources => {
 
 export const getFlyTime = (speed: number, distance: number) => {
   return (Math.round(distance / (speed / 10)) * 10000) / GENERAL_FACTOR;
+};
+
+export const getUnmetRequirements = (
+  requiredResearch: ShipRequiredResearch,
+  research: Research[]
+) => {
+  return (
+    requiredResearch.filter((req) => {
+      const playerResearchLevel =
+        research.find((r) => r.data.type === req.researchType)?.data.level ?? 0;
+      return playerResearchLevel < req.researchLevelRequired;
+    }) ?? []
+  );
 };

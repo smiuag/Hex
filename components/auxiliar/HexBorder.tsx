@@ -2,7 +2,7 @@ import React from "react";
 import { G, Line, Polygon } from "react-native-svg";
 import { terrainConfig } from "../../src/config/terrainConfig";
 import { Hex } from "../../src/types/hexTypes";
-import { getHexCornerPoints } from "../../utils/hexUtils";
+import { directionMap, getHexCornerPoints, getNeighbor, isOccupied } from "../../utils/hexUtils";
 
 interface Props {
   hex: Hex;
@@ -13,26 +13,6 @@ interface Props {
   index: number;
   hexSize: number;
 }
-
-const directionMap = [0, 5, 4, 3, 2, 1];
-const axialDirections = [
-  { q: +1, r: 0 }, // 0: E
-  { q: +1, r: -1 }, // 1: NE
-  { q: 0, r: -1 }, // 2: NW
-  { q: -1, r: 0 }, // 3: W
-  { q: -1, r: +1 }, // 4: SW
-  { q: 0, r: +1 }, // 5: SE
-];
-
-const getNeighbor = (q: number, r: number, direction: number) => {
-  const dir = axialDirections[direction];
-  return { q: q + dir.q, r: r + dir.r };
-};
-
-const isOccupied = (q: number, r: number, hexes: Hex[]) => {
-  const neighbor = hexes.find((h) => h.q === q && h.r === r);
-  return !!neighbor && (neighbor.isVisible || neighbor.building || neighbor.construction);
-};
 
 export default function BorderHexTile({ hex, hexes, points, px, py, index, hexSize }: Props) {
   const config = terrainConfig["BORDER"];

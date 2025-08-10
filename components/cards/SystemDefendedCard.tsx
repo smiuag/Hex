@@ -27,7 +27,7 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onCance
   const attackingFleet = fleet.find(
     (f) => f.destinationSystemId === system.id && f.movementType == "ATTACK"
   );
-  const duration = attackingFleet ? attackingFleet.startTime - attackingFleet.endTime : 0;
+  const duration = attackingFleet ? attackingFleet.endTime - attackingFleet.startTime : 0;
 
   const image = getSystemImage(system.type);
   const systemName = universe[system.id].name;
@@ -52,9 +52,6 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onCance
               {system.distance} {t("parsecs")}
             </Text>
           </View>
-          <Text style={[commonStyles.titleText, { textAlign: "center", marginTop: 5 }]}>
-            {t("CelestialBodies")}
-          </Text>
           <View style={{ marginTop: 5 }}>
             {system.defense.map((ship) => {
               const name = tShip(`shipName.${ship.type}`);

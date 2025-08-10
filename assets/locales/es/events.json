@@ -1,0 +1,68 @@
+{
+  "COMERCIAL": {
+    "singular": "Un acuerdo comercial de la raza {{race}}",
+    "plural": "Un acuerdo comercial de las razas {{races}}"
+  },
+  "VISIT": {
+    "singular": "Una visita de un emisario de la raza {{race}}",
+    "plural": "Una visita de un emisario de las razas {{races}}"
+  },
+  "ATACK": {
+    "singular": "Un ataque de la raza {{race}}",
+    "plural": "Un ataque de las razas {{races}}"
+  },
+  "EXTORTION": {
+    "singular": "Una extorsión de la raza {{race}}",
+    "plural": "Una extorsión de las razas {{races}}"
+  },
+
+  "diplomacyChange": {
+    "SMALL_INCREASE": "Tu relación con los {{race}} mejorará ligeramente.",
+    "MEDIUM_INCREASE": "Tu relación con los {{race}} establecerá un nuevo vinculo sólido.",
+    "LARGE_INCREASE": "Los {{race}} estarán en deuda con nosotros.",
+    "SMALL_DECREASE": "Tu relación con los {{race}} empeorará un poco.",
+    "MEDIUM_DECREASE": "Tu relación con los {{race}} sufrirá un severo revés.",
+    "LARGE_DECREASE": "Los {{race}} tomarán esta decisión como una fuerte afrenta a su raza."
+  },
+  "trade": {
+    "OFFER": "Nos ofrecen",
+    "ASK": "Nos piden",
+    "EXCHANGE": "a cambio de",
+    "TECH_SHARE": "Además se ofrecen a compartir contigo un descubrimiento tecnológico importante.",
+    "SE_OFFRE_TECH": "Se ofrecen a compartir contigo un descubrimiento tecnológico importante."
+  },
+  "extortion": {
+    "ASK": "Se nos exige la entrega de",
+    "EXCHANGE": "a cambio de"
+  },
+  "infiltration": {
+    "INFILTRATOR": "Un infiltrado",
+    "INFILTRATED_GROUP": "Un grupo infiltrado",
+    "ENEMY_AGENTS": "Varios agentes enemigos",
+    "DETECTED": "detectado a punto de",
+    "ATTEMPTING": "intentando",
+    "WITH_INTENT": "con intención de",
+    "STEAL_RESOURCES": "robar recursos",
+    "STEAL_TECHNOLOGY": "robar nuestra tecnología",
+    "SABOTAGE": "sabotear nuestras instalaciones",
+    "REBELION": "generar una rebelión"
+  },
+  "TRADE": "Comerciar",
+  "FIGHT": "Luchar",
+  "DIPLOMACY": "Diplomacia",
+  "RETRIBUTION": "Venganza",
+  "IGNORE": "Ignorar",
+  "attackWarning": "Serás atacado por",
+
+  "infiltrationDiplomatic1": "Decides no tomar represalias contra los atacantes, dejando que escapen del planeta sin consecuencias.",
+  "infiltrationDiplomatic2": "Fichas a los infiltrados y les niegas el futuro acceso a tu planeta, pero no tomas represalias.",
+  "infiltrationDiplomatic3": "Interrogas a los capturados pero finalmente los liberas y informas del percance a los suyos.",
+
+  "extortionDiplomatic1": "Rechazas el intercambio. Te pones en contacto con los líderes enemigos y consigues que la cosa no vaya a mayores a cambio de un donativo.",
+  "extortionDiplomatic2": "Haces entender a tus enemigos que es imposible para ti realizar un trato en esas condiciones. Les realizas un pago por menor y se marchan.",
+  "extortionDiplomatic3": "Consigues cambiar el trato y que se vayan sin consecuencias.",
+
+  "retributionDiplomatic1": "Coges a los asaltantes y los ejecutas sin interrogarlos ni juicio previo.",
+  "retributionDiplomatic2": "Los torturas intentando sacarles toda la información posible y pero los mandas de vuelta a su planeta.",
+  "retributionDiplomatic3": "Encierras a los atacantes en una prisión secreta y comunicas su defunción en trágico accidente. Quizá más tarde puedan ser útiles."
+}

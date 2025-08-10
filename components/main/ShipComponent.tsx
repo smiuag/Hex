@@ -49,12 +49,7 @@ export default function ShipComponent() {
       keyExtractor={(item) => item.key}
       contentContainerStyle={commonStyles.flatList}
       renderItem={({ item }) => (
-        <ShipCard
-          item={item}
-          disableButton={false} // puedes ajustar si solo 1 puede construirse a la vez
-          onBuild={handleBuildShip}
-          onCancel={handleCancelShip}
-        />
+        <ShipCard item={item} onBuild={handleBuildShip} onCancel={handleCancelShip} />
       )}
     />
   );

@@ -243,7 +243,15 @@ export const SystemExploredCard: React.FC<Props> = ({
           )}
 
           {system.extractionBuildingBuilt && (
-            <View style={commonStyles.actionBar}>
+            <View
+              style={[
+                commonStyles.actionBar,
+                Object.entries(system.storedResources.resources).filter(([key, value]) => value > 0) // Filtramos los recursos con valor > 0
+                  .length > 5
+                  ? { flexDirection: "column" }
+                  : { flexDirection: "row" },
+              ]}
+            >
               <View>
                 <Text style={commonStyles.whiteText}>{t("Stored")} </Text>
               </View>

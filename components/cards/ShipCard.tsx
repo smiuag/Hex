@@ -1,4 +1,7 @@
+import { shipConfig } from "@/src/config/shipConfig";
 import { SHIP_STATS } from "@/src/constants/ship";
+import { useGameContextSelector } from "@/src/context/GameContext";
+import { getUnmetRequirements, isUnlocked } from "@/utils/shipUtils";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Animated, ImageBackground, Text, TouchableOpacity, View } from "react-native";
@@ -22,17 +25,18 @@ type Props = {
     canBuild: boolean;
     unitTime: number;
   };
-  disableButton: boolean;
   onBuild: (type: ShipType, amount: number) => void;
   onCancel: (type: ShipType) => void;
 };
 
-export const ShipCard: React.FC<Props> = ({ item, disableButton, onBuild, onCancel }) => {
+export const ShipCard: React.FC<Props> = ({ item, onBuild, onCancel }) => {
   const { t } = useTranslation("common");
   const { t: tShip } = useTranslation("ship");
+  const { t: tResearch } = useTranslation("research");
   const scale = useRef(new Animated.Value(1)).current;
   const [animate, setAnimate] = useState(false);
   const wasInProgress = useRef(item.inProgress);
+  const research = useGameContextSelector((ctx) => ctx.research);
 
   useEffect(() => {
     if (wasInProgress.current && !item.inProgress) {
@@ -57,6 +61,13 @@ export const ShipCard: React.FC<Props> = ({ item, disableButton, onBuild, onCanc
       ]).start(() => setAnimate(false));
     }
   }, [animate, scale]);
+
+  const isAvailable = isUnlocked(item.type, research);
+
+  const config = shipConfig[item.type];
+  const unmetRequirements = isAvailable
+    ? []
+    : getUnmetRequirements(config.requiredResearch, research);
 
   return (
     <Animated.View style={[commonStyles.cardContainer, { transform: [{ scale }] }]}>
@@ -102,34 +113,50 @@ export const ShipCard: React.FC<Props> = ({ item, disableButton, onBuild, onCanc
             </View>
 
             <View style={commonStyles.actionBar}>
-              <TouchableOpacity
-                style={commonStyles.cancelButton}
-                onPress={() => onCancel(item.type)}
-                disabled={item.remainingAmount === 0}
-              >
-                <Text style={commonStyles.cancelButtonText}>{t("cancel")}</Text>
-              </TouchableOpacity>
+              {isAvailable && (
+                <TouchableOpacity
+                  style={commonStyles.cancelButton}
+                  onPress={() => onCancel(item.type)}
+                  disabled={item.remainingAmount === 0}
+                >
+                  <Text style={commonStyles.cancelButtonText}>{t("cancel")}</Text>
+                </TouchableOpacity>
+              )}
+              {isAvailable && (
+                <View style={commonStyles.queueCountContainer}>
+                  {item.remainingAmount > 0 && (
+                    <>
+                      <Text style={[commonStyles.queueCount]}>{item.remainingAmount} / </Text>
+                      <Text style={{ marginRight: 4 }}>⏳</Text>
+                      <CountdownTimer
+                        startedAt={item.startedAt}
+                        duration={item.totalTime}
+                        onlyMostSignificant={true}
+                      />
+                    </>
+                  )}
+                </View>
+              )}
 
-              <View style={commonStyles.queueCountContainer}>
-                {item.remainingAmount > 0 && (
-                  <>
-                    <Text style={[commonStyles.queueCount]}>{item.remainingAmount} / </Text>
-                    <Text style={{ marginRight: 4 }}>⏳</Text>
-                    <CountdownTimer
-                      startedAt={item.startedAt}
-                      duration={item.totalTime}
-                      onlyMostSignificant={true}
-                    />
-                  </>
-                )}
-              </View>
+              {!isAvailable && (
+                <View>
+                  {Object.values(
+                    unmetRequirements.map((item, i) => (
+                      <Text key={item.researchType} style={commonStyles.errorTextRed}>
+                        🔒 {tResearch(`researchName.${item.researchType}`)} {t("level")}{" "}
+                        {item.researchLevelRequired}
+                      </Text>
+                    ))
+                  )}
+                </View>
+              )}
 
               <TouchableOpacity
                 style={[
                   commonStyles.buttonPrimary,
-                  (!item.canBuild || disableButton) && commonStyles.buttonDisabled,
+                  (!item.canBuild || !isAvailable) && commonStyles.buttonDisabled,
                 ]}
-                disabled={!item.canBuild || disableButton}
+                disabled={!item.canBuild || !isAvailable}
                 onPress={() => onBuild(item.type, 1)}
               >
                 <Text style={commonStyles.buttonTextLight}>{t("Build")}</Text>

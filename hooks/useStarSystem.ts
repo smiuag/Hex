@@ -266,6 +266,7 @@ export const useStarSystem = (
     if (!Array.isArray(fleetRef.current)) return;
     for (let i = fleetRef.current.length - 1; i >= 0; i--) {
       const f = fleetRef.current[i];
+
       if (f.endTime > now) continue;
 
       switch (f.movementType) {
@@ -672,13 +673,12 @@ export const useStarSystem = (
   const startAttack = async (systemId: string, fleet: Ship[]) => {
     const system = systemsRef.current.find((s) => s.id === systemId);
     if (!system) return;
-
     const slowestSpeed = Math.min(...fleet.map((f) => shipConfig[f.type].speed));
-    const timeToExplore = getFlyTime(slowestSpeed, system.distance);
+    const timeToAttack = getFlyTime(slowestSpeed, system.distance);
 
     const fleetData: FleetData = {
       destinationSystemId: systemId,
-      endTime: Date.now() + timeToExplore,
+      endTime: Date.now() + timeToAttack,
       movementType: "ATTACK",
       origin: "PLANET",
       ships: fleet,

@@ -1,3 +1,4 @@
+import { buildingConfig } from "@/src/config/buildingConfig";
 import { BUILDING_PRODUCTION } from "@/src/constants/building";
 import { BuildingType } from "@/src/types/buildingTypes";
 import { Hex } from "@/src/types/hexTypes";
@@ -77,6 +78,17 @@ export const axialDistance = (a: { q: number; r: number }, b: { q: number; r: nu
   return (Math.abs(a.q - b.q) + Math.abs(a.q + a.r - b.q - b.r) + Math.abs(a.r - b.r)) / 2;
 };
 
+export const getNeighbor = (q: number, r: number, direction: number) => {
+  const dir = axialDirections[direction];
+  return { q: q + dir.q, r: r + dir.r };
+};
+
+export const isSpecialHex = (h?: Hex) => {
+  if (!h) return false;
+  const buildingType = h.construction ? h.construction.building : h.building?.type;
+  return buildingType ? !!buildingConfig[buildingType]?.special : false;
+};
+
 export const generateInitialHexMap = (): Hex[] => {
   // Base en forma de triángulo apuntando hacia abajo (vértice superior)
   const triangleGroup = [
@@ -89,15 +101,6 @@ export const generateInitialHexMap = (): Hex[] => {
     list.some((h) => h.q === q && h.r === r);
 
   const isBaseHex = (q: number, r: number): boolean => isInList(q, r, triangleGroup);
-
-  const getNeighbors = (q: number, r: number): { q: number; r: number }[] => [
-    { q: q + 1, r: r },
-    { q: q - 1, r: r },
-    { q: q, r: r + 1 },
-    { q: q, r: r - 1 },
-    { q: q + 1, r: r - 1 },
-    { q: q - 1, r: r + 1 },
-  ];
 
   // A partir de los 3 hexágonos base, expandimos hacia sus vecinos
   const initialHexesSet = new Set<string>();
@@ -181,6 +184,21 @@ export const generateInitialHexMap = (): Hex[] => {
   });
 
   return hexMap;
+};
+
+export const directionMap = [0, 5, 4, 3, 2, 1];
+export const axialDirections = [
+  { q: +1, r: 0 }, // 0: E
+  { q: +1, r: -1 }, // 1: NE
+  { q: 0, r: -1 }, // 2: NW
+  { q: -1, r: 0 }, // 3: W
+  { q: -1, r: +1 }, // 4: SW
+  { q: 0, r: +1 }, // 5: SE
+];
+
+export const isOccupied = (q: number, r: number, hexes: Hex[]) => {
+  const neighbor = hexes.find((h) => h.q === q && h.r === r);
+  return !!neighbor && (neighbor.isVisible || neighbor.building || neighbor.construction);
 };
 
 // Devuelve los vecinos de un hex axial

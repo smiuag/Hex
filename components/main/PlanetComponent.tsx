@@ -204,12 +204,14 @@ export default function PlanetComponent() {
                   return (
                     <HexTile
                       key={index}
+                      index={index}
                       hex={hex}
                       px={px}
                       py={py}
                       points={points}
                       factor={scale.FACTOR}
                       fontSize={scale.FONT_SIZE}
+                      hexSize={scale.HEX_SIZE}
                     />
                   );
                 })}

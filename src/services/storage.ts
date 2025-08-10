@@ -7,6 +7,7 @@ import { Ship } from "../../src/types/shipType";
 import { getInitialResources } from "../../utils/hexUtils";
 import { PlayerConfig } from "../types/configTypes";
 import { FleetData } from "../types/fleetType";
+import { DiplomacyLevel } from "../types/raceType";
 import { StarSystem } from "../types/starSystemTypes";
 
 const MAP_KEY = "player_map";
@@ -17,6 +18,7 @@ const CONFIG_KEY = "player_config";
 const QUESTS_KEY = "player_quests";
 const STAR_SYSTEM_KEY = "player_star_systems";
 const FLEET_KEY = "player_fleet";
+const DIPLOMACY_KEY = "player_diplomacy";
 
 //MAP_KEY
 export const saveMap = async (hexes: Hex[]) => {
@@ -134,4 +136,18 @@ export const loadFleet = async (): Promise<FleetData[] | null> => {
 
 export const deleteFleet = async (): Promise<void> => {
   await AsyncStorage.removeItem(FLEET_KEY);
+};
+
+//DIPLOMACY_KEY
+export const saveDiplomacy = async (fleet: DiplomacyLevel[] | null): Promise<void> => {
+  await AsyncStorage.setItem(DIPLOMACY_KEY, JSON.stringify(fleet));
+};
+
+export const loadDiplomacy = async (): Promise<DiplomacyLevel[] | null> => {
+  const data = await AsyncStorage.getItem(DIPLOMACY_KEY);
+  return data ? JSON.parse(data) : [];
+};
+
+export const deleteDiplomacy = async (): Promise<void> => {
+  await AsyncStorage.removeItem(DIPLOMACY_KEY);
 };

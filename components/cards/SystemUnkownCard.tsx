@@ -74,7 +74,7 @@ export const SystemUnknownCard: React.FC<Props> = ({
             </Text>
           </View>
           <Text style={[commonStyles.titleText, { textAlign: "center", marginTop: 5 }]}>
-            {t("ExpectedResources")}:
+            {t("ExpectedResources")}
           </Text>
           {Object.entries(expected)
             .sort(([, a], [, b]) => b - a)

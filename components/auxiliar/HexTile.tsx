@@ -1,7 +1,8 @@
+import { useGameContextSelector } from "@/src/context/GameContext";
+import { directionMap, getHexCornerPoints, getNeighbor, isSpecialHex } from "@/utils/hexUtils";
 import React, { useEffect, useState } from "react";
-import { Circle, Polygon, Image as SvgImage, Text as SvgText } from "react-native-svg";
+import { Circle, G, Line, Polygon, Image as SvgImage, Text as SvgText } from "react-native-svg";
 import { buildingConfig } from "../../src/config/buildingConfig";
-import { terrainConfig } from "../../src/config/terrainConfig";
 import { IMAGES } from "../../src/constants/images";
 import { Hex } from "../../src/types/hexTypes";
 import { getBuildTime } from "../../utils/buildingUtils";
@@ -14,19 +15,20 @@ interface Props {
   points: string;
   factor: number;
   fontSize: number;
+  index: number;
+  hexSize: number;
 }
 
-export default function HexTile({ hex, px, py, points, factor, fontSize }: Props) {
+export default function HexTile({ hex, px, py, points, factor, fontSize, index, hexSize }: Props) {
   const { terrain, building, construction, groupId, isGroupLeader } = hex;
-  const config = terrainConfig[terrain];
-
-  const buildingImage = construction
-    ? buildingConfig[construction.building].underConstructionImage
-    : building
-    ? buildingConfig[building.type].image
-    : undefined;
-
   const [remainingTime, setRemainingTime] = useState<number>(0);
+  const hexes = useGameContextSelector((ctx) => ctx.hexes);
+
+  console.log("sss");
+
+  const buildingType = construction ? construction.building : building ? building.type : undefined;
+  const buildingImage = buildingType ? buildingConfig[buildingType].image : undefined;
+  const corners = getHexCornerPoints(px, py, hexSize);
 
   useEffect(() => {
     if (!construction) return;
@@ -65,6 +67,8 @@ export default function HexTile({ hex, px, py, points, factor, fontSize }: Props
 
   const imageX = px - imageWidth / 2;
   const imageY = isTriangularStructure ? py - hexHeight * 0.43 : py - imageHeight / 2;
+
+  const showSpecial = buildingType && buildingConfig[buildingType].special;
 
   return (
     <>
@@ -139,7 +143,33 @@ export default function HexTile({ hex, px, py, points, factor, fontSize }: Props
       )}
 
       {/* Borde solo si NO es parte de grupo */}
-      {!groupId && <Polygon points={points} fill="none" stroke="white" strokeWidth={3 * factor} />}
+      {!groupId && (
+        <G key={`border-${index}`}>
+          <Polygon points={points} fill="none" stroke="none" />
+
+          {Array.from({ length: 6 }).map((_, i) => {
+            const dir = directionMap[i];
+            const neighbor = getNeighbor(hex.q, hex.r, dir);
+            const neighbourHex = hexes.find((he) => he.q == neighbor.q && he.r == neighbor.r);
+            const neighborExists = isSpecialHex(neighbourHex);
+            const yellow = showSpecial || neighborExists;
+
+            const p1 = corners[i];
+            const p2 = corners[(i + 1) % 6];
+            return (
+              <Line
+                key={`side-${i}`}
+                x1={p1.x}
+                y1={p1.y}
+                x2={p2.x}
+                y2={p2.y}
+                stroke={yellow ? "yellow" : "white"}
+                strokeWidth={1}
+              />
+            );
+          })}
+        </G>
+      )}
     </>
   );
 }

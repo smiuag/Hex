@@ -21,6 +21,7 @@ import { FleetData } from "../types/fleetType";
 import { Research, ResearchType } from "../types/researchTypes";
 import { StarSystem, StarSystemMap } from "../types/starSystemTypes";
 
+import { useDiplomacy } from "@/hooks/useDiplomacy";
 import { createContext, useContextSelector } from "use-context-selector";
 
 // 🎯 Contexto único con suscripción selectiva
@@ -68,15 +69,13 @@ type ProviderContextType = {
   cancelCollect: (systemId: string) => void;
 };
 
-// 🎯 Contexto único creado con use-context-selector
 const GameContext = createContext<ProviderContextType>(null as any);
 
-// 🧠 Provider
 export const GameProvider = ({ children }: { children: React.ReactNode }) => {
-  //const { t: tResearch } = useTranslation("research");
-
   const tResearch = React.useMemo(() => i18n.getFixedT(null, "research"), []);
   const { universe } = useUniverse();
+
+  const { resetPlayerDiplomacy } = useDiplomacy();
 
   const { playerConfig, handleUpdateConfig, resetPlayerConfig } = useConfig();
 
@@ -182,6 +181,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     await resetResources();
     await resetStarSystem();
     await resetFleet();
+    await resetPlayerDiplomacy();
   };
 
   const startGame = async () => {
