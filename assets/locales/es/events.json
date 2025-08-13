@@ -22,8 +22,8 @@
 
   "diplomacyChange": {
     "SMALL_INCREASE": "Tu relación con los {{race}} mejorará ligeramente.",
-    "MEDIUM_INCREASE": "Tu relación con los {{race}} establecerá un nuevo vinculo sólido.",
-    "LARGE_INCREASE": "Los {{race}} estarán en deuda con nosotros.",
+    "MEDIUM_INCREASE": "Tu relación con los {{race}} se verá fortalecida.",
+    "LARGE_INCREASE": "Los {{race}} recibirá la noticia como un gran gesto de confianza.",
     "SMALL_DECREASE": "Tu relación con los {{race}} empeorará un poco.",
     "MEDIUM_DECREASE": "Tu relación con los {{race}} sufrirá un severo revés.",
     "LARGE_DECREASE": "Los {{race}} tomarán esta decisión como una fuerte afrenta a su raza."
@@ -59,12 +59,13 @@
   "RETRIBUTION": "Venganza",
   "IGNORE": "Ignorar",
   "attackWarning": "Serás atacado por",
+  "noAttack": "Parece que las naves enemigas no son suficientes como para realizar un ataque.",
 
   "infiltrationDiplomatic1": "Decides no tomar represalias contra los atacantes, dejando que escapen del planeta sin consecuencias.",
   "infiltrationDiplomatic2": "Fichas a los infiltrados y les niegas el futuro acceso a tu planeta, pero no tomas represalias.",
   "infiltrationDiplomatic3": "Interrogas a los capturados pero finalmente los liberas y informas del percance a los suyos.",
 
-  "extortionDiplomatic1": "Rechazas el intercambio. Te pones en contacto con los líderes enemigos y consigues que la cosa no vaya a mayores a cambio de un donativo.",
+  "extortionDiplomatic1": "Rechazas el intercambio. Te pones en contacto con los líderes enemigos y consigues que la cosa no vaya a mayores a cambio de un intercambio menos desigual.",
   "extortionDiplomatic2": "Haces entender a tus enemigos que es imposible para ti realizar un trato en esas condiciones. Les realizas un pago por menor y se marchan.",
   "extortionDiplomatic3": "Consigues cambiar el trato y que se vayan sin consecuencias.",
 

@@ -2,7 +2,7 @@ import { shipConfig } from "@/src/config/shipConfig";
 import { GENERAL_FACTOR } from "@/src/constants/general";
 import { Research, ShipRequiredResearch } from "@/src/types/researchTypes";
 import { Resources } from "@/src/types/resourceTypes";
-import { ShipType } from "@/src/types/shipType";
+import { Ship, ShipData, ShipType } from "@/src/types/shipType";
 
 export const isUnlocked = (type: string, playerResearch: Research[] = []): boolean => {
   const config = shipConfig[type as ShipType];
@@ -47,4 +47,24 @@ export const getUnmetRequirements = (
       return playerResearchLevel < req.researchLevelRequired;
     }) ?? []
   );
+};
+
+export const getRandomShipAttackFleet = (shipBuildQueue: Ship[]): Ship[] => {
+  const ships: Ship[] = [];
+  shipBuildQueue.forEach((s) => {
+    const amount = Math.ceil(Math.random() * 2 * s.amount);
+    if (amount > 0 && s.type != "PROBE" && s.type != "FREIGHTER")
+      ships.push({ type: s.type, amount: amount });
+  });
+
+  if (ships.length == 0) ships.push({ type: "ESCORTFRIGATE", amount: 3 });
+  return ships;
+};
+
+export const getShips = (shipData: ShipData[]): Ship[] => {
+  const ships: Ship[] = [];
+  shipData.forEach((s) => {
+    ships.push({ type: s.type, amount: s.amount });
+  });
+  return ships;
 };

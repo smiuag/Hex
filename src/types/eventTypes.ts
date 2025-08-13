@@ -150,7 +150,6 @@ export type EventEffect = {
   type: EventEffectType;
   diplomacy?: DiplomacyChange[];
   trade?: Trade;
-  description: string;
   attackingShips?: ShipData[];
   sabotage: boolean;
 };

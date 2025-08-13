@@ -3,11 +3,7 @@ import { useGameContextSelector } from "@/src/context/GameContext";
 import { commonStyles } from "@/src/styles/commonStyles";
 import { DiplomaticEvent, EventOption } from "@/src/types/eventTypes";
 import { CombinedResources, CombinedResourcesType } from "@/src/types/resourceTypes";
-import {
-  generateDiplomacyChangeDescription,
-  generateSabotageDescription,
-  getOptionDescription,
-} from "@/utils/eventUtil";
+import { generateDiplomacyChangeDescription, generateSabotageDescription } from "@/utils/eventUtil";
 import { formatAmount } from "@/utils/generalUtils";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -143,17 +139,11 @@ export default function OptionCard({
     }
   });
 
-  const optionDescription = getOptionDescription(
-    tEvent as unknown as (key: string, options?: object) => string,
-    tShip as unknown as (key: string, options?: object) => string,
-    option.type,
-    diplomaticEvent
-  );
   const remainingDuration = diplomaticEvent.endTime - Date.now();
 
   return (
     <View style={[styles.optCard, { marginTop: 5 }]}>
-      {optionDescription && <Text style={styles.optDesc}>{optionDescription}</Text>}
+      {option.description && <Text style={styles.optDesc}>{option.description}</Text>}
 
       {!!option.effects && (
         <View key="tradeView" style={styles.compactBlock}>

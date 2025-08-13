@@ -2,6 +2,7 @@ import { SCAN_DURATION } from "@/src/constants/general";
 import { IMAGES } from "@/src/constants/images";
 import rawData from "@/src/data/names.json";
 import { commonStyles } from "@/src/styles/commonStyles";
+import { raceConfig } from "@/src/types/raceType";
 import { StarSystemDetected } from "@/src/types/starSystemTypes";
 import { UniverseNameMap } from "@/src/types/universeFantasyNames";
 import { getBuildTime } from "@/utils/buildingUtils";
@@ -15,7 +16,15 @@ import {
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FlatList, ImageBackground, Text, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  Image,
+  ImageBackground,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useGameContextSelector } from "../../src/context/GameContext";
 import { CountdownTimer } from "../auxiliar/CountdownTimer";
 import { UnderConstructionCard } from "../cards/UnderConstructionCard";
@@ -262,8 +271,14 @@ export default function AntennaComponent() {
     beingExplored: boolean;
   }) => {
     const image = getSystemImage(system.type);
-    const isExplored = starSystems.some((s) => s.id === system.id && !s.scanStartedAt);
-    const isDiscarded = starSystems.some((s) => s.id === system.id && s.discarded);
+    const target = starSystems.find((s) => s.id === system.id);
+
+    const isExplored = !!target && !target.scanStartedAt;
+    const isDiscarded = !!target && !!target.discarded;
+
+    const emblem =
+      (target && target.explored && target.race && raceConfig[target.race]?.emblem) ?? undefined;
+    const race = (target && target.explored && target.race && raceConfig[target.race]?.name) ?? "";
 
     return (
       <View style={commonStyles.containerCenter}>
@@ -273,7 +288,18 @@ export default function AntennaComponent() {
           imageStyle={{ borderRadius: 10 }}
         >
           <View style={commonStyles.overlayDark}>
-            <Text style={commonStyles.titleText}>{system.name}</Text>
+            {isExplored && emblem ? (
+              <View style={commonStyles.rowSpaceBetween}>
+                <Text style={commonStyles.titleText}>{system.name}</Text>
+                <View style={{ flexDirection: "row" }}>
+                  <Text style={[commonStyles.whiteText, { marginRight: 10 }]}>{race}</Text>
+                  <Image source={emblem} style={styles.emblem} resizeMode="contain" />
+                </View>
+              </View>
+            ) : (
+              <Text style={commonStyles.titleText}>{system.name}</Text>
+            )}
+
             <View style={commonStyles.actionBar}>
               {isDiscarded ? (
                 <Text style={commonStyles.titleBlueText}> {t("Discarded")}</Text>
@@ -438,3 +464,7 @@ export default function AntennaComponent() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  emblem: { width: 24, height: 24, borderRadius: 6 },
+});

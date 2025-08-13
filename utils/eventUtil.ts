@@ -20,6 +20,7 @@ import { ALL_RACES, DiplomacyLevel, raceConfig, RaceType } from "@/src/types/rac
 import { CombinedResourcesType } from "@/src/types/resourceTypes";
 import { Ship, ShipData } from "@/src/types/shipType";
 import { formatAmount } from "./generalUtils";
+import { getRandomShipAttackFleet } from "./shipUtils";
 import { createTradeEventEffect } from "./tradeUtils";
 
 function getHostileRace(race: RaceType): RaceType {
@@ -40,7 +41,6 @@ export const getRandomNegativeChange = (): NegativeChangeLevel => {
 
 export function getOptionDescription(
   tEvent: (key: string, options?: object) => string,
-  tShip: (key: string, options?: object) => string,
   optionType: EventOptionsType,
   diplomaticEvent: DiplomaticEvent
 ): string {
@@ -191,6 +191,7 @@ export function generateTradeDescription(
 
 function generateExtortionDescription(
   tEvent: (key: string, options?: object) => string,
+  tShip: (key: string, options?: object) => string,
   trade: Trade
 ): string {
   let description = "";
@@ -219,32 +220,34 @@ function generateExtortionDescription(
   const offeredShips = trade.shipChange
     ? trade.shipChange
         .filter(({ amount }) => amount > 0)
-        .map(({ type, amount }) => `${amount} ${tEvent(`shipType.${type}`)}`)
+        .map(({ type, amount }) => `${amount} ${tShip(`shipName.${type}`)}`)
     : [];
 
   const requestedShips = trade.shipChange
     ? trade.shipChange
         .filter(({ amount }) => amount < 0)
-        .map(({ type, amount }) => `${Math.abs(amount)} ${tEvent(`shipType.${type}`)}`)
+        .map(({ type, amount }) => `${Math.abs(amount)} ${tShip(`shipName.${type}`)}`)
     : [];
 
   if (requestedResources.length > 0 && offeredResources.length === 0) {
-    extortionText = `${tEvent("extortion.ASK")} ${requestedResources.join(", ")}.`;
+    description += `${tEvent("extortion.ASK")} ${requestedResources.join(", ")}.`;
   } else if (requestedResources.length > 0 && offeredResources.length > 0) {
-    extortionText = `${tEvent("extortion.ASK")} ${requestedResources.join(", ")} ${tEvent(
+    description += `${tEvent("extortion.ASK")} ${requestedResources.join(", ")} ${tEvent(
       "extortion.EXCHANGE"
     )} ${offeredResources.join(", ")}.`;
   }
 
-  if (offeredShips.length > 0 && requestedShips.length === 0) {
-    extortionText = `${tEvent("extortion.ASK")} ${offeredShips.join(", ")}.`;
-  } else if (offeredShips.length > 0 && requestedShips.length > 0) {
-    extortionText = `${tEvent("extortion.ASK")} ${requestedShips.join(", ")} ${tEvent(
-      "extortion.EXCHANGE"
-    )} ${offeredShips.join(", ")}.`;
+  if (requestedShips.length > 0 && offeredShips.length === 0) {
+    description += `${description ? " " : ""}${tEvent("extortion.ASK")} ${requestedShips.join(
+      ", "
+    )}.`;
+  } else if (requestedShips.length > 0 && offeredShips.length > 0) {
+    description += `${description ? " " : ""}${tEvent("extortion.ASK")} ${requestedShips.join(
+      ", "
+    )} ${tEvent("extortion.EXCHANGE")} ${offeredShips.join(", ")}.`;
+  } else if (offeredShips.length > 0 && requestedShips.length === 0) {
+    description += `${description ? " " : ""}${tEvent("trade.OFFER")} ${offeredShips.join(", ")}.`;
   }
-
-  description = extortionText;
 
   return description;
 }
@@ -281,17 +284,17 @@ function generateInstantAttackText(
   tEvent: (key: string, options?: object) => string
 ): string {
   if (attackingShips.length === 0) {
-    return tEvent("event.noAttack");
+    return tEvent("noAttack");
   }
 
   const attackingShipDescriptions = attackingShips.map(
-    (ship) => `${ship.amount} ${tEvent(`shipType.${ship.type}`)}`
+    (ship) => `${ship.amount} ${tEvent(`shipName.${ship.type}`)}`
   );
 
-  return `${tEvent("event.attackWarning")} ${attackingShipDescriptions.join(", ")}.`;
+  return `${tEvent("attackWarning")} ${attackingShipDescriptions.join(", ")}.`;
 }
 
-const getRandomRace = (): RaceType => {
+export const getRandomRace = (): RaceType => {
   const index = Math.floor(Math.random() * ALL_RACES.length);
   return ALL_RACES[index];
 };
@@ -313,7 +316,6 @@ const getTradeEfects = (trade: Trade, race: RaceType): EventEffect[] => {
   const tradeEffect: EventEffect = {
     trade: trade,
     type: "RESOURCE_CHANGE",
-    description: "",
     sabotage: false,
   };
 
@@ -340,7 +342,6 @@ const getSabotageEffects = () => {
 
   const raceEffect: EventEffect = {
     type: "SABOTAGE",
-    description: "",
     sabotage: true,
   };
 
@@ -372,7 +373,6 @@ const getDiplomacyEfects = (race: RaceType, changeType: DiplomacyChangeLevel): E
   const raceEffect: EventEffect = {
     type: "DIPLOMACY_CHANGE",
     diplomacy: diplomacyChange,
-    description: "",
     sabotage: false,
   };
 
@@ -381,8 +381,27 @@ const getDiplomacyEfects = (race: RaceType, changeType: DiplomacyChangeLevel): E
   return effects;
 };
 
-const getFightEfects = (): EventEffect[] => {
+const getFightEfects = (race: RaceType, ships: Ship[]): EventEffect[] => {
   let effects: EventEffect[] = [];
+
+  const raceChange: DiplomacyChange = { race: race, change: "MEDIUM_DECREASE" };
+  const diplomacyChange: DiplomacyChange[] = [];
+  diplomacyChange.push(raceChange);
+
+  const diplomacyEffect: EventEffect = {
+    type: "DIPLOMACY_CHANGE",
+    diplomacy: diplomacyChange,
+    sabotage: false,
+  };
+
+  const attackEffect: EventEffect = {
+    type: "INSTANT_ATTACK",
+    attackingShips: ships,
+    sabotage: false,
+  };
+
+  effects.push(diplomacyEffect);
+  effects.push(attackEffect);
 
   return effects;
 };
@@ -391,9 +410,11 @@ const getFightEfects = (): EventEffect[] => {
 
 const getFightOption = (
   tEvent: (key: string, options?: object) => string,
-  ships: Ship[]
+  ships: Ship[],
+  race: RaceType
 ): EventOption => {
-  const effects = getFightEfects();
+  const effects = getFightEfects(race, ships);
+
   const option: EventOption = {
     type: "FIGHT",
     effects: effects,
@@ -402,66 +423,85 @@ const getFightOption = (
   return option;
 };
 
-const getRetributionOption = (race: RaceType): EventOption => {
-  const effects = getRetributionEfects(race);
+const getRetributionOption = (
+  tEvent: (key: string, options?: object) => string,
+  diplomaticEvent: DiplomaticEvent
+): EventOption => {
+  const effects = getRetributionEfects(diplomaticEvent.races);
+
+  const description = getOptionDescription(
+    tEvent as unknown as (key: string, options?: object) => string,
+    "RETRIBUTION",
+    diplomaticEvent
+  );
 
   const option: EventOption = {
     type: "RETRIBUTION",
     effects: effects,
-    description: "",
+    description: description,
   };
   return option;
 };
 
-const getDiplomacyOption = (race: RaceType, type: EventType, abuseLevel?: number): EventOption => {
+const getDiplomacyOption = (
+  tEvent: (key: string, options?: object) => string,
+  diplomaticEvent: DiplomaticEvent,
+  abuseLevel?: number
+): EventOption => {
   const effects: EventEffect[] = [];
 
-  if (type == "INFILTRATION") {
+  if (diplomaticEvent.type == "INFILTRATION") {
     const diplomacyChange = getRandomPositiveChange();
-    const effect = getDiplomacyEfects(race, diplomacyChange);
+    const effect = getDiplomacyEfects(diplomaticEvent.races, diplomacyChange);
     effects.push(...effect);
   }
 
-  if (type == "EXTORTION" && abuseLevel) {
+  if (diplomaticEvent.type == "EXTORTION" && abuseLevel) {
     const tradeExtortion = createTradeEventEffect(Math.min(abuseLevel / 2, 2));
     const tradeEffect: EventEffect = {
       type: "RESOURCE_CHANGE",
       trade: tradeExtortion,
-      description: "",
       sabotage: false,
     };
 
-    const extortionEffect = getDiplomacyEfects(race, "SMALL_DECREASE");
+    const extortionEffect = getDiplomacyEfects(diplomaticEvent.races, "SMALL_DECREASE");
     effects.push(tradeEffect);
     effects.push(...extortionEffect);
   }
 
-  const randomDescription = Math.ceil(Math.random() * 3);
-  // const description =
-  //   type == "INFILTRATION"
-  //     ? tEvent(`infiltrationDiplomatic${randomDescription}`)
-  //     : type == "EXTORTION"
-  //     ? tEvent(`extortionDiplomatic${randomDescription}`)
-  //     : "";
+  const description = getOptionDescription(
+    tEvent as unknown as (key: string, options?: object) => string,
+    "DIPLOMACY",
+    diplomaticEvent
+  );
 
   const option: EventOption = {
     type: "DIPLOMACY",
     effects: effects,
-    description: "",
+    description: description,
   };
   return option;
 };
 
-const getIgnoreOption = (race: RaceType, type: EventType): EventOption => {
+const getIgnoreOption = (
+  tEvent: (key: string, options?: object) => string,
+  diplomaticEvent: DiplomaticEvent,
+  ships?: Ship[]
+): EventOption => {
   const effects: EventEffect[] = [];
 
-  if (type == "EXTORTION") {
-    const diplomacyChange = getRandomNegativeChange();
-    const effect = getDiplomacyEfects(race, diplomacyChange);
+  const description = getOptionDescription(
+    tEvent as unknown as (key: string, options?: object) => string,
+    "IGNORE",
+    diplomaticEvent
+  );
+
+  if (diplomaticEvent.type == "EXTORTION") {
+    const effect = getFightEfects(diplomaticEvent.races, ships!);
     effects.push(...effect);
   }
 
-  if (type == "INFILTRATION") {
+  if (diplomaticEvent.type == "INFILTRATION") {
     const effect = getSabotageEffects();
     effects.push(...effect);
   }
@@ -469,46 +509,49 @@ const getIgnoreOption = (race: RaceType, type: EventType): EventOption => {
   const option: EventOption = {
     type: "IGNORE",
     effects: effects,
-    description: "",
+    description: description,
   };
   return option;
 };
 
 const getTradeOption = (race: RaceType, trade: Trade): EventOption => {
   const effects = getTradeEfects(trade, race);
+
   const option: EventOption = {
     type: "TRADE",
     effects: effects,
-    description: "",
+    description: "", //No se pone nada en este caso
   };
   return option;
 };
 
 const getOptionsByType = (
-  type: EventType,
-  race: RaceType,
+  tEvent: (key: string, options?: object) => string,
+  diplomaticEvent: DiplomaticEvent,
+  shipBuildQueue: Ship[],
   mainTrade?: Trade,
   abuseLevel?: number
 ): EventOption[] => {
   let options: EventOption[] = [];
 
-  switch (type) {
+  switch (diplomaticEvent.type) {
     case "COMERCIAL":
-      options.push(getTradeOption(race, mainTrade!));
-      options.push(getIgnoreOption(race, type));
+      options.push(getTradeOption(diplomaticEvent.races, mainTrade!));
+      options.push(getIgnoreOption(tEvent, diplomaticEvent));
       break;
 
     case "EXTORTION":
-      options.push(getTradeOption(race, mainTrade!));
-      //options.push(getFightOption());
-      options.push(getDiplomacyOption(race, type, abuseLevel));
-      options.push(getIgnoreOption(race, type));
+      const ships = getRandomShipAttackFleet(shipBuildQueue);
+      options.push(getTradeOption(diplomaticEvent.races, mainTrade!));
+      options.push(getFightOption(tEvent, ships, diplomaticEvent.races));
+      options.push(getDiplomacyOption(tEvent, diplomaticEvent, abuseLevel));
+      options.push(getIgnoreOption(tEvent, diplomaticEvent, ships));
       break;
 
     case "INFILTRATION":
-      options.push(getRetributionOption(race));
-      options.push(getDiplomacyOption(race, type));
-      options.push(getIgnoreOption(race, type));
+      options.push(getRetributionOption(tEvent, diplomaticEvent));
+      options.push(getDiplomacyOption(tEvent, diplomaticEvent));
+      options.push(getIgnoreOption(tEvent, diplomaticEvent));
       break;
   }
 
@@ -535,14 +578,15 @@ const getEndTimeByType = (type: EventType): number => {
 export const getEventDescription = (
   tEvent: (key: string, options?: object) => string,
   tShip: (key: string, options?: object) => string,
-  diplomaticEvent: DiplomaticEvent
+  type: EventType,
+  trade?: Trade
 ): string => {
-  switch (diplomaticEvent.type) {
+  switch (type) {
     case "COMERCIAL":
-      return generateTradeDescription(tEvent, tShip, diplomaticEvent.mainTrade!);
+      return generateTradeDescription(tEvent, tShip, trade!);
 
     case "EXTORTION":
-      return generateExtortionDescription(tEvent, diplomaticEvent.mainTrade!);
+      return generateExtortionDescription(tEvent, tShip, trade!);
 
     case "INFILTRATION":
       return generateInfiltrationText(tEvent);
@@ -552,7 +596,12 @@ export const getEventDescription = (
   }
 };
 
-export function getRandomEvent(playerDiplomacy: DiplomacyLevel[]): DiplomaticEvent {
+export function getRandomEvent(
+  tEvent: (key: string, options?: object) => string,
+  tShip: (key: string, options?: object) => string,
+  shipBuildQueue: Ship[],
+  playerDiplomacy: DiplomacyLevel[]
+): DiplomaticEvent {
   const race = getRandomRace() as RaceType;
   const isHostile = playerDiplomacy.some((pd) => pd.race === race && pd.diplomacyLevel < 500);
   const type = getRandomEventByHostility(isHostile);
@@ -565,22 +614,35 @@ export function getRandomEvent(playerDiplomacy: DiplomacyLevel[]): DiplomaticEve
       ? createTradeEventEffect(abuseLevel)
       : undefined;
 
-  //const title = generateEventTitle(tEvent, type, race);
-  const options = getOptionsByType(type, race, mainTrade, abuseLevel);
   const endTime = getEndTimeByType(type);
-  //const description = getDescriptionByType(tEvent, type);
+  const title = generateEventTitle(
+    tEvent as unknown as (key: string, options?: object) => string,
+    type,
+    race
+  );
+
+  const description = getEventDescription(
+    tEvent as unknown as (key: string, options?: object) => string,
+    tShip as unknown as (key: string, options?: object) => string,
+    type,
+    mainTrade
+  );
 
   const event: DiplomaticEvent = {
     type: type,
     completed: false,
     hostile: isHostile,
     races: race,
-    title: "",
-    description: "",
-    options: options,
+    title: title,
+    description: description,
+    options: [],
     endTime: endTime,
     mainTrade: mainTrade,
   };
+
+  const options = getOptionsByType(tEvent, event, shipBuildQueue, mainTrade, abuseLevel);
+
+  event.options = options;
 
   return event;
 }

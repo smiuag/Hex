@@ -91,6 +91,7 @@ import backgroundCluster from "../../assets/images/starSystems/backgroundCluster
 import backgroundGalaxy from "../../assets/images/starSystems/backgroundGalaxy.png";
 import backgroundRegion from "../../assets/images/starSystems/backgroundRegion.png";
 
+import defaultRace from "../../assets/images/races/default.png";
 import race1 from "../../assets/images/races/race1.png";
 import race2 from "../../assets/images/races/race2.png";
 import race3 from "../../assets/images/races/race3.png";
@@ -194,6 +195,7 @@ export const IMAGES = {
   RACE3: race3,
   RACE4: race4,
   RACE5: race5,
+  RACE_DEFAULT: defaultRace,
 
   EVENT_TRADE: event_trade,
 };

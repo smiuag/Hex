@@ -101,6 +101,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     handleDestroyBuilding,
     setHexAncientStructure,
     stopConstruction,
+    bombingSystem,
   } = useHexes(
     addProduction,
     addResources,
@@ -131,6 +132,27 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   } = useResearch(addResources, subtractResources, enoughResources, updateQuest);
 
   const {
+    playerDiplomacy,
+    currentEvent,
+    resetPlayerEvent,
+    resetPlayerDiplomacy,
+    handleEventOptionChoose,
+    loadEvent,
+    modifyEvent,
+    handleModifyDiplomacy,
+  } = useDiplomacy(
+    shipBuildQueue,
+    handleDestroyShip,
+    handleCreateShips,
+    addResources,
+    subtractResources,
+    discoverNextResearch,
+    stopResearch,
+    stopConstruction,
+    bombingSystem
+  );
+
+  const {
     fleet,
     starSystems,
     discardStarSystem,
@@ -159,25 +181,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     handleCreateShips,
     subtractResources,
     addResources,
-    updateQuest
-  );
-
-  const {
-    playerDiplomacy,
-    currentEvent,
-    resetPlayerEvent,
-    resetPlayerDiplomacy,
-    handleEventOptionChoose,
-    loadEvent,
-    modifyEvent,
-  } = useDiplomacy(
-    handleDestroyShip,
-    handleCreateShips,
-    addResources,
-    subtractResources,
-    discoverNextResearch,
-    stopResearch,
-    stopConstruction
+    updateQuest,
+    handleModifyDiplomacy
   );
 
   useEffect(() => {
@@ -200,19 +205,19 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
   const endGame = async () => {
     await modifyEvent((prev) => {
-      return { ...prev, completed: false, completedTime: undefined };
+      return { ...prev, completed: false, completedTime: undefined, type: "DEFAULT" };
     });
     // addResources({ NEBULITA: 200000 });
     //await NotificationManager.cancelAllNotifications();
     // await resetPlayerEvent();
-    // await loadEvent();
+    await loadEvent();
     // await resetBuild();
     // await resetPlayerConfig();
     // await resetResearch();
     // await resetQuests();
     // await resetShip();
     // await resetResources();
-    // await resetStarSystem();
+    //await resetStarSystem();
     // await resetFleet();
     // await resetPlayerDiplomacy();
   };

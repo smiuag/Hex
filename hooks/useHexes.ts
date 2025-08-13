@@ -208,6 +208,44 @@ export const useHexes = (
     );
   };
 
+  const bombingSystem = async () => {
+    await modifyHexes((prev) =>
+      prev.map((h) => {
+        if (
+          h.building?.type == "ENERGY" ||
+          h.building?.type == "QUARRY" ||
+          h.building?.type == "METALLURGY" ||
+          h.building?.type == "KRYSTALMINE"
+        ) {
+          if (Math.random() < 0.5) {
+            if (h.construction)
+              return {
+                ...h,
+                construction: undefined,
+                building: h.previousBuilding ?? null,
+                previousBuilding: undefined,
+              };
+            else if (h.building.level == 1)
+              return {
+                ...h,
+                construction: undefined,
+                building: null,
+                previousBuilding: undefined,
+              };
+            else
+              return {
+                ...h,
+                construction: undefined,
+                building: { ...h.building, level: h.building.level - 1 },
+                previousBuilding: undefined,
+              };
+          }
+        }
+        return h;
+      })
+    );
+  };
+
   const processConstructionTick = async () => {
     let antennaBuild = false;
     let hangarBuild = false;
@@ -275,6 +313,7 @@ export const useHexes = (
         return {
           ...hex,
           construction: undefined,
+          previousBuilding: undefined,
           building: {
             type: building,
             level: targetLevel,
@@ -318,5 +357,6 @@ export const useHexes = (
     handleDestroyBuilding,
     setHexAncientStructure,
     stopConstruction,
+    bombingSystem,
   };
 };

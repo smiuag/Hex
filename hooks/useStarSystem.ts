@@ -13,6 +13,7 @@ import {
 } from "@/src/services/storage";
 import { FleetData, MovementType } from "@/src/types/fleetType";
 import { PlayerQuest, UpdateQuestOptions } from "@/src/types/questType";
+import { RaceType } from "@/src/types/raceType";
 import { CombinedResources } from "@/src/types/resourceTypes";
 import { Ship, ShipType } from "@/src/types/shipType";
 import { StarSystem, StarSystemMap } from "@/src/types/starSystemTypes";
@@ -30,7 +31,8 @@ export const useStarSystem = (
   handleCreateShips: (shipsToAdd: { type: ShipType; amount: number }[]) => void,
   subtractResources: (modifications: Partial<CombinedResources>) => void,
   addResources: (modifications: Partial<CombinedResources>) => void,
-  updateQuest: (options: UpdateQuestOptions) => void
+  updateQuest: (options: UpdateQuestOptions) => void,
+  handleModifyDiplomacy: (race: RaceType, change: number) => void
 ) => {
   const [starSystems, setPlayerStarSystems] = useState<StarSystem[]>([]);
   const [fleet, setFleet] = useState<FleetData[]>([]);
@@ -219,7 +221,7 @@ export const useStarSystem = (
         // Ganaron los atacantes: flota regresa y sistema queda sin defensa ni ataque en curso
         await modifyFleet((fleet) => {
           const now = Date.now();
-          const updated = [...fleet]; // Copia defensiva
+          const updated = [...fleet];
           const index = updated.findIndex((f) => f.id === attackingFleetData.id);
 
           if (index !== -1) {
@@ -246,6 +248,7 @@ export const useStarSystem = (
                   ...sys,
                   defense: [],
                   attackStartedAt: undefined,
+                  race: undefined,
                   starPortStartedAt: undefined,
                   defended: false,
                   conquered: true,
@@ -675,6 +678,8 @@ export const useStarSystem = (
     if (!system) return;
     const slowestSpeed = Math.min(...fleet.map((f) => shipConfig[f.type].speed));
     const timeToAttack = getFlyTime(slowestSpeed, system.distance);
+
+    if (system.race) handleModifyDiplomacy(system.race, -100);
 
     const fleetData: FleetData = {
       destinationSystemId: systemId,

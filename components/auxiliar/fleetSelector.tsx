@@ -1,6 +1,7 @@
 import { IMAGES } from "@/src/constants/images";
 import { useGameContextSelector } from "@/src/context/GameContext";
 import { commonStyles } from "@/src/styles/commonStyles";
+import { raceConfig } from "@/src/types/raceType";
 import { Ship } from "@/src/types/shipType";
 import { getSystemImage } from "@/utils/starSystemUtils";
 import { Ionicons } from "@expo/vector-icons";
@@ -9,6 +10,7 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  Alert,
   FlatList,
   Image,
   ImageBackground,
@@ -43,8 +45,31 @@ export default function FleetSelector({ origin, destination }: Props) {
   const sendAttack = (selectedFleets: Ship[]) => {
     if (selectedFleets.length > 0) {
       if (!system) return;
-      startAttack(system.id, selectedFleets);
-      router.replace("/(tabs)/galaxy");
+
+      const race = system.race;
+      if (race) {
+        const raceName = raceConfig[race].name;
+
+        Alert.alert(
+          "Diplomacia",
+          "Estás seguro que quieres atacar a los " +
+            raceName +
+            ". El ataque empeorará nuestra relación con ellos.",
+          [
+            { text: t("cancel"), style: "cancel" },
+            {
+              text: t("confirm"),
+              onPress: async () => {
+                startAttack(system.id, selectedFleets);
+                router.replace("/(tabs)/galaxy");
+              },
+            },
+          ]
+        );
+      } else {
+        startAttack(system.id, selectedFleets);
+        router.replace("/(tabs)/galaxy");
+      }
     } else
       Toast.show({
         type: "info",

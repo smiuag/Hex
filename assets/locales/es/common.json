@@ -81,7 +81,7 @@
   "CollectMessage": "¿Estás seguro de quieres iniciar la recolección del sistema? Requiere 50K de energía, 1 cargueros disponible y no se puede cancelar.",
   "NotEnoughForCollect": "No hay suficiente energía para comenzar la recolección o no hay un carguero disponible.",
   "TRADE": "Comerciar",
-  "FIGHT": "Pelear",
+  "FIGHT": "Combate",
   "DIPLOMACY": "Diplomacia",
   "RETRIBUTION": "Venganza",
   "IGNORE": "Ignorar",

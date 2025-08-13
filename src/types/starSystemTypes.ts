@@ -1,3 +1,4 @@
+import { RaceType } from "./raceType";
 import { CombinedResources, StoredResources } from "./resourceTypes";
 import { ShipData } from "./shipType";
 
@@ -30,6 +31,7 @@ export type CelestialBody = {
 
 export type StarSystem = {
   discarded: boolean;
+  race?: RaceType;
 
   explorationStartedAt?: number;
   extractionStartedAt?: number;

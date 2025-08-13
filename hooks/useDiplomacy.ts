@@ -15,26 +15,36 @@ import {
 } from "@/src/types/eventTypes";
 import { DiplomacyLevel, RaceType } from "@/src/types/raceType";
 import { CombinedResources, CombinedResourcesType } from "@/src/types/resourceTypes";
-import { ShipData, ShipType } from "@/src/types/shipType";
-import { buildDefault, normalizeToAllRaces } from "@/utils/diplomacyUtils";
+import { Ship, ShipData, ShipType } from "@/src/types/shipType";
+import { simulateBattle } from "@/utils/combat";
+import { buildDefault, isExpired, normalizeToAllRaces } from "@/utils/diplomacyUtils";
 import { getRandomEvent } from "@/utils/eventUtil";
+import { getShips } from "@/utils/shipUtils";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Alert } from "react-native";
 
 export const useDiplomacy = (
+  shipBuildQueue: Ship[],
   handleDestroyShip: (type: ShipType, amount: number) => void,
   handleCreateShips: (shipsToAdd: { type: ShipType; amount: number }[]) => void,
   addResources: (modifications: Partial<CombinedResources>) => void,
   subtractResources: (modifications: Partial<CombinedResources>) => void,
   discoverNextResearch: () => void,
   stopResearch: () => void,
-  stopConstruction: () => void
+  stopConstruction: () => void,
+  bombingSystem: () => void
 ) => {
   const [playerDiplomacy, setPlayerDiplomacy] = useState<DiplomacyLevel[]>([]);
   const [currentEvent, setCurrentEvent] = useState<DiplomaticEvent>(makeDefaultEvent());
   const diplomacyRef = useRef<DiplomacyLevel[]>([]);
   const eventRef = useRef<DiplomaticEvent>(makeDefaultEvent());
+
+  const { t: tEvent } = useTranslation("events");
+  const { t: tShip } = useTranslation("ship");
+
+  const router = useRouter();
 
   const syncAndSave = async (diplomacy: DiplomacyLevel[]) => {
     const normalized = normalizeToAllRaces(diplomacy);
@@ -122,6 +132,26 @@ export const useDiplomacy = (
       await discoverNextResearch();
     }
 
+    if (effect.type == "INSTANT_ATTACK" && effect.attackingShips) {
+      const attackingShips = getShips(effect.attackingShips);
+      const battleResult = simulateBattle(attackingShips, shipBuildQueue);
+
+      const updatedAttackingFleetShips = battleResult.remaining.fleetA;
+      const updatedDefenseShips = battleResult.remaining.fleetB;
+
+      await Promise.all(
+        shipBuildQueue.map((ship) => {
+          const remaining = updatedDefenseShips.find((r) => r.type === ship.type)?.amount ?? 0;
+          const amount = Math.max(0, ship.amount - remaining);
+          return amount > 0 ? handleDestroyShip(ship.type, amount) : Promise.resolve();
+        })
+      );
+
+      if (updatedAttackingFleetShips.length > 0) {
+        await bombingSystem();
+      }
+    }
+
     if (effect.sabotage) {
       await stopResearch();
       await stopConstruction();
@@ -153,12 +183,13 @@ export const useDiplomacy = (
 
   const loadEvent = async () => {
     const saved = await loadCurrentEvent();
-    const router = useRouter();
 
     if (saved && saved.type !== "DEFAULT" && !isExpired(saved)) {
       await syncAndSaveEvent(saved);
       return;
     }
+
+    await handleEventUnsolved();
 
     Alert.alert("Embajada", "Algo ocurre en el planeta. Visita la embajada para más información", [
       { text: "cancelar", style: "cancel" },
@@ -170,21 +201,18 @@ export const useDiplomacy = (
       },
     ]);
 
-    const newEvent = await getRandomEvent(playerDiplomacy);
+    const newEvent = await getRandomEvent(
+      tEvent as unknown as (key: string, options?: object) => string,
+      tShip as unknown as (key: string, options?: object) => string,
+      shipBuildQueue,
+      playerDiplomacy
+    );
     await syncAndSaveEvent(newEvent ?? makeDefaultEvent());
   };
 
-  const isExpired = (event: DiplomaticEvent): boolean => {
-    if (!event || event.type === "DEFAULT") return true;
-    if (
-      event.completed &&
-      event.completedTime &&
-      Date.now() - event.completedTime >= 12 * 60 * 60 * 1000
-    ) {
-      return true;
-    }
-    if (event.endTime === 0) return false;
-    return event.endTime <= Date.now();
+  const handleEventUnsolved = async () => {
+    const option = eventRef.current.options.find((op) => op.type == "IGNORE");
+    if (option) handleEventOptionChoose(option);
   };
 
   const resetPlayerDiplomacy = async () => {

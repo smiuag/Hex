@@ -13,6 +13,7 @@ import {
 } from "@/src/types/starSystemTypes";
 import { ImageSourcePropType } from "react-native";
 import uuid from "react-native-uuid";
+import { getRandomRace } from "./eventUtil";
 
 function getRandomFromRange([min, max]: [number, number]) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -173,12 +174,14 @@ export const generateSystem = (currentSystemId: string, system: StarSystemDetect
   });
 
   const decay = 1 - 0.1 * numCelestialBodies;
-  const starPort = shouldInclude(0.1 * numCelestialBodies);
+  const starPort = shouldInclude(0.2 + 0.1 * numCelestialBodies);
   const defenseShip = starPort ? generateStarSystemDefense(decay) : [];
   const distance = getDistance(currentSystemId, system.id);
+  const race = starPort ? getRandomRace() : undefined;
 
   return {
     type,
+    race: race,
     celestialBodies: celestialBodies,
     discovered: false,
     explored: false,

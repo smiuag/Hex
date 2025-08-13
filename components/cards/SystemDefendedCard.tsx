@@ -1,10 +1,12 @@
+import { IMAGES } from "@/src/constants/images";
 import { SHIP_STATS } from "@/src/constants/ship";
 import { useGameContextSelector } from "@/src/context/GameContext";
+import { raceConfig } from "@/src/types/raceType";
 import { getSystemImage } from "@/utils/starSystemUtils";
 import { useRouter } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { ImageBackground, Text, TouchableOpacity, View } from "react-native";
+import { Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { StarSystem } from "../../src/types/starSystemTypes";
 import { CountdownTimer } from "../auxiliar/CountdownTimer";
@@ -31,6 +33,7 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onCance
 
   const image = getSystemImage(system.type);
   const systemName = universe[system.id].name;
+  const emblem = system && system.race ? raceConfig[system.race].emblem : IMAGES.RACE_DEFAULT;
 
   return (
     <View style={commonStyles.containerCenter} key={system.id}>
@@ -40,17 +43,21 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onCance
         imageStyle={commonStyles.imageCover}
       >
         <View style={commonStyles.overlayDark}>
-          <View>
-            <Text style={commonStyles.titleBlueText}>
-              {systemName}{" "}
-              <Text style={[commonStyles.whiteText, { fontSize: 16 }]}>
-                {" "}
-                ({tPlanets(`systemType.${system.type}`)}){" "}
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Image source={emblem} style={styles.emblem} resizeMode="contain" />
+
+            <View style={{ marginLeft: 10 }}>
+              <Text style={commonStyles.titleBlueText}>
+                {systemName}{" "}
+                <Text style={[commonStyles.whiteText, { fontSize: 16 }]}>
+                  {" "}
+                  ({tPlanets(`systemType.${system.type}`)}){" "}
+                </Text>
               </Text>
-            </Text>
-            <Text style={commonStyles.smallSubtitle}>
-              {system.distance} {t("parsecs")}
-            </Text>
+              <Text style={commonStyles.smallSubtitle}>
+                {system.distance} {t("parsecs")}
+              </Text>
+            </View>
           </View>
           <View style={{ marginTop: 5 }}>
             {system.defense.map((ship) => {
@@ -118,3 +125,7 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onCance
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  emblem: { width: 36, height: 36, borderRadius: 8 },
+});

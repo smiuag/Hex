@@ -2,10 +2,8 @@ import { IMAGES } from "@/src/constants/images";
 import { commonStyles } from "@/src/styles/commonStyles";
 import { DiplomaticEvent, EventOption } from "@/src/types/eventTypes";
 import { raceConfig } from "@/src/types/raceType";
-import { generateEventTitle, getEventDescription } from "@/utils/eventUtil";
 import { Feather } from "@expo/vector-icons";
 import React from "react";
-import { useTranslation } from "react-i18next";
 import { Image, ImageBackground, ScrollView, StyleSheet, Text, View } from "react-native";
 import OptionCard from "./OptionCard";
 
@@ -15,21 +13,7 @@ type Props = {
 };
 
 export default function EventCard({ diplomaticEvent, onChoose }: Props) {
-  const { t: tEvent } = useTranslation("events");
-  const { t: tShip } = useTranslation("ships");
-
   const config = raceConfig[diplomaticEvent.races];
-  const title = generateEventTitle(
-    tEvent as unknown as (key: string, options?: object) => string,
-    diplomaticEvent.type,
-    diplomaticEvent.races
-  );
-
-  const description = getEventDescription(
-    tEvent as unknown as (key: string, options?: object) => string,
-    tShip as unknown as (key: string, options?: object) => string,
-    diplomaticEvent
-  );
 
   return (
     <View style={[commonStyles.cardContainer, { marginTop: 10 }]}>
@@ -44,7 +28,7 @@ export default function EventCard({ diplomaticEvent, onChoose }: Props) {
                 numberOfLines={2}
                 ellipsizeMode="tail"
               >
-                {title}
+                {diplomaticEvent.title}
               </Text>
             </View>
           </View>
@@ -57,7 +41,7 @@ export default function EventCard({ diplomaticEvent, onChoose }: Props) {
           ) : diplomaticEvent.options?.length ? (
             <>
               <View style={{ padding: 5 }}>
-                <Text style={commonStyles.subtitleText}>{description}</Text>
+                <Text style={commonStyles.subtitleText}>{diplomaticEvent.description}</Text>
               </View>
               <ScrollView style={styles.optionsScroll} contentContainerStyle={{ paddingBottom: 6 }}>
                 {diplomaticEvent.options.map((opt, i) => (
