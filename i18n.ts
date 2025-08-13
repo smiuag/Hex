@@ -3,8 +3,8 @@ import { initReactI18next } from "react-i18next";
 
 i18n.use(initReactI18next).init({
   lng: "es",
-  fallbackLng: "es",
-  ns: ["common", "resources", "planets", "buildings", "quests", "tech", "research", "ship"],
+  fallbackLng: ["es", "en"], // prioriza es, cae a en
+  ns: ["common", "resources", "planets", "buildings", "quests", "research", "ship", "events"], // quité 'tech' y añadí 'events'
   defaultNS: "common",
   resources: {
     en: {
@@ -28,6 +28,15 @@ i18n.use(initReactI18next).init({
       events: require("./assets/locales/es/events.json"),
     },
   },
+  interpolation: { escapeValue: false },
+  returnNull: false,
+  debug: __DEV__,
+  // saveMissing: false // (por si usas backend para guardar faltantes)
+});
+
+// log de claves faltantes -> se ve en ReactNativeJS de logcat
+i18n.on("missingKey", (lngs, ns, key) => {
+  console.warn(`[i18n missing] ${ns}:${key} (lngs=${lngs.join(",")})`);
 });
 
 export default i18n;

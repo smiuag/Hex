@@ -354,7 +354,7 @@ export default function AntennaComponent() {
                   style={[commonStyles.buttonPrimary, disabled && commonStyles.buttonDisabled]}
                   disabled={disabled}
                 >
-                  <Text style={commonStyles.buttonTextLight}>{t("Recuperar")}</Text>
+                  <Text style={commonStyles.buttonTextLight}>{t("Recover")}</Text>
                 </TouchableOpacity>
               ) : isExplored ? (
                 <Text style={commonStyles.titleBlueText}> {t("ExploredSystem")}</Text>

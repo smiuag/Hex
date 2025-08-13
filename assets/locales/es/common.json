@@ -37,6 +37,7 @@
   "VoidExplorationScreenSubTitle": "Aún no tienes datos precisos de ningún sistema estelar. Es necesario realizar un scaneo de la zona antes de comenzar la exploración.",
 
   "cancel": "Cancelar",
+  "Cancel": "Cancelar",
   "upgrade": "Mejorar",
   "buildTime": "Tiempo de construcción",
   "cost": "Coste",
@@ -86,5 +87,6 @@
   "RETRIBUTION": "Venganza",
   "IGNORE": "Ignorar",
   "specialReward": "Recomensa especial",
-  "RemainingTime": "Tiempo restante"
+  "RemainingTime": "Tiempo restante",
+  "Recover": "Recuperar"
 }

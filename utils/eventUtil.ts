@@ -280,15 +280,16 @@ function generateInfiltrationText(tEvent: (key: string, options?: object) => str
 }
 
 function generateInstantAttackText(
-  attackingShips: ShipData[],
-  tEvent: (key: string, options?: object) => string
+  tEvent: (key: string, options?: object) => string,
+  tShip: (key: string, options?: object) => string,
+  attackingShips: ShipData[]
 ): string {
   if (attackingShips.length === 0) {
     return tEvent("noAttack");
   }
 
   const attackingShipDescriptions = attackingShips.map(
-    (ship) => `${ship.amount} ${tEvent(`shipName.${ship.type}`)}`
+    (ship) => `${ship.amount} ${tShip(`shipName.${ship.type}`)}`
   );
 
   return `${tEvent("attackWarning")} ${attackingShipDescriptions.join(", ")}.`;
@@ -410,6 +411,7 @@ const getFightEfects = (race: RaceType, ships: Ship[]): EventEffect[] => {
 
 const getFightOption = (
   tEvent: (key: string, options?: object) => string,
+  tShip: (key: string, options?: object) => string,
   ships: Ship[],
   race: RaceType
 ): EventOption => {
@@ -418,7 +420,7 @@ const getFightOption = (
   const option: EventOption = {
     type: "FIGHT",
     effects: effects,
-    description: generateInstantAttackText(ships, tEvent),
+    description: generateInstantAttackText(tEvent, tShip, ships),
   };
   return option;
 };
@@ -527,6 +529,7 @@ const getTradeOption = (race: RaceType, trade: Trade): EventOption => {
 
 const getOptionsByType = (
   tEvent: (key: string, options?: object) => string,
+  tShip: (key: string, options?: object) => string,
   diplomaticEvent: DiplomaticEvent,
   shipBuildQueue: Ship[],
   mainTrade?: Trade,
@@ -543,7 +546,7 @@ const getOptionsByType = (
     case "EXTORTION":
       const ships = getRandomShipAttackFleet(shipBuildQueue);
       options.push(getTradeOption(diplomaticEvent.races, mainTrade!));
-      options.push(getFightOption(tEvent, ships, diplomaticEvent.races));
+      options.push(getFightOption(tEvent, tShip, ships, diplomaticEvent.races));
       options.push(getDiplomacyOption(tEvent, diplomaticEvent, abuseLevel));
       options.push(getIgnoreOption(tEvent, diplomaticEvent, ships));
       break;
@@ -640,7 +643,7 @@ export function getRandomEvent(
     mainTrade: mainTrade,
   };
 
-  const options = getOptionsByType(tEvent, event, shipBuildQueue, mainTrade, abuseLevel);
+  const options = getOptionsByType(tEvent, tShip, event, shipBuildQueue, mainTrade, abuseLevel);
 
   event.options = options;
 

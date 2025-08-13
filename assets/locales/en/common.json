@@ -37,6 +37,7 @@
   "VoidExplorationScreenSubTitle": "You don't yet have precise data on any star system. You need to scan the area before beginning exploration.",
 
   "cancel": "Cancel",
+  "Cancel": "Cancel",
   "upgrade": "Upgrade",
   "buildTime": "Build time",
   "cost": "Cost",
@@ -86,5 +87,6 @@
   "RETRIBUTION": "Retribution",
   "IGNORE": "Ignore",
   "specialReward": "special reward",
-  "RemainingTime": "Remaining time"
+  "RemainingTime": "Remaining time",
+  "Recover": "Recover"
 }
