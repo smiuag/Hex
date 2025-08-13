@@ -1,7 +1,7 @@
 import { shipConfig } from "@/src/config/shipConfig";
 import { deleteShip, loadShip, saveShip } from "@/src/services/storage";
 import { PlayerQuest, UpdateQuestOptions } from "@/src/types/questType";
-import { Resources } from "@/src/types/resourceTypes";
+import { CombinedResources } from "@/src/types/resourceTypes";
 import { Ship, ShipType } from "@/src/types/shipType";
 import { useEffect, useRef, useState } from "react";
 import Toast from "react-native-toast-message";
@@ -9,9 +9,9 @@ import { getTotalShipCost } from "../utils/shipUtils";
 
 export const useShip = (
   playerQuests: PlayerQuest[],
-  addResources: (modifications: Partial<Resources>) => void,
-  subtractResources: (modifications: Partial<Resources>) => void,
-  enoughResources: (cost: Partial<Resources>) => boolean,
+  addResources: (modifications: Partial<CombinedResources>) => void,
+  subtractResources: (modifications: Partial<CombinedResources>) => void,
+  enoughResources: (cost: Partial<CombinedResources>) => boolean,
   updateQuest: (options: UpdateQuestOptions) => void
 ) => {
   const [shipBuildQueue, setShipBuildQueue] = useState<Ship[]>([]);

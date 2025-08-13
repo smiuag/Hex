@@ -10,7 +10,7 @@ export const resourceEmojis: Record<CombinedResourcesType, string> = {
   THARNIO: "☢️", // material reactivo / radiactivo
   KAIROX: "🧬", // recurso biotecnológico o genético
   NEBULITA: "☁️", // energía o gas espacial, forma inestable
-  ADN: "🦠", // energía o gas espacial, forma inestable
+  //ADN: "🦠", // energía o gas espacial, forma inestable
 };
 
 export const shipStatsEmojis: Record<string, string> = {

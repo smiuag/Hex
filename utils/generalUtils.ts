@@ -1,7 +1,4 @@
-export const formatDuration = (
-  timestamp: number,
-  onlyMostSignificant?: boolean
-): string => {
+export const formatDuration = (timestamp: number, onlyMostSignificant?: boolean): string => {
   let diff = Math.abs(timestamp / 1000); // diferencia en segundos
 
   const days = Math.floor(diff / (60 * 60 * 24));
@@ -28,28 +25,24 @@ export const formatDuration = (
 
 export const formatAmount = (value: number): string => {
   const format = (val: number, suffix: string): string => {
-    const truncated = Math.floor(val * 10) / 10;
-    return (
-      (truncated % 1 === 0 ? truncated.toFixed(0) : truncated.toFixed(1)) +
-      suffix
-    );
+    const truncated = Math.floor(Math.abs(val) * 10) / 10; // Usamos Math.abs() para asegurar que solo formateamos el valor absoluto
+    return (truncated % 1 === 0 ? truncated.toFixed(0) : truncated.toFixed(1)) + suffix;
   };
 
-  if (value >= 1_000_000_000) {
-    return format(value / 1_000_000_000, "B");
+  const isNegative = value < 0; // Detectamos si el número es negativo
+
+  if (Math.abs(value) >= 1_000_000_000) {
+    return (isNegative ? "-" : "") + format(value / 1_000_000_000, "B");
   }
-  if (value >= 1_000_000) {
-    return format(value / 1_000_000, "M");
+  if (Math.abs(value) >= 1_000_000) {
+    return (isNegative ? "-" : "") + format(value / 1_000_000, "M");
   }
-  if (value >= 1_000) {
-    return format(value / 1_000, "K");
+  if (Math.abs(value) >= 1_000) {
+    return (isNegative ? "-" : "") + format(value / 1_000, "K");
   }
-  return Math.ceil(value).toString();
+  return (isNegative ? "-" : "") + Math.ceil(value).toString();
 };
 
-export const getTimeRemaining = (
-  duration: number,
-  startedAt: number
-): number => {
+export const getTimeRemaining = (duration: number, startedAt: number): number => {
   return Math.max(0, duration - (Date.now() - startedAt));
 };

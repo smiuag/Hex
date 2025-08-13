@@ -4,7 +4,7 @@ import { BuildingType } from "@/src/types/buildingTypes";
 import { ConfigEntry } from "@/src/types/configTypes";
 import { Hex } from "@/src/types/hexTypes";
 import { UpdateQuestOptions } from "@/src/types/questType";
-import { Resources } from "@/src/types/resourceTypes";
+import { CombinedResources, Resources } from "@/src/types/resourceTypes";
 import { TerrainType } from "@/src/types/terrainTypes";
 import { useEffect, useRef, useState } from "react";
 import Toast from "react-native-toast-message";
@@ -16,8 +16,8 @@ import {
 } from "../utils/hexUtils";
 
 export const useHexes = (
-  addProduction: (modifications: Partial<Resources>, effectiveAt: number) => void,
-  addResources: (modifications: Partial<Resources>) => void,
+  addProduction: (modifications: Partial<CombinedResources>, effectiveAt: number) => void,
+  addResources: (modifications: Partial<CombinedResources>) => void,
   subtractResources: (modifications: Partial<Resources>) => void,
   enoughResources: (cost: Partial<Resources>) => boolean,
   handleUpdateConfig: (config: ConfigEntry) => void,
@@ -126,6 +126,7 @@ export const useHexes = (
       return recalculateHexMapVisibility(updatedHexes);
     });
   };
+
   const setHexAncientStructure = async (hex: Hex) => {
     await modifyHexes((prev) => {
       const updatedHexes = prev.map((h) =>
@@ -193,6 +194,20 @@ export const useHexes = (
     });
   };
 
+  const stopConstruction = async () => {
+    await modifyHexes((prev) =>
+      prev.map((h) => {
+        if (!h.construction) return h;
+        return {
+          ...h,
+          construction: undefined,
+          building: h.previousBuilding ?? null,
+          previousBuilding: undefined,
+        };
+      })
+    );
+  };
+
   const processConstructionTick = async () => {
     let antennaBuild = false;
     let hangarBuild = false;
@@ -202,9 +217,11 @@ export const useHexes = (
     let baseBuild = false;
     let labBuild = false;
     let waterExtractorBuild = false;
+    let alienLabBuild = false;
+    let embassyBuild = false;
 
     const completed: Array<{
-      diff: Partial<Resources>;
+      diff: Partial<CombinedResources>;
       finishedAt: number;
       building: BuildingType;
     }> = [];
@@ -224,13 +241,13 @@ export const useHexes = (
 
         changed = true;
 
-        const prevProd: Partial<Resources> =
+        const prevProd: Partial<CombinedResources> =
           targetLevel === 1 ? {} : getProductionPerSecond(building, targetLevel - 1);
-        const newProd: Partial<Resources> = getProductionPerSecond(building, targetLevel);
-        const diff: Partial<Resources> = {};
+        const newProd: Partial<CombinedResources> = getProductionPerSecond(building, targetLevel);
+        const diff: Partial<CombinedResources> = {};
 
         const keys = new Set([...Object.keys(prevProd), ...Object.keys(newProd)]) as Set<
-          keyof Resources
+          keyof CombinedResources
         >;
 
         for (const key of keys) {
@@ -252,6 +269,8 @@ export const useHexes = (
         if (building === "HANGAR") hangarBuild = true;
         if (building === "LAB") labBuild = true;
         if (building === "WATEREXTRACTOR") waterExtractorBuild = true;
+        if (building === "ALIEN_LAB") alienLabBuild = true;
+        if (building === "EMBASSY") embassyBuild = true;
 
         return {
           ...hex,
@@ -285,6 +304,8 @@ export const useHexes = (
     if (antennaBuild) await updateQuest({ type: "BUILDING_ANTENNA", completed: true });
     if (hangarBuild) await updateQuest({ type: "BUILDING_HANGAR", completed: true });
     if (waterExtractorBuild) await updateQuest({ type: "H2O_FOUND", completed: true });
+    if (alienLabBuild) await updateQuest({ type: "BUILDING_ALIENT_LAB", completed: true });
+    if (embassyBuild) await updateQuest({ type: "BUILDING_EMBASSY", completed: true });
   };
 
   return {
@@ -296,5 +317,6 @@ export const useHexes = (
     handleTerraform,
     handleDestroyBuilding,
     setHexAncientStructure,
+    stopConstruction,
   };
 };

@@ -1,19 +1,23 @@
 {
   "COMERCIAL": {
-    "singular": "Un acuerdo comercial de la raza {{race}}",
-    "plural": "Un acuerdo comercial de las razas {{races}}"
+    "singular": "Oferta comercial de la raza {{race}}",
+    "plural": "Oferta comercial de las razas {{races}}"
   },
   "VISIT": {
-    "singular": "Una visita de un emisario de la raza {{race}}",
-    "plural": "Una visita de un emisario de las razas {{races}}"
+    "singular": "Visita de un emisario de la raza {{race}}",
+    "plural": "Visita de un emisario de las razas {{races}}"
   },
   "ATACK": {
-    "singular": "Un ataque de la raza {{race}}",
-    "plural": "Un ataque de las razas {{races}}"
+    "singular": "Ataque de la raza {{race}}",
+    "plural": "Ataque de las razas {{races}}"
   },
   "EXTORTION": {
-    "singular": "Una extorsión de la raza {{race}}",
-    "plural": "Una extorsión de las razas {{races}}"
+    "singular": "Extorsión de la raza {{race}}",
+    "plural": "Extorsión de las razas {{races}}"
+  },
+  "INFILTRATION": {
+    "singular": "Infiltración de la raza {{race}} en tu planeta.",
+    "plural": "Infiltración de las razas {{races}} en tu planeta"
   },
 
   "diplomacyChange": {
@@ -39,11 +43,13 @@
     "INFILTRATOR": "Un infiltrado",
     "INFILTRATED_GROUP": "Un grupo infiltrado",
     "ENEMY_AGENTS": "Varios agentes enemigos",
+
     "DETECTED": "detectado a punto de",
     "ATTEMPTING": "intentando",
     "WITH_INTENT": "con intención de",
-    "STEAL_RESOURCES": "robar recursos",
-    "STEAL_TECHNOLOGY": "robar nuestra tecnología",
+
+    "STEAL_RESOURCES": "robar algunos recursos de básicos para nuestro desarrollo",
+    "STEAL_TECHNOLOGY": "interferir en nuestro desarrollo",
     "SABOTAGE": "sabotear nuestras instalaciones",
     "REBELION": "generar una rebelión"
   },
@@ -62,7 +68,17 @@
   "extortionDiplomatic2": "Haces entender a tus enemigos que es imposible para ti realizar un trato en esas condiciones. Les realizas un pago por menor y se marchan.",
   "extortionDiplomatic3": "Consigues cambiar el trato y que se vayan sin consecuencias.",
 
-  "retributionDiplomatic1": "Coges a los asaltantes y los ejecutas sin interrogarlos ni juicio previo.",
-  "retributionDiplomatic2": "Los torturas intentando sacarles toda la información posible y pero los mandas de vuelta a su planeta.",
-  "retributionDiplomatic3": "Encierras a los atacantes en una prisión secreta y comunicas su defunción en trágico accidente. Quizá más tarde puedan ser útiles."
+  "retribution1": "Coges a los asaltantes y los ejecutas sin interrogarlos ni juicio previo.",
+  "retribution2": "Los torturas intentando sacarles toda la información posible y pero los mandas de vuelta a su planeta.",
+  "retribution3": "Encierras a los atacantes en una prisión secreta y comunicas su defunción en trágico accidente. Quizá más tarde puedan ser útiles.",
+
+  "ignoreInfiltration1": "Decides no efectuar ninguna acción, permitiendo a los infiltrados salirse con la suya.",
+  "ignoreInfiltration2": "El miedo a las posibles represalias si actuas hace que decidas hacer la vista gorda por esta vez.",
+  "ignoreInfiltration3": "Observas como los infiltrados se salen con la suya sin hacer nada al respecto.",
+
+  "ignoreComercial1": "El acuerdo no es posible en estos momentos. Te disculpas y agradeces el interés comercial.",
+  "ignoreComercial2": "No realizas el intercambio, aunque atiendes a los comerciantes correctamente para mantener el vinculo comercial.",
+  "ignoreComercial3": "Pese a no realizar el intercambio informas del interés por otros posibles intercambios.",
+
+  "sabotageEffect": "La incursion retrasa nuestro desarrollo. El sabotage detiene nuestras construcciones e investigaciones."
 }

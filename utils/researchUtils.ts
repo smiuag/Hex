@@ -6,7 +6,7 @@ import {
 } from "@/src/constants/general";
 import { BuildingRequiredData } from "@/src/types/buildingTypes";
 import { Hex } from "@/src/types/hexTypes";
-import { ResearchType } from "@/src/types/researchTypes";
+import { Research, ResearchType } from "@/src/types/researchTypes";
 import { Resources } from "@/src/types/resourceTypes";
 
 export const getResearchTime = (research: ResearchType, level: number): number => {
@@ -55,3 +55,14 @@ export const hexesMatchesRequeriments = (hexes: Hex[], req: BuildingRequiredData
 
   return false;
 };
+
+export function getNextDiscoverableResearchType(
+  userResearch: Research[]
+): ResearchType | undefined {
+  const owned = new Set<ResearchType>(userResearch.map((r) => r.data.type as ResearchType));
+
+  return (Object.keys(researchConfig) as ResearchType[])
+    .filter((k) => researchConfig[k].needsDiscover)
+    .filter((k) => !owned.has(k))
+    .sort((a, b) => (researchConfig[a].order ?? 1e9) - (researchConfig[b].order ?? 1e9))[0];
+}

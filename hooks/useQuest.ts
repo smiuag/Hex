@@ -1,10 +1,10 @@
 import { questConfig } from "@/src/config/questConfig";
 import { loadQuests, saveQuests } from "@/src/services/storage";
 import { PlayerQuest, QuestType, UpdateQuestOptions } from "@/src/types/questType";
-import { Resources } from "@/src/types/resourceTypes";
+import { CombinedResources } from "@/src/types/resourceTypes";
 import { useEffect, useRef, useState } from "react";
 
-export const useQuest = (addResources: (modifications: Partial<Resources>) => void) => {
+export const useQuest = (addResources: (modifications: Partial<CombinedResources>) => void) => {
   const [playerQuests, setPlayerQuests] = useState<PlayerQuest[]>([]);
   const questRef = useRef<PlayerQuest[]>([]);
 
@@ -191,6 +191,17 @@ export const useQuest = (addResources: (modifications: Partial<Resources>) => vo
         });
         break;
       case "SCAN_FIRST":
+        updateQuest({
+          type: "BUILDING_EMBASSY",
+          available: true,
+          completed: playerQuests.some((q) => q.type == "BUILDING_EMBASSY" && q.completed)
+            ? true
+            : false,
+          rewardClaimed: false,
+          viewed: false,
+        });
+        break;
+      case "BUILDING_EMBASSY":
         updateQuest({
           type: "BUILDING_HANGAR",
           available: true,

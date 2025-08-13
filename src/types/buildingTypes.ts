@@ -13,7 +13,8 @@ export type BuildingType =
   | "RESIDUE"
   | "GREENHOUSE"
   | "WATEREXTRACTOR"
-  | "ALIEN_LAB";
+  | "ALIEN_LAB"
+  | "EMBASSY";
 
 export type BuildingData = {
   type: BuildingType;

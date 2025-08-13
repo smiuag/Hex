@@ -202,7 +202,7 @@ export const createTradeEventEffect = (fairness: number = 1): Trade => {
       resources[line.key] = (resources[line.key] ?? 0) + line.qty;
     } else if (isShip(line.key)) {
       // Ajusta este shape a tu ShipData real
-      ships.push({ name: line.key as any, amount: line.qty } as unknown as ShipData);
+      ships.push({ type: line.key as any, amount: line.qty } as unknown as ShipData);
     } else if (isSpecial(line.key)) {
       specialReward = true;
     }

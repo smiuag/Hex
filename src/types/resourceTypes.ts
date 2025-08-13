@@ -1,11 +1,6 @@
 export type ResourceType = "METAL" | "STONE" | "ENERGY" | "CRYSTAL";
-export type SpecialResourceType =
-  | "ILMENITA"
-  | "AETHERIUM"
-  | "THARNIO"
-  | "KAIROX"
-  | "NEBULITA"
-  | "ADN";
+export type SpecialResourceType = "ILMENITA" | "AETHERIUM" | "THARNIO" | "KAIROX" | "NEBULITA";
+// | "ADN";
 
 export const SPECIAL_TYPES = [
   "ILMENITA",
@@ -13,7 +8,7 @@ export const SPECIAL_TYPES = [
   "THARNIO",
   "KAIROX",
   "NEBULITA",
-  "ADN",
+  //"ADN",
 ] as const;
 export type Resources = Record<ResourceType, number>;
 export type SpecialResources = Record<SpecialResourceType, number>;

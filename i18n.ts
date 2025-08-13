@@ -15,6 +15,7 @@ i18n.use(initReactI18next).init({
       research: require("./assets/locales/en/research.json"),
       resources: require("./assets/locales/en/resources.json"),
       ship: require("./assets/locales/en/ship.json"),
+      events: require("./assets/locales/en/events.json"),
     },
     es: {
       common: require("./assets/locales/es/common.json"),
@@ -24,6 +25,7 @@ i18n.use(initReactI18next).init({
       research: require("./assets/locales/es/research.json"),
       resources: require("./assets/locales/es/resources.json"),
       ship: require("./assets/locales/es/ship.json"),
+      events: require("./assets/locales/es/events.json"),
     },
   },
 });

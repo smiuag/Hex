@@ -18,7 +18,8 @@ export type QuestType =
   | "SYSTEM_BUILT_EXTRACTION"
   | "SYSTEM_BUILT_STARPORT"
   | "SYSTEM_BUILT_DEFENSE"
-  | "COLLECT";
+  | "COLLECT"
+  | "BUILDING_EMBASSY";
 
 export type Quest = {
   type: QuestType;

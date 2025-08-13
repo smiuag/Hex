@@ -206,5 +206,14 @@
       "But let’s not rush it — we need to synchronize with the colonies to optimize trips.",
       "Wait until the system has stored resources, then send a freighter to collect them."
     ]
+  },
+  "BUILDING_EMBASSY": {
+    "name": "Interstellar Embassy",
+    "shortDescription": "Build an embassy to manage relations with members of other species.",
+    "descriptions": [
+      "You are commissioned to design and build an Interstellar Embassy that acts as a neutral hub for first contact. Its mission is to bring together explorers, scientists, and diplomats, providing unified procedures from the very first moment of discovery. It must convey credibility and safety: a place where any species can present itself without risk or coercion, and with clear guarantees.",
+      "The rationale is preventive and strategic. We aim to avoid misunderstandings, cultural clashes, and biochemical risks through common protocols for quarantine, translation, and diplomatic etiquette. The embassy will safeguard the rights of newly discovered intelligences, document their culture ethically, and serve as an early forum for mediation and dispute resolution.",
+      "Functional requirements: modular mediation rooms, biosafety labs, translation/semiotics systems, a cultural archive, and docks/logistics for exploration vessels. Trust requirements: transparency, independent observers, decision traceability, and public reporting channels. Expected outcome: turn the chance of discovery into sustained cooperation—safe corridors, joint research, and responsible trade."
+    ]
   }
 }

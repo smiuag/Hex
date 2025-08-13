@@ -25,6 +25,7 @@ type Props = {
     remainingTime: number;
     totalTime: number;
     cost: Record<string, number>;
+    isDiscovered: boolean;
     progress?: {
       targetLevel: number;
       startedAt: number;
@@ -78,6 +79,9 @@ export const ResearchCard: React.FC<Props> = ({
 
   const config = researchConfig[item.type];
   const requirements = config.requiredBuilding;
+  const needsDiscover = config.needsDiscover;
+
+  if (needsDiscover && !item.isDiscovered) return;
 
   return (
     <Animated.View style={[commonStyles.containerCenter, { transform: [{ scale }] }]}>

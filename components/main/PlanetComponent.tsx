@@ -107,6 +107,14 @@ export default function PlanetComponent() {
       return;
     }
 
+    if (
+      hexToUse.building?.type == "EMBASSY" ||
+      (hexToUse.construction?.building == "EMBASSY" && hexToUse.construction.targetLevel > 1)
+    ) {
+      router.replace("/(tabs)/planet/embassy");
+      return;
+    }
+
     const isEmpty = !hexToUse.building && !hexToUse.construction;
     if (!hexToUse.isTerraformed) {
       showTerraform(hexToUse);

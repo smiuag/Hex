@@ -40,6 +40,7 @@ export default function ResearchList({ labType }: Props) {
 
       const isAvailable = isUnlocked(type, 1, hexes);
       const isMaxed = currentLevel >= config.maxLevel;
+      const isDiscovered = !!data?.discovered;
 
       return {
         key: type,
@@ -52,6 +53,7 @@ export default function ResearchList({ labType }: Props) {
         isMaxed,
         hasResources,
         cost: scaledCost,
+        isDiscovered,
         progress: data?.progress,
         totalTime,
       };

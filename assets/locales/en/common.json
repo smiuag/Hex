@@ -79,5 +79,12 @@
   "combatStats": "Stats:",
   "CollectAlert": "Resource collection",
   "CollectMessage": "Are you sure you want to start system collection? It requires 50K energy, 1 available freighter, and it cannot be canceled.",
-  "NotEnoughForCollect": "Not enough energy to start collection or no available freighter."
+  "NotEnoughForCollect": "Not enough energy to start collection or no available freighter.",
+  "TRADE": "Trade",
+  "FIGHT": "Fight",
+  "DIPLOMACY": "Dyplomacy",
+  "RETRIBUTION": "Retribution",
+  "IGNORE": "Ignore",
+  "specialReward": "special reward",
+  "RemainingTime": "Remaining time"
 }

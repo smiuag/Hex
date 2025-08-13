@@ -13,7 +13,7 @@ import {
 } from "@/src/services/storage";
 import { FleetData, MovementType } from "@/src/types/fleetType";
 import { PlayerQuest, UpdateQuestOptions } from "@/src/types/questType";
-import { CombinedResources, Resources } from "@/src/types/resourceTypes";
+import { CombinedResources } from "@/src/types/resourceTypes";
 import { Ship, ShipType } from "@/src/types/shipType";
 import { StarSystem, StarSystemMap } from "@/src/types/starSystemTypes";
 import { simulateBattle } from "@/utils/combat";
@@ -28,8 +28,8 @@ export const useStarSystem = (
   universe: StarSystemMap,
   handleDestroyShip: (type: ShipType, amount: number) => void,
   handleCreateShips: (shipsToAdd: { type: ShipType; amount: number }[]) => void,
-  subtractResources: (modifications: Partial<Resources>) => void,
-  addResources: (modifications: Partial<Resources>) => void,
+  subtractResources: (modifications: Partial<CombinedResources>) => void,
+  addResources: (modifications: Partial<CombinedResources>) => void,
   updateQuest: (options: UpdateQuestOptions) => void
 ) => {
   const [starSystems, setPlayerStarSystems] = useState<StarSystem[]>([]);

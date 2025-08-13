@@ -24,8 +24,6 @@ export default function HexTile({ hex, px, py, points, factor, fontSize, index, 
   const [remainingTime, setRemainingTime] = useState<number>(0);
   const hexes = useGameContextSelector((ctx) => ctx.hexes);
 
-  console.log("sss");
-
   const buildingType = construction ? construction.building : building ? building.type : undefined;
   const buildingImage = buildingType ? buildingConfig[buildingType].image : undefined;
   const corners = getHexCornerPoints(px, py, hexSize);

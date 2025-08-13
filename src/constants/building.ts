@@ -17,6 +17,7 @@ export const BUILDING_COST = {
   GREENHOUSE: { STONE: 75000, METAL: 35000, CRYSTAL: 75000, ENERGY: 3000 },
   WATEREXTRACTOR: { STONE: 75000, METAL: 42000, CRYSTAL: 75000, ENERGY: 3000 },
   ALIEN_LAB: { STONE: 150000, METAL: 150000, CRYSTAL: 500000, ENERGY: 30000 },
+  EMBASSY: { STONE: 7500, METAL: 3500, CRYSTAL: 7500, ENERGY: 3000 },
 };
 
 export const BUILDING_PRODUCTION = {
@@ -35,6 +36,7 @@ export const BUILDING_PRODUCTION = {
   GREENHOUSE: {},
   WATEREXTRACTOR: {},
   ALIEN_LAB: {},
+  EMBASSY: {},
 };
 
 export const BUILDING_TIME = {
@@ -53,6 +55,7 @@ export const BUILDING_TIME = {
   GREENHOUSE: 1000 * 60 * 5,
   WATEREXTRACTOR: 1000 * 60 * 5,
   ALIEN_LAB: 1000 * 60 * 60 * 6,
+  EMBASSY: 1000 * 60 * 5,
 };
 
 export const BUILDING_MAX_IN_PLANET = {
@@ -71,6 +74,7 @@ export const BUILDING_MAX_IN_PLANET = {
   GREENHOUSE: 1,
   WATEREXTRACTOR: 1,
   ALIEN_LAB: 1,
+  EMBASSY: 1,
 };
 
 export const BUILDING_MAX_LVL = {
@@ -89,6 +93,7 @@ export const BUILDING_MAX_LVL = {
   GREENHOUSE: 4,
   WATEREXTRACTOR: 1,
   ALIEN_LAB: 3,
+  EMBASSY: 1,
 };
 
 export const BUILDING_REQUIRED_RESEARCH: Record<BuildingType, BuildingRequiredResearch> = {
@@ -246,4 +251,5 @@ export const BUILDING_REQUIRED_RESEARCH: Record<BuildingType, BuildingRequiredRe
   ],
   WATEREXTRACTOR: [],
   ALIEN_LAB: [],
+  EMBASSY: [],
 };

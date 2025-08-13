@@ -11,6 +11,7 @@ import alienLabBackground from "../../assets/images/buildings/alienLabBackground
 import antennaBackground from "../../assets/images/buildings/antenna.png";
 import baseBackground from "../../assets/images/buildings/base.png";
 import crystalmineBackground from "../../assets/images/buildings/crystal.png";
+import embassyBackground from "../../assets/images/buildings/embassy.png";
 import energyBackground from "../../assets/images/buildings/energy.png";
 import greenhouseBackground from "../../assets/images/buildings/greenhouse.png";
 import hangarBackground from "../../assets/images/buildings/hangar.png";
@@ -64,6 +65,7 @@ import base from "../../assets/images/mini/base.png";
 import blank from "../../assets/images/mini/blank.png";
 import buildingAlienLab from "../../assets/images/mini/buildingAlienLab.png";
 import crystal from "../../assets/images/mini/crystal.png";
+import embassy from "../../assets/images/mini/embassy.png";
 import greenhouse from "../../assets/images/mini/greenhouse.png";
 import hangar from "../../assets/images/mini/hangar.png";
 import lab from "../../assets/images/mini/lab.png";
@@ -82,10 +84,20 @@ import waterExtractor from "../../assets/images/mini/water.png";
 import alienTechFound from "../../assets/images//quests/alienTechFound.png";
 import waterFound from "../../assets/images//quests/waterFound.png";
 import alienLab from "../../assets/images/quests/alienLab.png";
+import embassyQuest from "../../assets/images/quests/embassy.png";
 import waterSearch from "../../assets/images/quests/waterSearch.png";
+
 import backgroundCluster from "../../assets/images/starSystems/backgroundCluster.png";
 import backgroundGalaxy from "../../assets/images/starSystems/backgroundGalaxy.png";
 import backgroundRegion from "../../assets/images/starSystems/backgroundRegion.png";
+
+import race1 from "../../assets/images/races/race1.png";
+import race2 from "../../assets/images/races/race2.png";
+import race3 from "../../assets/images/races/race3.png";
+import race4 from "../../assets/images/races/race4.png";
+import race5 from "../../assets/images/races/race5.png";
+
+import event_trade from "../../assets/images/events/trade.png";
 
 export const IMAGES = {
   //IMAGENES GENERALES
@@ -118,13 +130,8 @@ export const IMAGES = {
   BUILDING_WATEREXTRACTOR: waterExtractor,
   BUILDING_RESIDUE: residue,
   BUILDING_ALIEN_LAB: buildingAlienLab,
+  BUILDING_EMBASSY: embassy,
   HEX_LUNAR: lunar,
-  RESEARCH_MINING: mining,
-  RESEARCH_TERRAFORMING: terraforming,
-  RESEARCH_WATER: water,
-  RESEARCH_FUEL: fuel,
-  RESEARCH_ENERGY: energy,
-  RESEARCH_SHIPS: ships,
   LAB_BACKGROUND: labBackground,
   METALLURGY_BACKGROUND: metallurgyBackground,
   QUARRY_BACKGROUND: quarryBackground,
@@ -138,6 +145,8 @@ export const IMAGES = {
   RECYCLE_BACKGROUND: recycleBackground,
   RESIDUE_BACKGROUND: residueBackground,
   WATEREXTRACTOR_BACKGROUND: waterBackground,
+  EMBASSY_BACKGROUND: embassyBackground,
+  EMBASSY_QUEST_BACKGROUND: embassyQuest,
   SHIP_BG_PROBE: probeBackground,
   SHIP_BG_LIGHTFIGHTER: lightFighterBackground,
   SHIP_BG_INTERCEPTOR: interceptorBackground,
@@ -150,10 +159,6 @@ export const IMAGES = {
   SHIP_BG_ORBITALASSAULTSHIP: orbitalAssaultShipBackground,
   SHIP_BG_PLANETARYDESTROYER: planetarDestroyerBackground,
   SHIP_BG_FREIGHTER: freighterBackground,
-  RESEARCH_LASER: laser,
-  RESEARCH_PLASMA: plasma,
-  RESEARCH_SHIELD: shield,
-  RESEARCH_GRAVITY: gravity,
   SPACESTATION_BACKGROUND: spaceStation,
   BINARY: binary,
   TRINARY: trinary,
@@ -173,4 +178,22 @@ export const IMAGES = {
   RESEARCH_ONTOCUANTICA: ontocuantica,
   RESEARCH_HEXOXIDO: hexoxido,
   RESEARCH_FLUXION: fluxion,
+  RESEARCH_LASER: laser,
+  RESEARCH_PLASMA: plasma,
+  RESEARCH_SHIELD: shield,
+  RESEARCH_GRAVITY: gravity,
+  RESEARCH_MINING: mining,
+  RESEARCH_TERRAFORMING: terraforming,
+  RESEARCH_WATER: water,
+  RESEARCH_FUEL: fuel,
+  RESEARCH_ENERGY: energy,
+  RESEARCH_SHIPS: ships,
+
+  RACE1: race1,
+  RACE2: race2,
+  RACE3: race3,
+  RACE4: race4,
+  RACE5: race5,
+
+  EVENT_TRADE: event_trade,
 };

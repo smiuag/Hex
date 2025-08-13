@@ -2,7 +2,7 @@ import { RaceType } from "./raceType";
 import { CombinedResources } from "./resourceTypes";
 import { ShipData } from "./shipType";
 
-export const ALL_EVENT_TYPES = ["COMERCIAL", "EXTORTION", "INFILTRATION"] as const;
+export const ALL_EVENT_TYPES = ["COMERCIAL", "EXTORTION", "INFILTRATION", "DEFAULT"] as const;
 export type EventType = (typeof ALL_EVENT_TYPES)[number];
 
 export const DIPLOMACY_CHANGE_LEVEL = {
@@ -130,7 +130,11 @@ export type DiplomacyChangeLevel = keyof typeof DIPLOMACY_CHANGE_LEVEL;
 
 export type EventOptionsType = "TRADE" | "FIGHT" | "DIPLOMACY" | "RETRIBUTION" | "IGNORE";
 
-export type EventEffectType = "RESOURCE_CHANGE" | "DIPLOMACY_CHANGE" | "INSTANT_ATTACK";
+export type EventEffectType =
+  | "RESOURCE_CHANGE"
+  | "DIPLOMACY_CHANGE"
+  | "INSTANT_ATTACK"
+  | "SABOTAGE";
 
 export type DiplomacyChange = {
   race: RaceType;
@@ -148,6 +152,7 @@ export type EventEffect = {
   trade?: Trade;
   description: string;
   attackingShips?: ShipData[];
+  sabotage: boolean;
 };
 
 export type EventOption = {
@@ -156,13 +161,26 @@ export type EventOption = {
   description: string;
 };
 
-export type Event = {
+export type DiplomaticEvent = {
   type: EventType;
   races: RaceType;
   hostile: boolean;
   endTime: number;
   completed: boolean;
+  completedTime?: number;
   options: EventOption[];
   title: string;
   description: string;
+  mainTrade?: Trade;
 };
+
+export const makeDefaultEvent = (): DiplomaticEvent => ({
+  type: "DEFAULT",
+  completed: false,
+  description: "",
+  endTime: Date.now(),
+  hostile: false,
+  options: [],
+  races: "RACE1",
+  title: "",
+});

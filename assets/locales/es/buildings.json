@@ -14,7 +14,8 @@
     "RESIDUE": "Vertedero",
     "GREENHOUSE": "Invernadero",
     "WATEREXTRACTOR": "Procesadora de agua",
-    "ALIEN_LAB": "Laboratorio X-23"
+    "ALIEN_LAB": "Laboratorio X-23",
+    "EMBASSY": "Embajada interplanetaria"
   },
   "buildingDescription": {
     "BASE": "Centro neurálgico de la colonia. Desde aquí se gestionan las operaciones generales, se monitorean los recursos y se coordinan las acciones de expansión y defensa en el planeta.",
@@ -31,7 +32,8 @@
     "RESIDUE": "Instalación para la gestión de residuos no reciclables. Aquí se almacenan, neutralizan o contienen sustancias peligrosas que no pueden ser reutilizadas, evitando riesgos biológicos o ambientales.",
     "GREENHOUSE": "Estructura climatizada para el cultivo intensivo de plantas en un ambiente controlado. Proporciona alimentos frescos, oxígeno y un entorno más habitable para los colonos en este planeta hostil.",
     "WATEREXTRACTOR": "Planta de procesamiento de hielo subterraneo. Extrae agua y la purifica para consumo humano.",
-    "ALIEN_LAB": "Laboratorio para el análisis de los restos tecnológicos de una civilización alien. Además servirá para sintetizar nuevos materiales y examinar ADN alien."
+    "ALIEN_LAB": "Laboratorio para el análisis de los restos tecnológicos de una civilización alien. Además servirá para sintetizar nuevos materiales y examinar ADN alien.",
+    "EMBASSY": "Es una institución diplomática que facilita la comunicación, el comercio y la cooperación entre diferentes planetas o civilizaciones galácticas."
   },
 
   "ExtractionSystems": "Sistemas de extracción de minerales",

@@ -1,16 +1,21 @@
 import { loadResearch, saveResearch } from "@/src/services/storage";
 import { UpdateQuestOptions } from "@/src/types/questType";
 import { Research, ResearchType } from "@/src/types/researchTypes";
-import { Resources } from "@/src/types/resourceTypes";
+import { CombinedResources } from "@/src/types/resourceTypes";
 import { useEffect, useRef, useState } from "react";
 import Toast from "react-native-toast-message";
 //import { NotificationManager } from "../utils/notificacionUtils";
-import { getResearchCost, getResearchTime } from "../utils/researchUtils";
+import { Alert } from "react-native";
+import {
+  getNextDiscoverableResearchType,
+  getResearchCost,
+  getResearchTime,
+} from "../utils/researchUtils";
 
 export const useResearch = (
-  addResources: (mod: Partial<Resources>) => void,
-  subtractResources: (mod: Partial<Resources>) => void,
-  enoughResources: (cost: Partial<Resources>) => boolean,
+  addResources: (mod: Partial<CombinedResources>) => void,
+  subtractResources: (mod: Partial<CombinedResources>) => void,
+  enoughResources: (cost: Partial<CombinedResources>) => boolean,
   updateQuest: (options: UpdateQuestOptions) => void
 ) => {
   const [research, setResearch] = useState<Research[]>([]);
@@ -79,6 +84,7 @@ export const useResearch = (
           targetLevel: nextLevel,
           // notificationId: notificationId ?? undefined,
         },
+        discovered: true,
       });
 
       return updated;
@@ -103,7 +109,47 @@ export const useResearch = (
     );
   };
 
-  const processResearchTick = async (tResearch: (key: string) => string) => {
+  const discoverNextResearch = async () => {
+    const nextDiscover = getNextDiscoverableResearchType(research);
+    if (nextDiscover) {
+      updateResearchState((prev) => [
+        ...prev,
+        { data: { type: nextDiscover, level: 0 }, discovered: true },
+      ]);
+
+      Alert.alert(
+        "Nueva tecnología",
+        "El acuerdo te ha proporcionado una nueva fuente de investigación. Visita el laboratorio de tecnologías alienígenas para verla.",
+        [
+          {
+            text: "Aceptar",
+            onPress: () => {},
+          },
+        ],
+        { cancelable: false }
+      );
+    } else {
+      Alert.alert(
+        "Nueva tecnología",
+        "Desgraciadamente ya sabes todo lo que te pueden enseñar. Aun así se quedan con el material por el esfuerzo dedicado.",
+        [
+          {
+            text: "Aceptar",
+            onPress: () => {},
+          },
+        ],
+        { cancelable: false }
+      );
+    }
+  };
+
+  const stopResearch = async () => {
+    await updateResearchState((prev) =>
+      prev.map((r) => (r.progress ? { ...r, progress: undefined } : r))
+    );
+  };
+
+  const processResearchTick = async () => {
     const now = Date.now();
     let changed = false;
     let miningResearch = false;
@@ -134,6 +180,7 @@ export const useResearch = (
               type: item.data.type,
               level: item.progress.targetLevel,
             },
+            discovered: true,
           };
         }
       }
@@ -163,5 +210,7 @@ export const useResearch = (
     handleCancelResearch,
     processResearchTick,
     resetResearch,
+    discoverNextResearch,
+    stopResearch,
   };
 };

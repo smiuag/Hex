@@ -41,6 +41,7 @@ export type Research = {
     targetLevel: number;
     notificationId?: string;
   };
+  discovered: boolean;
 };
 
 export interface ResearchItem {

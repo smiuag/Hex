@@ -206,5 +206,14 @@
       "Pero no nos precipitemos, tenemos que sincronizarnos con las colonias para aprovechar los viajes.",
       "Espera que el sistema acumule recursos y envía un carguero a recolectar."
     ]
+  },
+  "BUILDING_EMBASSY": {
+    "name": "Embajada interestelar",
+    "shortDescription": "Construye una embajada para gestionar las relaciones con los miembros de otras razas.",
+    "descriptions": [
+      "Se le encomienda el diseño y construcción de una Embajada Interestelar que actúe como hub neutral para primeros contactos. Su misión es centralizar a exploradores, científicos y diplomáticos, ofreciendo procedimientos unificados desde el minuto cero del hallazgo. Debe transmitir credibilidad y seguridad: un lugar donde cualquier especie pueda presentarse sin riesgo, sin coerción y con garantías claras.",
+      "Los motivos son preventivos y estratégicos. Queremos evitar malentendidos, choques culturales y riesgos bioquímicos mediante protocolos comunes de cuarentena, traducción y etiqueta diplomática. La embajada protegerá derechos de inteligencias recién descubiertas, documentará su cultura de forma ética, y servirá como mesa de mediación y resolución temprana de disputas.",
+      "Requisitos funcionales: salas de mediación modulables, laboratorios de bioseguridad, sistemas de traducción/semiótica, archivo cultural, y muelles/logística para naves de exploración. Requisitos de confianza: transparencia, observadores independientes, trazabilidad de decisiones y canales públicos de reporte. Resultado esperado: convertir el azar del descubrimiento en cooperación sostenida—corredores seguros, investigación conjunta y comercio responsable."
+    ]
   }
 }

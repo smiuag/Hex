@@ -17,7 +17,8 @@ export type ConfigType =
   | "STARTING_SYSTEM"
   | "HAS_ANTENNA"
   | "HAS_HANGAR"
-  | "ALIEN_STRUCTURE_FOUND";
+  | "ALIEN_STRUCTURE_FOUND"
+  | "RACE";
 
 export type ConfigEntry = {
   key: ConfigType;
@@ -29,6 +30,7 @@ export type PlayerConfig = ConfigEntry[];
 export const defaultPlayerConfig: PlayerConfig = [
   { key: "MAP_SIZE", value: "LARGE" },
   { key: "GAME_STARTED", value: "false" },
+  { key: "RACE", value: "RACE1" },
 ];
 
 export const SCALE: ScaleType = {

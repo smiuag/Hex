@@ -19,4 +19,8 @@ export const eventConfig: Record<
     type: "INFILTRATION",
     isHostile: true,
   },
+  DEFAULT: {
+    type: "COMERCIAL",
+    isHostile: false,
+  },
 };

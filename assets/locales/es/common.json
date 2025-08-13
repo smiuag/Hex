@@ -79,5 +79,12 @@
   "combatStats": "Estadísticas:",
   "CollectAlert": "Recolecctión de recursos",
   "CollectMessage": "¿Estás seguro de quieres iniciar la recolección del sistema? Requiere 50K de energía, 1 cargueros disponible y no se puede cancelar.",
-  "NotEnoughForCollect": "No hay suficiente energía para comenzar la recolección o no hay un carguero disponible."
+  "NotEnoughForCollect": "No hay suficiente energía para comenzar la recolección o no hay un carguero disponible.",
+  "TRADE": "Comerciar",
+  "FIGHT": "Pelear",
+  "DIPLOMACY": "Diplomacia",
+  "RETRIBUTION": "Venganza",
+  "IGNORE": "Ignorar",
+  "specialReward": "Recomensa especial",
+  "RemainingTime": "Tiempo restante"
 }

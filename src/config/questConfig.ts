@@ -126,9 +126,17 @@ export const questConfig: Record<
     contextType: "FLEET",
     persist: false,
   },
+  BUILDING_EMBASSY: {
+    type: "BUILDING_EMBASSY",
+    order: 12,
+    backgroundImage: IMAGES.EMBASSY_QUEST_BACKGROUND,
+    reward: { STONE: 13000, METAL: 13000, CRYSTAL: 3000, ENERGY: 500 },
+    contextType: "BUILD",
+    persist: true,
+  },
   SCAN_FIRST: {
     type: "SCAN_FIRST",
-    order: 12,
+    order: 13,
     backgroundImage: IMAGES.NEBULA,
     reward: { STONE: 10000, METAL: 10000, CRYSTAL: 10000 },
     contextType: "FLEET",
@@ -136,7 +144,7 @@ export const questConfig: Record<
   },
   SYSTEM_BUILT_DEFENSE: {
     type: "SYSTEM_BUILT_DEFENSE",
-    order: 13,
+    order: 14,
     backgroundImage: IMAGES.TRINARY,
     reward: { STONE: 10000, METAL: 10000, CRYSTAL: 10000 },
     contextType: "SYSTEM",
@@ -144,7 +152,7 @@ export const questConfig: Record<
   },
   SYSTEM_BUILT_EXTRACTION: {
     type: "SYSTEM_BUILT_EXTRACTION",
-    order: 14,
+    order: 15,
     backgroundImage: IMAGES.DEAD_STAR,
     reward: { STONE: 10000, METAL: 10000, CRYSTAL: 10000 },
     contextType: "SYSTEM",
@@ -152,7 +160,7 @@ export const questConfig: Record<
   },
   SYSTEM_BUILT_STARPORT: {
     type: "SYSTEM_BUILT_STARPORT",
-    order: 15,
+    order: 16,
     backgroundImage: IMAGES.BINARY,
     reward: { STONE: 10000, METAL: 10000, CRYSTAL: 10000 },
     contextType: "SYSTEM",
@@ -160,7 +168,7 @@ export const questConfig: Record<
   },
   COLLECT: {
     type: "COLLECT",
-    order: 15,
+    order: 17,
     backgroundImage: IMAGES.COLLECT,
     reward: { STONE: 10000, METAL: 10000, CRYSTAL: 10000 },
     contextType: "SYSTEM",
@@ -168,7 +176,7 @@ export const questConfig: Record<
   },
   BUILDING_ALIENT_LAB: {
     type: "BUILDING_ALIENT_LAB",
-    order: 16,
+    order: 18,
     backgroundImage: IMAGES.ALIEN_LAB,
     reward: { STONE: 50000, METAL: 50000, CRYSTAL: 50000 },
     contextType: "SYSTEM",

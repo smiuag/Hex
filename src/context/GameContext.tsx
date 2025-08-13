@@ -1,6 +1,5 @@
 // GameProvider.tsx
 import { useUniverse } from "@/hooks/useUniverse";
-import i18n from "@/i18n";
 import { getRandomStartSystem } from "@/utils/starSystemUtils";
 import React, { useEffect, useMemo } from "react";
 
@@ -14,7 +13,7 @@ import { useStarSystem } from "../../hooks/useStarSystem";
 import { BuildingType } from "../../src/types/buildingTypes";
 import { Hex } from "../../src/types/hexTypes";
 import { PlayerQuest, UpdateQuestOptions } from "../../src/types/questType";
-import { Resources, StoredResources } from "../../src/types/resourceTypes";
+import { CombinedResources, StoredResources } from "../../src/types/resourceTypes";
 import { Ship, ShipType } from "../../src/types/shipType";
 import { ConfigEntry, PlayerConfig } from "../types/configTypes";
 import { FleetData } from "../types/fleetType";
@@ -23,6 +22,8 @@ import { StarSystem, StarSystemMap } from "../types/starSystemTypes";
 
 import { useDiplomacy } from "@/hooks/useDiplomacy";
 import { createContext, useContextSelector } from "use-context-selector";
+import { DiplomaticEvent, EventOption } from "../types/eventTypes";
+import { DiplomacyLevel } from "../types/raceType";
 
 // 🎯 Contexto único con suscripción selectiva
 type ProviderContextType = {
@@ -35,11 +36,13 @@ type ProviderContextType = {
   playerConfig: PlayerConfig;
   starSystems: StarSystem[];
   universe: StarSystemMap;
+  playerDiplomacy: DiplomacyLevel[];
+  currentEvent: DiplomaticEvent;
   startStarSystemExploration: (id: string) => void;
   startCelestialBodyExploration: (systemId: string, planetId: string) => void;
-  addProduction: (modifications: Partial<Resources>, effectiveAt: number) => void;
-  addResources: (modifications: Partial<Resources>) => void;
-  subtractResources: (modifications: Partial<Resources>) => void;
+  addProduction: (modifications: Partial<CombinedResources>, effectiveAt: number) => void;
+  addResources: (modifications: Partial<CombinedResources>) => void;
+  subtractResources: (modifications: Partial<CombinedResources>) => void;
   handleBuild: (q: number, r: number, type: BuildingType) => void;
   handleCancelBuild: (q: number, r: number) => void;
   handleTerraform: (q: number, r: number) => void;
@@ -59,7 +62,7 @@ type ProviderContextType = {
   cancelExplorePlanet: (systemId: string, planetId: string) => void;
   startAttack: (systemId: string, fleet: Ship[]) => void;
   cancelAttack: (id: string) => void;
-  enoughResources: (cost: Partial<Resources>) => boolean;
+  enoughResources: (cost: Partial<CombinedResources>) => boolean;
   scanStarSystem: (currentSystemId: string, id: string) => void;
   recoverStarSystem: (id: string) => void;
   cancelScanStarSystem: (id: string) => void;
@@ -67,15 +70,13 @@ type ProviderContextType = {
   startCollectSystem: (systemId: string) => void;
   setHexAncientStructure: (hex: Hex) => void;
   cancelCollect: (systemId: string) => void;
+  handleEventOptionChoose: (option: EventOption) => void;
 };
 
 const GameContext = createContext<ProviderContextType>(null as any);
 
 export const GameProvider = ({ children }: { children: React.ReactNode }) => {
-  const tResearch = React.useMemo(() => i18n.getFixedT(null, "research"), []);
   const { universe } = useUniverse();
-
-  const { resetPlayerDiplomacy } = useDiplomacy();
 
   const { playerConfig, handleUpdateConfig, resetPlayerConfig } = useConfig();
 
@@ -99,6 +100,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     handleTerraform,
     handleDestroyBuilding,
     setHexAncientStructure,
+    stopConstruction,
   } = useHexes(
     addProduction,
     addResources,
@@ -118,8 +120,15 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     handleCreateShips,
   } = useShip(playerQuests, addResources, subtractResources, enoughResources, updateQuest);
 
-  const { research, handleResearch, handleCancelResearch, processResearchTick, resetResearch } =
-    useResearch(addResources, subtractResources, enoughResources, updateQuest);
+  const {
+    research,
+    handleResearch,
+    handleCancelResearch,
+    processResearchTick,
+    resetResearch,
+    discoverNextResearch,
+    stopResearch,
+  } = useResearch(addResources, subtractResources, enoughResources, updateQuest);
 
   const {
     fleet,
@@ -153,10 +162,28 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     updateQuest
   );
 
+  const {
+    playerDiplomacy,
+    currentEvent,
+    resetPlayerEvent,
+    resetPlayerDiplomacy,
+    handleEventOptionChoose,
+    loadEvent,
+    modifyEvent,
+  } = useDiplomacy(
+    handleDestroyShip,
+    handleCreateShips,
+    addResources,
+    subtractResources,
+    discoverNextResearch,
+    stopResearch,
+    stopConstruction
+  );
+
   useEffect(() => {
     const interval = setInterval(() => {
       processConstructionTick();
-      processResearchTick(tResearch);
+      processResearchTick();
       processShipTick();
       processFleeTick();
       processColonialTick();
@@ -172,16 +199,22 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   ]);
 
   const endGame = async () => {
+    await modifyEvent((prev) => {
+      return { ...prev, completed: false, completedTime: undefined };
+    });
+    // addResources({ NEBULITA: 200000 });
     //await NotificationManager.cancelAllNotifications();
-    await resetBuild();
-    await resetPlayerConfig();
-    await resetResearch();
-    await resetQuests();
-    await resetShip();
-    await resetResources();
-    await resetStarSystem();
-    await resetFleet();
-    await resetPlayerDiplomacy();
+    // await resetPlayerEvent();
+    // await loadEvent();
+    // await resetBuild();
+    // await resetPlayerConfig();
+    // await resetResearch();
+    // await resetQuests();
+    // await resetShip();
+    // await resetResources();
+    // await resetStarSystem();
+    // await resetFleet();
+    // await resetPlayerDiplomacy();
   };
 
   const startGame = async () => {
@@ -216,6 +249,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       research,
       playerQuests,
       universe,
+      playerDiplomacy,
+      currentEvent,
       startStarSystemExploration,
       startCelestialBodyExploration,
       discardStarSystem,
@@ -248,6 +283,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       startCollectSystem,
       setHexAncientStructure,
       cancelCollect,
+      handleEventOptionChoose,
     }),
     [
       fleet,
@@ -259,6 +295,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       research,
       playerQuests,
       universe,
+      playerDiplomacy,
+      currentEvent,
       startStarSystemExploration,
       startCelestialBodyExploration,
       discardStarSystem,
@@ -291,6 +329,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       startCollectSystem,
       setHexAncientStructure,
       cancelCollect,
+      handleEventOptionChoose,
     ]
   );
 
