@@ -6,7 +6,9 @@ import { Hex } from "@/src/types/hexTypes";
 import { UpdateQuestOptions } from "@/src/types/questType";
 import { CombinedResources, Resources } from "@/src/types/resourceTypes";
 import { TerrainType } from "@/src/types/terrainTypes";
+import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
+import { Alert } from "react-native";
 import Toast from "react-native-toast-message";
 import { getBuildCost, getBuildTime, getProductionPerSecond } from "../utils/buildingUtils";
 import {
@@ -25,6 +27,8 @@ export const useHexes = (
 ) => {
   const [hexes, setHexes] = useState<Hex[]>([]);
   const hexRef = useRef<Hex[]>([]);
+
+  const router = useRouter();
 
   const updateHexes = async (newHexes: Hex[]) => {
     const prev = hexRef.current;
@@ -340,11 +344,33 @@ export const useHexes = (
     if (metalBuild) await updateQuest({ type: "BUILDING_METALLURGY1", completed: true });
     if (krystalmineBuild) await updateQuest({ type: "BUILDING_KRYSTALMINE1", completed: true });
     if (baseBuild) await updateQuest({ type: "BUILDING_BASE2", completed: true });
-    if (antennaBuild) await updateQuest({ type: "BUILDING_ANTENNA", completed: true });
-    if (hangarBuild) await updateQuest({ type: "BUILDING_HANGAR", completed: true });
     if (waterExtractorBuild) await updateQuest({ type: "H2O_FOUND", completed: true });
     if (alienLabBuild) await updateQuest({ type: "BUILDING_ALIENT_LAB", completed: true });
     if (embassyBuild) await updateQuest({ type: "BUILDING_EMBASSY", completed: true });
+    if (antennaBuild) {
+      await updateQuest({ type: "BUILDING_ANTENNA", completed: true });
+      Alert.alert("Galaxia", "Una nueva opción del menú desbloqueada", [
+        { text: "cancelar", style: "cancel" },
+        {
+          text: "Aceptar",
+          onPress: async () => {
+            router.replace("/(tabs)/galaxy");
+          },
+        },
+      ]);
+    }
+    if (hangarBuild) {
+      await updateQuest({ type: "BUILDING_HANGAR", completed: true });
+      Alert.alert("Naves", "Una nueva opción del menú desbloqueada", [
+        { text: "cancelar", style: "cancel" },
+        {
+          text: "Aceptar",
+          onPress: async () => {
+            router.replace("/(tabs)/ship");
+          },
+        },
+      ]);
+    }
   };
 
   return {

@@ -40,7 +40,7 @@
   "upgrade": "Mejorar",
   "buildTime": "Tiempo de construcción",
   "cost": "Coste",
-  "productionLevel": "Producción (Nv {{level}}):",
+  "productionLevel": "Producción /h (Nv {{level}}):",
   "currentLevel": "Nivel actual",
   "level": "Nv",
   "timePerUnit": "Tiempo por unidad",

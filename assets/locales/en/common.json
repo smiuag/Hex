@@ -40,7 +40,7 @@
   "upgrade": "Upgrade",
   "buildTime": "Build time",
   "cost": "Cost",
-  "productionLevel": "Production (Lv {{level}}):",
+  "productionLevel": "Production /h (Lv {{level}}):",
   "currentLevel": "Current level",
   "level": "Lv",
   "timePerUnit": "Time per unit",

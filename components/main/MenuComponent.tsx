@@ -136,7 +136,7 @@ export default function MenuComponent() {
           <Text style={menuStyles.title}>{t("colony")}</Text>
 
           <View style={commonStyles.rowSpaceBetween}>
-            <Text style={commonStyles.whiteText}>{t("production")}:</Text>
+            <Text style={commonStyles.whiteText}>{t("production")} /h:</Text>
             <View style={commonStyles.rowResources}>
               <ResourceDisplay resources={productionPerHour} fontSize={13} />
             </View>

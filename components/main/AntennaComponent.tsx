@@ -14,7 +14,7 @@ import {
   getSystemsFromRegion,
 } from "@/utils/starSystemUtils";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   FlatList,
@@ -47,6 +47,11 @@ export default function AntennaComponent() {
   const [selectedCluster, setSelectedCluster] = useState<string | null>(null);
   const [selectedGalaxy, setSelectedGalaxy] = useState<string | null>(null);
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
+
+  // Ref del FlatList de sistemas + control para autoscroll por región
+  const systemsListRef = useRef<FlatList<StarSystemDetected>>(null);
+  const autoScrolledKeysRef = useRef<Set<string>>(new Set());
+
   const router = useRouter();
   const startingSystemId = gameStartingSystem(playerConfig);
   const startingSystem = universe[startingSystemId];
@@ -62,6 +67,16 @@ export default function AntennaComponent() {
   const systemScaned = starSystems.find((system) => !!system.scanStartedAt);
   const isAnyBeingExplored = !!systemScaned?.id;
 
+  // --- Entrar siempre al nivel de SISTEMAS (región del sistema natal) ---
+  useEffect(() => {
+    if (startingSystem) {
+      setSelectedCluster(startingSystem.cluster);
+      setSelectedGalaxy(startingSystem.galaxy);
+      setSelectedRegion(startingSystem.region);
+    }
+  }, [startingSystemId]);
+
+  // Mantener autoselecciones si solo hay 1 opción (comportamiento previo)
   useEffect(() => {
     if (visibleClusters.length === 1) setSelectedCluster(visibleClusters[0]);
   }, [visibleClusters]);
@@ -74,12 +89,10 @@ export default function AntennaComponent() {
     if (visibleRegions.length === 1) setSelectedRegion(visibleRegions[0]);
   }, [visibleRegions]);
 
-  if (!data) return;
-  const onCancel = () => {
-    handleCancelBuild(data.q, data.r);
-  };
-
+  if (!data) return null;
   if (!startingSystem) return null;
+
+  const onCancel = () => handleCancelBuild(data.q, data.r);
 
   const { cluster, galaxy, region } = startingSystem;
   const antennaLevel = data
@@ -109,6 +122,24 @@ export default function AntennaComponent() {
     antennaLevel >= 2
       ? getRegionsFromGalaxy(universe, currentCluster, currentGalaxy)
       : [currentRegion];
+
+  // --- Util para poner la opción natal primero (si está) y evitar duplicados ---
+  const placeHomeFirst = (list: string[], home: string) => {
+    if (!list?.length) return list;
+    const seen = new Set<string>();
+    const unique = list.filter((x) => {
+      if (seen.has(x)) return false;
+      seen.add(x);
+      return true;
+    });
+    if (!unique.includes(home)) return unique;
+    return [home, ...unique.filter((x) => x !== home)];
+  };
+
+  // Listas con natal primero
+  const clustersData = placeHomeFirst(visibleClusters, cluster);
+  const galaxiesData = placeHomeFirst(visibleGalaxies, galaxy);
+  const regionsData = placeHomeFirst(visibleRegions, region);
 
   const onBuild = () => {
     if (data.building) handleBuild(data.q, data.r, data.building.type);
@@ -144,6 +175,7 @@ export default function AntennaComponent() {
   };
 
   const getExploredCount = (ids: string[]) => {
+    // Conserva la lógica original: cuenta sistemas presentes en starSystems
     const explored = ids.filter((id) => starSystems.some((s) => s.id === id));
     return `${explored.length}/${ids.length}`;
   };
@@ -363,9 +395,10 @@ export default function AntennaComponent() {
 
       <View>{getMainArea()}</View>
 
-      {antennaLevel >= 4 && visibleClusters.length > 1 && !selectedCluster && (
+      {/* Clusters (natal primero si está en la lista) */}
+      {antennaLevel >= 4 && clustersData.length > 1 && !selectedCluster && (
         <FlatList
-          data={visibleClusters}
+          data={clustersData}
           keyExtractor={(item) => item}
           renderItem={({ item }) => (
             <ClusterItem
@@ -381,9 +414,10 @@ export default function AntennaComponent() {
         />
       )}
 
-      {antennaLevel >= 3 && visibleGalaxies.length > 1 && selectedCluster && !selectedGalaxy && (
+      {/* Galaxias (natal primero si pertenece al cluster actual) */}
+      {antennaLevel >= 3 && galaxiesData.length > 1 && selectedCluster && !selectedGalaxy && (
         <FlatList
-          data={visibleGalaxies}
+          data={galaxiesData}
           keyExtractor={(item) => item}
           renderItem={({ item }) => (
             <GalaxyItem
@@ -396,7 +430,7 @@ export default function AntennaComponent() {
             />
           )}
           ListHeaderComponent={
-            visibleClusters.length > 1 ? (
+            clustersData.length > 1 ? (
               <BackButton onPress={() => setSelectedCluster(null)} text="Clusters" />
             ) : (
               <View style={commonStyles.backButton}>
@@ -409,15 +443,16 @@ export default function AntennaComponent() {
         />
       )}
 
-      {antennaLevel >= 2 && visibleRegions.length > 1 && selectedGalaxy && !selectedRegion && (
+      {/* Regiones (natal primero si pertenece a la galaxia actual) */}
+      {antennaLevel >= 2 && regionsData.length > 1 && selectedGalaxy && !selectedRegion && (
         <FlatList
-          data={visibleRegions}
+          data={regionsData}
           keyExtractor={(item) => item}
           renderItem={({ item }) => (
             <RegionItem name={item} onPress={() => setSelectedRegion(item)} t={t} />
           )}
           ListHeaderComponent={
-            visibleGalaxies.length > 1 ? (
+            galaxiesData.length > 1 ? (
               <BackButton onPress={() => setSelectedGalaxy(null)} text="Galaxys" />
             ) : (
               <View style={commonStyles.backButton}>
@@ -430,10 +465,20 @@ export default function AntennaComponent() {
         />
       )}
 
+      {/* Sistemas */}
       {selectedRegion && (
         <FlatList
+          ref={systemsListRef}
           data={visibleSystems}
           keyExtractor={(item) => item.id}
+          onScrollToIndexFailed={({ index }) => {
+            setTimeout(() => {
+              systemsListRef.current?.scrollToIndex({
+                index: Math.min(index, visibleSystems.length - 1),
+                animated: false,
+              });
+            }, 50);
+          }}
           renderItem={({ item }) => {
             const isBeingExplored = systemScaned?.id === item.id;
             return (
@@ -449,7 +494,7 @@ export default function AntennaComponent() {
             );
           }}
           ListHeaderComponent={
-            visibleRegions.length > 1 ? (
+            regionsData.length > 1 ? (
               <BackButton onPress={() => setSelectedRegion(null)} text="Regions" />
             ) : (
               <View style={commonStyles.backButton}>
