@@ -14,7 +14,8 @@
     "RESIDUE": "Waste Facility",
     "GREENHOUSE": "Greenhouse",
     "WATEREXTRACTOR": "Water Extractor",
-    "ALIEN_LAB": "X-23 Lab"
+    "ALIEN_LAB": "X-23 Lab",
+    "EMBASSY": "Interplanetary embassy"
   },
   "buildingDescription": {
     "BASE": "Nerve center of the colony. Manages general operations, monitors resources, and coordinates planetary expansion and defense.",
@@ -31,7 +32,8 @@
     "RESIDUE": "Facility for managing non-recyclable waste. Stores, neutralizes, or contains hazardous materials to prevent environmental risks.",
     "GREENHOUSE": "Climate-controlled structure for growing crops. Provides food, oxygen, and livable conditions for colonists on a hostile planet.",
     "WATEREXTRACTOR": "Facility that processes subterranean ice. Extracts and purifies water for human consumption.",
-    "ALIEN_LAB": "Laboratory for analyzing alien technological remains. Also synthesizes new materials and studies alien DNA."
+    "ALIEN_LAB": "Laboratory for analyzing alien technological remains. Also synthesizes new materials and studies alien DNA.",
+    "EMBASSY": "It is a diplomatic institution that facilitates communication, trade and cooperation between different planets or galactic civilizations."
   },
   "ExtractionSystems": "Mineral Extraction Systems",
   "LocalDefenses": "Local Defenses",

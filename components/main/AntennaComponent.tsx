@@ -3,8 +3,7 @@ import { IMAGES } from "@/src/constants/images";
 import rawData from "@/src/data/names.json";
 import { commonStyles } from "@/src/styles/commonStyles";
 import { raceConfig } from "@/src/types/raceType";
-import { StarSystemDetected } from "@/src/types/starSystemTypes";
-import { UniverseNameMap } from "@/src/types/universeFantasyNames";
+import { StarSystemDetected, UniverseNameMap } from "@/src/types/starSystemTypes";
 import { getBuildTime } from "@/utils/buildingUtils";
 import { gameStartingSystem } from "@/utils/configUtils";
 import {

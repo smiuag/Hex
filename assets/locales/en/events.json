@@ -1,59 +1,85 @@
 {
   "COMERCIAL": {
-    "singular": "A trade agreement from the race {{race}}",
-    "plural": "A trade agreement from the races {{races}}"
+    "singular": "Commercial offer from the {{race}} race",
+    "plural": "Commercial offer from the {{races}} races"
   },
   "VISIT": {
-    "singular": "A visit from the emissary of the race {{race}}",
-    "plural": "A visit from the emissary of the races {{races}}"
+    "singular": "Visit from an envoy of the {{race}} race",
+    "plural": "Visit from an envoy of the {{races}} races"
   },
   "ATACK": {
-    "singular": "An attack from the race {{race}}",
-    "plural": "An attack from the races {{races}}"
+    "singular": "Attack from the {{race}} race",
+    "plural": "Attack from the {{races}} races"
   },
   "EXTORTION": {
-    "singular": "An extortion from the race {{race}}",
-    "plural": "An extortion from the races {{races}}"
+    "singular": "Extortion by the {{race}} race",
+    "plural": "Extortion by the {{races}} races"
   },
+  "INFILTRATION": {
+    "singular": "Infiltration by the {{race}} race on your planet.",
+    "plural": "Infiltration by the {{races}} races on your planet"
+  },
+
   "diplomacyChange": {
     "SMALL_INCREASE": "Your relationship with the {{race}} will improve slightly.",
-    "MEDIUM_INCREASE": "Your relationship with the {{race}} will forge a strong new bond.",
-    "LARGE_INCREASE": "The {{race}} will owe us a debt.",
+    "MEDIUM_INCREASE": "Your relationship with the {{race}} will be strengthened.",
+    "LARGE_INCREASE": "The {{race}} will take the news as a great gesture of trust.",
     "SMALL_DECREASE": "Your relationship with the {{race}} will worsen a little.",
     "MEDIUM_DECREASE": "Your relationship with the {{race}} will suffer a severe setback.",
-    "LARGE_DECREASE": "The {{race}} will take this decision as a great insult to their people."
+    "LARGE_DECREASE": "The {{race}} will take this decision as a serious affront to their race."
   },
   "trade": {
     "OFFER": "They offer us",
     "ASK": "They ask us for",
     "EXCHANGE": "in exchange for",
-    "TECH_SHARE": "In addition, they offer to share with you an important technological discovery.",
+    "TECH_SHARE": "They also offer to share with you an important technological discovery.",
     "SE_OFFRE_TECH": "They offer to share with you an important technological discovery."
   },
   "extortion": {
-    "ASK": "We are demand the delivery of",
+    "ASK": "We are required to hand over",
     "EXCHANGE": "in exchange for"
   },
   "infiltration": {
     "INFILTRATOR": "An infiltrator",
-    "INFILTRATED_GROUP": "An infiltrated group",
+    "INFILTRATED_GROUP": "A group of infiltrators",
     "ENEMY_AGENTS": "Several enemy agents",
+
     "DETECTED": "detected about to",
-    "ATTEMPTING": "attempting",
-    "WITH_INTENT": "with the intention of",
-    "STEAL_RESOURCES": "stealing resources",
-    "STEAL_TECHNOLOGY": "stealing our technology",
-    "SABOTAGE": "sabotaging our facilities",
-    "REBELION": "generating a rebellion"
+    "ATTEMPTING": "attempting to",
+    "WITH_INTENT": "with the intent to",
+
+    "STEAL_RESOURCES": "steal some basic resources essential for our development",
+    "STEAL_TECHNOLOGY": "interfere with our development",
+    "SABOTAGE": "sabotage our facilities",
+    "REBELION": "spark a rebellion"
   },
   "TRADE": "Trade",
   "FIGHT": "Fight",
   "DIPLOMACY": "Diplomacy",
   "RETRIBUTION": "Retribution",
   "IGNORE": "Ignore",
-  "attackWarning": "U will be attacked by",
+  "attackWarning": "You will be attacked by",
+  "noAttack": "It seems the enemy ships are not numerous enough to launch an attack.",
 
-  "infiltrationDiplomatic1": "You decide not to retaliate against the attackers, allowing them to leave the planet without consequences.",
-  "infiltrationDiplomatic2": "You record the infiltrators and deny them future access to your planet, but you do not retaliate.",
-  "infiltrationDiplomatic3": "You interrogate the captives but ultimately release them and inform their people of the incident."
+  "infiltrationDiplomatic1": "You decide not to retaliate against the attackers, letting them leave the planet without consequences.",
+  "infiltrationDiplomatic2": "You identify the infiltrators and deny them future access to your planet, but you take no further action.",
+  "infiltrationDiplomatic3": "You interrogate those captured but ultimately release them and inform their people of the incident.",
+
+  "extortionDiplomatic1": "You refuse the deal. You contact the enemy leaders and manage to keep things from escalating in exchange for a less one-sided trade.",
+  "extortionDiplomatic2": "You make your enemies understand that it’s impossible for you to accept a deal under those conditions. You make a smaller payment and they leave.",
+  "extortionDiplomatic3": "You manage to change the deal and they leave without consequences.",
+
+  "retribution1": "You seize the assailants and execute them without interrogation or trial.",
+  "retribution2": "You torture them, trying to extract as much information as possible, and then send them back to their planet.",
+  "retribution3": "You lock the attackers in a secret prison and announce their death in a tragic accident. They might be useful later.",
+
+  "ignoreInfiltration1": "You decide to take no action, allowing the infiltrators to get away with it.",
+  "ignoreInfiltration2": "Fear of possible reprisals if you act makes you turn a blind eye this time.",
+  "ignoreInfiltration3": "You watch the infiltrators get away with it without doing anything about it.",
+
+  "ignoreComercial1": "The deal is not possible at the moment. You apologize and appreciate their commercial interest.",
+  "ignoreComercial2": "You do not carry out the exchange, although you treat the merchants properly to maintain the commercial ties.",
+  "ignoreComercial3": "Although you do not make the exchange, you express interest in other possible trades.",
+
+  "sabotageEffect": "The incursion delays our development. The sabotage halts our construction and research."
 }
