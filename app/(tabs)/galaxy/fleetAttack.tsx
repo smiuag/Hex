@@ -1,4 +1,4 @@
-import FleetSelector from "@/components/auxiliar/FleetSelector";
+import FleetSelector from "@/components/auxiliar/FleetPreparation";
 import { useIsFocused } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
 import React from "react";

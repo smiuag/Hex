@@ -24,7 +24,6 @@ import { getRandomEvent } from "@/utils/eventUtil";
 import { getShips } from "@/utils/shipUtils";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Alert } from "react-native";
 
 export const useDiplomacy = (
@@ -43,9 +42,6 @@ export const useDiplomacy = (
   const [currentEvent, setCurrentEvent] = useState<DiplomaticEvent>(makeDefaultEvent());
   const diplomacyRef = useRef<DiplomacyLevel[]>([]);
   const eventRef = useRef<DiplomaticEvent>(makeDefaultEvent());
-
-  const { t: tEvent } = useTranslation("events");
-  const { t: tShip } = useTranslation("ship");
 
   const router = useRouter();
 
@@ -184,7 +180,10 @@ export const useDiplomacy = (
     }
   };
 
-  const loadEvent = async () => {
+  const loadEvent = async (
+    tEvent: (key: string, options?: object) => string,
+    tShip: (key: string, options?: object) => string
+  ) => {
     const hasEmbassy = hasEmbassyBuilt(playerConfig);
     if (hasEmbassy) {
       const saved = await loadCurrentEvent();
@@ -237,7 +236,6 @@ export const useDiplomacy = (
 
   useEffect(() => {
     loadPlayerDiplomacy();
-    loadEvent();
   }, [playerConfig]);
 
   return {

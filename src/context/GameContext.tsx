@@ -71,6 +71,10 @@ type ProviderContextType = {
   setHexAncientStructure: (hex: Hex) => void;
   cancelCollect: (systemId: string) => void;
   handleEventOptionChoose: (option: EventOption) => void;
+  loadEvent: (
+    tEvent: (key: string, options?: object) => string,
+    tShip: (key: string, options?: object) => string
+  ) => void;
 };
 
 const GameContext = createContext<ProviderContextType>(null as any);
@@ -284,6 +288,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       setHexAncientStructure,
       cancelCollect,
       handleEventOptionChoose,
+      loadEvent,
     }),
     [
       fleet,
@@ -330,6 +335,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       setHexAncientStructure,
       cancelCollect,
       handleEventOptionChoose,
+      loadEvent,
     ]
   );
 
