@@ -142,6 +142,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     handleModifyDiplomacy,
   } = useDiplomacy(
     shipBuildQueue,
+    playerConfig,
     handleDestroyShip,
     handleCreateShips,
     addResources,
@@ -204,14 +205,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   ]);
 
   const endGame = async () => {
-    //updateQuest({ type: "BUILDING_ANTENNA", completed: false, rewardClaimed: false });
-    // await modifyEvent((prev) => {
-    //   return { ...prev, completed: false, completedTime: undefined, type: "DEFAULT" };
-    // });
-    // addResources({ NEBULITA: 200000 });
-    //await NotificationManager.cancelAllNotifications();
     await resetPlayerEvent();
-    //await loadEvent();
     await resetBuild();
     await resetPlayerConfig();
     await resetResearch();

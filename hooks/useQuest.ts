@@ -286,9 +286,9 @@ export const useQuest = (addResources: (modifications: Partial<CombinedResources
         break;
       case "ALIEN_TECH_FOUND":
         updateQuest({
-          type: "BUILDING_ALIENT_LAB",
+          type: "BUILDING_ALIEN_LAB",
           available: true,
-          completed: playerQuests.some((q) => q.type == "BUILDING_ALIENT_LAB" && q.completed)
+          completed: playerQuests.some((q) => q.type == "BUILDING_ALIEN_LAB" && q.completed)
             ? true
             : false,
           rewardClaimed: false,

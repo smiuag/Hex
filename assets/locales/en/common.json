@@ -67,6 +67,7 @@
   "endGameConfirmation": "Are you sure you want to delete the current map?",
   "confirmDelete": "Yes, delete",
   "confirm": "Confirm",
+  "Confirm": "Confirm",
   "MainTerminal": "Main terminal",
   "Close": "Close",
 
@@ -88,5 +89,6 @@
   "IGNORE": "Ignore",
   "specialReward": "special reward",
   "RemainingTime": "Remaining time",
-  "Recover": "Recover"
+  "Recover": "Recover",
+  "terraform": "Terraform"
 }

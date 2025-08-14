@@ -174,8 +174,8 @@ export const questConfig: Record<
     contextType: "SYSTEM",
     persist: false,
   },
-  BUILDING_ALIENT_LAB: {
-    type: "BUILDING_ALIENT_LAB",
+  BUILDING_ALIEN_LAB: {
+    type: "BUILDING_ALIEN_LAB",
     order: 18,
     backgroundImage: IMAGES.ALIEN_LAB,
     reward: { STONE: 50000, METAL: 50000, CRYSTAL: 50000 },

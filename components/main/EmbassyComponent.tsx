@@ -25,7 +25,7 @@ export default function EmbassyComponent() {
     (h) => h.building?.type == "EMBASSY" || h.construction?.building == "EMBASSY"
   );
 
-  if (!data || !currentEvent || currentEvent.type == "DEFAULT") return null;
+  if (!data) return null;
 
   const onCancel = () => {
     handleCancelBuild(data.q, data.r);
@@ -71,12 +71,15 @@ export default function EmbassyComponent() {
           <Text style={commonStyles.closeXText}>✕</Text>
         </TouchableOpacity>
         {getMainArea()}
-        <EventCard
-          diplomaticEvent={currentEvent}
-          onChoose={(opt) => {
-            handleEventOptionChoose(opt);
-          }}
-        />
+        {currentEvent && currentEvent.type != "DEFAULT" && (
+          <EventCard
+            diplomaticEvent={currentEvent}
+            onChoose={(opt) => {
+              handleEventOptionChoose(opt);
+            }}
+          />
+        )}
+
         <DiplomacySummary data={playerDiplomacy} />
       </ScrollView>
     </View>

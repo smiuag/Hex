@@ -67,6 +67,7 @@
   "endGameConfirmation": "¿Estás seguro de que quieres borrar el mapa actual?",
   "confirmDelete": "Sí, borrar",
   "confirm": "Confirmar",
+  "Confirm": "Confirmar",
   "MainTerminal": "Terminal principal",
   "Close": "Cerrar",
 
@@ -88,5 +89,6 @@
   "IGNORE": "Ignorar",
   "specialReward": "Recomensa especial",
   "RemainingTime": "Tiempo restante",
-  "Recover": "Recuperar"
+  "Recover": "Recuperar",
+  "terraform": "Terraformar"
 }

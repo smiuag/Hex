@@ -230,8 +230,10 @@ export const SystemExploredCard: React.FC<Props> = ({
                   <TouchableOpacity
                     style={commonStyles.buttonPrimary}
                     onPress={() =>
-                      confirmBuild(t("BuildExtraction"), t("ExtractionBuildingCostMessage"), () =>
-                        onExtractionStartBuild(system.id)
+                      confirmBuild(
+                        t("BuildExtractionBuilding"),
+                        t("ExtractionBuildingCostMessage"),
+                        () => onExtractionStartBuild(system.id)
                       )
                     }
                   >

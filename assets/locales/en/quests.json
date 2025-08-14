@@ -198,7 +198,7 @@
       "Wait until the system has stored resources, then send a freighter to collect them."
     ]
   },
-  "BUILDING_ALIENT_LAB": {
+  "BUILDING_ALIEN_LAB": {
     "name": "Alien technology lab",
     "shortDescription": "Build a lab on the ruins to research alien tech remains.",
     "descriptions": [

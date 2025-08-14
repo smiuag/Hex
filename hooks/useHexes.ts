@@ -303,16 +303,18 @@ export const useHexes = (
           completed.push({ diff, finishedAt, building });
         }
 
-        if (building === "QUARRY") quarryBuild = true;
-        if (building === "METALLURGY") metalBuild = true;
-        if (building === "KRYSTALMINE") krystalmineBuild = true;
+        if (targetLevel == 1) {
+          if (building === "QUARRY") quarryBuild = true;
+          if (building === "METALLURGY") metalBuild = true;
+          if (building === "KRYSTALMINE") krystalmineBuild = true;
+          if (building === "ANTENNA") antennaBuild = true;
+          if (building === "HANGAR") hangarBuild = true;
+          if (building === "LAB") labBuild = true;
+          if (building === "WATEREXTRACTOR") waterExtractorBuild = true;
+          if (building === "ALIEN_LAB") alienLabBuild = true;
+          if (building === "EMBASSY") embassyBuild = true;
+        }
         if (building === "BASE") baseBuild = true;
-        if (building === "ANTENNA") antennaBuild = true;
-        if (building === "HANGAR") hangarBuild = true;
-        if (building === "LAB") labBuild = true;
-        if (building === "WATEREXTRACTOR") waterExtractorBuild = true;
-        if (building === "ALIEN_LAB") alienLabBuild = true;
-        if (building === "EMBASSY") embassyBuild = true;
 
         return {
           ...hex,
@@ -337,6 +339,7 @@ export const useHexes = (
     //config para mostrar tabs
     if (antennaBuild) await handleUpdateConfig({ key: "HAS_ANTENNA", value: "true" });
     if (hangarBuild) await handleUpdateConfig({ key: "HAS_HANGAR", value: "true" });
+    if (embassyBuild) await handleUpdateConfig({ key: "HAS_EMBASSY", value: "true" });
 
     //update de quests
     if (labBuild) await updateQuest({ type: "BUILDING_LAB1", completed: true });
@@ -345,7 +348,7 @@ export const useHexes = (
     if (krystalmineBuild) await updateQuest({ type: "BUILDING_KRYSTALMINE1", completed: true });
     if (baseBuild) await updateQuest({ type: "BUILDING_BASE2", completed: true });
     if (waterExtractorBuild) await updateQuest({ type: "H2O_FOUND", completed: true });
-    if (alienLabBuild) await updateQuest({ type: "BUILDING_ALIENT_LAB", completed: true });
+    if (alienLabBuild) await updateQuest({ type: "BUILDING_ALIEN_LAB", completed: true });
     if (embassyBuild) await updateQuest({ type: "BUILDING_EMBASSY", completed: true });
     if (antennaBuild) {
       await updateQuest({ type: "BUILDING_ANTENNA", completed: true });

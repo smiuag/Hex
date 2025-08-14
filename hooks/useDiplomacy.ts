@@ -6,6 +6,7 @@ import {
   saveCurrentEvent,
   saveDiplomacy,
 } from "@/src/services/storage";
+import { PlayerConfig } from "@/src/types/configTypes";
 import {
   DIPLOMACY_CHANGE_LEVEL,
   DiplomaticEvent,
@@ -17,6 +18,7 @@ import { DiplomacyLevel, RaceType } from "@/src/types/raceType";
 import { CombinedResources, CombinedResourcesType } from "@/src/types/resourceTypes";
 import { Ship, ShipData, ShipType } from "@/src/types/shipType";
 import { simulateBattle } from "@/utils/combat";
+import { hasEmbassyBuilt } from "@/utils/configUtils";
 import { buildDefault, isExpired, normalizeToAllRaces } from "@/utils/diplomacyUtils";
 import { getRandomEvent } from "@/utils/eventUtil";
 import { getShips } from "@/utils/shipUtils";
@@ -27,6 +29,7 @@ import { Alert } from "react-native";
 
 export const useDiplomacy = (
   shipBuildQueue: Ship[],
+  playerConfig: PlayerConfig,
   handleDestroyShip: (type: ShipType, amount: number) => void,
   handleCreateShips: (shipsToAdd: { type: ShipType; amount: number }[]) => void,
   addResources: (modifications: Partial<CombinedResources>) => void,
@@ -182,32 +185,39 @@ export const useDiplomacy = (
   };
 
   const loadEvent = async () => {
-    const saved = await loadCurrentEvent();
+    const hasEmbassy = hasEmbassyBuilt(playerConfig);
+    if (hasEmbassy) {
+      const saved = await loadCurrentEvent();
 
-    if (saved && saved.type !== "DEFAULT" && !isExpired(saved)) {
-      await syncAndSaveEvent(saved);
-      return;
+      if (saved && saved.type !== "DEFAULT" && !isExpired(saved)) {
+        await syncAndSaveEvent(saved);
+        return;
+      }
+
+      await handleEventUnsolved();
+
+      Alert.alert(
+        "Embajada",
+        "Algo ocurre en el planeta. Visita la embajada para más información",
+        [
+          { text: "cancelar", style: "cancel" },
+          {
+            text: "Aceptar",
+            onPress: async () => {
+              router.replace("/(tabs)/planet/embassy");
+            },
+          },
+        ]
+      );
+
+      const newEvent = await getRandomEvent(
+        tEvent as unknown as (key: string, options?: object) => string,
+        tShip as unknown as (key: string, options?: object) => string,
+        shipBuildQueue,
+        playerDiplomacy
+      );
+      await syncAndSaveEvent(newEvent ?? makeDefaultEvent());
     }
-
-    await handleEventUnsolved();
-
-    Alert.alert("Embajada", "Algo ocurre en el planeta. Visita la embajada para más información", [
-      { text: "cancelar", style: "cancel" },
-      {
-        text: "Aceptar",
-        onPress: async () => {
-          router.replace("/(tabs)/planet/embassy");
-        },
-      },
-    ]);
-
-    const newEvent = await getRandomEvent(
-      tEvent as unknown as (key: string, options?: object) => string,
-      tShip as unknown as (key: string, options?: object) => string,
-      shipBuildQueue,
-      playerDiplomacy
-    );
-    await syncAndSaveEvent(newEvent ?? makeDefaultEvent());
   };
 
   const handleEventUnsolved = async () => {
@@ -228,7 +238,7 @@ export const useDiplomacy = (
   useEffect(() => {
     loadPlayerDiplomacy();
     loadEvent();
-  }, []);
+  }, [playerConfig]);
 
   return {
     playerDiplomacy,

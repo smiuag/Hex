@@ -17,6 +17,7 @@ export type ConfigType =
   | "STARTING_SYSTEM"
   | "HAS_ANTENNA"
   | "HAS_HANGAR"
+  | "HAS_EMBASSY"
   | "ALIEN_STRUCTURE_FOUND"
   | "RACE";
 

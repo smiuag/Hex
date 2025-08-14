@@ -198,7 +198,7 @@
       "Espera que el sistema acumule recursos y envía un carguero a recolectar."
     ]
   },
-  "BUILDING_ALIENT_LAB": {
+  "BUILDING_ALIEN_LAB": {
     "name": "Laboratorio de tecnología alien",
     "shortDescription": "Construye un laboratorio sobre las ruinas para poder investigar los restos de tecnología alien.",
     "descriptions": [

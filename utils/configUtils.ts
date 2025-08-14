@@ -43,6 +43,9 @@ export function gameStartingSystem(playerConfig: PlayerConfig): string {
 export function hasHangarBuilt(playerConfig: PlayerConfig): boolean {
   return playerConfig.some((entry) => entry.key === "HAS_HANGAR" && entry.value);
 }
+export function hasEmbassyBuilt(playerConfig: PlayerConfig): boolean {
+  return playerConfig.some((entry) => entry.key === "HAS_EMBASSY" && entry.value);
+}
 
 export function hasAntennaBuilt(playerConfig: PlayerConfig): boolean {
   return playerConfig.some((entry) => entry.key === "HAS_ANTENNA" && entry.value);
