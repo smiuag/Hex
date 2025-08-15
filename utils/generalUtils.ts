@@ -1,5 +1,6 @@
-import { Lang } from "@/i18n";
+import i18n, { Lang } from "@/i18n";
 import { PlayerConfig } from "@/src/types/configTypes";
+import { TOptions } from "i18next";
 
 export const formatDuration = (timestamp: number, onlyMostSignificant?: boolean): string => {
   let diff = Math.abs(timestamp / 1000); // diferencia en segundos
@@ -65,3 +66,12 @@ export const normalizeLang = (l?: string): Lang =>
 
 export const getCfg = (playerConfig: PlayerConfig, key: string) =>
   playerConfig.find((c) => c.key === key)?.value ?? "";
+
+export function tSafeNS(ns: string) {
+  return (key?: string | null, opts?: TOptions, fallback = ""): string => {
+    if (!i18n.isInitialized) return fallback; // i18n aún no listo
+    if (typeof key !== "string" || !key.trim()) return fallback;
+    const t = i18n.getFixedT(i18n.resolvedLanguage || i18n.language, ns);
+    return t(key, { defaultValue: key, ...(opts ?? {}) });
+  };
+}

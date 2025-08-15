@@ -22,7 +22,7 @@ import { StarSystem, StarSystemMap } from "../types/starSystemTypes";
 
 import { useAchievements } from "@/hooks/useAchievements";
 import { useDiplomacy } from "@/hooks/useDiplomacy";
-import { useTranslation } from "react-i18next";
+import { tSafeNS } from "@/utils/generalUtils";
 import Toast from "react-native-toast-message";
 import { createContext, useContextSelector } from "use-context-selector";
 import { PlayerAchievement } from "../types/achievementTypes";
@@ -86,15 +86,17 @@ type ProviderContextType = {
 const GameContext = createContext<ProviderContextType>(null as any);
 
 export const GameProvider = ({ children }: { children: React.ReactNode }) => {
-  const { t: tAchievements } = useTranslation("achievements");
+  //const { t: tAchievements } = useTranslation("achievements", { useSuspense: false });
+  const tAch = useMemo(() => tSafeNS("achievements"), []);
+
   const { universe } = useUniverse();
 
   const { playerAchievements, getProgress, onAchievementEvent, resetAchievements } =
     useAchievements({
-      toast: ({ titleKey, descKey, icon }) => {
+      toast: ({ titleKey, icon }: { titleKey?: string; icon?: string }) => {
         Toast.show({
           type: "success",
-          text1: `${icon ?? "🏆"} ${tAchievements(titleKey, { defaultValue: titleKey })}`,
+          text1: `${icon ?? "🏆"} ${tAch(titleKey)}`,
           visibilityTime: 2500,
         });
       },

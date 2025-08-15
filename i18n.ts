@@ -1,11 +1,14 @@
+// i18n.ts
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
 export type Lang = "es" | "en";
 
+const isDev = __DEV__ === true; // React Native define __DEV__
+
 i18n.use(initReactI18next).init({
-  lng: "es",
-  fallbackLng: "es",
+  lng: "es", // idioma por defecto
+  fallbackLng: ["en"], // cae a inglés si falta en español
   ns: [
     "common",
     "resources",
@@ -19,8 +22,16 @@ i18n.use(initReactI18next).init({
     "achievements",
   ],
   defaultNS: "common",
-  // initImmediate: false,
-  // react: { useSuspense: false },
+
+  // 👇 Que te “vaya diciendo” lo que falta
+  debug: isDev, // logs de i18next en consola (dev)
+  saveMissing: isDev, // dispara missingKey/missingKeyHandler
+  // Marca visual para detectar fácilmente en UI las claves que faltan
+  parseMissingKeyHandler: (key) => (isDev ? `❓${key}` : key),
+  // Evita que valores "" en recursos tapen el fallback
+  returnEmptyString: false,
+  returnNull: false,
+
   resources: {
     en: {
       common: require("./assets/locales/en/common.json"),
@@ -46,5 +57,17 @@ i18n.use(initReactI18next).init({
     },
   },
 });
+
+// Evento global: cada vez que falte una clave, te la chiva aquí
+if (isDev) {
+  i18n.on("missingKey", (lngs, ns, key /*, res */) => {
+    // lngs puede ser array (p.ej. ["es"])
+    console.warn(
+      `[i18n] Missing key → ns="${ns}" key="${key}" langs=${
+        Array.isArray(lngs) ? lngs.join(",") : lngs
+      }`
+    );
+  });
+}
 
 export default i18n;

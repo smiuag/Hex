@@ -184,9 +184,7 @@ export default function PlayerSetup() {
                 pressed && styles.btnPressed,
               ]}
             >
-              <Text style={styles.btnText}>
-                {t("achievements.title", { defaultValue: "Logros" })}
-              </Text>
+              <Text style={styles.btnText}>{t("Achievements", { defaultValue: "Logros" })}</Text>
             </Pressable>
           </View>
         </View>
