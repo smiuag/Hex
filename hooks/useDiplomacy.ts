@@ -6,6 +6,7 @@ import {
   saveCurrentEvent,
   saveDiplomacy,
 } from "@/src/services/storage";
+import { AchievementEvent } from "@/src/types/achievementTypes";
 import { PlayerConfig } from "@/src/types/configTypes";
 import {
   DIPLOMACY_CHANGE_LEVEL,
@@ -42,7 +43,8 @@ export const useDiplomacy = (
   discoverNextResearch: () => void,
   stopResearch: () => void,
   stopConstruction: () => void,
-  bombingSystem: () => void
+  bombingSystem: () => void,
+  onAchievementEvent: (ev: AchievementEvent) => void
 ) => {
   const [playerDiplomacy, setPlayerDiplomacy] = useState<DiplomacyLevel[]>([]);
   const [currentEvent, setCurrentEvent] = useState<DiplomaticEvent>(makeDefaultEvent());
@@ -92,17 +94,27 @@ export const useDiplomacy = (
     }
 
     if (effect.trade) {
+      let shipsDeltaAbs = 0;
       if (effect.trade.shipChange) {
         const shipsToAdd: ShipData[] = [];
         effect.trade.shipChange.forEach((data) => {
-          if (data.amount > 0) shipsToAdd.push(data);
-          else {
+          if (data.amount > 0) {
+            shipsDeltaAbs += data.amount;
+            shipsToAdd.push(data);
+          } else {
             handleDestroyShip(data.type, data.amount);
           }
         });
 
+        if (shipsDeltaAbs > 0)
+          onAchievementEvent({ type: "increment", key: "SHIPS_TRADED", amount: shipsDeltaAbs });
+
         await handleCreateShips(shipsToAdd);
       }
+
+      onAchievementEvent({ type: "trigger", key: "FIRST_TRADE" });
+      onAchievementEvent({ type: "increment", key: "TRADES_COMPLETED", amount: 1 });
+      onAchievementEvent({ type: "addToSet", key: "TRADE_PARTNERS", itemId: currentEvent.races });
     }
 
     if (effect.trade?.resourceChange) {
@@ -175,6 +187,11 @@ export const useDiplomacy = (
       });
       return found ? updated : [...updated, { race, diplomacyLevel: 500 + change }];
     });
+
+    const allBelow300 =
+      diplomacyRef.current.length > 0 && diplomacyRef.current.every((d) => d.diplomacyLevel < 300);
+
+    if (allBelow300) onAchievementEvent({ type: "trigger", key: "NO_FRIENDS" });
   };
 
   const loadPlayerDiplomacy = async () => {
@@ -215,7 +232,7 @@ export const useDiplomacy = (
         ]
       );
 
-      const accumulatedResources = getAccumulatedResources(resources, Date.now());
+      const { resources: accumulatedResources } = getAccumulatedResources(resources, Date.now());
       const newEvent = await getRandomEvent(
         tEvent as unknown as (key: string, options?: object) => string,
         tShip as unknown as (key: string, options?: object) => string,

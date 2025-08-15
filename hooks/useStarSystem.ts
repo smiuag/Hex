@@ -11,6 +11,7 @@ import {
   saveFleet,
   saveStarSystem,
 } from "@/src/services/storage";
+import { AchievementEvent } from "@/src/types/achievementTypes";
 import { FleetData, MovementType } from "@/src/types/fleetType";
 import { PlayerQuest, UpdateQuestOptions } from "@/src/types/questType";
 import { RaceType } from "@/src/types/raceType";
@@ -19,7 +20,7 @@ import { Ship, ShipType } from "@/src/types/shipType";
 import { StarSystem, StarSystemMap } from "@/src/types/starSystemTypes";
 import { simulateBattle } from "@/utils/combat";
 import { getAccumulatedResources, sumCombinedResources } from "@/utils/resourceUtils";
-import { getFlyTime } from "@/utils/shipUtils";
+import { getFlyTime, totalShips } from "@/utils/shipUtils";
 import { generateSystem } from "@/utils/starSystemUtils";
 import { useEffect, useRef, useState } from "react";
 import uuid from "react-native-uuid";
@@ -32,7 +33,8 @@ export const useStarSystem = (
   subtractResources: (modifications: Partial<CombinedResources>) => void,
   addResources: (modifications: Partial<CombinedResources>) => void,
   updateQuest: (options: UpdateQuestOptions) => void,
-  handleModifyDiplomacy: (race: RaceType, change: number) => void
+  handleModifyDiplomacy: (race: RaceType, change: number) => void,
+  onAchievementEvent: (ev: AchievementEvent) => void
 ) => {
   const [starSystems, setPlayerStarSystems] = useState<StarSystem[]>([]);
   const [fleet, setFleet] = useState<FleetData[]>([]);
@@ -218,6 +220,9 @@ export const useStarSystem = (
 
     if (updatedAttackingFleetShips.length > 0) {
       if (battleResult.winner === "A") {
+        const initialAttackers = totalShips(attackingFleetData.ships);
+        const finalAttackers = totalShips(updatedAttackingFleetShips);
+
         // Ganaron los atacantes: flota regresa y sistema queda sin defensa ni ataque en curso
         await modifyFleet((fleet) => {
           const now = Date.now();
@@ -256,6 +261,11 @@ export const useStarSystem = (
               : sys
           )
         );
+
+        onAchievementEvent({ type: "trigger", key: "FIRST_BATTLE_WON" });
+        onAchievementEvent({ type: "increment", key: "BATTLES_WON", amount: 1 });
+        if (initialAttackers == finalAttackers)
+          onAchievementEvent({ type: "trigger", key: "NO_LOSSES_BATTLE" });
       } else {
         // Perdieron los atacantes: flota eliminada, sistema con defensa actualizada
         // Ya filtramos la flota atacante arriba, nada más que hacer aquí
@@ -360,6 +370,8 @@ export const useStarSystem = (
 
     if (!playerQuests.some((pq) => pq.type == "EXPLORE_SYSTEM" && pq.completed))
       await updateQuest({ type: "EXPLORE_SYSTEM", completed: true });
+
+    onAchievementEvent({ type: "increment", key: "SYSTEMS_EXPLORED", amount: 1 });
   };
 
   const starPortBuild = async (id: string) => {
@@ -386,7 +398,7 @@ export const useStarSystem = (
         const started = s.extractionStartedAt ?? now;
         const finishedAt = started + STAR_BUILDINGS_DURATION;
         const effectiveAt = Math.min(finishedAt, now);
-        const resAtFinish = getAccumulatedResources(s.storedResources, effectiveAt);
+        const { resources: resAtFinish } = getAccumulatedResources(s.storedResources, effectiveAt);
 
         return {
           ...s,
@@ -419,6 +431,8 @@ export const useStarSystem = (
 
     if (!playerQuests.some((pq) => pq.type == "SYSTEM_BUILT_DEFENSE" && pq.completed))
       await updateQuest({ type: "SYSTEM_BUILT_DEFENSE", completed: true });
+
+    onAchievementEvent({ type: "increment", key: "ESTABLISH_COLONY", amount: 1 });
   };
 
   const scanFinished = async (id: string) => {
@@ -431,6 +445,8 @@ export const useStarSystem = (
 
     if (!playerQuests.some((pq) => pq.type == "SCAN_FIRST" && pq.completed))
       await updateQuest({ type: "SCAN_FIRST", completed: true });
+
+    onAchievementEvent({ type: "increment", key: "SYSTEMS_SCANNED", amount: 1 });
   };
 
   const starPortStartBuild = async (id: string) => {

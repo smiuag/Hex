@@ -20,8 +20,12 @@ import { FleetData } from "../types/fleetType";
 import { Research, ResearchType } from "../types/researchTypes";
 import { StarSystem, StarSystemMap } from "../types/starSystemTypes";
 
+import { useAchievements } from "@/hooks/useAchievements";
 import { useDiplomacy } from "@/hooks/useDiplomacy";
+import { useTranslation } from "react-i18next";
+import Toast from "react-native-toast-message";
 import { createContext, useContextSelector } from "use-context-selector";
+import { PlayerAchievement } from "../types/achievementTypes";
 import { DiplomaticEvent, EventOption } from "../types/eventTypes";
 import { DiplomacyLevel } from "../types/raceType";
 
@@ -38,6 +42,8 @@ type ProviderContextType = {
   universe: StarSystemMap;
   playerDiplomacy: DiplomacyLevel[];
   currentEvent: DiplomaticEvent;
+  playerAchievements: PlayerAchievement[];
+  getProgress: (id: string) => void;
   startStarSystemExploration: (id: string) => void;
   startCelestialBodyExploration: (systemId: string, planetId: string) => void;
   addProduction: (modifications: Partial<CombinedResources>, effectiveAt: number) => void;
@@ -80,7 +86,19 @@ type ProviderContextType = {
 const GameContext = createContext<ProviderContextType>(null as any);
 
 export const GameProvider = ({ children }: { children: React.ReactNode }) => {
+  const { t: tAchievements } = useTranslation("achievements");
   const { universe } = useUniverse();
+
+  const { playerAchievements, getProgress, onAchievementEvent, resetAchievements } =
+    useAchievements({
+      toast: ({ titleKey, descKey, icon }) => {
+        Toast.show({
+          type: "success",
+          text1: `${icon ?? "🏆"} ${tAchievements(titleKey, { defaultValue: titleKey })}`,
+          visibilityTime: 2500,
+        });
+      },
+    });
 
   const { playerConfig, handleUpdateConfig, resetPlayerConfig } = useConfig();
 
@@ -91,9 +109,9 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     addResources,
     subtractResources,
     enoughResources,
-  } = useResources();
+  } = useResources(onAchievementEvent);
 
-  const { playerQuests, updateQuest, resetQuests } = useQuest(addResources);
+  const { playerQuests, updateQuest, resetQuests } = useQuest(addResources, onAchievementEvent);
 
   const {
     hexes,
@@ -112,7 +130,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     subtractResources,
     enoughResources,
     handleUpdateConfig,
-    updateQuest
+    updateQuest,
+    onAchievementEvent
   );
 
   const {
@@ -123,7 +142,14 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     resetShip,
     handleDestroyShip,
     handleCreateShips,
-  } = useShip(playerQuests, addResources, subtractResources, enoughResources, updateQuest);
+  } = useShip(
+    playerQuests,
+    addResources,
+    subtractResources,
+    enoughResources,
+    updateQuest,
+    onAchievementEvent
+  );
 
   const {
     research,
@@ -133,7 +159,13 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     resetResearch,
     discoverNextResearch,
     stopResearch,
-  } = useResearch(addResources, subtractResources, enoughResources, updateQuest);
+  } = useResearch(
+    addResources,
+    subtractResources,
+    enoughResources,
+    updateQuest,
+    onAchievementEvent
+  );
 
   const {
     playerDiplomacy,
@@ -155,7 +187,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     discoverNextResearch,
     stopResearch,
     stopConstruction,
-    bombingSystem
+    bombingSystem,
+    onAchievementEvent
   );
 
   const {
@@ -188,7 +221,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     subtractResources,
     addResources,
     updateQuest,
-    handleModifyDiplomacy
+    handleModifyDiplomacy,
+    onAchievementEvent
   );
 
   useEffect(() => {
@@ -211,15 +245,16 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
   const endGame = async () => {
     await resetPlayerEvent();
-    // await resetBuild();
-    // await resetPlayerConfig();
-    // await resetResearch();
-    // await resetQuests();
-    // await resetShip();
-    // await resetResources();
-    // await resetStarSystem();
-    // await resetFleet();
-    // await resetPlayerDiplomacy();
+    await resetBuild();
+    await resetPlayerConfig();
+    await resetResearch();
+    await resetQuests();
+    await resetShip();
+    await resetResources();
+    await resetStarSystem();
+    await resetFleet();
+    await resetPlayerDiplomacy();
+    await resetAchievements();
   };
 
   const startGame = async () => {
@@ -228,7 +263,9 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (exception) {
     } finally {
       await handleUpdateConfig({ key: "GAME_STARTED", value: "true" });
-      await handleUpdateConfig({ key: "MAP_SIZE", value: "SMALL" });
+      await handleUpdateConfig({ key: "PLANET_NAME", value: "Colonia 9" });
+      await handleUpdateConfig({ key: "PLAYER_LANGUAGE", value: "es" });
+      await handleUpdateConfig({ key: "PLAYER_NAME", value: "Lucas Vera" });
       await handleUpdateConfig({
         key: "STARTING_SYSTEM",
         value: getRandomStartSystem(universe).id,
@@ -256,6 +293,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       universe,
       playerDiplomacy,
       currentEvent,
+      playerAchievements,
+      getProgress,
       startStarSystemExploration,
       startCelestialBodyExploration,
       discardStarSystem,
@@ -303,6 +342,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       universe,
       playerDiplomacy,
       currentEvent,
+      playerAchievements,
+      getProgress,
       startStarSystemExploration,
       startCelestialBodyExploration,
       discardStarSystem,

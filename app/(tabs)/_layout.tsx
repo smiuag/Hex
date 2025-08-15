@@ -1,6 +1,7 @@
 import { HapticTab } from "@/components/auxiliar/HapticTab";
 import { Tabs, useRouter } from "expo-router";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Text, View } from "react-native";
 import {
   GalaxyIcon,
@@ -18,6 +19,7 @@ export default function TabLayout() {
   const playerConfig = useGameContextSelector((ctx) => ctx.playerConfig);
   const partidaIniciada = gameStarted(playerConfig);
   const router = useRouter();
+  const { t } = useTranslation("common");
 
   const hasHangar = hasHangarBuilt(playerConfig);
   const hasAntenna = hasAntennaBuilt(playerConfig);
@@ -41,7 +43,13 @@ export default function TabLayout() {
         name="menu"
         options={{
           tabBarIcon: ({ color, size }) => <MenuIcon color={color} size={size} />,
-          tabBarLabel: "Menu",
+          tabBarLabel: t("Menu"),
+        }}
+        listeners={{
+          tabPress: (e) => {
+            e.preventDefault();
+            router.replace("/(tabs)/menu");
+          },
         }}
       />
 
@@ -49,14 +57,14 @@ export default function TabLayout() {
         name="planet"
         options={{
           tabBarIcon: ({ color, size }) => <PlanetIcon color={color} size={size} />,
-          tabBarLabel: "Planeta",
+          tabBarLabel: t("Planet"),
           tabBarButton: partidaIniciada ? undefined : () => null,
           tabBarItemStyle: partidaIniciada ? {} : tabStyles.hidden,
         }}
         listeners={{
           tabPress: (e) => {
-            e.preventDefault(); // Evita la navegación automática
-            router.replace("/(tabs)/planet"); // Siempre redirige a index
+            e.preventDefault();
+            router.replace("/(tabs)/planet");
           },
         }}
       />
@@ -65,7 +73,7 @@ export default function TabLayout() {
         name="ship"
         options={{
           tabBarIcon: ({ color, size }) => <ShipIcon color={color} size={size} />,
-          tabBarLabel: "Naves",
+          tabBarLabel: t("Ships"),
           tabBarButton: hasHangar && partidaIniciada ? undefined : () => null,
           tabBarItemStyle: hasHangar && partidaIniciada ? {} : tabStyles.hidden,
         }}
@@ -75,7 +83,7 @@ export default function TabLayout() {
         name="galaxy"
         options={{
           tabBarIcon: ({ color, size }) => <GalaxyIcon color={color} size={size} />,
-          tabBarLabel: "Galaxia",
+          tabBarLabel: t("Galaxy"),
           tabBarButton: hasAntenna && partidaIniciada ? undefined : () => null,
           tabBarItemStyle: hasAntenna && partidaIniciada ? {} : tabStyles.hidden,
         }}
@@ -102,7 +110,7 @@ export default function TabLayout() {
               </View>
             );
           },
-          tabBarLabel: "Misiones",
+          tabBarLabel: t("Quests"),
           tabBarButton: partidaIniciada ? undefined : () => null,
           tabBarItemStyle: partidaIniciada ? {} : tabStyles.hidden,
         }}

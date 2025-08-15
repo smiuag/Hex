@@ -1,0 +1,204 @@
+{
+  "PROGRESSION": "Progression",
+  "ECONOMY": "Economy",
+  "SCIENCE": "Science",
+  "TRADE": "Trade",
+  "EXPLORATION": "Exploration",
+  "COMBAT": "Combat",
+  "META": "Meta",
+  "secret": {
+    "title": "Secret achievement",
+    "desc": "??? Keep your eyes open."
+  },
+
+  "tutorialComplete": {
+    "title": "Tutorial completed",
+    "desc": "You finished the initial tutorial."
+  },
+  "establishColony": {
+    "t1": { "title": "Colony I", "desc": "Establish 5 colonies." },
+    "t2": { "title": "Colony II", "desc": "Establish 25 colonies." },
+    "t3": { "title": "Colony III", "desc": "Establish 100 colonies." }
+  },
+  "baseLevel2": {
+    "title": "Base level 2",
+    "desc": "Upgrade your base to level 2."
+  },
+  "baseLevel3": {
+    "title": "Base level 3",
+    "desc": "Upgrade your base to level 3."
+  },
+  "firstShipBuilt": {
+    "t1": { "title": "Shipyard I", "desc": "Build 15 ships." },
+    "t2": { "title": "Shipyard II", "desc": "Build 150 ships." },
+    "t3": { "title": "Shipyard III", "desc": "Build 1,000 ships." }
+  },
+  "firstScan": {
+    "t1": { "title": "Cartographer I", "desc": "Perform 10 system scans." },
+    "t2": { "title": "Cartographer II", "desc": "Perform 50 system scans." },
+    "t3": { "title": "Cartographer III", "desc": "Perform 500 system scans." }
+  },
+  "establishEmbassy": {
+    "title": "Embassy established",
+    "desc": "Build an embassy and open diplomatic relations."
+  },
+  "firstSystemExplored": {
+    "title": "Interstellar explorer",
+    "desc": "Explore your first star system."
+  },
+  "starportBuilt": {
+    "title": "Starport online",
+    "desc": "Build a starport."
+  },
+  "defensesOnline": {
+    "title": "Defenses online",
+    "desc": "Activate your colony defenses."
+  },
+
+  "miner": {
+    "t1": { "title": "Mining I", "desc": "Extract 10,000 minerals." },
+    "t2": { "title": "Mining II", "desc": "Extract 100,000 minerals." },
+    "t3": { "title": "Mining III", "desc": "Extract 1,000,000 minerals." },
+    "t4": { "title": "Mining IV", "desc": "Extract 10,000,000 minerals." },
+    "t5": { "title": "Mining V", "desc": "Extract 1,000,000,000 minerals." }
+  },
+  "energy": {
+    "t1": { "title": "Energy I", "desc": "Generate 50,000 energy." },
+    "t2": { "title": "Energy II", "desc": "Generate 500,000 energy." },
+    "t3": { "title": "Energy III", "desc": "Generate 5,000,000 energy." }
+  },
+  "specialResources": {
+    "t1": { "title": "Water I", "desc": "Collect 5,000 units of H₂O." },
+    "t2": { "title": "Water II", "desc": "Collect 50,000 units of H₂O." },
+    "t3": { "title": "Water III", "desc": "Collect 500,000 units of H₂O." }
+  },
+  "quarries": {
+    "t1": { "title": "Quarries I", "desc": "Build 2 quarries." },
+    "t2": { "title": "Quarries II", "desc": "Build 4 quarries." },
+    "t3": { "title": "Quarries III", "desc": "Build 7 quarries." }
+  },
+  "metallurgy": {
+    "t1": { "title": "Metallurgy I", "desc": "Build 2 metallurgy plants." },
+    "t2": { "title": "Metallurgy II", "desc": "Build 4 metallurgy plants." },
+    "t3": { "title": "Metallurgy III", "desc": "Build 7 metallurgy plants." }
+  },
+  "upgrades": {
+    "t1": { "title": "Upgrades I", "desc": "Complete 10 building upgrades." },
+    "t2": { "title": "Upgrades II", "desc": "Complete 50 building upgrades." },
+    "t3": { "title": "Upgrades III", "desc": "Complete 200 building upgrades." }
+  },
+
+  "firstLab": {
+    "title": "First laboratory",
+    "desc": "You built your first lab."
+  },
+  "research": {
+    "firstResearch1": {
+      "title": "First research",
+      "desc": "Complete your first research."
+    }
+  },
+  "techs": {
+    "t1": { "title": "Technologist I", "desc": "Unlock 5 technologies." },
+    "t2": { "title": "Technologist II", "desc": "Unlock 15 technologies." },
+    "t3": { "title": "Technologist III", "desc": "Unlock 30 technologies." }
+  },
+  "alienTechAnalyzed": {
+    "title": "Alien tech analyzed",
+    "desc": "Successfully analyze alien technology."
+  },
+  "researchProjects": {
+    "t1": { "title": "Projects I", "desc": "Complete 3 research projects." },
+    "t2": { "title": "Projects II", "desc": "Complete 10 research projects." },
+    "t3": { "title": "Projects III", "desc": "Complete 25 research projects." }
+  },
+
+  "firstTrade": {
+    "title": "First deal",
+    "desc": "Complete your first trade."
+  },
+  "trades": {
+    "t1": { "title": "Trader I", "desc": "Complete 5 trades." },
+    "t2": { "title": "Trader II", "desc": "Complete 25 trades." },
+    "t3": { "title": "Trader III", "desc": "Complete 100 trades." }
+  },
+  "tradePartners": {
+    "t1": { "title": "Contacts I", "desc": "Trade with 3 different partners." }
+  },
+  "tradeAllRaces": {
+    "title": "Universal trade",
+    "desc": "Trade with all known races."
+  },
+  "shipsTraded": {
+    "t1": { "title": "Hull trader I", "desc": "Trade 1 ship." },
+    "t2": { "title": "Hull trader II", "desc": "Trade 10 ships." },
+    "t3": { "title": "Hull trader III", "desc": "Trade 100 ships." }
+  },
+  "noFriends": {
+    "t1": { "title": "Lone wolf", "desc": "Avoid alliances at same time." }
+  },
+
+  "tilesTerraformed": {
+    "t1": { "title": "Terraformer I", "desc": "Terraform 11 hexes." },
+    "t2": { "title": "Terraformer II", "desc": "Terraform 23 hexes." },
+    "t3": { "title": "Terraformer III", "desc": "Terraform 40 hexes." }
+  },
+  "h2oFound": {
+    "title": "Water found",
+    "desc": "Discover a source of H₂O."
+  },
+  "alienRuins": {
+    "title": "Alien ruins",
+    "desc": "Discover alien ruins."
+  },
+  "systems": {
+    "t1": { "title": "Stellar I", "desc": "Explore 1 system." },
+    "t2": { "title": "Stellar II", "desc": "Explore 3 systems." },
+    "t3": { "title": "Stellar III", "desc": "Explore 5 systems." }
+  },
+  "scanTime": {
+    "t1": { "title": "Long range I", "desc": "Continuous scanning for 15 minutes." },
+    "t2": { "title": "Long range II", "desc": "Continuous scanning for 1 hour." }
+  },
+  "maxLevelAntenna": {
+    "title": "Signal peak",
+    "desc": "Reach the maximum antenna level."
+  },
+
+  "firstBattle": {
+    "title": "Baptism by fire",
+    "desc": "Win your first battle."
+  },
+  "battles": {
+    "t1": { "title": "Veteran I", "desc": "Win 3 battles." },
+    "t2": { "title": "Veteran II", "desc": "Win 15 battles." },
+    "t3": { "title": "Veteran III", "desc": "Win 50 battles." },
+    "t4": { "title": "Veteran IV", "desc": "Win 250 battles." },
+    "t5": { "title": "Veteran V", "desc": "Win 1,000 battles." }
+  },
+  "noLosses": {
+    "title": "Flawless",
+    "desc": "Win a battle without losing any units."
+  },
+
+  "collectAllShips": {
+    "title": "Full hangar",
+    "desc": "Obtain all ship blueprints."
+  },
+  "allResearch": {
+    "title": "Complete tree",
+    "desc": "Finish all research."
+  },
+  "allQuests": {
+    "title": "All quests",
+    "desc": "Complete every available quest."
+  },
+  "masterEcon": {
+    "title": "Economic mastery",
+    "desc": "Complete the key economy achievements."
+  },
+  "masterScience": {
+    "title": "Scientific mastery",
+    "desc": "Complete the key science achievements."
+  }
+}

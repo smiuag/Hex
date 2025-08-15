@@ -1,10 +1,15 @@
 import { questConfig } from "@/src/config/questConfig";
 import { loadQuests, saveQuests } from "@/src/services/storage";
+import { AchievementEvent } from "@/src/types/achievementTypes";
 import { PlayerQuest, QuestType, UpdateQuestOptions } from "@/src/types/questType";
 import { CombinedResources } from "@/src/types/resourceTypes";
+import { triggerAchievementForQuest } from "@/utils/achievementsUtils";
 import { useEffect, useRef, useState } from "react";
 
-export const useQuest = (addResources: (modifications: Partial<CombinedResources>) => void) => {
+export const useQuest = (
+  addResources: (modifications: Partial<CombinedResources>) => void,
+  onAchievementEvent: (ev: AchievementEvent) => void
+) => {
   const [playerQuests, setPlayerQuests] = useState<PlayerQuest[]>([]);
   const questRef = useRef<PlayerQuest[]>([]);
 
@@ -24,9 +29,49 @@ export const useQuest = (addResources: (modifications: Partial<CombinedResources
   const loadData = async () => {
     const saved = await loadQuests();
     if (saved) {
+      // const { quests, changed } = migrateQuests(saved as any[]);
       syncAndSave(saved);
     }
   };
+
+  // const migrateQuests = (raw: any[]): { quests: PlayerQuest[]; changed: boolean } => {
+  //   let changed = false;
+  //   const byType = new Map<QuestType, PlayerQuest>();
+
+  //   for (const q of raw || []) {
+  //     const fixedType =
+  //       q?.type === "BUILDING_ALIENT_LAB"
+  //         ? ("BUILDING_ALIEN_LAB" as QuestType)
+  //         : (q?.type as QuestType);
+  //     if (q?.type === "BUILDING_ALIENT_LAB") changed = true;
+
+  //     // normaliza y asegura booleanos
+  //     const normalized: PlayerQuest = {
+  //       type: fixedType,
+  //       available: !!q?.available,
+  //       viewed: !!q?.viewed,
+  //       completed: true,
+  //       rewardClaimed: !!q?.rewardClaimed,
+  //     };
+
+  //     // si existiera duplicado (por el fix), mergea con OR
+  //     const prev = byType.get(fixedType);
+  //     if (prev) {
+  //       byType.set(fixedType, {
+  //         type: fixedType,
+  //         available: prev.available || normalized.available,
+  //         viewed: prev.viewed || normalized.viewed,
+  //         completed: prev.completed || normalized.completed,
+  //         rewardClaimed: prev.rewardClaimed || normalized.rewardClaimed,
+  //       });
+  //       changed = true;
+  //     } else {
+  //       byType.set(fixedType, normalized);
+  //     }
+  //   }
+
+  //   return { quests: Array.from(byType.values()), changed };
+  // };
 
   const updateQuest = async ({
     type,
@@ -76,8 +121,8 @@ export const useQuest = (addResources: (modifications: Partial<CombinedResources
     }
   };
 
-  const handleQuestCompleted = (type: string) => {
-    switch (type as QuestType) {
+  const handleQuestCompleted = (type: QuestType) => {
+    switch (type) {
       case "START":
         updateQuest({
           type: "H2O_SEARCH",
@@ -296,6 +341,8 @@ export const useQuest = (addResources: (modifications: Partial<CombinedResources
         });
         break;
     }
+
+    triggerAchievementForQuest(type, onAchievementEvent);
   };
 
   const resetQuests = async () => {

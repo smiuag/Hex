@@ -1,3 +1,6 @@
+import { Lang } from "@/i18n";
+import { PlayerConfig } from "@/src/types/configTypes";
+
 export const formatDuration = (timestamp: number, onlyMostSignificant?: boolean): string => {
   let diff = Math.abs(timestamp / 1000); // diferencia en segundos
 
@@ -46,3 +49,19 @@ export const formatAmount = (value: number): string => {
 export const getTimeRemaining = (duration: number, startedAt: number): number => {
   return Math.max(0, duration - (Date.now() - startedAt));
 };
+
+const NAME_REGEX = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9 _'\-]+$/;
+
+export function validateName(name: string, t: (key: string, options?: object) => string): string[] {
+  const errors: string[] = [];
+  const trimmed = name.trim();
+  if (trimmed.length < 3) errors.push(t("setup.errorShort"));
+  if (trimmed && !NAME_REGEX.test(trimmed)) errors.push(t("setup.errorChars"));
+  return errors;
+}
+
+export const normalizeLang = (l?: string): Lang =>
+  l?.toLowerCase().startsWith("en") ? "en" : "es";
+
+export const getCfg = (playerConfig: PlayerConfig, key: string) =>
+  playerConfig.find((c) => c.key === key)?.value ?? "";

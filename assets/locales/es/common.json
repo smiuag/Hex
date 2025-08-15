@@ -90,5 +90,27 @@
   "specialReward": "Recomensa especial",
   "RemainingTime": "Tiempo restante",
   "Recover": "Recuperar",
-  "terraform": "Terraformar"
+  "terraform": "Terraformar",
+  "setup": {
+    "title": "Configuración",
+    "playerName": "Nombre del jugador",
+    "colonyName": "Nombre de la colonia",
+    "language": "Idioma",
+    "spanish": "Castellano",
+    "english": "Inglés",
+    "save": "Guardar",
+    "endGame": "Finalizar partida",
+    "endGameConfirmTitle": "¿Finalizar partida?",
+    "endGameConfirmMsg": "Se cerrará la partida actual. Podrás empezar una nueva cuando quieras.",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "errorShort": "Debe tener al menos 3 caracteres.",
+    "errorChars": "Solo letras, números, espacios y - _ ' permitidos."
+  },
+  "Config": "Configuración",
+  "Menu": "Menu",
+  "Planet": "Planeta",
+  "Ships": "Naves",
+  "Quests": "Misiones",
+  "Saved": "Datos guardados correctamente"
 }

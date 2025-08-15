@@ -1,5 +1,6 @@
 import { shipConfig } from "@/src/config/shipConfig";
 import { deleteShip, loadShip, saveShip } from "@/src/services/storage";
+import { AchievementEvent } from "@/src/types/achievementTypes";
 import { PlayerQuest, UpdateQuestOptions } from "@/src/types/questType";
 import { CombinedResources } from "@/src/types/resourceTypes";
 import { Ship, ShipType } from "@/src/types/shipType";
@@ -12,7 +13,8 @@ export const useShip = (
   addResources: (modifications: Partial<CombinedResources>) => void,
   subtractResources: (modifications: Partial<CombinedResources>) => void,
   enoughResources: (cost: Partial<CombinedResources>) => boolean,
-  updateQuest: (options: UpdateQuestOptions) => void
+  updateQuest: (options: UpdateQuestOptions) => void,
+  onAchievementEvent: (ev: AchievementEvent) => void
 ) => {
   const [shipBuildQueue, setShipBuildQueue] = useState<Ship[]>([]);
   const shipRef = useRef<Ship[]>([]);
@@ -163,6 +165,11 @@ export const useShip = (
       await updateShipQueueState(updatedQueue);
       if (!playerQuests.some((pq) => pq.type == "SHIP_FIRST" && pq.completed))
         await updateQuest({ type: "SHIP_FIRST", completed: true });
+
+      if (updatedQueue.filter((q) => q.amount > 0).length == Object.keys(shipConfig).length)
+        onAchievementEvent({ type: "trigger", key: "COLLECT_ALL_SHIPS" });
+
+      onAchievementEvent({ type: "increment", key: "SHIPS_BUILT", amount: 1 });
     }
   };
 

@@ -68,3 +68,6 @@ export const getShips = (shipData: ShipData[]): Ship[] => {
   });
   return ships;
 };
+
+export const totalShips = (ships: Array<{ type: any; amount: number }>) =>
+  ships.reduce((s, sh) => s + (sh.amount || 0), 0);

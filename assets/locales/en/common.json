@@ -90,5 +90,27 @@
   "specialReward": "special reward",
   "RemainingTime": "Remaining time",
   "Recover": "Recover",
-  "terraform": "Terraform"
+  "terraform": "Terraform",
+  "setup": {
+    "title": "Setup",
+    "playerName": "Player name",
+    "colonyName": "Colony name",
+    "language": "Language",
+    "spanish": "Spanish",
+    "english": "English",
+    "save": "Save",
+    "endGame": "End Game",
+    "endGameConfirmTitle": "End current game?",
+    "endGameConfirmMsg": "This will end the current run. You can start a new one anytime.",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "errorShort": "Must be at least 3 characters.",
+    "errorChars": "Only letters, numbers, spaces and - _ ' are allowed."
+  },
+  "Config": "Config",
+  "Menu": "Menu",
+  "Planet": "Planet",
+  "Ships": "Ships",
+  "Quests": "Quests",
+  "Saved": "Game saved"
 }

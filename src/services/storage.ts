@@ -5,6 +5,7 @@ import { Research } from "../../src/types/researchTypes";
 import { StoredResources } from "../../src/types/resourceTypes";
 import { Ship } from "../../src/types/shipType";
 import { getInitialResources } from "../../utils/hexUtils";
+import { PlayerAchievement } from "../types/achievementTypes";
 import { PlayerConfig } from "../types/configTypes";
 import { DiplomaticEvent } from "../types/eventTypes";
 import { FleetData } from "../types/fleetType";
@@ -21,6 +22,7 @@ const STAR_SYSTEM_KEY = "player_star_systems";
 const FLEET_KEY = "player_fleet";
 const DIPLOMACY_KEY = "player_diplomacy";
 const EVENT_KEY = "player_currentEvent";
+const ACHIEVEMENTS_KEY = "player_achievements";
 
 //MAP_KEY
 export const saveMap = async (hexes: Hex[]) => {
@@ -167,3 +169,23 @@ export const loadCurrentEvent = async (): Promise<DiplomaticEvent | null> => {
 export const deleteCurrentEvent = async (): Promise<void> => {
   await AsyncStorage.removeItem(EVENT_KEY);
 };
+
+//ACHIEVEMENTS_KEY
+export async function loadAchievements(): Promise<PlayerAchievement[] | null> {
+  try {
+    const raw = await AsyncStorage.getItem(ACHIEVEMENTS_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as PlayerAchievement[];
+    return Array.isArray(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function saveAchievements(data: PlayerAchievement[]): Promise<void> {
+  try {
+    await AsyncStorage.setItem(ACHIEVEMENTS_KEY, JSON.stringify(data));
+  } catch {
+    // swallow
+  }
+}

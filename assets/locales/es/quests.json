@@ -3,20 +3,19 @@
     "name": "Comenzando la colonia",
     "shortDescription": "Inicia el protocolo de asentamiento y accede al diario de misiones.",
     "descriptions": [
-      "CAPITÁN: LUCAS VERA",
       "ESTADO: DESCRIÓGENESIS COMPLETADA [✓]",
       "TIEMPO DESDE EL EVENTO \"ÉXODO SOLAR\": 18 AÑOS, 241 DÍAS",
       "SINCRONIZANDO MEMORIA DE NAVE...",
       "ACTUALIZACIÓN COMPLETA.",
       "<>",
-      "Bienvenido de nuevo, Capitán Vera. Me complace informar que tu criostasis se ha completado con éxito, sin anomalías neurológicas ni fisiológicas detectadas.",
+      "Bienvenido de nuevo, {{playerName}}. Me complace informar que tu criostasis se ha completado con éxito, sin anomalías neurológicas ni fisiológicas detectadas.",
       "Lamento ser quien deba transmitir esta noticia: la Tierra, y gran parte de la civilización humana, ya no existe como la conocimos. La amenaza conocida como Entidad Omega completó la aniquilación del sistema solar interior 11 años después de nuestra salida. Las últimas transmisiones recibidas indican resistencia fallida en Titán y Ceres.",
       "Nuestra misión primaria se ha reescrito bajo protocolo Arca Alfa: Preservar y reconstruir la especie humana.",
       "Hemos llegado a un planeta desconocido en el sector Lira-94, designado provisionalmente como Éxilon. La atmósfera es respirable con modificaciones mínimas. Gravedad estable. Recursos detectados.",
       "<>",
       "Escaneos de superficie detectaron formaciones regulares de origen no natural a 2.4 kilómetros del punto de aterrizaje. Geometría angular. Simetría axial. Materiales desconocidos, no coincidentes con roca marciana ni aleaciones humanas.",
       "La nave ha aterrizado de forma segura tras una maniobra automatizada. Sistemas de soporte funcionando a 82%. Tripulación restante en criosueño.",
-      "Tú eres el primero, Capitán. El futuro depende de tus decisiones.",
+      "Tú eres el primero, {{playerName}}. El futuro depende de tus decisiones.",
       "Recomiendo: iniciar exploración inicial, reactivación de equipo de misión, y comenzar despliegue de módulo base.",
       "Estoy contigo. Siempre."
     ]
@@ -25,7 +24,7 @@
     "name": "Laboratorio",
     "shortDescription": "Construye un laboratorio para comenzar la investigación científica.",
     "descriptions": [
-      "Nuestros datos científicos son insuficientes.",
+      "{{playerName}}, nuestros datos científicos son insuficientes.",
       "Construir un laboratorio tecnológico es esencial para entender los recursos y amenazas de este planeta.",
       "Prioriza su construcción. El conocimiento es poder."
     ]
@@ -34,7 +33,7 @@
     "name": "Primera investigación",
     "shortDescription": "Investiga minería para identificar zonas ricas en recursos.",
     "descriptions": [
-      "Los escáneres muestran grandes depósitos minerales bajo la superficie.",
+      "{{playerName}}, los escáneres muestran grandes depósitos minerales bajo la superficie.",
       "Pero no podemos ponernos a excavar sin más. Hay que analizar bien la geología del planet para ver donde podemos comenzar las excavaciones.",
       "Inicia la investigación de tecnologías de minería básica inmediatamente."
     ]
@@ -43,7 +42,7 @@
     "name": "Mina de metales",
     "shortDescription": "Establece una mina para extraer metales esenciales.",
     "descriptions": [
-      "La reserva de aleaciones metálicas se agota rápidamente.",
+      "{{playerName}}, la reserva de aleaciones metálicas se agota rápidamente.",
       "Necesitamos empezar a procesar separar los pocos metales que obtenemos del subsuelo.",
       "Actúa con urgencia. Cada segundo cuenta."
     ]
@@ -52,7 +51,7 @@
     "name": "Cantera",
     "shortDescription": "Construye una cantera para obtener minerales estructurales.",
     "descriptions": [
-      "Los cimientos de nuestra colonia requieren materiales sólidos.",
+      "{{playerName}}, los cimientos de nuestra colonia requieren materiales sólidos.",
       "Necesitamos una cantera para extraer minerales estructurales del terreno.",
       "Hazlo posible. Este planeta no nos dará otra oportunidad."
     ]
@@ -61,7 +60,7 @@
     "name": "Mina de cristal",
     "shortDescription": "Extrae cristales energéticos para impulsar nuestras tecnologías.",
     "descriptions": [
-      "Detectamos formaciones cristalinas con potencial energético excepcional.",
+      "{{playerName}}, detectamos formaciones cristalinas con potencial energético excepcional.",
       "Una mina de cristal abrirá nuevas posibilidades tecnológicas.",
       "Establece la operación cuanto antes. Las estrellas observan."
     ]
@@ -70,7 +69,7 @@
     "name": "Base de nivel 2",
     "shortDescription": "Mejora la base para aumentar capacidad y soporte vital.",
     "descriptions": [
-      "Las cosas van bien, la población de la colonia va aumentando y nuestros objetivos serán cada vez más ambiciosos.",
+      "{{playerName}}, las cosas van bien, la población de la colonia va aumentando y nuestros objetivos serán cada vez más ambiciosos.",
       "Ampliar la base es imprescindible para continuar con nuestro crecimiento.",
       "El futuro de la colonia depende de este paso."
     ]
@@ -79,7 +78,7 @@
     "name": "Antenas de radio",
     "shortDescription": "Construye una antena para intentar contactar con el exterior.",
     "descriptions": [
-      "Aún no hay señales del resto de la humanidad...",
+      "{{playerName}}, aún no hay señales del resto de la humanidad...",
       "Construir una antena podría ser nuestra única forma de contacto con el exterior.",
       "Si hay alguien ahí fuera... debemos intentarlo."
     ]
@@ -88,7 +87,7 @@
     "name": "Hangar",
     "shortDescription": "Prepara un hangar para construir y lanzar naves.",
     "descriptions": [
-      "Hemos detectado algunos sistemas que pueden interesantes. Los planos de fabricación de naves están listos pero sin un hangar, estamos atados a este planeta.",
+      "{{playerName}}, hemos detectado algunos sistemas que pueden interesantes. Los planos de fabricación de naves están listos pero sin un hangar, estamos atados a este planeta.",
       "Construye uno lo antes posible, necesitamos comenzar a construir sondas para confirmar nuestros hallazgos.",
       "El universo no esperará por nosotros."
     ]
@@ -97,7 +96,7 @@
     "name": "Primera flota",
     "shortDescription": "Construye la primera nave de nuestra colonia.",
     "descriptions": [
-      "El hangar está operativo. La nave prototipo está casi lista.",
+      "{{playerName}}, el hangar está operativo y la nave prototipo está casi lista.",
       "Esta será la primera nave construida en este sistema.",
       "Comandante, autorice la fabricación. Nuestra expansión comienza ahora."
     ]
@@ -106,19 +105,19 @@
     "name": "Extracción de agua",
     "shortDescription": "Construye una planta de procesamiento de agua.",
     "descriptions": [
-      "Capitán, hemos localizado una zona con depósitos extensos de hielo subsuperficial en el cuadrante Delta-7.",
+      "{{playerName}}, hemos localizado una zona con depósitos extensos de hielo subsuperficial en el cuadrante Delta-7.",
       "La profundidad media es de apenas 12 metros, y la densidad supera el umbral necesario para una operación sostenida de extracción y procesamiento.",
       "La composición es estable: 91% H₂O, con impurezas mínimas. Los datos sugieren que el área podría mantener el suministro hídrico de una colonia durante varios ciclos estándar.",
       "Es el primer hallazgo de esta magnitud desde el aterrizaje.",
       "Recomendación: establecer una estación de perforación, iniciar montaje del sistema de purificación y asegurar la zona.",
-      "Tenemos agua, Capitán. Tenemos futuro"
+      "Tenemos agua, {{playerName}}. Tenemos futuro"
     ]
   },
   "ALIEN_TECH_FOUND": {
     "name": "Tecnología alienígena",
     "shortDescription": "Localizar y analizar estructuras extraterrestres.",
     "descriptions": [
-      "Capitán, durante una exploración rutinaria en el sector Kappa-3, el equipo ha encontrado restos materiales de origen no humano.",
+      "{{playerName}}, durante una exploración rutinaria en el sector Kappa-3, el equipo ha encontrado restos materiales de origen no humano.",
       "Estructuras parcialmente colapsadas, patrones geométricos no naturales y una aleación desconocida sin correspondencia en bases de datos terrestres o marcianas.",
       "No hay señales de actividad reciente, pero la degradación sugiere una antigüedad milenaria... o algo que no se degrada fácilmente.",
       "Este hallazgo no debe ser comunicado a la tripulación general hasta confirmar su naturaleza.",
@@ -130,7 +129,7 @@
     "name": "Busqueda de agua",
     "shortDescription": "Construye una planta de procesamiento de agua.",
     "descriptions": [
-      "Capitán, las reservas de agua reciclada han descendido por debajo del umbral operativo.",
+      "{{playerName}}, las reservas de agua reciclada han descendido por debajo del umbral operativo.",
       "La tasa de consumo actual supera la capacidad de regeneración del sistema. Continuar sin una fuente externa comprometerá la supervivencia de la colonia.",
       "El subsuelo planetario presenta indicios de humedad atrapada, pero se requiere una exploración detallada para confirmar su viabilidad.",
       "Recomendación inmediata: desplegar drones de sondeo y priorizar la búsqueda de depósitos de hielo o acuíferos.",
@@ -141,7 +140,7 @@
     "name": "Buscando un sistema estelar libre",
     "shortDescription": "Utiliza la antena para escanear otros sistemas estelares. Necesitamos conocer el vecindario.",
     "descriptions": [
-      "Capitán, los sensores indican que nos encontramos en una región rica en posibilidades. Variaciones en la radiación cósmica sugieren que algunos sistemas cercanos podrían albergar recursos valiosos, formas de vida desconocidas o incluso restos de tecnología olvidada.",
+      "{{playerName}}, los sensores indican que nos encontramos en una región rica en posibilidades. Variaciones en la radiación cósmica sugieren que algunos sistemas cercanos podrían albergar recursos valiosos, formas de vida desconocidas o incluso restos de tecnología olvidada.",
       "Explorar más allá de nuestra posición actual no solo ampliará nuestro conocimiento del sector, sino que podría brindarnos una ventaja decisiva para el desarrollo de la colonia. Cada escaneo nos acerca un paso más a comprender este mundo y sus secretos.",
       "Los sistemas de escaneo están listos y a su disposición. ¿Quién sabe qué maravillas se esconden más allá de nuestro alcance visual? El universo no espera. Actívese el protocolo de exploración."
     ]
@@ -150,7 +149,7 @@
     "name": "Explorando la galaxia",
     "shortDescription": "Explora algún sistema estelar. En el apartado Galaxia puedes ver todos los sistemas ya escaneados.",
     "descriptions": [
-      "El resultado del escaneo indica que podemos haber localizado un sistema apto para la conolización, pero es necesaria una investigación más a fondo.",
+      "{{playerName}}, el resultado del escaneo indica que podemos haber localizado un sistema apto para la conolización, pero es necesaria una investigación más a fondo.",
       "Envía una sonda a investigar más de cerca el sistema. Necesitamos saber si es un sistema ocupado o si está libre como para formar allí nuestra primera colonia."
     ]
   },
@@ -158,16 +157,16 @@
     "name": "Investigando un sistema cercano",
     "shortDescription": "Envía una sonda al sistema que acabas de scanear. Necesitamos averiguar si está habitado.",
     "descriptions": [
-      "Capitán, los registros estelares han sido actualizados. Varios sistemas cercanos presentan condiciones prometedoras para una primera exploración. Las señales gravitacionales y térmicas indican actividad inusual, digna de una sonda de reconocimiento.",
+      "{{playerName}}, los registros estelares han sido actualizados. Varios sistemas cercanos presentan condiciones prometedoras para una primera exploración. Las señales gravitacionales y térmicas indican actividad inusual, digna de una sonda de reconocimiento.",
       "Enviar una sonda al sistema que elija marcará el inicio oficial de nuestra expansión. Esta primera misión no solo revelará datos valiosos sobre posibles recursos, sino que también sentará las bases para futuras operaciones interplanetarias.",
-      "El equipo de navegación está preparado. Basta una orden suya para lanzar la primera mirada más allá de nuestra estrella. Que este sea el comienzo de nuestro mapa en las estrellas, capitán."
+      "El equipo de navegación está preparado. Basta una orden suya para lanzar la primera mirada más allá de nuestra estrella. Que este sea el comienzo de nuestro mapa en las estrellas, {{playerName}}."
     ]
   },
   "SYSTEM_BUILT_EXTRACTION": {
     "name": "Instalación de extracción de recursos",
     "shortDescription": "Construye un sistema de extracción de recursos para poder empezar a aprovechar los recursos del sistema",
     "descriptions": [
-      "Capitán, hemos completado el escaneo inicial del sistema. Los análisis muestran múltiples objetos celestes con concentraciones valiosas de recursos: metales pesados, cristales energéticos y compuestos raros no identificados hasta ahora",
+      "{{playerName}}, hemos completado el escaneo inicial del sistema. Los análisis muestran múltiples objetos celestes con concentraciones valiosas de recursos: metales pesados, cristales energéticos y compuestos raros no identificados hasta ahora",
       "Para proceder con la extracción, será necesario construir las instalaciones adecuadas en cada ubicación estratégica. Recomiendo desplegar módulos de minería automatizada, refinerías orbitales y plataformas de procesamiento en superficie.",
       "Para la construcción deberemos enviar 2 cargueros con mucho material y personal especializado. Asegurate de que es un sistema rentable y si no busca otro que nos proporcino un mayor beneficio."
     ]
@@ -176,7 +175,7 @@
     "name": "Sistema de defensa",
     "shortDescription": "Las colonias son lugares dificiles de defender. Construye un sistema defensivo que permita dar más seguridad a nuestros colonos.",
     "descriptions": [
-      "El primer carguero ha regresado con éxito. Sin duda estos recursos nos ayudarán a evolucionar la colonia.",
+      "{{playerName}}, el primer carguero ha regresado con éxito. Sin duda estos recursos nos ayudarán a evolucionar la colonia.",
       "Las colonias son importantes y además, son puntos alejados dificiles de defender. Construye un sistema defensivo que permita defenderse de posibles bandidos espaciales."
     ]
   },
@@ -184,7 +183,7 @@
     "name": "Investigando un sistema cercano",
     "shortDescription": "Envía una sonda al sistema que acabas de scanear. Necesitamos averiguar si está habitado.",
     "descriptions": [
-      "¡Perfecto! Los sistemas de extracción han comenzado a almacenar recursos.",
+      "Buen trabajo, {{playerName}}! Los sistemas de extracción han comenzado a almacenar recursos.",
       "Tendremos que enviar naves a recolectar el material producido, pero ahora mismo el viaje es peligroso.",
       "Necesitamos construir un puerto estelar para asegurar poder enviar naves de manera segura."
     ]
@@ -193,7 +192,7 @@
     "name": "Recolección de recursos",
     "shortDescription": "Envía un carguero a recolectar a uno de los sistemas estelares controlados",
     "descriptions": [
-      "Está todo preparado para la extracción de recursos. Con suerte, pronto comenzaremos a recoger el fruto de tanto esfuerzo.",
+      "{{playerName}}, está todo preparado para la extracción de recursos. Con suerte, pronto comenzaremos a recoger el fruto de tanto esfuerzo.",
       "Pero no nos precipitemos, tenemos que sincronizarnos con las colonias para aprovechar los viajes.",
       "Espera que el sistema acumule recursos y envía un carguero a recolectar."
     ]
@@ -202,16 +201,16 @@
     "name": "Laboratorio de tecnología alien",
     "shortDescription": "Construye un laboratorio sobre las ruinas para poder investigar los restos de tecnología alien.",
     "descriptions": [
-      "Está todo preparado para la extracción de recursos. Con suerte, pronto comenzaremos a recoger el fruto de tanto esfuerzo.",
-      "Pero no nos precipitemos, tenemos que sincronizarnos con las colonias para aprovechar los viajes.",
-      "Espera que el sistema acumule recursos y envía un carguero a recolectar."
+      "{{playerName}}, lo que hemos descubierto puede hacernos dar un salto tecnológico descomunal, pero necesitamos una inversión.",
+      "Necesitamos construir un laboratorio nuevo para investigar todo lo que hemos descubierto.",
+      "Será un gran avance, pero no será fácil, ahora mismo apenas entendemos lo que hemos encontrado y necesitaremos tiempo para dominar estas nuevas tecnologías."
     ]
   },
   "BUILDING_EMBASSY": {
     "name": "Embajada interestelar",
     "shortDescription": "Construye una embajada para gestionar las relaciones con los miembros de otras razas.",
     "descriptions": [
-      "Se le encomienda el diseño y construcción de una Embajada Interestelar que actúe como hub neutral para primeros contactos. Su misión es centralizar a exploradores, científicos y diplomáticos, ofreciendo procedimientos unificados desde el minuto cero del hallazgo. Debe transmitir credibilidad y seguridad: un lugar donde cualquier especie pueda presentarse sin riesgo, sin coerción y con garantías claras.",
+      "{{playerName}}, se le encomienda el diseño y construcción de una Embajada Interestelar que actúe como hub neutral para primeros contactos. Su misión es centralizar a exploradores, científicos y diplomáticos, ofreciendo procedimientos unificados desde el minuto cero del hallazgo. Debe transmitir credibilidad y seguridad: un lugar donde cualquier especie pueda presentarse sin riesgo, sin coerción y con garantías claras.",
       "Los motivos son preventivos y estratégicos. Queremos evitar malentendidos, choques culturales y riesgos bioquímicos mediante protocolos comunes de cuarentena, traducción y etiqueta diplomática. La embajada protegerá derechos de inteligencias recién descubiertas, documentará su cultura de forma ética, y servirá como mesa de mediación y resolución temprana de disputas.",
       "Requisitos funcionales: salas de mediación modulables, laboratorios de bioseguridad, sistemas de traducción/semiótica, archivo cultural, y muelles/logística para naves de exploración. Requisitos de confianza: transparencia, observadores independientes, trazabilidad de decisiones y canales públicos de reporte. Resultado esperado: convertir el azar del descubrimiento en cooperación sostenida—corredores seguros, investigación conjunta y comercio responsable."
     ]

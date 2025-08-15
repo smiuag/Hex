@@ -19,7 +19,10 @@ export type ConfigType =
   | "HAS_HANGAR"
   | "HAS_EMBASSY"
   | "ALIEN_STRUCTURE_FOUND"
-  | "RACE";
+  | "RACE"
+  | "PLANET_NAME"
+  | "PLAYER_NAME"
+  | "PLAYER_LANGUAGE";
 
 export type ConfigEntry = {
   key: ConfigType;
@@ -32,6 +35,9 @@ export const defaultPlayerConfig: PlayerConfig = [
   { key: "MAP_SIZE", value: "LARGE" },
   { key: "GAME_STARTED", value: "false" },
   { key: "RACE", value: "RACE1" },
+  { key: "PLANET_NAME", value: "Colonia última esperanza" },
+  { key: "PLAYER_NAME", value: "Lucas Vera" },
+  { key: "PLAYER_LANGUAGE", value: "es" },
 ];
 
 export const SCALE: ScaleType = {

@@ -1,0 +1,207 @@
+{
+  "PROGRESSION": "Progresión",
+  "ECONOMY": "Economía",
+  "SCIENCE": "Ciencia",
+  "TRADE": "Comercio",
+  "EXPLORATION": "Exploración",
+  "COMBAT": "Combate",
+  "META": "Meta",
+  "secret": {
+    "title": "Logro secreto",
+    "desc": "??? Mantén los ojos abiertos."
+  },
+
+  "tutorialComplete": {
+    "title": "Tutorial completado",
+    "desc": "Has completado el tutorial inicial."
+  },
+  "establishColony": {
+    "t1": { "title": "Colonia I", "desc": "Establece 5 colonias." },
+    "t2": { "title": "Colonia II", "desc": "Establece 25 colonias." },
+    "t3": { "title": "Colonia III", "desc": "Establece 100 colonias." }
+  },
+  "baseLevel2": {
+    "title": "Base nivel 2",
+    "desc": "Mejora tu base al nivel 2."
+  },
+  "baseLevel3": {
+    "title": "Base nivel 3",
+    "desc": "Mejora tu base al nivel 3."
+  },
+  "firstShipBuilt": {
+    "t1": { "title": "Astillero I", "desc": "Construye 15 naves." },
+    "t2": { "title": "Astillero II", "desc": "Construye 150 naves." },
+    "t3": { "title": "Astillero III", "desc": "Construye 1000 naves." }
+  },
+  "firstScan": {
+    "t1": { "title": "Cartógrafo I", "desc": "Realiza 10 escaneos de sistemas." },
+    "t2": { "title": "Cartógrafo II", "desc": "Realiza 50 escaneos de sistemas." },
+    "t3": { "title": "Cartógrafo III", "desc": "Realiza 500 escaneos de sistemas." }
+  },
+  "establishEmbassy": {
+    "title": "Embajada establecida",
+    "desc": "Construye una embajada y abre relaciones diplomáticas."
+  },
+  "firstSystemExplored": {
+    "title": "Explorador interestelar",
+    "desc": "Explora tu primer sistema estelar."
+  },
+  "starportBuilt": {
+    "title": "Astropuerto operativo",
+    "desc": "Construye un astropuerto."
+  },
+  "defensesOnline": {
+    "title": "Defensas en línea",
+    "desc": "Activa las defensas de la colonia."
+  },
+  "miner": {
+    "t1": { "title": "Minería I", "desc": "Extrae 10.000 minerales." },
+    "t2": { "title": "Minería II", "desc": "Extrae 100.000 minerales." },
+    "t3": { "title": "Minería III", "desc": "Extrae 1.000.000 minerales." },
+    "t4": { "title": "Minería IV", "desc": "Extrae 10.000.000 minerales." },
+    "t5": { "title": "Minería V", "desc": "Extrae 1.000.000.000 minerales." }
+  },
+  "energy": {
+    "t1": { "title": "Energía I", "desc": "Genera 50.000 de energía." },
+    "t2": { "title": "Energía II", "desc": "Genera 500.000 de energía." },
+    "t3": { "title": "Energía III", "desc": "Genera 5.000.000 de energía." }
+  },
+  "specialResources": {
+    "t1": {
+      "title": "Recursos especiales",
+      "desc": "Recolecta 5.000 unidades de recursos especiales."
+    },
+    "t2": {
+      "title": "Recursos especiales",
+      "desc": "Recolecta 50.000 unidades de recursos especiales."
+    },
+    "t3": {
+      "title": "Recursos especiales",
+      "desc": "Recolecta 500.000 unidades de recursos especiales."
+    }
+  },
+  "quarries": {
+    "t1": { "title": "Canteras I", "desc": "Construye 2 canteras." },
+    "t2": { "title": "Canteras II", "desc": "Construye 4 canteras." },
+    "t3": { "title": "Canteras III", "desc": "Construye 7 canteras." }
+  },
+  "metallurgy": {
+    "t1": { "title": "Metalurgia I", "desc": "Construye 2 plantas de metalurgia." },
+    "t2": { "title": "Metalurgia II", "desc": "Construye 4 plantas de metalurgia." },
+    "t3": { "title": "Metalurgia III", "desc": "Construye 7 plantas de metalurgia." }
+  },
+  "upgrades": {
+    "t1": { "title": "Mejoras I", "desc": "Completa 10 mejoras de edificios." },
+    "t2": { "title": "Mejoras II", "desc": "Completa 50 mejoras de edificios." },
+    "t3": { "title": "Mejoras III", "desc": "Completa 200 mejoras de edificios." }
+  },
+  "firstLab": {
+    "title": "Primer laboratorio",
+    "desc": "Has construido tu primer laboratorio."
+  },
+  "research": {
+    "firstResearch1": {
+      "title": "Primera investigación",
+      "desc": "Completa tu primera investigación."
+    }
+  },
+  "techs": {
+    "t1": { "title": "Tecnólogo I", "desc": "Desbloquea 5 tecnologías." },
+    "t2": { "title": "Tecnólogo II", "desc": "Desbloquea 15 tecnologías." },
+    "t3": { "title": "Tecnólogo III", "desc": "Desbloquea 30 tecnologías." }
+  },
+  "alienTechAnalyzed": {
+    "title": "Tecnología alien analizada",
+    "desc": "Analiza con éxito tecnología alienígena."
+  },
+  "researchProjects": {
+    "t1": { "title": "Proyectos I", "desc": "Completa 3 proyectos de investigación." },
+    "t2": { "title": "Proyectos II", "desc": "Completa 10 proyectos de investigación." },
+    "t3": { "title": "Proyectos III", "desc": "Completa 25 proyectos de investigación." }
+  },
+  "firstTrade": {
+    "title": "Primer trato",
+    "desc": "Completa tu primera transacción comercial."
+  },
+  "trades": {
+    "t1": { "title": "Comerciante I", "desc": "Completa 5 transacciones." },
+    "t2": { "title": "Comerciante II", "desc": "Completa 25 transacciones." },
+    "t3": { "title": "Comerciante III", "desc": "Completa 100 transacciones." }
+  },
+  "tradePartners": {
+    "t1": { "title": "Red de contactos I", "desc": "Comercia con 3 socios distintos." }
+  },
+  "tradeAllRaces": {
+    "title": "Comercio universal",
+    "desc": "Comercia con todas las razas conocidas."
+  },
+  "shipsTraded": {
+    "t1": { "title": "Mercader de cascos I", "desc": "Intercambia 1 nave." },
+    "t2": { "title": "Mercader de cascos II", "desc": "Intercambia 10 naves." },
+    "t3": { "title": "Mercader de cascos III", "desc": "Intercambia 100 naves." }
+  },
+  "noFriends": {
+    "t1": { "title": "Lobo solitario", "desc": "Enemistate con todas las razas a la vez." }
+  },
+  "tilesTerraformed": {
+    "t1": { "title": "Terraformador I", "desc": "Terraforma 11 hexágonos." },
+    "t2": { "title": "Terraformador II", "desc": "Terraforma 23 hexágonos." },
+    "t3": { "title": "Terraformador III", "desc": "Terraforma 40 hexágonos." }
+  },
+  "h2oFound": {
+    "title": "Agua encontrada",
+    "desc": "Descubre una fuente de H₂O."
+  },
+  "alienRuins": {
+    "title": "Ruinas alien",
+    "desc": "Descubre ruinas alienígenas."
+  },
+  "systems": {
+    "t1": { "title": "Estelar I", "desc": "Explora 1 sistema." },
+    "t2": { "title": "Estelar II", "desc": "Explora 3 sistemas." },
+    "t3": { "title": "Estelar III", "desc": "Explora 5 sistemas." }
+  },
+  "scanTime": {
+    "t1": { "title": "Largo alcance I", "desc": "Escaneo continuo durante 15 minutos." },
+    "t2": { "title": "Largo alcance II", "desc": "Escaneo continuo durante 1 hora." }
+  },
+  "maxLevelAntenna": {
+    "title": "Pico de señal",
+    "desc": "Alcanza el nivel máximo de la antena."
+  },
+  "firstBattle": {
+    "title": "Bautismo de fuego",
+    "desc": "Gana tu primera batalla."
+  },
+  "battles": {
+    "t1": { "title": "Veterano I", "desc": "Gana 3 batallas." },
+    "t2": { "title": "Veterano II", "desc": "Gana 15 batallas." },
+    "t3": { "title": "Veterano III", "desc": "Gana 50 batallas." },
+    "t4": { "title": "Veterano IV", "desc": "Gana 250 batallas." },
+    "t5": { "title": "Veterano V", "desc": "Gana 1000 batallas." }
+  },
+  "noLosses": {
+    "title": "Impecable",
+    "desc": "Gana una batalla sin perder unidades."
+  },
+  "collectAllShips": {
+    "title": "Hangar completo",
+    "desc": "Consigue todos los planos de naves."
+  },
+  "allResearch": {
+    "title": "Árbol completo",
+    "desc": "Completa todas las investigaciones."
+  },
+  "allQuests": {
+    "title": "Todas las misiones",
+    "desc": "Completa todas las misiones disponibles."
+  },
+  "masterEcon": {
+    "title": "Maestría económica",
+    "desc": "Completa los principales logros de economía."
+  },
+  "masterScience": {
+    "title": "Maestría científica",
+    "desc": "Completa los principales logros de ciencia."
+  }
+}

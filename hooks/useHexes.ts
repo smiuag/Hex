@@ -1,5 +1,6 @@
 import { buildingConfig } from "@/src/config/buildingConfig";
 import { deleteMap, loadMap, saveMap } from "@/src/services/storage";
+import { AchievementEvent } from "@/src/types/achievementTypes";
 import { BuildingType } from "@/src/types/buildingTypes";
 import { ConfigEntry } from "@/src/types/configTypes";
 import { Hex } from "@/src/types/hexTypes";
@@ -23,7 +24,8 @@ export const useHexes = (
   subtractResources: (modifications: Partial<Resources>) => void,
   enoughResources: (cost: Partial<Resources>) => boolean,
   handleUpdateConfig: (config: ConfigEntry) => void,
-  updateQuest: (options: UpdateQuestOptions) => void
+  updateQuest: (options: UpdateQuestOptions) => void,
+  onAchievementEvent: (ev: AchievementEvent) => void
 ) => {
   const [hexes, setHexes] = useState<Hex[]>([]);
   const hexRef = useRef<Hex[]>([]);
@@ -151,6 +153,7 @@ export const useHexes = (
 
     await handleUpdateConfig({ key: "ALIEN_STRUCTURE_FOUND", value: "true" });
     await updateQuest({ type: "ALIEN_TECH_FOUND", completed: true });
+    onAchievementEvent({ type: "trigger", key: "ALIEN_TECH_FOUND" });
   };
 
   const handleTerraform = async (q: number, r: number) => {
@@ -165,6 +168,7 @@ export const useHexes = (
       )
     );
 
+    onAchievementEvent({ type: "increment", key: "TILES_TERRAFORMED", amount: 1 });
     if (resources) addResources(resources);
   };
 
@@ -250,6 +254,7 @@ export const useHexes = (
     );
   };
 
+  // ✅ Construcciones completadas → logros
   const processConstructionTick = async () => {
     let antennaBuild = false;
     let hangarBuild = false;
@@ -261,6 +266,14 @@ export const useHexes = (
     let waterExtractorBuild = false;
     let alienLabBuild = false;
     let embassyBuild = false;
+
+    // NUEVOS acumuladores para logros
+    let quarriesBuiltCount = 0;
+    let metallurgyBuiltCount = 0;
+    let upgradesCount = 0;
+    let baseReachedL2 = false;
+    let baseReachedL3 = false;
+    let antennaReachedMax = false;
 
     const completed: Array<{
       diff: Partial<CombinedResources>;
@@ -283,65 +296,87 @@ export const useHexes = (
 
         changed = true;
 
+        // produc / diff
         const prevProd: Partial<CombinedResources> =
           targetLevel === 1 ? {} : getProductionPerSecond(building, targetLevel - 1);
         const newProd: Partial<CombinedResources> = getProductionPerSecond(building, targetLevel);
         const diff: Partial<CombinedResources> = {};
-
         const keys = new Set([...Object.keys(prevProd), ...Object.keys(newProd)]) as Set<
           keyof CombinedResources
         >;
-
         for (const key of keys) {
           const before = prevProd[key] || 0;
           const after = newProd[key] || 0;
           const d = after - before;
           if (d !== 0) diff[key] = d;
         }
-
         if (Object.keys(diff).length > 0) {
           completed.push({ diff, finishedAt, building });
         }
 
+        // flags existentes
         if (targetLevel == 1) {
-          if (building === "QUARRY") quarryBuild = true;
-          if (building === "METALLURGY") metalBuild = true;
+          if (building === "QUARRY") {
+            quarryBuild = true;
+            quarriesBuiltCount += 1;
+          }
+          if (building === "METALLURGY") {
+            metalBuild = true;
+            metallurgyBuiltCount += 1;
+          }
           if (building === "KRYSTALMINE") krystalmineBuild = true;
           if (building === "ANTENNA") antennaBuild = true;
           if (building === "HANGAR") hangarBuild = true;
-          if (building === "LAB") labBuild = true;
-          if (building === "WATEREXTRACTOR") waterExtractorBuild = true;
+          if (building === "LAB") {
+            labBuild = true;
+          }
+          if (building === "WATEREXTRACTOR") {
+            waterExtractorBuild = true;
+          }
           if (building === "ALIEN_LAB") alienLabBuild = true;
           if (building === "EMBASSY") embassyBuild = true;
+        } else {
+          // cualquier edificio que sube a >1 cuenta como "upgrade"
+          upgradesCount += 1;
         }
-        if (building === "BASE") baseBuild = true;
+
+        if (building === "BASE") {
+          baseBuild = true;
+          if (targetLevel >= 2) baseReachedL2 = true;
+          if (targetLevel >= 3) baseReachedL3 = true;
+        }
+
+        // antena a nivel máximo
+        if (building === "ANTENNA") {
+          const maxLv = buildingConfig.ANTENNA?.maxLvl ?? undefined;
+          if (maxLv && targetLevel >= maxLv) antennaReachedMax = true;
+        }
 
         return {
           ...hex,
           construction: undefined,
           previousBuilding: undefined,
-          building: {
-            type: building,
-            level: targetLevel,
-          },
+          building: { type: building, level: targetLevel },
         };
       });
 
       return changed ? expandHexMapFromBuiltHexes(updatedHexes) : prevHexes;
     });
 
+    // producción diferida
     if (completed.length) {
       completed.sort((a, b) => a.finishedAt - b.finishedAt);
       for (const c of completed) {
         await addProduction(c.diff, c.finishedAt);
       }
     }
-    //config para mostrar tabs
+
+    // === Config para tabs (igual que tenías) ===
     if (antennaBuild) await handleUpdateConfig({ key: "HAS_ANTENNA", value: "true" });
     if (hangarBuild) await handleUpdateConfig({ key: "HAS_HANGAR", value: "true" });
     if (embassyBuild) await handleUpdateConfig({ key: "HAS_EMBASSY", value: "true" });
 
-    //update de quests
+    // === Quests (igual que tenías) ===
     if (labBuild) await updateQuest({ type: "BUILDING_LAB1", completed: true });
     if (quarryBuild) await updateQuest({ type: "BUILDING_QUARRY1", completed: true });
     if (metalBuild) await updateQuest({ type: "BUILDING_METALLURGY1", completed: true });
@@ -350,6 +385,7 @@ export const useHexes = (
     if (waterExtractorBuild) await updateQuest({ type: "H2O_FOUND", completed: true });
     if (alienLabBuild) await updateQuest({ type: "BUILDING_ALIEN_LAB", completed: true });
     if (embassyBuild) await updateQuest({ type: "BUILDING_EMBASSY", completed: true });
+
     if (antennaBuild) {
       await updateQuest({ type: "BUILDING_ANTENNA", completed: true });
       Alert.alert("Galaxia", "Una nueva opción del menú desbloqueada", [
@@ -373,6 +409,30 @@ export const useHexes = (
           },
         },
       ]);
+    }
+
+    // === 🔔 LOGROS ===
+    // booleanos
+    if (labBuild) onAchievementEvent({ type: "trigger", key: "FIRST_LAB" });
+    if (embassyBuild) onAchievementEvent({ type: "trigger", key: "ESTABLISH_EMBASSY" });
+    if (waterExtractorBuild) onAchievementEvent({ type: "trigger", key: "H2O_FOUND" });
+    if (baseReachedL2) onAchievementEvent({ type: "trigger", key: "BASE_LEVEL_2" });
+    if (baseReachedL3) onAchievementEvent({ type: "trigger", key: "BASE_LEVEL_3" });
+    if (antennaReachedMax) onAchievementEvent({ type: "trigger", key: "MAX_LEVEL_ANTENNA" });
+
+    // contadores
+    if (quarriesBuiltCount > 0) {
+      onAchievementEvent({ type: "increment", key: "QUARRIES_BUILT", amount: quarriesBuiltCount });
+    }
+    if (metallurgyBuiltCount > 0) {
+      onAchievementEvent({
+        type: "increment",
+        key: "METALLURGY_BUILT",
+        amount: metallurgyBuiltCount,
+      });
+    }
+    if (upgradesCount > 0) {
+      onAchievementEvent({ type: "increment", key: "BUILDINGS_UPGRADED", amount: upgradesCount });
     }
   };
 

@@ -96,20 +96,26 @@ export const sumCombinedResources = (
 export const isSpecialResourceType = (key: string): key is (typeof SPECIAL_TYPES)[number] =>
   SPECIAL_TYPES.includes(key as (typeof SPECIAL_TYPES)[number]);
 
-export const getAccumulatedResources = (
+// Implementación
+export function getAccumulatedResources(
   stored: StoredResources,
   until?: number
-): Partial<CombinedResources> => {
-  const target = Math.min(until ?? Date.now(), Date.now());
+): { resources: Partial<CombinedResources>; delta: Partial<CombinedResources> } {
+  const now = Date.now();
+  const target = Math.min(until ?? now, now);
   const start = stored.lastUpdate ?? target;
 
   const elapsedMs = Math.max(0, target - start);
-  if (elapsedMs === 0) return { ...stored.resources };
+  const base: Partial<CombinedResources> = { ...stored.resources };
+
+  if (elapsedMs === 0) {
+    return { resources: base, delta: {} };
+  }
 
   const elapsedSeconds = elapsedMs / 1000;
-  const updated: Partial<CombinedResources> = { ...stored.resources };
+  const updated: Partial<CombinedResources> = { ...base };
 
-  const prod = stored.production ?? {};
+  const prod = (stored.production ?? {}) as Partial<CombinedResources>;
   for (const key in prod) {
     const k = key as keyof CombinedResources;
     const rate = prod[k] || 0;
@@ -117,5 +123,14 @@ export const getAccumulatedResources = (
     updated[k] = (updated[k] ?? 0) + rate * elapsedSeconds;
   }
 
-  return updated;
-};
+  const delta: Partial<CombinedResources> = {};
+  const keys = new Set([...Object.keys(updated), ...Object.keys(base)]);
+  for (const k of keys) {
+    const key = k as keyof CombinedResources;
+    const before = base[key] || 0;
+    const after = updated[key] || 0;
+    const d = after - before;
+    if (d !== 0) delta[key] = d;
+  }
+  return { resources: updated, delta };
+}

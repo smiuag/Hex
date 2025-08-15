@@ -1,10 +1,11 @@
 import { loadResources, saveResources } from "@/src/services/storage";
+import { AchievementEvent } from "@/src/types/achievementTypes";
 import { CombinedResources, StoredResources } from "@/src/types/resourceTypes";
 import { useEffect, useRef, useState } from "react";
 import { getInitialResources } from "../utils/hexUtils";
 import { getAccumulatedResources, hasEnoughResources } from "../utils/resourceUtils";
 
-export function useResources() {
+export function useResources(onAchievementEvent: (ev: AchievementEvent) => void) {
   const [resources, setResources] = useState<StoredResources>(getInitialResources());
   const reservedRef = useRef<Partial<CombinedResources>>({});
 
@@ -38,7 +39,7 @@ export function useResources() {
 
     const now = Date.now();
     const prev = resources;
-    const updated = getAccumulatedResources(resources);
+    const { resources: updated, delta } = getAccumulatedResources(resources);
 
     for (const key in modifications) {
       const typedKey = key as keyof CombinedResources;
@@ -52,13 +53,46 @@ export function useResources() {
     };
 
     setResources(updatedState);
+
+    const minerales = Math.max(0, delta.STONE ?? 0);
+    if (minerales > 0) {
+      onAchievementEvent({
+        type: "increment",
+        key: "MINERALS_COLLECTED",
+        amount: minerales,
+      });
+    }
+
+    const energy = Math.max(0, delta.ENERGY ?? 0);
+    if (energy > 0) {
+      onAchievementEvent({
+        type: "increment",
+        key: "ENERGY_PRODUCED",
+        amount: energy,
+      });
+    }
+
+    const specials =
+      Math.max(0, delta.AETHERIUM ?? 0) +
+      Math.max(0, delta.ILMENITA ?? 0) +
+      Math.max(0, delta.KAIROX ?? 0) +
+      Math.max(0, delta.NEBULITA ?? 0) +
+      Math.max(0, delta.THARNIO ?? 0);
+    if (specials > 0) {
+      onAchievementEvent({
+        type: "increment",
+        key: "SPECIAL_RESOURCES_COLLECTED_TOTAL",
+        amount: specials,
+      });
+    }
     await saveResources(updatedState);
   };
 
   const addResources = async (modifications: Partial<CombinedResources>) => {
     const now = Date.now();
     const prev = resources;
-    const updated = getAccumulatedResources(resources);
+
+    const { resources: updated, delta } = getAccumulatedResources(resources);
 
     for (const key in modifications) {
       const typedKey = key as keyof CombinedResources;
@@ -73,6 +107,38 @@ export function useResources() {
 
     setResources(updatedState);
     await saveResources(updatedState);
+
+    const minerales = Math.max(0, delta.STONE ?? 0);
+    if (minerales > 0) {
+      onAchievementEvent({
+        type: "increment",
+        key: "MINERALS_COLLECTED",
+        amount: minerales,
+      });
+    }
+
+    const energy = Math.max(0, delta.ENERGY ?? 0);
+    if (energy > 0) {
+      onAchievementEvent({
+        type: "increment",
+        key: "ENERGY_PRODUCED",
+        amount: energy,
+      });
+    }
+
+    const specials =
+      Math.max(0, delta.AETHERIUM ?? 0) +
+      Math.max(0, delta.ILMENITA ?? 0) +
+      Math.max(0, delta.KAIROX ?? 0) +
+      Math.max(0, delta.NEBULITA ?? 0) +
+      Math.max(0, delta.THARNIO ?? 0);
+    if (specials > 0) {
+      onAchievementEvent({
+        type: "increment",
+        key: "SPECIAL_RESOURCES_COLLECTED_TOTAL",
+        amount: specials,
+      });
+    }
   };
 
   const addProduction = async (
@@ -82,7 +148,7 @@ export function useResources() {
     const targetTime = Math.min(effectiveAt, Date.now());
 
     setResources((prev) => {
-      const accumulated = getAccumulatedResources(prev, targetTime);
+      const { resources: accumulated, delta } = getAccumulatedResources(prev, targetTime);
 
       const newProduction: Partial<CombinedResources> = { ...prev.production };
       for (const key in extraProduction) {
@@ -98,6 +164,38 @@ export function useResources() {
       };
 
       saveResources(next).catch(() => {});
+
+      const minerales = Math.max(0, delta.STONE ?? 0);
+      if (minerales > 0) {
+        onAchievementEvent({
+          type: "increment",
+          key: "MINERALS_COLLECTED",
+          amount: minerales,
+        });
+      }
+
+      const energy = Math.max(0, delta.ENERGY ?? 0);
+      if (energy > 0) {
+        onAchievementEvent({
+          type: "increment",
+          key: "ENERGY_PRODUCED",
+          amount: energy,
+        });
+      }
+
+      const specials =
+        Math.max(0, delta.AETHERIUM ?? 0) +
+        Math.max(0, delta.ILMENITA ?? 0) +
+        Math.max(0, delta.KAIROX ?? 0) +
+        Math.max(0, delta.NEBULITA ?? 0) +
+        Math.max(0, delta.THARNIO ?? 0);
+      if (specials > 0) {
+        onAchievementEvent({
+          type: "increment",
+          key: "SPECIAL_RESOURCES_COLLECTED_TOTAL",
+          amount: specials,
+        });
+      }
       return next;
     });
   };

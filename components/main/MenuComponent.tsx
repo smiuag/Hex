@@ -1,15 +1,17 @@
 import { ResearchType } from "@/src/types/researchTypes";
 import { ShipType } from "@/src/types/shipType";
+import { gameStarted } from "@/utils/configUtils";
+import { getCfg } from "@/utils/generalUtils";
+import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, Button, ImageBackground, ScrollView, Text, View } from "react-native";
+import { Button, ImageBackground, ScrollView, Text, View } from "react-native";
 import { researchConfig } from "../../src/config/researchConfig";
 import { IMAGES } from "../../src/constants/images";
 import { useGameContextSelector } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { menuStyles } from "../../src/styles/menuStyles";
 import { Process } from "../../src/types/processTypes";
-import { gameStarted } from "../../utils/configUtils";
 import {
   getBuildingProcesses,
   getFleetProcesses,
@@ -38,12 +40,13 @@ export default function MenuComponent() {
   const handleCancelResearch = useGameContextSelector((ctx) => ctx.handleCancelResearch);
   const handleCancelShip = useGameContextSelector((ctx) => ctx.handleCancelShip);
 
-  const endGame = useGameContextSelector((ctx) => ctx.endGame);
-  const startGame = useGameContextSelector((ctx) => ctx.startGame);
   const cancelExploreSystem = useGameContextSelector((ctx) => ctx.cancelExploreSystem);
   const cancelAttack = useGameContextSelector((ctx) => ctx.cancelAttack);
   const cancelCollect = useGameContextSelector((ctx) => ctx.cancelCollect);
   const loadEvent = useGameContextSelector((ctx) => ctx.loadEvent);
+  const startGame = useGameContextSelector((ctx) => ctx.startGame);
+
+  const router = useRouter();
 
   useEffect(() => {
     loadEvent(
@@ -51,8 +54,6 @@ export default function MenuComponent() {
       tShip as unknown as (key: string, options?: object) => string
     );
   }, []);
-
-  const started = gameStarted(playerConfig);
 
   useEffect(() => {
     const buildingProcesses = getBuildingProcesses(hexes, tBuilding);
@@ -68,18 +69,8 @@ export default function MenuComponent() {
     setProcesses(allProcesses);
   }, [hexes, research, shipBuildQueue, fleet]);
 
-  const handleReset = () => {
-    Alert.alert(t("endGameTitle"), t("endGameConfirmation"), [
-      { text: t("cancel"), style: "cancel" },
-      {
-        text: t("confirmDelete"),
-        style: "destructive",
-        onPress: async () => {
-          endGame();
-        },
-      },
-    ]);
-  };
+  const started = gameStarted(playerConfig);
+  const colonyName = getCfg(playerConfig, "PLANET_NAME");
 
   const cancelBuild = async (q: number, r: number) => {
     await handleCancelBuild(q, r);
@@ -142,7 +133,7 @@ export default function MenuComponent() {
         showsVerticalScrollIndicator={false}
       >
         <View>
-          <Text style={menuStyles.title}>{t("colony")}</Text>
+          <Text style={menuStyles.title}>{colonyName || t("colony")}</Text>
 
           <View style={commonStyles.rowSpaceBetween}>
             <Text style={commonStyles.whiteText}>{t("production")} /h:</Text>
@@ -191,10 +182,14 @@ export default function MenuComponent() {
             </View>
           )}
         </View>
-
         <View style={commonStyles.pt5}>
           {started ? (
-            <Button title={t("endGame")} color="red" onPress={handleReset} />
+            <Button
+              title={t("Config")}
+              onPress={() => {
+                router.replace("/(tabs)/menu/config");
+              }}
+            />
           ) : (
             <Button title={t("startGame")} onPress={startGame} />
           )}

@@ -28,23 +28,29 @@ export default function ComputerComponent() {
   const router = useRouter();
 
   const playerQuests = useGameContextSelector((ctx) => ctx.playerQuests);
+  const playerConfig = useGameContextSelector((ctx) => ctx.playerConfig);
   const updateQuest = useGameContextSelector((ctx) => ctx.updateQuest);
 
   const { t } = useTranslation("common");
   const { t: tQuests, i18n } = useTranslation("quests");
 
-  // 👇 Memoiza los mensajes; se recalcula si cambia tipo o idioma
+  const playerName = useMemo(() => {
+    const name = playerConfig.find((c) => c.key === "PLAYER_NAME")?.value?.trim();
+    return name && name.length >= 3 ? name : "Comandante Lucas Vera";
+  }, [playerConfig]);
+
   const messages = useMemo(() => {
-    const m = tQuests(`${questType}.descriptions`, { returnObjects: true }) as unknown;
+    const m = tQuests(`${questType}.descriptions`, {
+      returnObjects: true,
+      playerName: playerName,
+    }) as unknown;
+
     return Array.isArray(m) ? (m as string[]) : [];
-    // depende de idioma porque i18n actualiza t() sin cambiar la ref de la función
-  }, [tQuests, questType, i18n.language]);
+  }, [tQuests, questType, i18n.language, playerName]);
 
   const contextType = questConfig[questType].contextType;
 
-  // ✅ Reset sólido cuando cambian los mensajes (por tipo o idioma)
   useEffect(() => {
-    // limpia timers pendientes
     if (typingTimerRef.current) {
       clearTimeout(typingTimerRef.current);
       typingTimerRef.current = null;

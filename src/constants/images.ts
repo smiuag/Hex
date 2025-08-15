@@ -1,6 +1,7 @@
 import background from "../../assets/images/background.jpg";
 import backgroundMenu from "../../assets/images/backgroundMenu.jpg";
 import collect from "../../assets/images/collect.png";
+import backgroundAchievement from "../../assets/images/events/achievements.png";
 import backgroundQuest from "../../assets/images/nebulosa.png";
 
 import alienStructure from "../../assets/images/hex/alienStructure.png";
@@ -198,4 +199,5 @@ export const IMAGES = {
   RACE_DEFAULT: defaultRace,
 
   EVENT_TRADE: event_trade,
+  ACHIEVEMENT_BACKGROUND: backgroundAchievement,
 };
