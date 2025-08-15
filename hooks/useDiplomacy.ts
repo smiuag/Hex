@@ -15,12 +15,17 @@ import {
   makeDefaultEvent,
 } from "@/src/types/eventTypes";
 import { DiplomacyLevel, RaceType } from "@/src/types/raceType";
-import { CombinedResources, CombinedResourcesType } from "@/src/types/resourceTypes";
+import {
+  CombinedResources,
+  CombinedResourcesType,
+  StoredResources,
+} from "@/src/types/resourceTypes";
 import { Ship, ShipData, ShipType } from "@/src/types/shipType";
 import { simulateBattle } from "@/utils/combat";
 import { hasEmbassyBuilt } from "@/utils/configUtils";
 import { buildDefault, isExpired, normalizeToAllRaces } from "@/utils/diplomacyUtils";
 import { getRandomEvent } from "@/utils/eventUtil";
+import { getAccumulatedResources } from "@/utils/resourceUtils";
 import { getShips } from "@/utils/shipUtils";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
@@ -29,6 +34,7 @@ import { Alert } from "react-native";
 export const useDiplomacy = (
   shipBuildQueue: Ship[],
   playerConfig: PlayerConfig,
+  resources: StoredResources,
   handleDestroyShip: (type: ShipType, amount: number) => void,
   handleCreateShips: (shipsToAdd: { type: ShipType; amount: number }[]) => void,
   addResources: (modifications: Partial<CombinedResources>) => void,
@@ -209,9 +215,11 @@ export const useDiplomacy = (
         ]
       );
 
+      const accumulatedResources = getAccumulatedResources(resources, Date.now());
       const newEvent = await getRandomEvent(
         tEvent as unknown as (key: string, options?: object) => string,
         tShip as unknown as (key: string, options?: object) => string,
+        accumulatedResources,
         shipBuildQueue,
         playerDiplomacy
       );

@@ -47,7 +47,6 @@ export default function ModalTerraform() {
               {
                 text: "Aceptar",
                 onPress: () => {
-                  updateQuest({ type: "ALIEN_TECH_FOUND", completed: true });
                   setHexAncientStructure(selectedHex);
                 },
               },

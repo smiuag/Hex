@@ -17,7 +17,7 @@ import {
   Trade,
 } from "@/src/types/eventTypes";
 import { ALL_RACES, DiplomacyLevel, raceConfig, RaceType } from "@/src/types/raceType";
-import { CombinedResourcesType } from "@/src/types/resourceTypes";
+import { CombinedResources, CombinedResourcesType } from "@/src/types/resourceTypes";
 import { Ship, ShipData } from "@/src/types/shipType";
 import { formatAmount } from "./generalUtils";
 import { getRandomShipAttackFleet } from "./shipUtils";
@@ -448,6 +448,8 @@ const getRetributionOption = (
 const getDiplomacyOption = (
   tEvent: (key: string, options?: object) => string,
   diplomaticEvent: DiplomaticEvent,
+  playerResources: Partial<CombinedResources>,
+  shipBuildQueue: Ship[],
   abuseLevel?: number
 ): EventOption => {
   const effects: EventEffect[] = [];
@@ -459,7 +461,11 @@ const getDiplomacyOption = (
   }
 
   if (diplomaticEvent.type == "EXTORTION" && abuseLevel) {
-    const tradeExtortion = createTradeEventEffect(Math.min(abuseLevel / 2, 2));
+    const tradeExtortion = createTradeEventEffect(
+      playerResources,
+      shipBuildQueue,
+      Math.min(abuseLevel / 2, 2)
+    );
     const tradeEffect: EventEffect = {
       type: "RESOURCE_CHANGE",
       trade: tradeExtortion,
@@ -531,6 +537,7 @@ const getOptionsByType = (
   tEvent: (key: string, options?: object) => string,
   tShip: (key: string, options?: object) => string,
   diplomaticEvent: DiplomaticEvent,
+  playerResources: Partial<CombinedResources>,
   shipBuildQueue: Ship[],
   mainTrade?: Trade,
   abuseLevel?: number
@@ -547,13 +554,15 @@ const getOptionsByType = (
       const ships = getRandomShipAttackFleet(shipBuildQueue);
       options.push(getTradeOption(diplomaticEvent.races, mainTrade!));
       options.push(getFightOption(tEvent, tShip, ships, diplomaticEvent.races));
-      options.push(getDiplomacyOption(tEvent, diplomaticEvent, abuseLevel));
+      options.push(
+        getDiplomacyOption(tEvent, diplomaticEvent, playerResources, shipBuildQueue, abuseLevel)
+      );
       options.push(getIgnoreOption(tEvent, diplomaticEvent, ships));
       break;
 
     case "INFILTRATION":
       options.push(getRetributionOption(tEvent, diplomaticEvent));
-      options.push(getDiplomacyOption(tEvent, diplomaticEvent));
+      options.push(getDiplomacyOption(tEvent, diplomaticEvent, playerResources, shipBuildQueue));
       options.push(getIgnoreOption(tEvent, diplomaticEvent));
       break;
   }
@@ -602,6 +611,7 @@ export const getEventDescription = (
 export function getRandomEvent(
   tEvent: (key: string, options?: object) => string,
   tShip: (key: string, options?: object) => string,
+  playerResources: Partial<CombinedResources>,
   shipBuildQueue: Ship[],
   playerDiplomacy: DiplomacyLevel[]
 ): DiplomaticEvent {
@@ -612,9 +622,9 @@ export function getRandomEvent(
   const abuseLevel = 1 + Math.random() * 9;
   const mainTrade =
     type == "COMERCIAL"
-      ? createTradeEventEffect(0.5 + Math.random() / 2)
+      ? createTradeEventEffect(playerResources, shipBuildQueue, 0.5 + Math.random() / 2)
       : type == "EXTORTION"
-      ? createTradeEventEffect(abuseLevel)
+      ? createTradeEventEffect(playerResources, shipBuildQueue, abuseLevel)
       : undefined;
 
   const endTime = getEndTimeByType(type);
@@ -643,7 +653,15 @@ export function getRandomEvent(
     mainTrade: mainTrade,
   };
 
-  const options = getOptionsByType(tEvent, tShip, event, shipBuildQueue, mainTrade, abuseLevel);
+  const options = getOptionsByType(
+    tEvent,
+    tShip,
+    event,
+    playerResources,
+    shipBuildQueue,
+    mainTrade,
+    abuseLevel
+  );
 
   event.options = options;
 

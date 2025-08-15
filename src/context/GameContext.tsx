@@ -147,6 +147,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   } = useDiplomacy(
     shipBuildQueue,
     playerConfig,
+    resources,
     handleDestroyShip,
     handleCreateShips,
     addResources,
@@ -210,15 +211,15 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
   const endGame = async () => {
     await resetPlayerEvent();
-    await resetBuild();
-    await resetPlayerConfig();
-    await resetResearch();
-    await resetQuests();
-    await resetShip();
-    await resetResources();
-    await resetStarSystem();
-    await resetFleet();
-    await resetPlayerDiplomacy();
+    // await resetBuild();
+    // await resetPlayerConfig();
+    // await resetResearch();
+    // await resetQuests();
+    // await resetShip();
+    // await resetResources();
+    // await resetStarSystem();
+    // await resetFleet();
+    // await resetPlayerDiplomacy();
   };
 
   const startGame = async () => {

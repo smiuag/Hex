@@ -42,7 +42,7 @@ export const DIPLOMACY_CHANGE_OPPOSITE = {
 export const DIPLOMACY_TRADE_VALUE = {
   STONE: { TYPE: "RESOURCE", COST: 1, RESTRICTED: false, WANTED: false, CHANCE: 0, MAX: 0 },
   METAL: { TYPE: "RESOURCE", COST: 1.2, RESTRICTED: false, WANTED: false, CHANCE: 0, MAX: 0 },
-  CRYSTAL: { TYPE: "RESOURCE", COST: 1.5, RESTRICTED: false, WANTED: false, CHANCE: 0, MAX: 0 },
+  CRYSTAL: { TYPE: "RESOURCE", COST: 1.5, RESTRICTED: false, WANTED: true, CHANCE: 0.05, MAX: 0 },
   ILMENITA: {
     TYPE: "RESOURCE",
     COST: 300,
@@ -86,7 +86,7 @@ export const DIPLOMACY_TRADE_VALUE = {
   ASSAULTBATTLESHIP: {
     TYPE: "SHIP",
     COST: 2000000,
-    RESTRICTED: true,
+    RESTRICTED: false,
     WANTED: true,
     CHANCE: 0.1,
     MAX: 5,
@@ -95,7 +95,7 @@ export const DIPLOMACY_TRADE_VALUE = {
   HEAVYASSAULTSHIP: {
     TYPE: "SHIP",
     COST: 2500000,
-    RESTRICTED: true,
+    RESTRICTED: false,
     WANTED: true,
     CHANCE: 0.1,
     MAX: 3,
@@ -103,7 +103,7 @@ export const DIPLOMACY_TRADE_VALUE = {
   ORBITALASSAULTSHIP: {
     TYPE: "SHIP",
     COST: 2750000,
-    RESTRICTED: true,
+    RESTRICTED: false,
     WANTED: true,
     CHANCE: 0.05,
     MAX: 2,
@@ -111,7 +111,7 @@ export const DIPLOMACY_TRADE_VALUE = {
   PLANETARYDESTROYER: {
     TYPE: "SHIP",
     COST: 3000000,
-    RESTRICTED: true,
+    RESTRICTED: false,
     WANTED: true,
     CHANCE: 0.03,
     MAX: 1,
