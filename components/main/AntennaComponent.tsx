@@ -1,3 +1,4 @@
+import { buildingConfig } from "@/src/config/buildingConfig";
 import { SCAN_DURATION } from "@/src/constants/general";
 import { IMAGES } from "@/src/constants/images";
 import rawData from "@/src/data/names.json";
@@ -26,6 +27,7 @@ import {
 } from "react-native";
 import { useGameContextSelector } from "../../src/context/GameContext";
 import { CountdownTimer } from "../auxiliar/CountdownTimer";
+import HeaderClose from "../auxiliar/HeaderClose";
 import { UnderConstructionCard } from "../cards/UnderConstructionCard";
 import { UpgradeCard } from "../cards/UpgradeCard";
 
@@ -49,7 +51,7 @@ export default function AntennaComponent() {
 
   // Ref del FlatList de sistemas + control para autoscroll por región
   const systemsListRef = useRef<FlatList<StarSystemDetected>>(null);
-  const autoScrolledKeysRef = useRef<Set<string>>(new Set());
+  const { t: tBuilding } = useTranslation("buildings");
 
   const router = useRouter();
   const startingSystemId = gameStartingSystem(playerConfig);
@@ -151,20 +153,34 @@ export default function AntennaComponent() {
         data.construction.targetLevel
       );
       return (
-        <View style={commonStyles.mainBuilding}>
-          <UnderConstructionCard
-            data={data}
-            onCancelBuild={onCancel}
-            duration={totalBuildTime}
-            startedAt={data.construction.startedAt}
-          />
-        </View>
+        <>
+          <View style={commonStyles.mainBuilding}>
+            <UnderConstructionCard
+              data={data}
+              onCancelBuild={onCancel}
+              duration={totalBuildTime}
+              startedAt={data.construction.startedAt}
+            />
+          </View>
+          <TouchableOpacity onPress={onClose} style={commonStyles.closeXButton}>
+            <Text style={commonStyles.closeXText}>✕</Text>
+          </TouchableOpacity>
+        </>
       );
     } else {
-      return (
-        <View style={commonStyles.mainBuilding}>
-          <UpgradeCard data={data} onBuild={onBuild} research={research} />
-        </View>
+      const isMaxed = data.building?.level == buildingConfig["ANTENNA"].maxLvl;
+
+      return isMaxed ? (
+        <HeaderClose title={tBuilding("buildingName.ANTENNA")} onClose={onClose} />
+      ) : (
+        <>
+          <View style={commonStyles.mainBuilding}>
+            <UpgradeCard data={data} onBuild={onBuild} research={research} />
+          </View>
+          <TouchableOpacity onPress={onClose} style={commonStyles.closeXButton}>
+            <Text style={commonStyles.closeXText}>✕</Text>
+          </TouchableOpacity>
+        </>
       );
     }
   };
@@ -388,10 +404,6 @@ export default function AntennaComponent() {
 
   return (
     <View style={{ flex: 1 }}>
-      <TouchableOpacity onPress={onClose} style={commonStyles.closeXButton}>
-        <Text style={commonStyles.closeXText}>✕</Text>
-      </TouchableOpacity>
-
       <View>{getMainArea()}</View>
 
       {/* Clusters (natal primero si está en la lista) */}

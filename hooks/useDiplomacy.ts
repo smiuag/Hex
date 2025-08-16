@@ -22,7 +22,7 @@ import {
   StoredResources,
 } from "@/src/types/resourceTypes";
 import { Ship, ShipData, ShipType } from "@/src/types/shipType";
-import { simulateBattle } from "@/utils/combat";
+import { simulateBattle } from "@/utils/combatUtils";
 import { hasEmbassyBuilt } from "@/utils/configUtils";
 import { buildDefault, isExpired, normalizeToAllRaces } from "@/utils/diplomacyUtils";
 import { getRandomEvent } from "@/utils/eventUtil";

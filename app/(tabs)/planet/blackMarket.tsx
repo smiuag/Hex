@@ -17,7 +17,7 @@ export default function BlackMarketScreen() {
     <SafeAreaView style={[commonStyles.safeArea, { paddingTop: insets.top }]}>
       <BlackMarketComponent />
       <ResourceBar storedResources={resources} showOnlyNormal={true} />
-      <ResourceBar storedResources={resources} showOnlySpecial={true} />
+      <ResourceBar storedResources={resources} showOnlySpecial={true} miniSyle={true} />
     </SafeAreaView>
   );
 }

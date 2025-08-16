@@ -2,6 +2,8 @@ import background from "../../assets/images/background.jpg";
 import backgroundMenu from "../../assets/images/backgroundMenu.jpg";
 import collect from "../../assets/images/collect.png";
 import backgroundAchievement from "../../assets/images/events/achievements.png";
+import combat from "../../assets/images/events/combat.png";
+import combatVertial from "../../assets/images/events/combatVertical.png";
 import tradeOffer from "../../assets/images/events/offer.png";
 import tradePayment from "../../assets/images/events/payment.png";
 import unlockResearch from "../../assets/images/events/unlockResearch.png";
@@ -206,4 +208,6 @@ export const IMAGES = {
   TRADE_OFFER: tradeOffer,
   TRADE_PAYMENT: tradePayment,
   TRADE_UNLOCK_RESEARCH: unlockResearch,
+  COMBAT_CARD: combat,
+  COMBAT_CARD_VERTICAL: combatVertial,
 };

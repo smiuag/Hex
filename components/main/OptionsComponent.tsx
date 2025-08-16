@@ -22,6 +22,7 @@ export default function PlayerSetup() {
   const { t } = useTranslation();
   const playerConfig = useGameContextSelector((ctx) => ctx.playerConfig);
   const handleUpdateConfig = useGameContextSelector((ctx) => ctx.handleUpdateConfig);
+  const endGame = useGameContextSelector((ctx) => ctx.endGame);
 
   // Estado local
   const [playerName, setPlayerName] = useState("");
@@ -91,7 +92,7 @@ export default function PlayerSetup() {
         text: t("setup.confirm"),
         style: "destructive",
         onPress: () => {
-          handleUpdateConfig({ key: "GAME_STARTED", value: "false" });
+          endGame();
           router.replace("/(tabs)/menu");
         },
       },

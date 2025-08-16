@@ -85,7 +85,7 @@ export const BUILDING_MAX_LVL = {
   BASE: 5,
   ANTENNA: 4,
   ROCKET: 2,
-  HANGAR: 2,
+  HANGAR: 1,
   ENERGY: 5,
   SPACESTATION: 1,
   RECYCLE: 2,

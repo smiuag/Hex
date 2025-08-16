@@ -288,10 +288,11 @@ export const SystemExploredCard: React.FC<Props> = ({
               <TouchableOpacity
                 style={[
                   commonStyles.buttonPrimary,
-                  !system.starPortBuilt && commonStyles.buttonDisabled,
+                  (!system.starPortBuilt || !system.extractionBuildingBuilt) &&
+                    commonStyles.buttonDisabled,
                 ]}
                 onPress={() => handleCollect()}
-                disabled={!system.starPortBuilt}
+                disabled={!system.starPortBuilt || !system.extractionBuildingBuilt}
               >
                 <Text style={commonStyles.buttonTextLight}>{t("Collect")}</Text>
               </TouchableOpacity>

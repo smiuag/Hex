@@ -4,6 +4,7 @@ import {
   STAR_BUILDINGS_COST,
   STAR_BUILDINGS_DURATION,
 } from "@/src/constants/general";
+import { insertCombatResult } from "@/src/services/combatStorage";
 import {
   deleteStarSystem,
   loadFleet,
@@ -18,9 +19,9 @@ import { RaceType } from "@/src/types/raceType";
 import { CombinedResources } from "@/src/types/resourceTypes";
 import { Ship, ShipType } from "@/src/types/shipType";
 import { StarSystem, StarSystemMap } from "@/src/types/starSystemTypes";
-import { simulateBattle } from "@/utils/combat";
+import { simulateBattle } from "@/utils/combatUtils";
 import { getAccumulatedResources, sumCombinedResources } from "@/utils/resourceUtils";
-import { getFlyTime, totalShips } from "@/utils/shipUtils";
+import { getFlyTime } from "@/utils/shipUtils";
 import { generateSystem } from "@/utils/starSystemUtils";
 import { useEffect, useRef, useState } from "react";
 import uuid from "react-native-uuid";
@@ -196,80 +197,104 @@ export const useStarSystem = (
     );
     if (!targetSystem) return;
 
-    // Actualiza el sistema como no atacado
+    // Marcar sistema como no atacado
     await modifySystems((sys) =>
-      sys.map((sys) => (sys.id === targetSystem.id ? { ...sys, attackStartedAt: undefined } : sys))
+      sys.map((s) => (s.id === targetSystem.id ? { ...s, attackStartedAt: undefined } : s))
     );
 
-    // Simula la batalla
-    const battleResult = simulateBattle(attackingFleetData.ships, targetSystem.defense);
-
-    // Flotas restantes ya en formato Ship[]
-    const updatedAttackingFleetShips = battleResult.remaining.fleetA;
-    const updatedDefenseShips = battleResult.remaining.fleetB;
-
-    // Actualiza la defensa del sistema usando updatedSystems (no currentSystems)
-    modifySystems((systems) =>
-      systems.map((system) =>
-        system.id === targetSystem.id ? { ...system, defense: updatedDefenseShips } : system
-      )
+    const battleResult = simulateBattle(
+      attackingFleetData.ships, // atacantes
+      targetSystem.defense, // defensores
+      {
+        sistem: String(targetSystem.id), // o el nombre si lo tienes
+        playerIsAttacker: true,
+      }
     );
 
-    // Actualiza la flota atacante: si no quedan naves la elimina, si quedan actualiza
+    // Guardar el combate en storage
+    await insertCombatResult(battleResult);
+
+    // Último turno = estado final
+    const lastTurn =
+      battleResult.turns[battleResult.turns.length - 1] ??
+      ({
+        turn: 0,
+        attackerRemaining: attackingFleetData.ships,
+        defenderRemaining: targetSystem.defense,
+        attackerLost: [],
+        defenderLost: [],
+      } as const);
+
+    // Flotas restantes (ShipData[])
+    const updatedAttackingFleetShips = lastTurn.attackerRemaining;
+    const updatedDefenseShips = lastTurn.defenderRemaining;
+
+    // Totales para logros
+    const total = (list: { amount: number }[]) => list.reduce((acc, s) => acc + s.amount, 0);
+    const initialAttackers = total(attackingFleetData.ships);
+    const finalAttackers = total(updatedAttackingFleetShips);
+
+    // Como playerIsAttacker = true, playerWins indica si ganan los atacantes
+    const attackersWon = battleResult.playerWins === true;
+
+    // Eliminar la flota atacante actual (luego la reinsertamos si corresponde)
     await modifyFleet((fleet) => fleet.filter((f) => f.id !== fleetId));
 
-    if (updatedAttackingFleetShips.length > 0) {
-      if (battleResult.winner === "A") {
-        const initialAttackers = totalShips(attackingFleetData.ships);
-        const finalAttackers = totalShips(updatedAttackingFleetShips);
+    if (updatedAttackingFleetShips.length > 0 && attackersWon) {
+      // Ganaron los atacantes: flota regresa y el sistema queda conquistado
+      await modifyFleet((fleet) => {
+        const now = Date.now();
+        const timeSpent = attackingFleetData.endTime - attackingFleetData.startTime;
 
-        // Ganaron los atacantes: flota regresa y sistema queda sin defensa ni ataque en curso
-        await modifyFleet((fleet) => {
-          const now = Date.now();
-          const updated = [...fleet];
-          const index = updated.findIndex((f) => f.id === attackingFleetData.id);
+        const returningFleet = {
+          ...attackingFleetData,
+          ships: updatedAttackingFleetShips,
+          startTime: now,
+          endTime: now + timeSpent,
+          destinationSystemId: attackingFleetData.origin,
+          origin: attackingFleetData.destinationSystemId,
+          movementType: "RETURN" as const,
+        };
 
-          if (index !== -1) {
-            const timeSpent = attackingFleetData.endTime - attackingFleetData.startTime;
+        const idx = fleet.findIndex((f) => f.id === attackingFleetData.id);
+        if (idx !== -1) {
+          const next = [...fleet];
+          next[idx] = returningFleet;
+          return next;
+        }
+        return [...fleet, returningFleet];
+      });
 
-            updated[index] = {
-              ...attackingFleetData,
-              ships: updatedAttackingFleetShips,
-              startTime: now,
-              endTime: now + timeSpent,
-              destinationSystemId: attackingFleetData.origin,
-              origin: attackingFleetData.destinationSystemId,
-              movementType: "RETURN",
-            };
-          }
+      await modifySystems((systems) =>
+        systems.map((sys) =>
+          sys.id === targetSystem.id
+            ? {
+                ...sys,
+                defense: [],
+                attackStartedAt: undefined,
+                race: undefined,
+                starPortStartedAt: undefined,
+                defended: false,
+                conquered: true,
+              }
+            : sys
+        )
+      );
 
-          return updated;
-        });
-
-        await modifySystems((systems) =>
-          systems.map((sys) =>
-            sys.id === targetSystem.id
-              ? {
-                  ...sys,
-                  defense: [],
-                  attackStartedAt: undefined,
-                  race: undefined,
-                  starPortStartedAt: undefined,
-                  defended: false,
-                  conquered: true,
-                }
-              : sys
-          )
-        );
-
-        onAchievementEvent({ type: "trigger", key: "FIRST_BATTLE_WON" });
-        onAchievementEvent({ type: "increment", key: "BATTLES_WON", amount: 1 });
-        if (initialAttackers == finalAttackers)
-          onAchievementEvent({ type: "trigger", key: "NO_LOSSES_BATTLE" });
-      } else {
-        // Perdieron los atacantes: flota eliminada, sistema con defensa actualizada
-        // Ya filtramos la flota atacante arriba, nada más que hacer aquí
+      // Logros
+      onAchievementEvent({ type: "trigger", key: "FIRST_BATTLE_WON" });
+      onAchievementEvent({ type: "increment", key: "BATTLES_WON", amount: 1 });
+      if (initialAttackers === finalAttackers) {
+        onAchievementEvent({ type: "trigger", key: "NO_LOSSES_BATTLE" });
       }
+    } else {
+      // Perdieron atacantes o empate: sistema mantiene defensa resultante
+      await modifySystems((systems) =>
+        systems.map((system) =>
+          system.id === targetSystem.id ? { ...system, defense: updatedDefenseShips } : system
+        )
+      );
+      // No reinsertamos flota atacante (ya fue eliminada arriba)
     }
   };
 

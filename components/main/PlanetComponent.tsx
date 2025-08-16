@@ -92,6 +92,14 @@ export default function PlanetComponent() {
     }
 
     if (
+      hexToUse.building?.type == "HANGAR" ||
+      (hexToUse.construction?.building == "HANGAR" && hexToUse.construction.targetLevel > 1)
+    ) {
+      router.replace(`/(tabs)/planet/hangar?q=${tappedHex.q}&r=${tappedHex.r}`);
+      return;
+    }
+
+    if (
       hexToUse.building?.type == "LAB" ||
       (hexToUse.construction?.building == "LAB" && hexToUse.construction.targetLevel > 1)
     ) {

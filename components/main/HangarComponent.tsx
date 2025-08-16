@@ -6,13 +6,14 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useGameContextSelector } from "../../src/context/GameContext";
+import CombatResultList from "../auxiliar/CombatResultList";
 import HeaderClose from "../auxiliar/HeaderClose";
-import ResearchList from "../auxiliar/ResearchList";
 import { UnderConstructionCard } from "../cards/UnderConstructionCard";
 import { UpgradeCard } from "../cards/UpgradeCard";
 
-export default function LabComponent() {
+export default function HangarComponent() {
   const { q, r } = useLocalSearchParams();
+
   const hexes = useGameContextSelector((ctx) => ctx.hexes);
   const research = useGameContextSelector((ctx) => ctx.research);
   const handleCancelBuild = useGameContextSelector((ctx) => ctx.handleCancelBuild);
@@ -68,9 +69,9 @@ export default function LabComponent() {
 
   return isMaxed ? (
     <>
-      <HeaderClose title={tBuilding(`buildingName.${labType}`)} onClose={onClose} />
+      <HeaderClose title={tBuilding("buildingName.HANGAR")} onClose={onClose} />
       <View style={{ flex: 1 }}>
-        <ResearchList labType={labType!}></ResearchList>
+        <CombatResultList></CombatResultList>
       </View>
     </>
   ) : (
@@ -79,7 +80,7 @@ export default function LabComponent() {
         <Text style={commonStyles.closeXText}>✕</Text>
       </TouchableOpacity>
       {getMainArea()}
-      <ResearchList labType={labType!}></ResearchList>
+      <CombatResultList></CombatResultList>
     </View>
   );
 }

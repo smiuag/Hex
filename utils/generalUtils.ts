@@ -75,3 +75,15 @@ export function tSafeNS(ns: string) {
     return t(key, { defaultValue: key, ...(opts ?? {}) });
   };
 }
+
+export function formatDate(ts: number) {
+  try {
+    return new Date(ts).toLocaleString();
+  } catch {
+    return String(ts);
+  }
+}
+
+export function totalAmount(list: ReadonlyArray<{ amount: number }>) {
+  return list.reduce((acc, s) => acc + s.amount, 0);
+}

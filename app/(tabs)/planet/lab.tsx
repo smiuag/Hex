@@ -17,7 +17,7 @@ export default function ConstructionScreen() {
     <SafeAreaView style={[commonStyles.safeArea, { paddingTop: insets.top }]}>
       <LabComponent />
       <ResourceBar storedResources={resources} showOnlyNormal={true} />
-      <ResourceBar storedResources={resources} showOnlySpecial={true} />
+      <ResourceBar storedResources={resources} showOnlySpecial={true} miniSyle={true} />
     </SafeAreaView>
   );
 }

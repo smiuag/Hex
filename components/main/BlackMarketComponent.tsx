@@ -362,10 +362,7 @@ export default function BlackMarketComponent() {
     const entry = pricing[selectedItemKey];
     if (!entry) return;
 
-    if (contributedValue < requiredValue) {
-      console.log("Pago insuficiente");
-      return;
-    }
+    if (contributedValue < requiredValue) return;
 
     // 1) Cobrar SIEMPRE (con fallback)
     const payment: Record<string, number> = {};

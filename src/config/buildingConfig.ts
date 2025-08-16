@@ -130,7 +130,7 @@ export const buildingConfig: Record<
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.HANGAR,
     maxLvl: BUILDING_MAX_LVL.HANGAR,
     order: 8,
-    special: false,
+    special: true,
   },
   ENERGY: {
     baseBuildTime: BUILDING_TIME.ENERGY,

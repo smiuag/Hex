@@ -71,3 +71,9 @@ export const getShips = (shipData: ShipData[]): Ship[] => {
 
 export const totalShips = (ships: Array<{ type: any; amount: number }>) =>
   ships.reduce((s, sh) => s + (sh.amount || 0), 0);
+
+export function sumShipArray(arr: ShipData[]): Record<string, number> {
+  const map: Record<string, number> = {};
+  for (const s of arr) map[s.type] = (map[s.type] ?? 0) + s.amount;
+  return map;
+}
