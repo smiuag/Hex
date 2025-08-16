@@ -7,7 +7,11 @@ import { getAccumulatedResources, hasEnoughResources } from "../utils/resourceUt
 
 export function useResources(onAchievementEvent: (ev: AchievementEvent) => void) {
   const [resources, setResources] = useState<StoredResources>(getInitialResources());
-  const reservedRef = useRef<Partial<CombinedResources>>({});
+  const resourcesRef = useRef<StoredResources>(resources);
+
+  useEffect(() => {
+    resourcesRef.current = resources;
+  }, [resources]);
 
   useEffect(() => {
     const load = async () => {
@@ -19,126 +23,105 @@ export function useResources(onAchievementEvent: (ev: AchievementEvent) => void)
 
   const resetResources = async () => {
     const initial = getInitialResources();
-    reservedRef.current = {};
     setResources(initial);
+    resourcesRef.current = initial;
     await saveResources(initial);
   };
 
-  const releaseResources = (cost: Partial<CombinedResources>) => {
-    for (const key in cost) {
-      const typedKey = key as keyof CombinedResources;
-      reservedRef.current[typedKey] = Math.max(
-        0,
-        (reservedRef.current[typedKey] || 0) - (cost[typedKey] || 0)
-      );
-    }
-  };
-
   const subtractResources = async (modifications: Partial<CombinedResources>) => {
-    releaseResources(modifications);
+    setResources((prev) => {
+      const now = Date.now();
+      const { resources: updated, delta } = getAccumulatedResources(prev);
 
-    const now = Date.now();
-    const prev = resources;
-    const { resources: updated, delta } = getAccumulatedResources(resources);
+      for (const key in modifications) {
+        const k = key as keyof CombinedResources;
+        updated[k] = (updated[k] || 0) - (modifications[k] || 0);
+      }
 
-    for (const key in modifications) {
-      const typedKey = key as keyof CombinedResources;
-      updated[typedKey] = (updated[typedKey] || 0) - (modifications[typedKey] || 0);
-    }
+      const next: StoredResources = {
+        resources: updated as CombinedResources,
+        lastUpdate: now,
+        production: prev.production,
+      };
 
-    const updatedState: StoredResources = {
-      resources: updated as CombinedResources,
-      lastUpdate: now,
-      production: prev.production,
-    };
+      saveResources(next).catch(() => {});
 
-    setResources(updatedState);
+      // Logros a partir de lo producido en la acumulación
+      const minerales = Math.max(0, delta.STONE ?? 0);
+      if (minerales > 0) {
+        onAchievementEvent({ type: "increment", key: "MINERALS_COLLECTED", amount: minerales });
+      }
 
-    const minerales = Math.max(0, delta.STONE ?? 0);
-    if (minerales > 0) {
-      onAchievementEvent({
-        type: "increment",
-        key: "MINERALS_COLLECTED",
-        amount: minerales,
-      });
-    }
+      const energy = Math.max(0, delta.ENERGY ?? 0);
+      if (energy > 0) {
+        onAchievementEvent({ type: "increment", key: "ENERGY_PRODUCED", amount: energy });
+      }
 
-    const energy = Math.max(0, delta.ENERGY ?? 0);
-    if (energy > 0) {
-      onAchievementEvent({
-        type: "increment",
-        key: "ENERGY_PRODUCED",
-        amount: energy,
-      });
-    }
+      const specials =
+        Math.max(0, delta.AETHERIUM ?? 0) +
+        Math.max(0, delta.ILMENITA ?? 0) +
+        Math.max(0, delta.KAIROX ?? 0) +
+        Math.max(0, delta.NEBULITA ?? 0) +
+        Math.max(0, delta.THARNIO ?? 0);
+      if (specials > 0) {
+        onAchievementEvent({
+          type: "increment",
+          key: "SPECIAL_RESOURCES_COLLECTED_TOTAL",
+          amount: specials,
+        });
+      }
 
-    const specials =
-      Math.max(0, delta.AETHERIUM ?? 0) +
-      Math.max(0, delta.ILMENITA ?? 0) +
-      Math.max(0, delta.KAIROX ?? 0) +
-      Math.max(0, delta.NEBULITA ?? 0) +
-      Math.max(0, delta.THARNIO ?? 0);
-    if (specials > 0) {
-      onAchievementEvent({
-        type: "increment",
-        key: "SPECIAL_RESOURCES_COLLECTED_TOTAL",
-        amount: specials,
-      });
-    }
-    await saveResources(updatedState);
+      // Mantén el ref sincronizado
+      resourcesRef.current = next;
+      return next;
+    });
   };
 
   const addResources = async (modifications: Partial<CombinedResources>) => {
-    const now = Date.now();
-    const prev = resources;
+    setResources((prev) => {
+      const now = Date.now();
+      const { resources: updated, delta } = getAccumulatedResources(prev);
 
-    const { resources: updated, delta } = getAccumulatedResources(resources);
+      for (const key in modifications) {
+        const k = key as keyof CombinedResources;
+        updated[k] = (updated[k] || 0) + (modifications[k] || 0);
+      }
 
-    for (const key in modifications) {
-      const typedKey = key as keyof CombinedResources;
-      updated[typedKey] = (updated[typedKey] || 0) + (modifications[typedKey] || 0);
-    }
+      const next: StoredResources = {
+        resources: updated as CombinedResources,
+        lastUpdate: now,
+        production: prev.production,
+      };
 
-    const updatedState: StoredResources = {
-      resources: updated as CombinedResources,
-      lastUpdate: now,
-      production: prev.production,
-    };
+      saveResources(next).catch(() => {});
 
-    setResources(updatedState);
-    await saveResources(updatedState);
+      const minerales = Math.max(0, delta.STONE ?? 0);
+      if (minerales > 0) {
+        onAchievementEvent({ type: "increment", key: "MINERALS_COLLECTED", amount: minerales });
+      }
 
-    const minerales = Math.max(0, delta.STONE ?? 0);
-    if (minerales > 0) {
-      onAchievementEvent({
-        type: "increment",
-        key: "MINERALS_COLLECTED",
-        amount: minerales,
-      });
-    }
+      const energy = Math.max(0, delta.ENERGY ?? 0);
+      if (energy > 0) {
+        onAchievementEvent({ type: "increment", key: "ENERGY_PRODUCED", amount: energy });
+      }
 
-    const energy = Math.max(0, delta.ENERGY ?? 0);
-    if (energy > 0) {
-      onAchievementEvent({
-        type: "increment",
-        key: "ENERGY_PRODUCED",
-        amount: energy,
-      });
-    }
+      const specials =
+        Math.max(0, delta.AETHERIUM ?? 0) +
+        Math.max(0, delta.ILMENITA ?? 0) +
+        Math.max(0, delta.KAIROX ?? 0) +
+        Math.max(0, delta.NEBULITA ?? 0) +
+        Math.max(0, delta.THARNIO ?? 0);
+      if (specials > 0) {
+        onAchievementEvent({
+          type: "increment",
+          key: "SPECIAL_RESOURCES_COLLECTED_TOTAL",
+          amount: specials,
+        });
+      }
 
-    const specials =
-      Math.max(0, delta.AETHERIUM ?? 0) +
-      Math.max(0, delta.ILMENITA ?? 0) +
-      Math.max(0, delta.KAIROX ?? 0) +
-      Math.max(0, delta.NEBULITA ?? 0) +
-      Math.max(0, delta.THARNIO ?? 0);
-    if (specials > 0) {
-      onAchievementEvent({
-        type: "increment",
-        key: "SPECIAL_RESOURCES_COLLECTED_TOTAL",
-        amount: specials,
-      });
-    }
+      resourcesRef.current = next;
+      return next;
+    });
   };
 
   const addProduction = async (
@@ -196,25 +179,15 @@ export function useResources(onAchievementEvent: (ev: AchievementEvent) => void)
           amount: specials,
         });
       }
+
+      resourcesRef.current = next;
       return next;
     });
   };
 
   const enoughResources = (cost: Partial<CombinedResources>) => {
-    const effectiveResources: Partial<CombinedResources> = {};
-    for (const key in resources.resources) {
-      const typedKey = key as keyof CombinedResources;
-      effectiveResources[typedKey] =
-        (resources.resources[typedKey] || 0) - (reservedRef.current[typedKey] || 0);
-    }
-
-    return hasEnoughResources(
-      {
-        ...resources,
-        resources: effectiveResources as CombinedResources,
-      },
-      cost
-    );
+    // Usa SIEMPRE el estado más reciente desde el ref
+    return hasEnoughResources(resourcesRef.current, cost);
   };
 
   return {

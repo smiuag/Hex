@@ -2,6 +2,9 @@ import background from "../../assets/images/background.jpg";
 import backgroundMenu from "../../assets/images/backgroundMenu.jpg";
 import collect from "../../assets/images/collect.png";
 import backgroundAchievement from "../../assets/images/events/achievements.png";
+import tradeOffer from "../../assets/images/events/offer.png";
+import tradePayment from "../../assets/images/events/payment.png";
+import unlockResearch from "../../assets/images/events/unlockResearch.png";
 import backgroundQuest from "../../assets/images/nebulosa.png";
 
 import alienStructure from "../../assets/images/hex/alienStructure.png";
@@ -200,4 +203,7 @@ export const IMAGES = {
 
   EVENT_TRADE: event_trade,
   ACHIEVEMENT_BACKGROUND: backgroundAchievement,
+  TRADE_OFFER: tradeOffer,
+  TRADE_PAYMENT: tradePayment,
+  TRADE_UNLOCK_RESEARCH: unlockResearch,
 };

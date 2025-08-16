@@ -1,6 +1,7 @@
 import { DIPLOMACY_TRADE_VALUE, Trade } from "@/src/types/eventTypes";
 import { CombinedResources } from "@/src/types/resourceTypes";
 import { Ship, ShipData } from "@/src/types/shipType";
+import { Balances, PricingMap, TradeKind } from "@/src/types/tradeTypes";
 
 type TradeKey = keyof typeof DIPLOMACY_TRADE_VALUE;
 
@@ -351,4 +352,80 @@ export const createTradeEventEffect = (
   const shipChange: ShipData[] | undefined = ships.length ? ships : undefined;
 
   return { specialReward, resourceChange, shipChange };
+};
+
+// ===== Utilidades =====
+export const formatInt = (n: number) => new Intl.NumberFormat().format(Math.floor(n));
+
+export const getItemKeysByType = (pricing: PricingMap, types: TradeKind[]) =>
+  Object.keys(pricing).filter((k) => types.includes(pricing[k].TYPE));
+
+// Mezcla automática (avara en unidades): usa primero los más valiosos y si falta un poco añade 1 del más barato.
+export const payableKeys = (pricing: PricingMap, balances: Balances, allowed?: string[]) => {
+  const keys = Object.keys(pricing).filter((k) => pricing[k].TYPE === "RESOURCE");
+  const filtered = allowed ? keys.filter((k) => allowed.includes(k)) : keys;
+  return filtered.filter((k) => (balances[k] ?? 0) > 0 && (pricing[k].COST ?? 0) > 0);
+};
+
+export const totalWalletValue = (keys: string[], pricing: PricingMap, balances: Balances) =>
+  keys.reduce((acc, k) => acc + (balances[k] ?? 0) * (pricing[k]?.COST ?? 0), 0);
+
+export const maxAffordableQty = (
+  itemKey: string,
+  pricing: PricingMap,
+  balances: Balances,
+  payKeys: string[]
+) => {
+  const unit = pricing[itemKey]?.COST ?? 0;
+  if (unit <= 0) return 0;
+  const wallet = totalWalletValue(payKeys, pricing, balances);
+  return Math.floor(wallet / unit);
+};
+
+export const computeAutoMix = (
+  requiredValue: number,
+  pricing: PricingMap,
+  balances: Balances,
+  selectedPayKeys: string[]
+): { mix: Record<string, number>; contributedValue: number; ok: boolean } => {
+  const keys = [...selectedPayKeys].sort((a, b) => (pricing[b].COST ?? 0) - (pricing[a].COST ?? 0));
+  const mix: Record<string, number> = {};
+  let remaining = Math.max(0, requiredValue);
+
+  for (const k of keys) {
+    const unitVal = pricing[k]?.COST ?? 0;
+    if (unitVal <= 0) continue;
+    const have = Math.floor(balances[k] ?? 0);
+    if (have <= 0) continue;
+    const canUse = Math.min(have, Math.floor(remaining / unitVal));
+    if (canUse > 0) {
+      mix[k] = canUse;
+      remaining -= canUse * unitVal;
+    }
+  }
+
+  if (remaining > 0) {
+    const cheapest = keys
+      .filter((k) => (balances[k] ?? 0) > 0)
+      .sort((a, b) => (pricing[a].COST ?? 0) - (pricing[b].COST ?? 0))[0];
+    if (cheapest) {
+      mix[cheapest] = (mix[cheapest] ?? 0) + 1;
+      remaining = 0;
+    }
+  }
+
+  const contributed = Object.entries(mix).reduce(
+    (acc, [k, v]) => acc + v * (pricing[k]?.COST ?? 0),
+    0
+  );
+  const ok = contributed >= requiredValue;
+  return { mix, contributedValue: contributed, ok };
+};
+
+export const applyPayment = (balances: Balances, payment: Record<string, number>) => {
+  const out: Balances = { ...balances };
+  Object.entries(payment).forEach(([k, v]) => {
+    out[k] = Math.max(0, Math.floor((out[k] ?? 0) - Math.floor(v)));
+  });
+  return out;
 };

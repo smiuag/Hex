@@ -26,7 +26,6 @@ export default function MenuComponent() {
   const { t: tResearch } = useTranslation("research");
   const { t: tShip } = useTranslation("ship");
   const { t: tBuilding } = useTranslation("buildings");
-  const { t: tEvent } = useTranslation("events");
   const [processes, setProcesses] = useState<Process[]>([]);
 
   const hexes = useGameContextSelector((ctx) => ctx.hexes);
@@ -43,17 +42,9 @@ export default function MenuComponent() {
   const cancelExploreSystem = useGameContextSelector((ctx) => ctx.cancelExploreSystem);
   const cancelAttack = useGameContextSelector((ctx) => ctx.cancelAttack);
   const cancelCollect = useGameContextSelector((ctx) => ctx.cancelCollect);
-  const loadEvent = useGameContextSelector((ctx) => ctx.loadEvent);
   const startGame = useGameContextSelector((ctx) => ctx.startGame);
 
   const router = useRouter();
-
-  useEffect(() => {
-    loadEvent(
-      tEvent as unknown as (key: string, options?: object) => string,
-      tShip as unknown as (key: string, options?: object) => string
-    );
-  }, []);
 
   useEffect(() => {
     const buildingProcesses = getBuildingProcesses(hexes, tBuilding);

@@ -251,14 +251,13 @@ const styles = StyleSheet.create({
   segmentText: { color: "#c9c9cf", fontSize: 14, fontWeight: "600" },
   segmentTextActive: { color: "white" },
   buttonsRow: {
-    flexDirection: "column", // <-- antes: "row"
+    flexDirection: "column",
     gap: 12,
     marginTop: 24,
   },
 
   btn: {
-    // flex: 1,                  // <-- quita esto
-    width: "100%", // <-- ocupa todo el ancho disponible
+    width: "100%",
     paddingVertical: 12,
     borderRadius: 12,
     alignItems: "center",

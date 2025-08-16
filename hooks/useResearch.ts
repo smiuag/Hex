@@ -185,6 +185,8 @@ export const useResearch = (
     if (miningResearch) await updateQuest({ type: "RESEARCH_MINING1", completed: true });
   };
 
+  const hasDiscoverableResearch = () => !!getNextDiscoverableResearchType(researchRef.current);
+
   const loadData = async () => {
     const saved = await loadResearch();
     if (saved) {
@@ -204,5 +206,6 @@ export const useResearch = (
     resetResearch,
     discoverNextResearch,
     stopResearch,
+    hasDiscoverableResearch,
   };
 };

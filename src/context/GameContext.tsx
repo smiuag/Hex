@@ -77,16 +77,14 @@ type ProviderContextType = {
   setHexAncientStructure: (hex: Hex) => void;
   cancelCollect: (systemId: string) => void;
   handleEventOptionChoose: (option: EventOption) => void;
-  loadEvent: (
-    tEvent: (key: string, options?: object) => string,
-    tShip: (key: string, options?: object) => string
-  ) => void;
+  discoverNextResearch: () => void;
+  handleCreateShips: (shipsToAdd: { type: ShipType; amount: number }[]) => void;
+  hasDiscoverableResearch: () => boolean;
 };
 
 const GameContext = createContext<ProviderContextType>(null as any);
 
 export const GameProvider = ({ children }: { children: React.ReactNode }) => {
-  //const { t: tAchievements } = useTranslation("achievements", { useSuspense: false });
   const tAch = useMemo(() => tSafeNS("achievements"), []);
 
   const { universe } = useUniverse();
@@ -161,6 +159,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     resetResearch,
     discoverNextResearch,
     stopResearch,
+    hasDiscoverableResearch,
   } = useResearch(
     addResources,
     subtractResources,
@@ -175,7 +174,6 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     resetPlayerEvent,
     resetPlayerDiplomacy,
     handleEventOptionChoose,
-    loadEvent,
     modifyEvent,
     handleModifyDiplomacy,
   } = useDiplomacy(
@@ -330,7 +328,9 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       setHexAncientStructure,
       cancelCollect,
       handleEventOptionChoose,
-      loadEvent,
+      discoverNextResearch,
+      handleCreateShips,
+      hasDiscoverableResearch,
     }),
     [
       fleet,
@@ -379,7 +379,9 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       setHexAncientStructure,
       cancelCollect,
       handleEventOptionChoose,
-      loadEvent,
+      discoverNextResearch,
+      handleCreateShips,
+      hasDiscoverableResearch,
     ]
   );
 

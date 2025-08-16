@@ -26,10 +26,11 @@ import { simulateBattle } from "@/utils/combat";
 import { hasEmbassyBuilt } from "@/utils/configUtils";
 import { buildDefault, isExpired, normalizeToAllRaces } from "@/utils/diplomacyUtils";
 import { getRandomEvent } from "@/utils/eventUtil";
+import { tSafeNS } from "@/utils/generalUtils";
 import { getAccumulatedResources } from "@/utils/resourceUtils";
 import { getShips } from "@/utils/shipUtils";
 import { useRouter } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Alert } from "react-native";
 
 export const useDiplomacy = (
@@ -50,6 +51,8 @@ export const useDiplomacy = (
   const [currentEvent, setCurrentEvent] = useState<DiplomaticEvent>(makeDefaultEvent());
   const diplomacyRef = useRef<DiplomacyLevel[]>([]);
   const eventRef = useRef<DiplomaticEvent>(makeDefaultEvent());
+  const tEvent = useMemo(() => tSafeNS("events"), []);
+  const tShip = useMemo(() => tSafeNS("ship"), []);
 
   const router = useRouter();
 
@@ -203,11 +206,9 @@ export const useDiplomacy = (
     }
   };
 
-  const loadEvent = async (
-    tEvent: (key: string, options?: object) => string,
-    tShip: (key: string, options?: object) => string
-  ) => {
+  const loadEvent = async () => {
     const hasEmbassy = hasEmbassyBuilt(playerConfig);
+
     if (hasEmbassy) {
       const saved = await loadCurrentEvent();
 
@@ -261,6 +262,7 @@ export const useDiplomacy = (
 
   useEffect(() => {
     loadPlayerDiplomacy();
+    loadEvent();
   }, [playerConfig]);
 
   return {
@@ -271,7 +273,6 @@ export const useDiplomacy = (
     resetPlayerDiplomacy,
     resetPlayerEvent,
     handleEventOptionChoose,
-    loadEvent,
     modifyEvent,
   };
 };

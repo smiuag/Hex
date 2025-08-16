@@ -3,9 +3,11 @@ import { commonStyles } from "@/src/styles/commonStyles";
 import { getBuildTime } from "@/utils/buildingUtils";
 import { useRouter } from "expo-router";
 import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import { useTranslation } from "react-i18next";
+import { Text, View } from "react-native";
+import { Pressable, ScrollView } from "react-native-gesture-handler";
 import DiplomacySummary from "../auxiliar/DiplomacySummary";
+import HeaderClose from "../auxiliar/HeaderClose";
 import EventCard from "../cards/EventCard";
 import { UnderConstructionCard } from "../cards/UnderConstructionCard";
 import { UpgradeCard } from "../cards/UpgradeCard";
@@ -20,6 +22,8 @@ export default function EmbassyComponent() {
   const handleEventOptionChoose = useGameContextSelector((ctx) => ctx.handleEventOptionChoose);
 
   const router = useRouter();
+  const { t } = useTranslation();
+  const { t: tBuilding } = useTranslation("buildings");
 
   const data = hexes.find(
     (h) => h.building?.type == "EMBASSY" || h.construction?.building == "EMBASSY"
@@ -35,8 +39,8 @@ export default function EmbassyComponent() {
     if (data.building) handleBuild(data.q, data.r, data.building.type);
   };
 
-  const onClose = () => {
-    router.replace("/(tabs)/planet");
+  const openIlegalMarket = () => {
+    router.replace("/(tabs)/planet/blackMarket");
   };
 
   const getMainArea = () => {
@@ -63,25 +67,35 @@ export default function EmbassyComponent() {
       );
     }
   };
+  const onClose = () => {
+    router.replace("/(tabs)/planet");
+  };
 
   return (
-    <View style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <TouchableOpacity onPress={onClose} style={commonStyles.closeXButton}>
-          <Text style={commonStyles.closeXText}>✕</Text>
-        </TouchableOpacity>
-        {getMainArea()}
-        {currentEvent && currentEvent.type != "DEFAULT" && (
-          <EventCard
-            diplomaticEvent={currentEvent}
-            onChoose={(opt) => {
-              handleEventOptionChoose(opt);
-            }}
-          />
-        )}
+    <>
+      <HeaderClose title={tBuilding("buildingName.EMBASSY")} onClose={onClose}></HeaderClose>
+      <View style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          {currentEvent && currentEvent.type != "DEFAULT" && (
+            <EventCard
+              diplomaticEvent={currentEvent}
+              onChoose={(opt) => {
+                handleEventOptionChoose(opt);
+              }}
+            />
+          )}
+          <Pressable
+            onPress={openIlegalMarket}
+            style={[commonStyles.buttonPrimary, { padding: 5 }]}
+          >
+            <View style={{ padding: 5 }}>
+              <Text style={commonStyles.buttonTextLight}>{t("IlegalMarket")}</Text>
+            </View>
+          </Pressable>
 
-        <DiplomacySummary data={playerDiplomacy} />
-      </ScrollView>
-    </View>
+          <DiplomacySummary data={playerDiplomacy} />
+        </ScrollView>
+      </View>
+    </>
   );
 }

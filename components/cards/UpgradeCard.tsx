@@ -62,7 +62,7 @@ export const UpgradeCard: React.FC<Props> = ({ data, research, onBuild, onDestro
   const unmetRequirements = getUnmetRequirements(config.requiredResearch, research, nextLevel);
   const canUpgrade = unmetRequirements.length == 0;
   const canBuild = canUpgrade && !lockedByResources;
-  const isMaxLvl = config.maxLvl < (data.building?.level ?? 0);
+  const isMaxLvl = config.maxLvl <= (data.building?.level ?? 0);
   const showDestroyButton = !!onDestroy && data.building.type != "BASE" && !data.construction;
 
   return (
