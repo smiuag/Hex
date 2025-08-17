@@ -20,7 +20,7 @@ export default function EmbassyScreen() {
         <EmbassyComponent />
       </GestureHandlerRootView>
       <ResourceBar storedResources={resources} showOnlyNormal={true} />
-      <ResourceBar storedResources={resources} showOnlySpecial={true} miniSyle={true} />
+      <ResourceBar storedResources={resources} showOnlySpecial={true} />
     </SafeAreaView>
   );
 }

@@ -1,4 +1,5 @@
 import { shipConfig } from "@/src/config/shipConfig";
+import { GENERAL_FACTOR } from "@/src/constants/general";
 import { deleteShip, loadShip, saveShip } from "@/src/services/storage";
 import { AchievementEvent } from "@/src/types/achievementTypes";
 import { PlayerQuest, UpdateQuestOptions } from "@/src/types/questType";
@@ -19,19 +20,49 @@ export const useShip = (
   const [shipBuildQueue, setShipBuildQueue] = useState<Ship[]>([]);
   const shipRef = useRef<Ship[]>([]);
 
-  const syncAndSave = (newQueue: Ship[]) => {
-    shipRef.current = newQueue;
-    setShipBuildQueue(newQueue);
-    saveShip(newQueue).catch((e) => console.error("Error saving ships:", e));
+  // Persistencia serializada
+  const saveChain = useRef(Promise.resolve());
+  const readyToPersist = useRef(false);
+
+  // Persistir cada cambio real
+  useEffect(() => {
+    if (!readyToPersist.current) return;
+    const snapshot = shipRef.current;
+    saveChain.current = saveChain.current
+      .then(() => saveShip(snapshot))
+      .catch((e) => console.error("Error saving ships:", e));
+  }, [shipBuildQueue]);
+
+  // Helpers
+  const mapWithChange = <T>(
+    arr: T[],
+    fn: (x: T, i: number) => T
+  ): { next: T[]; changed: boolean } => {
+    let changed = false;
+    const next = arr.map((x, i) => {
+      const y = fn(x, i);
+      if (y !== x) changed = true;
+      return y;
+    });
+    return { next, changed };
   };
 
-  const updateShipQueueState = async (updater: Ship[] | ((prev: Ship[]) => Ship[])) => {
-    const updated = typeof updater === "function" ? updater(shipRef.current) : updater;
-    syncAndSave(updated);
+  const modifyQueue = (modifier: (prev: Ship[]) => Ship[]) => {
+    setShipBuildQueue((prev) => {
+      const next = modifier(prev);
+      if (next === prev) return prev; // short-circuit: no cambios → no re-render
+      shipRef.current = next;
+      return next;
+    });
+  };
+
+  const syncAndSet = (newQueue: Ship[]) => {
+    shipRef.current = newQueue;
+    setShipBuildQueue(newQueue);
   };
 
   const resetShip = async () => {
-    await updateShipQueueState([]);
+    syncAndSet([]);
     await deleteShip();
   };
 
@@ -49,38 +80,35 @@ export const useShip = (
       return;
     }
 
-    await updateShipQueueState((prev) => {
-      const updated = [...prev];
-      const existing = updated.find((r) => r.type === type);
-
+    modifyQueue((prev) => {
+      const existing = prev.find((r) => r.type === type);
       if (existing) {
-        const newRemaining = (existing.progress?.targetAmount ?? 0) + amount;
-        return updated.map((r) =>
+        const { next, changed } = mapWithChange(prev, (r) =>
           r.type === type
             ? {
                 ...r,
                 progress: {
                   startedAt: r.progress?.startedAt ?? now,
-                  targetAmount: newRemaining,
+                  targetAmount: (r.progress?.targetAmount ?? 0) + amount,
                   notificationId: undefined,
                 },
               }
             : r
         );
-      } else {
-        return [
-          ...updated,
-          {
-            type,
-            amount: 0,
-            progress: {
-              startedAt: now,
-              targetAmount: amount,
-              notificationId: undefined,
-            },
-          },
-        ];
+        return changed ? next : prev;
       }
+      return [
+        ...prev,
+        {
+          type,
+          amount: 0,
+          progress: {
+            startedAt: now,
+            targetAmount: amount,
+            notificationId: undefined,
+          },
+        },
+      ];
     });
 
     subtractResources(cost);
@@ -89,27 +117,23 @@ export const useShip = (
   const handleCancelShip = async (type: ShipType) => {
     let didRefund = false;
 
-    await updateShipQueueState((prev) =>
-      prev.map((r) => {
+    modifyQueue((prev) => {
+      let localRefund = false;
+      const { next, changed } = mapWithChange(prev, (r) => {
         if (r.type !== type || !r.progress) return r;
-
         const remaining = r.progress.targetAmount - 1;
+        localRefund = true;
         if (remaining <= 0) {
-          didRefund = true;
           return { ...r, progress: undefined };
         }
-
-        didRefund = true;
         return {
           ...r,
-          progress: {
-            ...r.progress,
-            targetAmount: remaining,
-            notificationId: undefined,
-          },
+          progress: { ...r.progress, targetAmount: remaining, notificationId: undefined },
         };
-      })
-    );
+      });
+      didRefund = changed && localRefund;
+      return changed ? next : prev;
+    });
 
     if (didRefund) {
       const refundCost = getTotalShipCost(type, 1);
@@ -119,86 +143,115 @@ export const useShip = (
 
   const processShipTick = async () => {
     const now = Date.now();
-
-    const updatedQueue: Ship[] = [];
     let changed = false;
 
-    for (const item of shipRef.current) {
-      if (item.progress && item.progress.targetAmount > 0) {
-        const timePerUnit = shipConfig[item.type].baseBuildTime;
-        const elapsed = now - item.progress.startedAt;
+    modifyQueue((prev) => {
+      const updated: Ship[] = [];
+      for (const item of prev) {
+        if (item.progress && item.progress.targetAmount > 0) {
+          const timePerUnit = Math.max(
+            1,
+            Math.floor(shipConfig[item.type].baseBuildTime / GENERAL_FACTOR)
+          ); // evita sub-ms
+          const elapsed = now - item.progress.startedAt;
 
-        if (elapsed >= timePerUnit) {
-          changed = true;
+          if (elapsed >= timePerUnit) {
+            changed = true;
 
-          const unitsBuilt = Math.min(
-            Math.floor(elapsed / timePerUnit),
-            item.progress.targetAmount
-          );
+            const unitsBuilt = Math.min(
+              Math.floor(elapsed / timePerUnit),
+              item.progress.targetAmount
+            );
 
-          const newAmount = item.amount + unitsBuilt;
-          const newTargetAmount = item.progress.targetAmount - unitsBuilt;
-          const newStartedAt = item.progress.startedAt + unitsBuilt * timePerUnit;
+            const newAmount = item.amount + unitsBuilt;
+            const newTargetAmount = item.progress.targetAmount - unitsBuilt;
+            const newStartedAt = item.progress.startedAt + unitsBuilt * timePerUnit;
 
-          if (newTargetAmount <= 0) {
-            updatedQueue.push({ type: item.type, amount: newAmount });
+            if (newTargetAmount <= 0) {
+              updated.push({ type: item.type, amount: newAmount });
+            } else {
+              updated.push({
+                type: item.type,
+                amount: newAmount,
+                progress: {
+                  ...item.progress,
+                  targetAmount: newTargetAmount,
+                  startedAt: newStartedAt,
+                },
+              });
+            }
           } else {
-            updatedQueue.push({
-              type: item.type,
-              amount: newAmount,
-              progress: {
-                ...item.progress,
-                targetAmount: newTargetAmount,
-                startedAt: newStartedAt,
-              },
-            });
+            // SIN cambios → reutilizamos la MISMA referencia
+            updated.push(item);
           }
         } else {
-          updatedQueue.push(item);
+          updated.push(item);
         }
-      } else {
-        updatedQueue.push(item);
       }
-    }
+      // Si no cambió nada, devolvemos exactamente prev (no re-render, no guardado)
+      return changed ? updated : prev;
+    });
 
     if (changed) {
-      await updateShipQueueState(updatedQueue);
-      if (!playerQuests.some((pq) => pq.type == "SHIP_FIRST" && pq.completed))
+      if (!playerQuests.some((pq) => pq.type == "SHIP_FIRST" && pq.completed)) {
         await updateQuest({ type: "SHIP_FIRST", completed: true });
+      }
 
-      if (updatedQueue.filter((q) => q.amount > 0).length == Object.keys(shipConfig).length)
+      if (shipRef.current.filter((q) => q.amount > 0).length == Object.keys(shipConfig).length) {
         onAchievementEvent({ type: "trigger", key: "COLLECT_ALL_SHIPS" });
+      }
 
       onAchievementEvent({ type: "increment", key: "SHIPS_BUILT", amount: 1 });
     }
   };
 
   const handleDestroyShip = async (type: ShipType, amount: number) => {
-    await updateShipQueueState((prev) =>
-      prev.map((ship) => (ship.type === type ? { ...ship, amount: ship.amount - amount } : ship))
-    );
+    modifyQueue((prev) => {
+      let any = false;
+      const { next, changed } = mapWithChange(prev, (ship) => {
+        if (ship.type !== type) return ship;
+        const newAmount = ship.amount - amount;
+        if (newAmount === ship.amount) return ship;
+        any = true;
+        return { ...ship, amount: newAmount };
+      });
+      return changed && any ? next : prev;
+    });
   };
 
   const handleCreateShips = async (shipsToAdd: { type: ShipType; amount: number }[]) => {
-    await updateShipQueueState((prev) => {
-      const updated = [...prev];
+    modifyQueue((prev) => {
+      if (shipsToAdd.length === 0) return prev;
+      const next = [...prev];
+      let changed = false;
 
       for (const { type, amount } of shipsToAdd) {
-        const existing = updated.find((s) => s.type === type);
-        if (existing) {
-          existing.amount += amount;
+        if (amount === 0) continue;
+        const idx = next.findIndex((s) => s.type === type);
+        if (idx >= 0) {
+          const cur = next[idx];
+          const newAmount = cur.amount + amount;
+          if (newAmount !== cur.amount) {
+            next[idx] = { ...cur, amount: newAmount };
+            changed = true;
+          }
         } else {
-          updated.push({ type, amount, progress: undefined });
+          next.push({ type, amount, progress: undefined });
+          changed = true;
         }
       }
-
-      return updated;
+      return changed ? next : prev;
     });
   };
 
   const loadData = async () => {
     const saved = await loadShip();
-    if (saved) syncAndSave(saved);
+    if (saved) {
+      syncAndSet(saved);
+    } else {
+      syncAndSet([]);
+    }
+    readyToPersist.current = true; // activamos guardado tras hidratar
   };
 
   useEffect(() => {

@@ -24,26 +24,73 @@ export const useResearch = (
   const [research, setResearch] = useState<Research[]>([]);
   const researchRef = useRef<Research[]>([]);
 
-  const syncAndSave = (newState: Research[]) => {
-    researchRef.current = newState;
-    setResearch(newState);
-    saveResearch(newState).catch((e) => console.error("Error saving research:", e));
+  // Cola para serializar guardados + flag de hidratación
+  const saveChain = useRef(Promise.resolve());
+  const hydrated = useRef(false);
+
+  // Persistir en serie cada cambio
+  useEffect(() => {
+    if (!hydrated.current) {
+      hydrated.current = true;
+      return;
+    }
+    const snapshot = researchRef.current;
+    saveChain.current = saveChain.current
+      .then(() => saveResearch(snapshot))
+      .catch((e) => console.error("Error saving research:", e));
+  }, [research]);
+
+  // Carga inicial
+  const loadData = async () => {
+    const saved = await loadResearch();
+    if (saved) {
+      researchRef.current = saved;
+      setResearch(saved);
+    }
+  };
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  // Utilidad: mapea detectando si cambió algo
+  const mapWithChange = <T>(
+    arr: T[],
+    fn: (x: T, i: number) => T
+  ): { next: T[]; changed: boolean } => {
+    let changed = false;
+    const next = arr.map((x, i) => {
+      const y = fn(x, i);
+      if (y !== x) changed = true; // referencia distinta = cambió
+      return y;
+    });
+    return { next, changed };
   };
 
-  const updateResearchState = async (updater: Research[] | ((prev: Research[]) => Research[])) => {
-    const updated = typeof updater === "function" ? updater(researchRef.current) : updater;
-    syncAndSave(updated);
+  // Helper: modificar desde el estado previo (y mantener el ref sincronizado)
+  const modifyResearch = (
+    modifier: (prev: Research[]) => Research[] | { next: Research[]; changed?: boolean }
+  ) => {
+    setResearch((prev) => {
+      const result = modifier(prev as Research[]);
+      const next = (result as any)?.next
+        ? ((result as any).next as Research[])
+        : (result as Research[]);
+      // Si el caller quiere saltarse el set, que devuelva exactamente 'prev'
+      if (next === prev) return prev;
+      researchRef.current = next;
+      return next;
+    });
   };
 
   const resetResearch = async () => {
-    syncAndSave([]);
+    modifyResearch(() => (researchRef.current.length ? [] : researchRef.current));
   };
 
   const handleResearch = async (type: ResearchType) => {
     const currentLevel = researchRef.current.find((r) => r.data.type === type)?.data.level ?? 0;
     const nextLevel = currentLevel + 1;
     const scaledCost = getResearchCost(type, nextLevel);
-    const durationMs = getResearchTime(type, nextLevel);
+    // const durationMs = getResearchTime(type, nextLevel); // no usado aquí
 
     if (!enoughResources(scaledCost)) {
       Toast.show({
@@ -55,34 +102,27 @@ export const useResearch = (
       return;
     }
 
-    await updateResearchState((prev) => {
-      const updated = [...prev];
-      const existing = updated.find((r) => r.data.type === type);
-
+    modifyResearch((prev) => {
+      const existing = prev.find((r) => r.data.type === type);
       if (existing) {
-        return updated.map((r) =>
+        const { next, changed } = mapWithChange(prev, (r) =>
           r.data.type === type
             ? {
                 ...r,
-                progress: {
-                  startedAt: Date.now(),
-                  targetLevel: nextLevel,
-                },
+                progress: { startedAt: Date.now(), targetLevel: nextLevel },
               }
             : r
         );
+        return changed ? next : prev;
       }
-
-      updated.push({
-        data: { type, level: 0 },
-        progress: {
-          startedAt: Date.now(),
-          targetLevel: nextLevel,
+      return [
+        ...prev,
+        {
+          data: { type, level: 0 },
+          progress: { startedAt: Date.now(), targetLevel: nextLevel },
+          discovered: true,
         },
-        discovered: true,
-      });
-
-      return updated;
+      ];
     });
 
     subtractResources(scaledCost);
@@ -95,15 +135,18 @@ export const useResearch = (
     const scaledCost = getResearchCost(type, target.progress?.targetLevel ?? 1);
     addResources(scaledCost);
 
-    await updateResearchState((prev) =>
-      prev.map((r) => (r.data.type === type ? { ...r, progress: undefined } : r))
-    );
+    modifyResearch((prev) => {
+      const { next, changed } = mapWithChange(prev, (r) =>
+        r.data.type === type ? { ...r, progress: undefined } : r
+      );
+      return changed ? next : prev;
+    });
   };
 
   const discoverNextResearch = async () => {
     const nextDiscover = getNextDiscoverableResearchType(researchRef.current);
     if (nextDiscover) {
-      updateResearchState((prev) => [
+      modifyResearch((prev) => [
         ...prev,
         { data: { type: nextDiscover, level: 0 }, discovered: true },
       ]);
@@ -125,14 +168,16 @@ export const useResearch = (
   };
 
   const stopResearch = async () => {
-    await updateResearchState((prev) =>
-      prev.map((r) => (r.progress ? { ...r, progress: undefined } : r))
-    );
+    modifyResearch((prev) => {
+      const { next, changed } = mapWithChange(prev, (r) =>
+        r.progress ? { ...r, progress: undefined } : r
+      );
+      return changed ? next : prev;
+    });
   };
 
   const processResearchTick = async () => {
     const now = Date.now();
-    let changed = false;
 
     // Para logros:
     const hadCompletedBefore = researchRef.current.some((r) => (r.data.level ?? 0) > 0);
@@ -141,62 +186,54 @@ export const useResearch = (
     let miningResearch = false;
     let lastCompleted = false;
 
-    const updated = researchRef.current.map((item) => {
-      if (item.progress) {
-        const totalTime = getResearchTime(item.data.type, item.progress.targetLevel);
-        const elapsed = now - item.progress.startedAt;
+    // Hacemos el cambio condicional: si nada cambia, devolvemos prev y NO hay re-render
+    modifyResearch((prev) => {
+      let changed = false;
+      const next = prev.map((item) => {
+        if (item.progress) {
+          const totalTime = getResearchTime(item.data.type, item.progress.targetLevel);
+          const elapsed = now - item.progress.startedAt;
 
-        if (elapsed >= totalTime) {
-          changed = true;
-          completedThisTick += 1;
+          if (elapsed >= totalTime) {
+            changed = true;
+            completedThisTick += 1;
 
-          if (item.data.type === "MINING") miningResearch = true;
-          // Ajusta a tu enumerado real de investigación alienígena:
-          const config = researchConfig[item.data.type];
-          if (config.needsDiscover) {
-            alienAnalyzed = true;
+            if (item.data.type === "MINING") miningResearch = true;
+
+            const config = researchConfig[item.data.type];
+            if (config.needsDiscover) alienAnalyzed = true;
+            if (item.data.type == "SELENOGRAFIA") lastCompleted = true;
+
+            return {
+              data: { type: item.data.type, level: item.progress.targetLevel },
+              discovered: true,
+            } as Research;
           }
-          if (item.data.type == "SELENOGRAFIA") lastCompleted = true;
-
-          return {
-            data: { type: item.data.type, level: item.progress.targetLevel },
-            discovered: true,
-          };
         }
-      }
-      return item;
+        return item;
+      });
+
+      return changed ? next : prev;
     });
 
-    if (changed) {
-      await updateResearchState(updated);
+    // Si algo terminó, dispara logros/quests
+    if (completedThisTick > 0) {
+      if (!hadCompletedBefore) onAchievementEvent({ type: "trigger", key: "FIRST_RESEARCH" });
 
-      if (!hadCompletedBefore && completedThisTick > 0)
-        onAchievementEvent({ type: "trigger", key: "FIRST_RESEARCH" });
-
-      if (completedThisTick > 0)
-        onAchievementEvent({ type: "increment", key: "RESEARCH_PROJECTS_COMPLETED", amount: 1 });
+      onAchievementEvent({
+        type: "increment",
+        key: "RESEARCH_PROJECTS_COMPLETED",
+        amount: 1, // mantengo tu lógica original
+      });
 
       if (alienAnalyzed) onAchievementEvent({ type: "trigger", key: "ALIEN_TECH_ANALYZED" });
-
       if (lastCompleted) onAchievementEvent({ type: "trigger", key: "ALL_RESEARCH_COMPLETE" });
     }
 
-    // QUEST existente que ya tenías
     if (miningResearch) await updateQuest({ type: "RESEARCH_MINING1", completed: true });
   };
 
   const hasDiscoverableResearch = () => !!getNextDiscoverableResearchType(researchRef.current);
-
-  const loadData = async () => {
-    const saved = await loadResearch();
-    if (saved) {
-      syncAndSave(saved);
-    }
-  };
-
-  useEffect(() => {
-    loadData();
-  }, []);
 
   return {
     research,

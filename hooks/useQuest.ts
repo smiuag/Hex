@@ -13,65 +13,43 @@ export const useQuest = (
   const [playerQuests, setPlayerQuests] = useState<PlayerQuest[]>([]);
   const questRef = useRef<PlayerQuest[]>([]);
 
-  const syncAndSave = (newQuests: PlayerQuest[]) => {
-    questRef.current = newQuests;
-    setPlayerQuests(newQuests);
-    saveQuests(newQuests);
-  };
+  // Cola para serializar guardados + flag de hidratación
+  const saveChain = useRef(Promise.resolve());
+  const hydrated = useRef(false);
 
-  const updateQuestState = async (
-    updater: PlayerQuest[] | ((prev: PlayerQuest[]) => PlayerQuest[])
-  ) => {
-    const updated = typeof updater === "function" ? updater(questRef.current) : updater;
-    syncAndSave(updated);
-  };
+  // Persistir en serie cada cambio del estado
+  useEffect(() => {
+    if (!hydrated.current) {
+      hydrated.current = true;
+      return;
+    }
+    const snapshot = questRef.current;
+    saveChain.current = saveChain.current
+      .then(() => saveQuests(snapshot))
+      .catch((e) => console.error("Error saving quests:", e));
+  }, [playerQuests]);
 
+  // Cargar del storage
   const loadData = async () => {
     const saved = await loadQuests();
     if (saved) {
-      // const { quests, changed } = migrateQuests(saved as any[]);
-      syncAndSave(saved);
+      questRef.current = saved;
+      setPlayerQuests(saved);
     }
   };
 
-  // const migrateQuests = (raw: any[]): { quests: PlayerQuest[]; changed: boolean } => {
-  //   let changed = false;
-  //   const byType = new Map<QuestType, PlayerQuest>();
+  useEffect(() => {
+    loadData();
+  }, []);
 
-  //   for (const q of raw || []) {
-  //     const fixedType =
-  //       q?.type === "BUILDING_ALIENT_LAB"
-  //         ? ("BUILDING_ALIEN_LAB" as QuestType)
-  //         : (q?.type as QuestType);
-  //     if (q?.type === "BUILDING_ALIENT_LAB") changed = true;
-
-  //     // normaliza y asegura booleanos
-  //     const normalized: PlayerQuest = {
-  //       type: fixedType,
-  //       available: !!q?.available,
-  //       viewed: !!q?.viewed,
-  //       completed: true,
-  //       rewardClaimed: !!q?.rewardClaimed,
-  //     };
-
-  //     // si existiera duplicado (por el fix), mergea con OR
-  //     const prev = byType.get(fixedType);
-  //     if (prev) {
-  //       byType.set(fixedType, {
-  //         type: fixedType,
-  //         available: prev.available || normalized.available,
-  //         viewed: prev.viewed || normalized.viewed,
-  //         completed: prev.completed || normalized.completed,
-  //         rewardClaimed: prev.rewardClaimed || normalized.rewardClaimed,
-  //       });
-  //       changed = true;
-  //     } else {
-  //       byType.set(fixedType, normalized);
-  //     }
-  //   }
-
-  //   return { quests: Array.from(byType.values()), changed };
-  // };
+  // Helper para modificar estado de forma segura y sincronizar el ref
+  const modifyQuests = (modifier: (prev: PlayerQuest[]) => PlayerQuest[]) => {
+    setPlayerQuests((prev) => {
+      const next = modifier(prev);
+      questRef.current = next;
+      return next;
+    });
+  };
 
   const updateQuest = async ({
     type,
@@ -81,13 +59,11 @@ export const useQuest = (
     rewardClaimed,
   }: UpdateQuestOptions) => {
     const config = questConfig[type];
-
     const quest = questRef.current.find((q) => q.type === type);
     const justClaimed = rewardClaimed === true && quest && !quest.rewardClaimed;
-
     const exists = !!quest;
 
-    await updateQuestState((prev) => {
+    await modifyQuests((prev) => {
       const updated = prev.map((q) =>
         q.type !== type
           ? q
@@ -108,7 +84,6 @@ export const useQuest = (
           completed: completed ?? false,
           rewardClaimed: rewardClaimed ?? false,
         };
-
         return [...updated, newQuest];
       }
 
@@ -127,7 +102,9 @@ export const useQuest = (
         updateQuest({
           type: "H2O_SEARCH",
           available: true,
-          completed: playerQuests.some((q) => q.type == "H2O_SEARCH" && q.completed) ? true : false,
+          completed: questRef.current.some((q) => q.type == "H2O_SEARCH" && q.completed)
+            ? true
+            : false,
           viewed: false,
           rewardClaimed: false,
         });
@@ -136,7 +113,7 @@ export const useQuest = (
         updateQuest({
           type: "BUILDING_LAB1",
           available: true,
-          completed: playerQuests.some((q) => q.type == "BUILDING_LAB1" && q.completed)
+          completed: questRef.current.some((q) => q.type == "BUILDING_LAB1" && q.completed)
             ? true
             : false,
           rewardClaimed: false,
@@ -147,7 +124,7 @@ export const useQuest = (
         updateQuest({
           type: "RESEARCH_MINING1",
           available: true,
-          completed: playerQuests.some((q) => q.type == "RESEARCH_MINING1" && q.completed)
+          completed: questRef.current.some((q) => q.type == "RESEARCH_MINING1" && q.completed)
             ? true
             : false,
           rewardClaimed: false,
@@ -158,7 +135,7 @@ export const useQuest = (
         updateQuest({
           type: "BUILDING_QUARRY1",
           available: true,
-          completed: playerQuests.some((q) => q.type == "BUILDING_QUARRY1" && q.completed)
+          completed: questRef.current.some((q) => q.type == "BUILDING_QUARRY1" && q.completed)
             ? true
             : false,
           rewardClaimed: false,
@@ -169,7 +146,7 @@ export const useQuest = (
         updateQuest({
           type: "BUILDING_METALLURGY1",
           available: true,
-          completed: playerQuests.some((q) => q.type == "BUILDING_METALLURGY1" && q.completed)
+          completed: questRef.current.some((q) => q.type == "BUILDING_METALLURGY1" && q.completed)
             ? true
             : false,
           rewardClaimed: false,
@@ -180,7 +157,7 @@ export const useQuest = (
         updateQuest({
           type: "BUILDING_KRYSTALMINE1",
           available: true,
-          completed: playerQuests.some((q) => q.type == "BUILDING_KRYSTALMINE1" && q.completed)
+          completed: questRef.current.some((q) => q.type == "BUILDING_KRYSTALMINE1" && q.completed)
             ? true
             : false,
           rewardClaimed: false,
@@ -191,7 +168,9 @@ export const useQuest = (
         updateQuest({
           type: "H2O_FOUND",
           available: true,
-          completed: playerQuests.some((q) => q.type == "H2O_FOUND" && q.completed) ? true : false,
+          completed: questRef.current.some((q) => q.type == "H2O_FOUND" && q.completed)
+            ? true
+            : false,
           rewardClaimed: false,
           viewed: false,
         });
@@ -199,7 +178,7 @@ export const useQuest = (
         updateQuest({
           type: "BUILDING_BASE2",
           available: true,
-          completed: playerQuests.some((q) => q.type == "BUILDING_BASE2" && q.completed)
+          completed: questRef.current.some((q) => q.type == "BUILDING_BASE2" && q.completed)
             ? true
             : false,
           rewardClaimed: false,
@@ -208,7 +187,7 @@ export const useQuest = (
         updateQuest({
           type: "ALIEN_TECH_FOUND",
           available: true,
-          completed: playerQuests.some((q) => q.type == "ALIEN_TECH_FOUND" && q.completed)
+          completed: questRef.current.some((q) => q.type == "ALIEN_TECH_FOUND" && q.completed)
             ? true
             : false,
           rewardClaimed: false,
@@ -219,7 +198,7 @@ export const useQuest = (
         updateQuest({
           type: "BUILDING_ANTENNA",
           available: true,
-          completed: playerQuests.some((q) => q.type == "BUILDING_ANTENNA" && q.completed)
+          completed: questRef.current.some((q) => q.type == "BUILDING_ANTENNA" && q.completed)
             ? true
             : false,
           rewardClaimed: false,
@@ -230,7 +209,9 @@ export const useQuest = (
         updateQuest({
           type: "SCAN_FIRST",
           available: true,
-          completed: playerQuests.some((q) => q.type == "SCAN_FIRST" && q.completed) ? true : false,
+          completed: questRef.current.some((q) => q.type == "SCAN_FIRST" && q.completed)
+            ? true
+            : false,
           rewardClaimed: false,
           viewed: false,
         });
@@ -239,7 +220,7 @@ export const useQuest = (
         updateQuest({
           type: "BUILDING_EMBASSY",
           available: true,
-          completed: playerQuests.some((q) => q.type == "BUILDING_EMBASSY" && q.completed)
+          completed: questRef.current.some((q) => q.type == "BUILDING_EMBASSY" && q.completed)
             ? true
             : false,
           rewardClaimed: false,
@@ -250,7 +231,7 @@ export const useQuest = (
         updateQuest({
           type: "BUILDING_HANGAR",
           available: true,
-          completed: playerQuests.some((q) => q.type == "BUILDING_HANGAR" && q.completed)
+          completed: questRef.current.some((q) => q.type == "BUILDING_HANGAR" && q.completed)
             ? true
             : false,
           rewardClaimed: false,
@@ -261,7 +242,9 @@ export const useQuest = (
         updateQuest({
           type: "SHIP_FIRST",
           available: true,
-          completed: playerQuests.some((q) => q.type == "SHIP_FIRST" && q.completed) ? true : false,
+          completed: questRef.current.some((q) => q.type == "SHIP_FIRST" && q.completed)
+            ? true
+            : false,
           rewardClaimed: false,
           viewed: false,
         });
@@ -270,7 +253,7 @@ export const useQuest = (
         updateQuest({
           type: "EXPLORE_SYSTEM",
           available: true,
-          completed: playerQuests.some((q) => q.type == "EXPLORE_SYSTEM" && q.completed)
+          completed: questRef.current.some((q) => q.type == "EXPLORE_SYSTEM" && q.completed)
             ? true
             : false,
           rewardClaimed: false,
@@ -281,7 +264,7 @@ export const useQuest = (
         updateQuest({
           type: "ALIEN_TECH_FOUND",
           available: true,
-          completed: playerQuests.some((q) => q.type == "ALIEN_TECH_FOUND" && q.completed)
+          completed: questRef.current.some((q) => q.type == "ALIEN_TECH_FOUND" && q.completed)
             ? true
             : false,
           rewardClaimed: false,
@@ -292,7 +275,9 @@ export const useQuest = (
         updateQuest({
           type: "SYSTEM_BUILT_EXTRACTION",
           available: true,
-          completed: playerQuests.some((q) => q.type == "SYSTEM_BUILT_EXTRACTION" && q.completed)
+          completed: questRef.current.some(
+            (q) => q.type == "SYSTEM_BUILT_EXTRACTION" && q.completed
+          )
             ? true
             : false,
           rewardClaimed: false,
@@ -303,7 +288,7 @@ export const useQuest = (
         updateQuest({
           type: "SYSTEM_BUILT_STARPORT",
           available: true,
-          completed: playerQuests.some((q) => q.type == "SYSTEM_BUILT_STARPORT" && q.completed)
+          completed: questRef.current.some((q) => q.type == "SYSTEM_BUILT_STARPORT" && q.completed)
             ? true
             : false,
           rewardClaimed: false,
@@ -314,7 +299,9 @@ export const useQuest = (
         updateQuest({
           type: "COLLECT",
           available: true,
-          completed: playerQuests.some((q) => q.type == "COLLECT" && q.completed) ? true : false,
+          completed: questRef.current.some((q) => q.type == "COLLECT" && q.completed)
+            ? true
+            : false,
           rewardClaimed: false,
           viewed: false,
         });
@@ -322,7 +309,7 @@ export const useQuest = (
         updateQuest({
           type: "SYSTEM_BUILT_DEFENSE",
           available: true,
-          completed: playerQuests.some((q) => q.type == "SYSTEM_BUILT_DEFENSE" && q.completed)
+          completed: questRef.current.some((q) => q.type == "SYSTEM_BUILT_DEFENSE" && q.completed)
             ? true
             : false,
           rewardClaimed: false,
@@ -333,7 +320,7 @@ export const useQuest = (
         updateQuest({
           type: "BUILDING_ALIEN_LAB",
           available: true,
-          completed: playerQuests.some((q) => q.type == "BUILDING_ALIEN_LAB" && q.completed)
+          completed: questRef.current.some((q) => q.type == "BUILDING_ALIEN_LAB" && q.completed)
             ? true
             : false,
           rewardClaimed: false,
@@ -346,7 +333,7 @@ export const useQuest = (
   };
 
   const resetQuests = async () => {
-    await updateQuestState([]);
+    modifyQuests(() => []);
   };
 
   const getCompletedQuestTypes = (): QuestType[] =>
@@ -359,10 +346,6 @@ export const useQuest = (
       return !isCompleted && !isViewed;
     });
   };
-
-  useEffect(() => {
-    loadData();
-  }, []);
 
   return {
     playerQuests,

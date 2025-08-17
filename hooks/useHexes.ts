@@ -32,28 +32,33 @@ export const useHexes = (
 
   const router = useRouter();
 
-  const updateHexes = async (newHexes: Hex[]) => {
-    const prev = hexRef.current;
+  // Cola para serializar guardados y evitar escrituras fuera de orden
+  const saveChain = useRef(Promise.resolve());
+  // Evita re-guardar justo tras hidratar
+  const hydrated = useRef(false);
 
-    const isEqual = prev === newHexes || JSON.stringify(prev) === JSON.stringify(newHexes);
-    if (isEqual) return;
+  // Persistir en serie cada cambio de 'hexes'
+  useEffect(() => {
+    if (!hydrated.current) {
+      hydrated.current = true;
+      return;
+    }
+    const snapshot = hexRef.current;
+    saveChain.current = saveChain.current
+      .then(() => saveMap(snapshot))
+      .catch((e) => console.error("Error saving map:", e));
+  }, [hexes]);
 
-    hexRef.current = newHexes;
-    setHexes(newHexes);
-    await saveMap(newHexes);
-  };
-
-  const modifyHexes = async (modifier: (prev: Hex[]) => Hex[]) => {
-    const next = modifier(hexRef.current);
-    await updateHexes(next);
-  };
-
+  // Cargar mapa inicial
   const loadInitialMap = async () => {
     const saved = await loadMap();
     if (saved) {
-      await updateHexes(saved);
+      hexRef.current = saved;
+      setHexes(saved);
     } else {
-      await updateHexes([]);
+      const initial: Hex[] = [];
+      hexRef.current = initial;
+      setHexes(initial);
     }
   };
 
@@ -61,15 +66,38 @@ export const useHexes = (
     loadInitialMap();
   }, []);
 
+  // Helper para mapear detectando si cambió algo (por referencia)
+  const mapWithChange = <T>(
+    arr: T[],
+    fn: (x: T, i: number) => T
+  ): { next: T[]; changed: boolean } => {
+    let changed = false;
+    const next = arr.map((x, i) => {
+      const y = fn(x, i);
+      if (y !== x) changed = true;
+      return y;
+    });
+    return { next, changed };
+  };
+
+  // Helper: modificar a partir del estado previo con short-circuit si no cambia
+  const modifyHexes = (modifier: (prev: Hex[]) => Hex[]) => {
+    setHexes((prev) => {
+      const next = modifier(prev);
+      if (next === prev) return prev; // ← evita re-render si no hay cambios
+      hexRef.current = next;
+      return next;
+    });
+  };
+
   const resetBuild = async () => {
     await deleteMap();
-    await modifyHexes(() => generateInitialHexMap());
+    modifyHexes(() => generateInitialHexMap());
   };
 
   const handleBuild = async (q: number, r: number, type: BuildingType) => {
     //let notificationId: string | undefined;
-
-    await modifyHexes((prevHexes) => {
+    modifyHexes((prevHexes) => {
       const hex = prevHexes.find((h) => h.q === q && h.r === r);
       if (!hex) return prevHexes;
 
@@ -90,15 +118,9 @@ export const useHexes = (
 
       subtractResources(scaledCost);
 
-      // NotificationManager.scheduleNotification({
-      //   title: "✅ Construcción terminada",
-      //   body: `Tu edificio \"${type}\" está listo.`,
-      //   delayMs: durationMs,
-      // }).then((id) => {
-      //   notificationId = id ?? undefined;
-      // });
+      // NotificationManager.scheduleNotification({...durationMs}).then(id => { notificationId = id ?? undefined; });
 
-      return prevHexes.map((h) =>
+      const { next, changed } = mapWithChange(prevHexes, (h) =>
         h.q === q && h.r === r
           ? {
               ...h,
@@ -113,12 +135,13 @@ export const useHexes = (
             }
           : h
       );
+      return changed ? next : prevHexes;
     });
   };
 
   const handleDestroyBuilding = async (q: number, r: number) => {
-    await modifyHexes((prev) => {
-      const updatedHexes = prev.map((h) =>
+    modifyHexes((prev) => {
+      const { next, changed } = mapWithChange(prev, (h) =>
         h.q === q && h.r === r
           ? {
               ...h,
@@ -129,13 +152,14 @@ export const useHexes = (
             }
           : h
       );
-      return recalculateHexMapVisibility(updatedHexes);
+      // Si no cambia nada, devolvemos prev (no recomputamos visibilidad)
+      return changed ? recalculateHexMapVisibility(next) : prev;
     });
   };
 
   const setHexAncientStructure = async (hex: Hex) => {
-    await modifyHexes((prev) => {
-      const updatedHexes = prev.map((h) =>
+    modifyHexes((prev) => {
+      const { next, changed } = mapWithChange(prev, (h) =>
         h.q === hex.q && h.r === hex.r
           ? {
               ...h,
@@ -147,8 +171,7 @@ export const useHexes = (
             }
           : h
       );
-
-      return recalculateHexMapVisibility(updatedHexes);
+      return changed ? recalculateHexMapVisibility(next) : prev;
     });
 
     await handleUpdateConfig({ key: "ALIEN_STRUCTURE_FOUND", value: "true" });
@@ -160,36 +183,39 @@ export const useHexes = (
     const targetHex = hexRef.current.find((h) => h.q === q && h.r === r);
     if (!targetHex) return;
 
-    const resources = targetHex.resources;
-
-    await modifyHexes((prev) =>
-      prev.map((h) =>
+    let didChange = false;
+    modifyHexes((prev) => {
+      const { next, changed } = mapWithChange(prev, (h) =>
         h.q === q && h.r === r ? { ...h, resources: undefined, isTerraformed: true } : h
-      )
-    );
+      );
+      didChange = changed;
+      return changed ? next : prev;
+    });
 
-    onAchievementEvent({ type: "increment", key: "TILES_TERRAFORMED", amount: 1 });
-    if (resources) addResources(resources);
+    if (didChange) {
+      onAchievementEvent({ type: "increment", key: "TILES_TERRAFORMED", amount: 1 });
+      if (targetHex.resources) addResources(targetHex.resources);
+    }
   };
 
   const handleCancelBuild = async (q: number, r: number) => {
-    await modifyHexes((prevHexes) => {
-      const hex = prevHexes.find((h) => h.q === q && h.r === r);
-      if (!hex || !hex.construction) return prevHexes;
+    // Mantén la semántica original: solo si existe una construcción, reembolsa y cambia
+    const hex = hexRef.current.find((h) => h.q === q && h.r === r);
+    if (!hex || !hex.construction) return;
 
-      const { building, targetLevel, notificationId } = hex.construction;
-      const baseCost = buildingConfig[building].baseCost;
+    const { building, targetLevel /*, notificationId */ } = hex.construction;
+    const baseCost = buildingConfig[building].baseCost;
 
-      const scaledCost: Partial<Resources> = {};
-      for (const key in baseCost) {
-        const typedKey = key as keyof Resources;
-        scaledCost[typedKey] = (baseCost[typedKey] ?? 0) * targetLevel;
-      }
+    const scaledCost: Partial<Resources> = {};
+    for (const key in baseCost) {
+      const typedKey = key as keyof Resources;
+      scaledCost[typedKey] = (baseCost[typedKey] ?? 0) * targetLevel;
+    }
+    addResources(scaledCost);
+    // if (notificationId) NotificationManager.cancelNotification(notificationId);
 
-      addResources(scaledCost);
-      //if (notificationId) NotificationManager.cancelNotification(notificationId);
-
-      return prevHexes.map((h) =>
+    modifyHexes((prevHexes) => {
+      const { next, changed } = mapWithChange(prevHexes, (h) =>
         h.q === q && h.r === r
           ? {
               ...h,
@@ -199,12 +225,13 @@ export const useHexes = (
             }
           : h
       );
+      return changed ? next : prevHexes;
     });
   };
 
   const stopConstruction = async () => {
-    await modifyHexes((prev) =>
-      prev.map((h) => {
+    modifyHexes((prev) => {
+      const { next, changed } = mapWithChange(prev, (h) => {
         if (!h.construction) return h;
         return {
           ...h,
@@ -212,13 +239,14 @@ export const useHexes = (
           building: h.previousBuilding ?? null,
           previousBuilding: undefined,
         };
-      })
-    );
+      });
+      return changed ? next : prev;
+    });
   };
 
   const bombingSystem = async () => {
-    await modifyHexes((prev) =>
-      prev.map((h) => {
+    modifyHexes((prev) => {
+      const { next, changed } = mapWithChange(prev, (h) => {
         if (
           h.building?.type == "ENERGY" ||
           h.building?.type == "QUARRY" ||
@@ -233,6 +261,7 @@ export const useHexes = (
                 building: h.previousBuilding ?? null,
                 previousBuilding: undefined,
               };
+            else if (!h.building) return h; // no building, no change
             else if (h.building.level == 1)
               return {
                 ...h,
@@ -250,8 +279,9 @@ export const useHexes = (
           }
         }
         return h;
-      })
-    );
+      });
+      return changed ? next : prev;
+    });
   };
 
   // ✅ Construcciones completadas → logros
@@ -281,7 +311,7 @@ export const useHexes = (
       building: BuildingType;
     }> = [];
 
-    await modifyHexes((prevHexes) => {
+    modifyHexes((prevHexes) => {
       const now = Date.now();
       let changed = false;
 
@@ -376,7 +406,7 @@ export const useHexes = (
     if (hangarBuild) await handleUpdateConfig({ key: "HAS_HANGAR", value: "true" });
     if (embassyBuild) await handleUpdateConfig({ key: "HAS_EMBASSY", value: "true" });
 
-    // === Quests (igual que tenías) ===
+    // === Quests ===
     if (labBuild) await updateQuest({ type: "BUILDING_LAB1", completed: true });
     if (quarryBuild) await updateQuest({ type: "BUILDING_QUARRY1", completed: true });
     if (metalBuild) await updateQuest({ type: "BUILDING_METALLURGY1", completed: true });

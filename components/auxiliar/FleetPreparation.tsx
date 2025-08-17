@@ -31,6 +31,8 @@ export default function FleetSelector({ origin, destination }: Props) {
   const [selected, setSelected] = useState<Record<string, number>>({});
   const [available, setAvailable] = useState<Record<string, number>>({});
 
+  console.log("sdasdas");
+
   const router = useRouter();
   const shipBuildQueue = useGameContextSelector((ctx) => ctx.shipBuildQueue);
   const starSystems = useGameContextSelector((ctx) => ctx.starSystems);

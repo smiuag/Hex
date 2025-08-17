@@ -18,7 +18,7 @@ export default function GalaxyScreen() {
     <SafeAreaView style={[commonStyles.safeArea, { paddingTop: insets.top }]}>
       <GalaxyComponent />
       <ResourceBar storedResources={resources} showOnlyNormal={true} />
-      <ResourceBar storedResources={resources} showOnlySpecial={true} miniSyle={true} />
+      <ResourceBar storedResources={resources} showOnlySpecial={true} />
     </SafeAreaView>
   );
 }

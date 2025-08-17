@@ -9,23 +9,44 @@ export function useResources(onAchievementEvent: (ev: AchievementEvent) => void)
   const [resources, setResources] = useState<StoredResources>(getInitialResources());
   const resourcesRef = useRef<StoredResources>(resources);
 
+  // Cola para serializar guardados y evitar escrituras fuera de orden
+  const saveChain = useRef(Promise.resolve());
+  // Evitar guardar justo al hidratar desde storage
+  const hydrated = useRef(false);
+
+  // Mantener el ref siempre en sync
   useEffect(() => {
     resourcesRef.current = resources;
   }, [resources]);
 
+  // Hidratar desde storage
   useEffect(() => {
     const load = async () => {
       const saved = await loadResources();
-      setResources(saved);
+      if (saved) {
+        resourcesRef.current = saved;
+        setResources(saved);
+      }
     };
     load();
   }, []);
 
+  // Persistir cada cambio en serie y en orden
+  useEffect(() => {
+    if (!hydrated.current) {
+      hydrated.current = true;
+      return;
+    }
+    const snapshot = resourcesRef.current;
+    saveChain.current = saveChain.current
+      .then(() => saveResources(snapshot))
+      .catch((e) => console.error("Error saving resources:", e));
+  }, [resources]);
+
   const resetResources = async () => {
     const initial = getInitialResources();
-    setResources(initial);
     resourcesRef.current = initial;
-    await saveResources(initial);
+    setResources(initial);
   };
 
   const subtractResources = async (modifications: Partial<CombinedResources>) => {
@@ -43,8 +64,6 @@ export function useResources(onAchievementEvent: (ev: AchievementEvent) => void)
         lastUpdate: now,
         production: prev.production,
       };
-
-      saveResources(next).catch(() => {});
 
       // Logros a partir de lo producido en la acumulación
       const minerales = Math.max(0, delta.STONE ?? 0);
@@ -71,7 +90,6 @@ export function useResources(onAchievementEvent: (ev: AchievementEvent) => void)
         });
       }
 
-      // Mantén el ref sincronizado
       resourcesRef.current = next;
       return next;
     });
@@ -92,8 +110,6 @@ export function useResources(onAchievementEvent: (ev: AchievementEvent) => void)
         lastUpdate: now,
         production: prev.production,
       };
-
-      saveResources(next).catch(() => {});
 
       const minerales = Math.max(0, delta.STONE ?? 0);
       if (minerales > 0) {
@@ -146,8 +162,6 @@ export function useResources(onAchievementEvent: (ev: AchievementEvent) => void)
         lastUpdate: targetTime,
       };
 
-      saveResources(next).catch(() => {});
-
       const minerales = Math.max(0, delta.STONE ?? 0);
       if (minerales > 0) {
         onAchievementEvent({
@@ -185,8 +199,8 @@ export function useResources(onAchievementEvent: (ev: AchievementEvent) => void)
     });
   };
 
+  // Chequeo con el ref más reciente
   const enoughResources = (cost: Partial<CombinedResources>) => {
-    // Usa SIEMPRE el estado más reciente desde el ref
     return hasEnoughResources(resourcesRef.current, cost);
   };
 

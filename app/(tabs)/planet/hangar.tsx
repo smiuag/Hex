@@ -17,7 +17,7 @@ export default function HangarScreen() {
     <SafeAreaView style={[commonStyles.safeArea, { paddingTop: insets.top }]}>
       <HangarComponent />
       <ResourceBar storedResources={resources} showOnlyNormal={true} />
-      <ResourceBar storedResources={resources} showOnlySpecial={true} miniSyle={true} />
+      <ResourceBar storedResources={resources} showOnlySpecial={true} />
     </SafeAreaView>
   );
 }

@@ -56,34 +56,55 @@ export const useDiplomacy = (
 
   const router = useRouter();
 
-  const syncAndSave = async (diplomacy: DiplomacyLevel[]) => {
-    const normalized = normalizeToAllRaces(diplomacy);
-    diplomacyRef.current = normalized;
-    setPlayerDiplomacy(normalized);
-    await saveDiplomacy(normalized);
+  // Colas de guardado + flags de hidratación
+  const diplomacySaveChain = useRef(Promise.resolve());
+  const eventSaveChain = useRef(Promise.resolve());
+  const diplomacyHydrated = useRef(false);
+  const eventHydrated = useRef(false);
+
+  // Persistencia en serie: diplomacia
+  useEffect(() => {
+    if (!diplomacyHydrated.current) {
+      diplomacyHydrated.current = true;
+      return;
+    }
+    const snapshot = diplomacyRef.current;
+    diplomacySaveChain.current = diplomacySaveChain.current
+      .then(() => saveDiplomacy(snapshot))
+      .catch((e) => console.error("Error saving diplomacy:", e));
+  }, [playerDiplomacy]);
+
+  // Persistencia en serie: evento diplomático actual
+  useEffect(() => {
+    if (!eventHydrated.current) {
+      eventHydrated.current = true;
+      return;
+    }
+    const snapshot = eventRef.current;
+    eventSaveChain.current = eventSaveChain.current
+      .then(() => saveCurrentEvent(snapshot))
+      .catch((e) => console.error("Error saving current event:", e));
+  }, [currentEvent]);
+
+  // Helpers: modificar estado de forma funcional y sincronizar refs
+  const modifyDiplomacy = (modifier: (prev: DiplomacyLevel[]) => DiplomacyLevel[]) => {
+    setPlayerDiplomacy((prev) => {
+      const next = normalizeToAllRaces(modifier(prev));
+      diplomacyRef.current = next;
+      return next;
+    });
   };
 
-  const syncAndSaveEvent = async (event: DiplomaticEvent) => {
-    eventRef.current = event;
-    setCurrentEvent(event);
-    await saveCurrentEvent(event);
-  };
-
-  const modifyDiplomacy = async (modifier: (prev: DiplomacyLevel[]) => DiplomacyLevel[]) => {
-    const next = modifier(diplomacyRef.current);
-    await syncAndSave(next);
-  };
-
-  const modifyEvent = async (modifier: (prev: DiplomaticEvent) => DiplomaticEvent) => {
-    const next = modifier(eventRef.current);
-    await syncAndSaveEvent(next);
+  const modifyEvent = (modifier: (prev: DiplomaticEvent) => DiplomaticEvent) => {
+    setCurrentEvent((prev) => {
+      const next = modifier(prev);
+      eventRef.current = next;
+      return next;
+    });
   };
 
   const handleEventOptionChoose = async (option: EventOption) => {
-    await modifyEvent((prev) => {
-      return { ...prev, completed: true, completedTime: Date.now() };
-    });
-
+    modifyEvent((prev) => ({ ...prev, completed: true, completedTime: Date.now() }));
     option.effects.forEach((effect) => {
       handleEffectResolved(effect);
     });
@@ -103,16 +124,20 @@ export const useDiplomacy = (
         effect.trade.shipChange.forEach((data) => {
           if (data.amount > 0) {
             shipsDeltaAbs += data.amount;
-            shipsToAdd.push(data);
+            shipsToAdd.push({ type: data.type, amount: data.amount });
           } else {
-            handleDestroyShip(data.type, data.amount);
+            // amount negativo => destruir cantidad absoluta
+            handleDestroyShip(data.type, Math.abs(data.amount));
           }
         });
 
-        if (shipsDeltaAbs > 0)
+        if (shipsDeltaAbs > 0) {
           onAchievementEvent({ type: "increment", key: "SHIPS_TRADED", amount: shipsDeltaAbs });
+        }
 
-        await handleCreateShips(shipsToAdd);
+        if (shipsToAdd.length > 0) {
+          await handleCreateShips(shipsToAdd);
+        }
       }
 
       onAchievementEvent({ type: "trigger", key: "FIRST_TRADE" });
@@ -125,7 +150,7 @@ export const useDiplomacy = (
       const resourcesToSubtract: Partial<CombinedResources> = {};
 
       for (const [k, v] of Object.entries(effect.trade.resourceChange)) {
-        const type = k as CombinedResourcesType; // p.ej. "metal" | "energy" | ...
+        const type = k as CombinedResourcesType;
         const amount = typeof v === "number" ? v : 0;
 
         if (amount > 0) {
@@ -135,14 +160,13 @@ export const useDiplomacy = (
 
         if (amount < 0) {
           const key = type as keyof CombinedResources;
-          resourcesToSubtract[key] = (resourcesToAdd[key] ?? 0) + Math.abs(amount);
+          resourcesToSubtract[key] = (resourcesToSubtract[key] ?? 0) + Math.abs(amount);
         }
       }
 
       if (Object.keys(resourcesToAdd).length) {
         await addResources(resourcesToAdd);
       }
-
       if (Object.keys(resourcesToSubtract).length) {
         await subtractResources(resourcesToSubtract);
       }
@@ -152,24 +176,46 @@ export const useDiplomacy = (
       await discoverNextResearch();
     }
 
-    if (effect.type == "INSTANT_ATTACK" && effect.attackingShips) {
-      const attackingShips = getShips(effect.attackingShips);
-      const battleResult = simulateBattle(attackingShips, shipBuildQueue);
+    if (effect.type === "INSTANT_ATTACK" && effect.attackingShips) {
+      // Atacantes (del efecto) ya en ShipData[]
+      const attackingShips: ShipData[] = getShips(effect.attackingShips);
 
-      const updatedAttackingFleetShips = battleResult.remaining.fleetA;
-      const updatedDefenseShips = battleResult.remaining.fleetB;
+      // Defensores: si tu cola/estado son Ship[] convierto a ShipData[]
+      const defenders: ShipData[] = shipBuildQueue.map((s: Ship) => ({
+        type: s.type,
+        amount: s.amount,
+      }));
 
+      // Simular con la nueva firma; en un evento el jugador NO es atacante
+      const battleResult = simulateBattle(attackingShips, defenders, {
+        sistem: "EVENT",
+        playerIsAttacker: false,
+        // date: Date.now(),
+        // maxTurns: 10000,
+      });
+
+      // Último turno = estado final
+      const lastTurn = battleResult.turns[battleResult.turns.length - 1];
+
+      const updatedAttackingFleetShips = lastTurn.attackerRemaining; // enemigos que quedan
+      const updatedDefenseShips = lastTurn.defenderRemaining; // tus defensas que quedan
+
+      // Ajustar inventario de naves defensivas: destruir la diferencia
       await Promise.all(
-        shipBuildQueue.map((ship) => {
+        shipBuildQueue.map((ship: Ship) => {
           const remaining = updatedDefenseShips.find((r) => r.type === ship.type)?.amount ?? 0;
-          const amount = Math.max(0, ship.amount - remaining);
-          return amount > 0 ? handleDestroyShip(ship.type, amount) : Promise.resolve();
+          const destroyed = Math.max(0, ship.amount - remaining);
+          return destroyed > 0 ? handleDestroyShip(ship.type, destroyed) : Promise.resolve();
         })
       );
 
+      // Si quedan atacantes vivos, procede a bombardeo
       if (updatedAttackingFleetShips.length > 0) {
         await bombingSystem();
       }
+
+      // (Opcional) guardar el combate en tu storage si usas historial
+      // await insertCombatResult(battleResult);
     }
 
     if (effect.sabotage) {
@@ -179,7 +225,7 @@ export const useDiplomacy = (
   };
 
   const handleModifyDiplomacy = async (race: RaceType, change: number) => {
-    await modifyDiplomacy((prev) => {
+    modifyDiplomacy((prev) => {
       let found = false;
       const updated = prev.map((entry) => {
         if (entry.race === race) {
@@ -200,10 +246,19 @@ export const useDiplomacy = (
   const loadPlayerDiplomacy = async () => {
     const saved = await loadDiplomacy();
     if (saved && Array.isArray(saved)) {
-      await syncAndSave(saved as DiplomacyLevel[]);
+      const normalized = normalizeToAllRaces(saved as DiplomacyLevel[]);
+      diplomacyRef.current = normalized;
+      setPlayerDiplomacy(normalized);
     } else {
-      await syncAndSave(buildDefault());
+      const def = buildDefault();
+      diplomacyRef.current = def;
+      setPlayerDiplomacy(def);
     }
+  };
+
+  const handleEventUnsolved = async () => {
+    const option = eventRef.current.options.find((op) => op.type == "IGNORE");
+    if (option) handleEventOptionChoose(option);
   };
 
   const loadEvent = async () => {
@@ -213,7 +268,8 @@ export const useDiplomacy = (
       const saved = await loadCurrentEvent();
 
       if (saved && saved.type !== "DEFAULT" && !isExpired(saved)) {
-        await syncAndSaveEvent(saved);
+        eventRef.current = saved;
+        setCurrentEvent(saved);
         return;
       }
 
@@ -241,23 +297,24 @@ export const useDiplomacy = (
         shipBuildQueue,
         playerDiplomacy
       );
-      await syncAndSaveEvent(newEvent ?? makeDefaultEvent());
+      const finalEvent = newEvent ?? makeDefaultEvent();
+      eventRef.current = finalEvent;
+      setCurrentEvent(finalEvent);
     }
-  };
-
-  const handleEventUnsolved = async () => {
-    const option = eventRef.current.options.find((op) => op.type == "IGNORE");
-    if (option) handleEventOptionChoose(option);
   };
 
   const resetPlayerDiplomacy = async () => {
     await deleteDiplomacy();
-    await syncAndSave(buildDefault());
+    const def = buildDefault();
+    diplomacyRef.current = def;
+    setPlayerDiplomacy(def);
   };
 
   const resetPlayerEvent = async () => {
     await deleteCurrentEvent();
-    await syncAndSaveEvent(makeDefaultEvent());
+    const def = makeDefaultEvent();
+    eventRef.current = def;
+    setCurrentEvent(def);
   };
 
   useEffect(() => {

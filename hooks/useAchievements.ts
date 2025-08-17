@@ -1,5 +1,5 @@
 // src/hooks/useAchievements.ts
-import { achievementConfig, defaultProg } from "@/src/config/achievementConfig";
+import { achievementConfig } from "@/src/config/achievementConfig";
 import { loadAchievements, saveAchievements } from "@/src/services/storage";
 import {
   AchievementConfig,
@@ -9,8 +9,9 @@ import {
   ToastPayload,
   UseAchievementsOpts,
 } from "@/src/types/achievementTypes";
-import { defaultProgress } from "@/utils/achievementsUtils";
+import { defaultProgress as DEFAULT_PROGRESS_SHAPE } from "@/utils/achievementsUtils";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
 export function useAchievements(opts?: UseAchievementsOpts) {
   const [playerAchievements, setPlayerAchievements] = useState<PlayerAchievement[]>([]);
   const ref = useRef<PlayerAchievement[]>([]);
@@ -20,17 +21,23 @@ export function useAchievements(opts?: UseAchievementsOpts) {
     []
   );
 
-  const syncSave = useCallback((next: PlayerAchievement[], save = true) => {
+  const syncSave = useCallback(async (next: PlayerAchievement[], persist = true) => {
     ref.current = next;
     setPlayerAchievements(next);
-    if (save) saveAchievements(next);
+    if (persist) {
+      try {
+        await saveAchievements(next);
+      } catch {
+        // swallow
+      }
+    }
   }, []);
 
   // Migra/normaliza contra el config
   const migrate = useCallback(
     (saved: PlayerAchievement[] | null): PlayerAchievement[] => {
       const byId = new Map<AchievementType, PlayerAchievement>();
-      // inicializa vacíos
+      // inicializa vacíos según config
       for (const c of achievementConfig) {
         byId.set(c.id, {
           id: c.id,
@@ -72,12 +79,12 @@ export function useAchievements(opts?: UseAchievementsOpts) {
   }, [migrate, syncSave]);
 
   // Helpers
-  const findPlayer = (id: AchievementType) => ref.current.find((a) => a.id === id)!;
   const now = () => Date.now();
 
   const evaluateUnlocks = useCallback(
     (id: AchievementType, acc: PlayerAchievement): ToastPayload[] => {
-      const cfg = cfgById.get(id)!;
+      const cfg = cfgById.get(id);
+      if (!cfg) return [];
       let newUnlocked = acc.unlockedTier;
       for (const t of cfg.tiers) {
         if (acc.progress >= t.threshold) newUnlocked = Math.max(newUnlocked, t.tier);
@@ -87,7 +94,6 @@ export function useAchievements(opts?: UseAchievementsOpts) {
         const unlockedNow = cfg.tiers
           .filter((t) => t.tier > acc.unlockedTier && t.tier <= newUnlocked)
           .sort((a, b) => a.tier - b.tier);
-        // preparar toasts y recompensas
         for (const tier of unlockedNow) {
           toasts.push({
             id,
@@ -108,11 +114,14 @@ export function useAchievements(opts?: UseAchievementsOpts) {
   // API pública: onEvent
   const onAchievementEvent = useCallback(
     (ev: AchievementEvent) => {
-      const next = ref.current.map((a) => ({ ...a })); // copia superficial
+      // copia superficial
+      const next = ref.current.map((a) => ({ ...a }));
+      let changed = false;
       const toasts: ToastPayload[] = [];
 
       for (const a of next) {
-        const cfg = cfgById.get(a.id)!;
+        const cfg = cfgById.get(a.id);
+        if (!cfg) continue;
         const m = cfg.metric;
 
         switch (m.kind) {
@@ -121,6 +130,7 @@ export function useAchievements(opts?: UseAchievementsOpts) {
               a.progress += ev.amount;
               a.lastProgressAt = now();
               toasts.push(...evaluateUnlocks(a.id, a));
+              changed = true;
             }
             break;
           }
@@ -132,12 +142,13 @@ export function useAchievements(opts?: UseAchievementsOpts) {
                 a.progress = a.setItems.length;
                 a.lastProgressAt = now();
                 toasts.push(...evaluateUnlocks(a.id, a));
+                changed = true;
               }
             }
             break;
           }
           case "boolean": {
-            // puedes dispararlo por id concreto o por key genérica si lo prefieres
+            // admite trigger directo o "increment" con key == id
             if (
               (ev.type === "increment" && ev.key === a.id && ev.amount > 0) ||
               (ev.type === "trigger" && ev.key === a.id)
@@ -146,6 +157,7 @@ export function useAchievements(opts?: UseAchievementsOpts) {
                 a.progress = 1;
                 a.lastProgressAt = now();
                 toasts.push(...evaluateUnlocks(a.id, a));
+                changed = true;
               }
             }
             break;
@@ -153,33 +165,14 @@ export function useAchievements(opts?: UseAchievementsOpts) {
         }
       }
 
-      if (toasts.length > 0) {
-        syncSave(next);
-        // dispara toasts (uno por tier desbloqueado)
-        toasts.forEach((t) => opts?.toast?.(t));
-      } else {
-        // guarda sin toast si solo hubo progreso sin desbloqueo
-        syncSave(next);
-      }
+      if (!changed) return; // nada que persistir
+
+      syncSave(next);
+      // dispara toasts (uno por tier desbloqueado)
+      toasts.forEach((t) => opts?.toast?.(t));
     },
-    [cfgById, evaluateUnlocks, syncSave]
+    [cfgById, evaluateUnlocks, syncSave, opts]
   );
-
-  // // Reclamar recompensa de un tier específico o del más alto desbloqueado no reclamado
-  // const claimTier = useCallback(
-  //   (id: AchievementId, tier?: number) => {
-  //     const next = ref.current.map((a) => ({ ...a }));
-  //     const me = next.find((a) => a.id === id)!;
-
-  //     const targetTier = tier ?? me.unlockedTier;
-  //     if (targetTier <= me.claimedTier || targetTier > me.unlockedTier) return false;
-
-  //     me.claimedTier = targetTier;
-  //     syncSave(next);
-  //     return true;
-  //   },
-  //   [cfgById, findPlayer, opts, syncSave]
-  // );
 
   // Info de progreso para UI
   const getProgress = (id: string) => {
@@ -187,26 +180,27 @@ export function useAchievements(opts?: UseAchievementsOpts) {
       const p = playerAchievements.find((a) => a.id === id);
       const unlockedTier = p?.unlockedTier ?? 0;
       const claimedTier = p?.claimedTier ?? 0;
-      // ... calcula progress/nextThreshold/ratio según tu métrica
       return {
-        ...defaultProgress,
+        ...DEFAULT_PROGRESS_SHAPE,
         unlockedTier,
-        claimedTier /*, progress, nextThreshold, ratio */,
+        claimedTier,
+        // progress: p?.progress ?? 0,
+        // nextThreshold: ...,
+        // ratio: ...,
       };
     } catch {
-      return defaultProg;
+      return DEFAULT_PROGRESS_SHAPE;
     }
   };
 
   const resetAchievements = useCallback(async () => {
     const fresh = migrate(null);
-    syncSave(fresh);
+    await syncSave(fresh);
   }, [migrate, syncSave]);
 
   return {
     playerAchievements,
     onAchievementEvent,
-    // claimTier,
     getProgress,
     resetAchievements,
   };

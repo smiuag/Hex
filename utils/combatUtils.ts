@@ -71,63 +71,88 @@ function diffLost(before: ReadonlyArray<ShipData>, after: ReadonlyArray<ShipData
 /*                             Resolución de turnos                            */
 /* -------------------------------------------------------------------------- */
 
-/**
- * Ejecuta un turno completo de combate (A ataca a B, luego B a A)
- * Overflow: si el daño excede el HP del objetivo, el sobrante continúa
- * contra otro objetivo aleatorio.
- */
+// Daño a partir de un valor de ataque numérico (para el overflow)
+function calculateDamageFromAttack(attackValue: number, defender: CombatShip) {
+  const raw = attackValue - defender.defense;
+  if (raw > 1) return raw;
+  if (raw >= -2) return 1;
+  return 0;
+}
+
 function executeTurn(fleetA: CombatShip[], fleetB: CombatShip[]) {
-  // Ataque de A a B
-  for (const attacker of [...fleetA]) {
-    if (!fleetB.length) break;
+  // Daño acumulado ESTE turno (hp reales se actualizan al final y persisten entre turnos)
+  const dmgOnB = new Map<CombatShip, number>();
+  const dmgOnA = new Map<CombatShip, number>();
 
-    let leftover = 0; // daño sobrante si "overkillea" un objetivo
-    while (fleetB.length) {
-      const targetIndex = Math.floor(Math.random() * fleetB.length);
-      const target = fleetB[targetIndex];
-      if (!target) break;
+  const projHpB = (s: CombatShip) => s.hp - (dmgOnB.get(s) ?? 0);
+  const projHpA = (s: CombatShip) => s.hp - (dmgOnA.get(s) ?? 0);
 
-      const dmg = leftover > 0 ? leftover : calculateDamage(attacker, target);
-      if (dmg <= 0) break; // no puede dañar
+  const pickAlive = (arr: CombatShip[], projHp: (s: CombatShip) => number) => {
+    const alive = arr.filter((s) => projHp(s) > 0);
+    if (!alive.length) return null;
+    return alive[Math.floor(Math.random() * alive.length)];
+  };
 
-      if (dmg >= target.hp) {
-        leftover = dmg - target.hp;
-        fleetB.splice(targetIndex, 1);
-        if (!fleetB.length || leftover <= 0) break;
-      } else {
-        target.hp -= dmg;
-        if (target.hp < 0) target.hp = 0;
-        leftover = 0;
-        break; // fin del turno de este atacante
+  // Congelamos quién dispara: así TODOS disparan este turno
+  const shootersA = [...fleetA];
+  const shootersB = [...fleetB];
+
+  const firePhase = (
+    shooters: CombatShip[],
+    enemyFleet: CombatShip[],
+    enemyDmgMap: Map<CombatShip, number>,
+    projHp: (s: CombatShip) => number
+  ) => {
+    for (const attacker of shooters) {
+      // El "ataque actual" empieza en el ataque base del atacante
+      let currentAttack = attacker.attack;
+
+      // Mientras pueda encadenar (overflow) y queden objetivos proyectados vivos
+      while (true) {
+        const target = pickAlive(enemyFleet, projHp);
+        if (!target) break;
+
+        // EL PUNTO CLAVE: el daño se calcula con currentAttack (no con attacker.attack fijo)
+        const dmg = calculateDamageFromAttack(currentAttack, target);
+        if (dmg <= 0) break; // no penetra: fin del turno de este atacante
+
+        const remaining = projHp(target);
+
+        if (dmg >= remaining) {
+          // Programamos exactamente lo que le falta para morir…
+          enemyDmgMap.set(target, (enemyDmgMap.get(target) ?? 0) + remaining);
+          // …y el SOBRANTE DE DAÑO pasa a ser el NUEVO ATAQUE
+          const overflowAttack = dmg - remaining;
+          if (overflowAttack <= 0) break;
+
+          currentAttack = overflowAttack; // ahora esto se enfrentará a la defensa del próximo objetivo
+          // seguimos el while para elegir otro objetivo y volver a calcular
+          continue;
+        } else {
+          // Solo hiere: programar daño y terminar el turno del atacante
+          enemyDmgMap.set(target, (enemyDmgMap.get(target) ?? 0) + dmg);
+          break;
+        }
       }
     }
-  }
+  };
 
-  // Ataque de B a A (mismo esquema)
-  for (const attacker of [...fleetB]) {
-    if (!fleetA.length) break;
+  // Disparan ambos bandos "a la vez" (nadie muere hasta aplicar el daño)
+  firePhase(shootersA, fleetB, dmgOnB, projHpB);
+  firePhase(shootersB, fleetA, dmgOnA, projHpA);
 
-    let leftover = 0;
-    while (fleetA.length) {
-      const targetIndex = Math.floor(Math.random() * fleetA.length);
-      const target = fleetA[targetIndex];
-      if (!target) break;
+  // Aplicar daño al final del turno; hp persiste entre turnos (daño acumulado de todo el combate)
+  fleetB = fleetB.filter((s) => {
+    const taken = dmgOnB.get(s) ?? 0;
+    if (taken > 0) s.hp = Math.max(0, s.hp - taken);
+    return s.hp > 0;
+  });
 
-      const dmg = leftover > 0 ? leftover : calculateDamage(attacker, target);
-      if (dmg <= 0) break;
-
-      if (dmg >= target.hp) {
-        leftover = dmg - target.hp;
-        fleetA.splice(targetIndex, 1);
-        if (!fleetA.length || leftover <= 0) break;
-      } else {
-        target.hp -= dmg;
-        if (target.hp < 0) target.hp = 0;
-        leftover = 0;
-        break;
-      }
-    }
-  }
+  fleetA = fleetA.filter((s) => {
+    const taken = dmgOnA.get(s) ?? 0;
+    if (taken > 0) s.hp = Math.max(0, s.hp - taken);
+    return s.hp > 0;
+  });
 
   return { fleetA, fleetB };
 }

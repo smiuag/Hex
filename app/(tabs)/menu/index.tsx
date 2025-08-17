@@ -21,9 +21,7 @@ export default function MenuScreen() {
     <SafeAreaView style={[commonStyles.safeArea, { paddingTop: insets.top }]}>
       <MenuComponent />
       {started && <ResourceBar storedResources={resources} showOnlyNormal={true} />}
-      {started && (
-        <ResourceBar storedResources={resources} showOnlySpecial={true} miniSyle={true} />
-      )}
+      {started && <ResourceBar storedResources={resources} showOnlySpecial={true} />}
     </SafeAreaView>
   );
 }
