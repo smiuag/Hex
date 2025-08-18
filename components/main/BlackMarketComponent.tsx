@@ -21,6 +21,7 @@ import { ShipData, ShipType } from "@/src/types/shipType";
 import { Balances, BLACKMARKET_TRADE_VALUE, BMEntry, BMMap, Meta } from "@/src/types/tradeTypes";
 import { formatAmount } from "@/utils/generalUtils";
 import { getAccumulatedResources } from "@/utils/resourceUtils";
+import { makeShip } from "@/utils/shipUtils";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import HeaderClose from "../auxiliar/HeaderClose";
@@ -391,7 +392,7 @@ export default function BlackMarketComponent() {
           break;
         }
         case "SHIP": {
-          const ships: ShipData[] = [{ type: entry.TYPE as ShipType, amount: qty }];
+          const ships: ShipData[] = [makeShip(entry.TYPE as ShipType, qty)];
           handleCreateShips(ships);
           break;
         }

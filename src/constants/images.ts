@@ -2,12 +2,24 @@ import background from "../../assets/images/background.jpg";
 import backgroundMenu from "../../assets/images/backgroundMenu.jpg";
 import collect from "../../assets/images/collect.png";
 import backgroundAchievement from "../../assets/images/events/achievements.png";
+import backConstruction from "../../assets/images/events/backConstruction.png";
 import combat from "../../assets/images/events/combat.png";
 import combatVertial from "../../assets/images/events/combatVertical.png";
 import tradeOffer from "../../assets/images/events/offer.png";
 import tradePayment from "../../assets/images/events/payment.png";
 import unlockResearch from "../../assets/images/events/unlockResearch.png";
 import backgroundQuest from "../../assets/images/nebulosa.png";
+
+import defaultShip1 from "../../assets/images/ship/defaultShip1.png";
+import defaultShip10 from "../../assets/images/ship/defaultShip10.png";
+import defaultShip2 from "../../assets/images/ship/defaultShip2.png";
+import defaultShip3 from "../../assets/images/ship/defaultShip3.png";
+import defaultShip4 from "../../assets/images/ship/defaultShip4.png";
+import defaultShip5 from "../../assets/images/ship/defaultShip5.png";
+import defaultShip6 from "../../assets/images/ship/defaultShip6.png";
+import defaultShip7 from "../../assets/images/ship/defaultShip7.png";
+import defaultShip8 from "../../assets/images/ship/defaultShip8.png";
+import defaultShip9 from "../../assets/images/ship/defaultShip9.png";
 
 import alienStructure from "../../assets/images/hex/alienStructure.png";
 import unterraformed from "../../assets/images/hex/unterraformed.png";
@@ -210,4 +222,16 @@ export const IMAGES = {
   TRADE_UNLOCK_RESEARCH: unlockResearch,
   COMBAT_CARD: combat,
   COMBAT_CARD_VERTICAL: combatVertial,
+  BACKGROUND_CONSTRUCTION: backConstruction,
+
+  DEFAULT_SHIP_1: defaultShip1,
+  DEFAULT_SHIP_2: defaultShip2,
+  DEFAULT_SHIP_3: defaultShip3,
+  DEFAULT_SHIP_4: defaultShip4,
+  DEFAULT_SHIP_5: defaultShip5,
+  DEFAULT_SHIP_6: defaultShip6,
+  DEFAULT_SHIP_7: defaultShip7,
+  DEFAULT_SHIP_8: defaultShip8,
+  DEFAULT_SHIP_9: defaultShip9,
+  DEFAULT_SHIP_10: defaultShip10,
 };

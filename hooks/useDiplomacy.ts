@@ -21,14 +21,14 @@ import {
   CombinedResourcesType,
   StoredResources,
 } from "@/src/types/resourceTypes";
-import { Ship, ShipData, ShipType } from "@/src/types/shipType";
+import { Ship, ShipData, ShipId, ShipSpecsCtx } from "@/src/types/shipType";
 import { simulateBattle } from "@/utils/combatUtils";
 import { hasEmbassyBuilt } from "@/utils/configUtils";
 import { buildDefault, isExpired, normalizeToAllRaces } from "@/utils/diplomacyUtils";
 import { getRandomEvent } from "@/utils/eventUtil";
 import { tSafeNS } from "@/utils/generalUtils";
 import { getAccumulatedResources } from "@/utils/resourceUtils";
-import { getShips } from "@/utils/shipUtils";
+import { getShips, makeShip } from "@/utils/shipUtils";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Alert } from "react-native";
@@ -37,8 +37,9 @@ export const useDiplomacy = (
   shipBuildQueue: Ship[],
   playerConfig: PlayerConfig,
   resources: StoredResources,
-  handleDestroyShip: (type: ShipType, amount: number) => void,
-  handleCreateShips: (shipsToAdd: { type: ShipType; amount: number }[]) => void,
+  specs: ShipSpecsCtx,
+  handleDestroyShip: (type: ShipId, amount: number) => void,
+  handleCreateShips: (shipsToAdd: { type: ShipId; amount: number }[]) => void,
   addResources: (modifications: Partial<CombinedResources>) => void,
   subtractResources: (modifications: Partial<CombinedResources>) => void,
   discoverNextResearch: () => void,
@@ -124,7 +125,7 @@ export const useDiplomacy = (
         effect.trade.shipChange.forEach((data) => {
           if (data.amount > 0) {
             shipsDeltaAbs += data.amount;
-            shipsToAdd.push({ type: data.type, amount: data.amount });
+            shipsToAdd.push(makeShip(data.type, data.amount));
           } else {
             // amount negativo => destruir cantidad absoluta
             handleDestroyShip(data.type, Math.abs(data.amount));
@@ -181,13 +182,10 @@ export const useDiplomacy = (
       const attackingShips: ShipData[] = getShips(effect.attackingShips);
 
       // Defensores: si tu cola/estado son Ship[] convierto a ShipData[]
-      const defenders: ShipData[] = shipBuildQueue.map((s: Ship) => ({
-        type: s.type,
-        amount: s.amount,
-      }));
+      const defenders: ShipData[] = shipBuildQueue.map((s: Ship) => makeShip(s.type, s.amount));
 
       // Simular con la nueva firma; en un evento el jugador NO es atacante
-      const battleResult = simulateBattle(attackingShips, defenders, {
+      const battleResult = simulateBattle(attackingShips, defenders, specs, {
         sistem: "EVENT",
         playerIsAttacker: false,
         // date: Date.now(),

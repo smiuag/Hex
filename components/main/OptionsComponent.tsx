@@ -3,6 +3,7 @@ import i18n, { Lang } from "@/i18n";
 import { useGameContextSelector } from "@/src/context/GameContext";
 import React, { useEffect, useRef, useState } from "react";
 
+import { ConfigValueByKey } from "@/src/types/configTypes";
 import { getCfg, normalizeLang, validateName } from "@/utils/generalUtils";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -25,8 +26,8 @@ export default function PlayerSetup() {
   const endGame = useGameContextSelector((ctx) => ctx.endGame);
 
   // Estado local
-  const [playerName, setPlayerName] = useState("");
-  const [colonyName, setColonyName] = useState("");
+  const [playerName, setPlayerName] = useState<ConfigValueByKey["PLAYER_NAME"]>("");
+  const [colonyName, setColonyName] = useState<ConfigValueByKey["PLANET_NAME"]>("");
   const [lang, setLang] = useState<Lang>(normalizeLang(i18n.language));
   const router = useRouter();
 
@@ -35,8 +36,8 @@ export default function PlayerSetup() {
   useEffect(() => {
     if (prefilledRef.current) return;
 
-    const initialPlayer = getCfg(playerConfig, "PLAYER_NAME");
-    const initialColony = getCfg(playerConfig, "PLANET_NAME");
+    const initialPlayer = getCfg(playerConfig, "PLAYER_NAME") ?? "Lucas vera";
+    const initialColony = getCfg(playerConfig, "PLANET_NAME") ?? "Colonia 9";
     const savedLang = normalizeLang(getCfg(playerConfig, "PLAYER_LANGUAGE"));
 
     setPlayerName(initialPlayer);

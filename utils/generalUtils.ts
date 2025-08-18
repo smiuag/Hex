@@ -1,5 +1,5 @@
 import i18n, { Lang } from "@/i18n";
-import { PlayerConfig } from "@/src/types/configTypes";
+import { ConfigEntry, ConfigType, ConfigValueByKey, PlayerConfig } from "@/src/types/configTypes";
 import { TOptions } from "i18next";
 
 export const formatDuration = (timestamp: number, onlyMostSignificant?: boolean): string => {
@@ -64,8 +64,25 @@ export function validateName(name: string, t: (key: string, options?: object) =>
 export const normalizeLang = (l?: string): Lang =>
   l?.toLowerCase().startsWith("en") ? "en" : "es";
 
-export const getCfg = (playerConfig: PlayerConfig, key: string) =>
-  playerConfig.find((c) => c.key === key)?.value ?? "";
+export function getCfg<K extends ConfigType>(
+  cfg: PlayerConfig,
+  key: K
+): ConfigValueByKey[K] | undefined;
+export function getCfg<K extends ConfigType>(
+  cfg: PlayerConfig,
+  key: K,
+  fallback: ConfigValueByKey[K]
+): ConfigValueByKey[K];
+
+export function getCfg<K extends ConfigType>(
+  cfg: PlayerConfig,
+  key: K,
+  fallback?: ConfigValueByKey[K]
+) {
+  const entry = cfg.find((c): c is ConfigEntry<K> => c.key === key);
+  if (entry) return entry.value;
+  return fallback as ConfigValueByKey[K] | undefined;
+}
 
 export function tSafeNS(ns: string) {
   return (key?: string | null, opts?: TOptions, fallback = ""): string => {

@@ -100,6 +100,14 @@ export default function PlanetComponent() {
     }
 
     if (
+      hexToUse.building?.type == "ROCKET" ||
+      (hexToUse.construction?.building == "ROCKET" && hexToUse.construction.targetLevel > 1)
+    ) {
+      router.replace(`/(tabs)/planet/rocket?q=${tappedHex.q}&r=${tappedHex.r}`);
+      return;
+    }
+
+    if (
       hexToUse.building?.type == "LAB" ||
       (hexToUse.construction?.building == "LAB" && hexToUse.construction.targetLevel > 1)
     ) {

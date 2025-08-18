@@ -1,6 +1,7 @@
 export type ResourceType = "METAL" | "STONE" | "ENERGY" | "CRYSTAL";
 export type SpecialResourceType = "ILMENITA" | "AETHERIUM" | "THARNIO" | "KAIROX" | "NEBULITA";
-// | "ADN";
+
+export const NORMAL_KEYS = new Set(["STONE", "METAL", "CRYSTAL", "ENERGY"]);
 
 export const SPECIAL_TYPES = [
   "ILMENITA",

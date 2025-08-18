@@ -1,13 +1,13 @@
 import { buildingConfig } from "@/src/config/buildingConfig";
 import { researchConfig } from "@/src/config/researchConfig";
-import { shipConfig } from "@/src/config/shipConfig";
 import { FleetData } from "@/src/types/fleetType";
 import { Hex } from "@/src/types/hexTypes";
 import { Process, ProcessType } from "@/src/types/processTypes";
 import { Research } from "@/src/types/researchTypes";
-import { Ship } from "@/src/types/shipType";
+import { Ship, ShipSpecsCtx, ShipType } from "@/src/types/shipType";
 import { getBuildTime } from "../utils/buildingUtils";
 import { getResearchTime } from "../utils/researchUtils";
+import { getSpecByType, isCustomType } from "./shipUtils";
 
 export const getBuildingProcesses = (
   hexes: Hex[],
@@ -75,45 +75,47 @@ export const getResearchProcesses = (
 
 export const getShipProcesses = (
   tShip: (key: string) => string,
-  shipBuildQueue: Ship[]
+  shipBuildQueue: Ship[],
+  specs: ShipSpecsCtx
 ): Process[] => {
   const processes: Process[] = [];
 
-  shipBuildQueue.forEach((r) => {
-    if (r.progress) {
-      const targetAmount = r.progress.targetAmount ?? 0;
-      const config = shipConfig[r.type];
-      const totalTime = config.baseBuildTime * targetAmount;
-      const startedAt = r.progress.startedAt ?? 0;
-      const proc: Process = {
-        name:
-          "Flota: " +
-          (tShip("shipName." + r.type) +
-            " " +
-            targetAmount +
-            (targetAmount == 1 ? " unidad" : " unidades")),
-        type: "SHIP",
-        shipType: r.type,
-        id: "SHIP-" + r.type,
-        duration: totalTime,
-        startedAt,
+  for (const r of shipBuildQueue) {
+    const p = r.progress;
+    if (!p || (p.targetAmount ?? 0) <= 0) continue;
 
-        image: config.imageBackground,
-      };
+    const spec = getSpecByType(r.type, specs); // ✅ builtin o custom
+    const targetAmount = p.targetAmount!;
+    const totalTime = spec.baseBuildTime * targetAmount;
+    const startedAt = p.startedAt ?? 0;
 
-      processes.push(proc);
-    }
-  });
+    // Nombre: usa i18n para builtin y spec.name para custom
+    const displayName = isCustomType(r.type) ? spec.name : tShip(`shipName.${r.type as ShipType}`);
+
+    const proc: Process = {
+      name:
+        "Flota: " + `${displayName} ${targetAmount} ${targetAmount === 1 ? "unidad" : "unidades"}`,
+      type: "SHIP",
+      shipType: r.type, // ✅ ahora puede ser builtin o custom
+      id: `SHIP-${r.type}`,
+      duration: totalTime,
+      startedAt,
+      image: spec.imageBackground, // ✅ viene de spec
+    };
+
+    processes.push(proc);
+  }
 
   return processes;
 };
 
-export const getFleetProcesses = (fleetData: FleetData[]): Process[] => {
+export const getFleetProcesses = (fleetData: FleetData[], specs: ShipSpecsCtx): Process[] => {
   const processes: Process[] = [];
 
   fleetData.forEach((fleet) => {
     const fleetShips = fleet.ships.reduce((total, fl) => total + fl.amount, 0);
-    const config = shipConfig[fleet.ships[0].type];
+
+    const spec = getSpecByType(fleet.ships[0].type, specs); // ✅ builtin o custom
     const totalTime = fleet.endTime - fleet.startTime;
 
     let type: ProcessType;
@@ -169,7 +171,8 @@ export const getFleetProcesses = (fleetData: FleetData[]): Process[] => {
       explorationPlanetId:
         fleet.movementType == "EXPLORE CELESTIALBODY" ? fleet.destinationPlanetId : undefined,
       attackSystemId: fleet.movementType == "ATTACK" ? fleet.destinationSystemId : undefined,
-      image: config.imageBackground,
+
+      image: spec.imageBackground,
     };
 
     processes.push(proc);

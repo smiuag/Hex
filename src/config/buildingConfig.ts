@@ -208,7 +208,7 @@ export const buildingConfig: Record<
     maxNumberInPlanet: BUILDING_MAX_IN_PLANET.ROCKET,
     maxLvl: BUILDING_MAX_LVL.ROCKET,
     order: 14,
-    special: false,
+    special: true,
   },
   WATEREXTRACTOR: {
     baseBuildTime: BUILDING_TIME.WATEREXTRACTOR,

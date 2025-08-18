@@ -12,3 +12,6 @@ export const SCAN_DURATION = 1000 * 60 * 5;
 export const STAR_BUILDINGS_DURATION = 1000 * 60 * 60 * 1;
 export const STAR_BUILDINGS_COST: Partial<Resources> = { METAL: 120000, CRYSTAL: 120000 };
 export const COLLECT_COST: Partial<Resources> = { ENERGY: 50000 };
+export const DESIGN_DURATION_MS = (1000 * 60 * 60 * 24 * 2) / GENERAL_FACTOR;
+export const RETRY_SUCCESS_BONUS = 0.1;
+export const RETRY_SUCCESS_BONUS_CAP = 0.5;

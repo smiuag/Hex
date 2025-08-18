@@ -1,7 +1,7 @@
 import { IMAGES } from "@/src/constants/images";
 import { celestialResourceChances, starSystemConfig } from "@/src/constants/starSystem";
 import { CombinedResources, ResourceType, SpecialResourceType } from "@/src/types/resourceTypes";
-import { ALL_SHIP_TYPES, ShipData, ShipType } from "@/src/types/shipType";
+import { ALL_SHIP_TYPES, ShipData } from "@/src/types/shipType";
 import {
   CelestialBody,
   CelestialBodyType,
@@ -14,6 +14,7 @@ import {
 import { ImageSourcePropType } from "react-native";
 import uuid from "react-native-uuid";
 import { getRandomRace } from "./eventUtil";
+import { makeShip } from "./shipUtils";
 
 function getRandomFromRange([min, max]: [number, number]) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -97,7 +98,7 @@ function generateStarSystemDefense(decay: number): ShipData[] {
       chance *= decay;
     } while (Math.random() < chance);
 
-    defense.push({ type: ship as ShipType, amount: count });
+    defense.push(makeShip(ship, count));
   }
 
   return defense;

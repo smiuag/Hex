@@ -6,7 +6,7 @@ import { commonStyles } from "@/src/styles/commonStyles";
 import { raceConfig } from "@/src/types/raceType";
 import { StarSystemDetected, UniverseNameMap } from "@/src/types/starSystemTypes";
 import { getBuildTime } from "@/utils/buildingUtils";
-import { gameStartingSystem } from "@/utils/configUtils";
+import { getCfg } from "@/utils/generalUtils";
 import {
   getGalaxiesFromCluster,
   getRegionsFromGalaxy,
@@ -54,7 +54,7 @@ export default function AntennaComponent() {
   const { t: tBuilding } = useTranslation("buildings");
 
   const router = useRouter();
-  const startingSystemId = gameStartingSystem(playerConfig);
+  const startingSystemId = getCfg(playerConfig, "STARTING_SYSTEM")!;
   const startingSystem = universe[startingSystemId];
   const universeNames = rawData as UniverseNameMap;
 

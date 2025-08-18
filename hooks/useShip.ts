@@ -4,13 +4,14 @@ import { deleteShip, loadShip, saveShip } from "@/src/services/storage";
 import { AchievementEvent } from "@/src/types/achievementTypes";
 import { PlayerQuest, UpdateQuestOptions } from "@/src/types/questType";
 import { CombinedResources } from "@/src/types/resourceTypes";
-import { Ship, ShipType } from "@/src/types/shipType";
+import { Ship, ShipId, ShipSpecsCtx } from "@/src/types/shipType";
 import { useEffect, useRef, useState } from "react";
 import Toast from "react-native-toast-message";
-import { getTotalShipCost } from "../utils/shipUtils";
+import { getTotalShipCost, makeShip } from "../utils/shipUtils";
 
 export const useShip = (
   playerQuests: PlayerQuest[],
+  specs: ShipSpecsCtx,
   addResources: (modifications: Partial<CombinedResources>) => void,
   subtractResources: (modifications: Partial<CombinedResources>) => void,
   enoughResources: (cost: Partial<CombinedResources>) => boolean,
@@ -66,8 +67,8 @@ export const useShip = (
     await deleteShip();
   };
 
-  const handleBuildShip = async (type: ShipType, amount: number) => {
-    const cost = getTotalShipCost(type, amount);
+  const handleBuildShip = async (type: ShipId, amount: number) => {
+    const cost = getTotalShipCost(type, specs, amount);
     const now = Date.now();
 
     if (!enoughResources(cost)) {
@@ -81,32 +82,30 @@ export const useShip = (
     }
 
     modifyQueue((prev) => {
-      const existing = prev.find((r) => r.type === type);
+      const existing = prev.some((r) => r.type === type);
       if (existing) {
         const { next, changed } = mapWithChange(prev, (r) =>
           r.type === type
             ? {
-                ...r,
+                ...r, // ← no tocar 'custom'
                 progress: {
                   startedAt: r.progress?.startedAt ?? now,
                   targetAmount: (r.progress?.targetAmount ?? 0) + amount,
-                  notificationId: undefined,
+                  ...(r.progress?.notificationId
+                    ? { notificationId: r.progress.notificationId }
+                    : {}),
                 },
               }
             : r
         );
         return changed ? next : prev;
       }
+      const base = makeShip(type, 0);
       return [
         ...prev,
         {
-          type,
-          amount: 0,
-          progress: {
-            startedAt: now,
-            targetAmount: amount,
-            notificationId: undefined,
-          },
+          ...base,
+          progress: { startedAt: now, targetAmount: amount },
         },
       ];
     });
@@ -114,7 +113,7 @@ export const useShip = (
     subtractResources(cost);
   };
 
-  const handleCancelShip = async (type: ShipType) => {
+  const handleCancelShip = async (type: ShipId) => {
     let didRefund = false;
 
     modifyQueue((prev) => {
@@ -136,7 +135,7 @@ export const useShip = (
     });
 
     if (didRefund) {
-      const refundCost = getTotalShipCost(type, 1);
+      const refundCost = getTotalShipCost(type, specs, 1);
       addResources(refundCost);
     }
   };
@@ -149,10 +148,9 @@ export const useShip = (
       const updated: Ship[] = [];
       for (const item of prev) {
         if (item.progress && item.progress.targetAmount > 0) {
-          const timePerUnit = Math.max(
-            1,
-            Math.floor(shipConfig[item.type].baseBuildTime / GENERAL_FACTOR)
-          ); // evita sub-ms
+          const timePerUnit = item.custom
+            ? 10000000000
+            : Math.max(1, Math.floor(shipConfig[item.type].baseBuildTime / GENERAL_FACTOR));
           const elapsed = now - item.progress.startedAt;
 
           if (elapsed >= timePerUnit) {
@@ -168,27 +166,24 @@ export const useShip = (
             const newStartedAt = item.progress.startedAt + unitsBuilt * timePerUnit;
 
             if (newTargetAmount <= 0) {
-              updated.push({ type: item.type, amount: newAmount });
+              updated.push(makeShip(item.type, newAmount));
             } else {
               updated.push({
-                type: item.type,
+                ...item,
                 amount: newAmount,
                 progress: {
-                  ...item.progress,
+                  ...item.progress!,
                   targetAmount: newTargetAmount,
                   startedAt: newStartedAt,
                 },
               });
             }
-          } else {
-            // SIN cambios → reutilizamos la MISMA referencia
             updated.push(item);
           }
         } else {
           updated.push(item);
         }
       }
-      // Si no cambió nada, devolvemos exactamente prev (no re-render, no guardado)
       return changed ? updated : prev;
     });
 
@@ -205,7 +200,7 @@ export const useShip = (
     }
   };
 
-  const handleDestroyShip = async (type: ShipType, amount: number) => {
+  const handleDestroyShip = async (type: ShipId, amount: number) => {
     modifyQueue((prev) => {
       let any = false;
       const { next, changed } = mapWithChange(prev, (ship) => {
@@ -219,7 +214,7 @@ export const useShip = (
     });
   };
 
-  const handleCreateShips = async (shipsToAdd: { type: ShipType; amount: number }[]) => {
+  const handleCreateShips = async (shipsToAdd: { type: ShipId; amount: number }[]) => {
     modifyQueue((prev) => {
       if (shipsToAdd.length === 0) return prev;
       const next = [...prev];
@@ -236,7 +231,7 @@ export const useShip = (
             changed = true;
           }
         } else {
-          next.push({ type, amount, progress: undefined });
+          next.push(makeShip(type, amount));
           changed = true;
         }
       }

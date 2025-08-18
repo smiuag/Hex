@@ -17,11 +17,11 @@ import { FleetData, MovementType } from "@/src/types/fleetType";
 import { PlayerQuest, UpdateQuestOptions } from "@/src/types/questType";
 import { RaceType } from "@/src/types/raceType";
 import { CombinedResources } from "@/src/types/resourceTypes";
-import { Ship, ShipType } from "@/src/types/shipType";
+import { Ship, ShipId, ShipSpecsCtx } from "@/src/types/shipType";
 import { StarSystem, StarSystemMap } from "@/src/types/starSystemTypes";
 import { simulateBattle } from "@/utils/combatUtils";
 import { getAccumulatedResources, sumCombinedResources } from "@/utils/resourceUtils";
-import { getFlyTime } from "@/utils/shipUtils";
+import { getFlyTime, getSpecByType, makeShip } from "@/utils/shipUtils";
 import { generateSystem } from "@/utils/starSystemUtils";
 import { useEffect, useRef, useState } from "react";
 import uuid from "react-native-uuid";
@@ -29,8 +29,9 @@ import uuid from "react-native-uuid";
 export const useStarSystem = (
   playerQuests: PlayerQuest[],
   universe: StarSystemMap,
-  handleDestroyShip: (type: ShipType, amount: number) => void,
-  handleCreateShips: (shipsToAdd: { type: ShipType; amount: number }[]) => void,
+  specs: ShipSpecsCtx,
+  handleDestroyShip: (type: ShipId, amount: number) => void,
+  handleCreateShips: (shipsToAdd: { type: ShipId; amount: number }[]) => void,
   subtractResources: (modifications: Partial<CombinedResources>) => void,
   addResources: (modifications: Partial<CombinedResources>) => void,
   updateQuest: (options: UpdateQuestOptions) => void,
@@ -233,6 +234,7 @@ export const useStarSystem = (
     const battleResult = simulateBattle(
       attackingFleetData.ships, // atacantes
       targetSystem.defense, // defensores
+      specs,
       {
         sistem: String(targetSystem.id),
         playerIsAttacker: true,
@@ -380,7 +382,7 @@ export const useStarSystem = (
       endTime: Date.now() + timeToExplore,
       movementType: "EXPLORE SYSTEM",
       origin: "PLANET",
-      ships: [{ type: "PROBE", amount: 1 }],
+      ships: [makeShip("PROBE", 1)],
       startTime: Date.now(),
       id: uuid.v4() as string,
       resources: {},
@@ -580,7 +582,7 @@ export const useStarSystem = (
       endTime: Date.now() + timeToCollect,
       movementType: "COLLECT",
       origin: "PLANET",
-      ships: [{ type: "FREIGHTER", amount: 1 }],
+      ships: [makeShip("FREIGHTER", 1)],
       startTime: Date.now(),
       id: uuid.v4() as string,
       resources: {},
@@ -648,7 +650,7 @@ export const useStarSystem = (
       endTime: Date.now() + timeToExplore,
       movementType: "EXPLORE CELESTIALBODY",
       origin: "PLANET",
-      ships: [{ type: "PROBE", amount: 1 }],
+      ships: [makeShip("PROBE", 1)],
       startTime: Date.now(),
       id: uuid.v4() as string,
       resources: {},
@@ -744,7 +746,7 @@ export const useStarSystem = (
   const startAttack = async (systemId: string, fleetShips: Ship[]) => {
     const system = systemsRef.current.find((s) => s.id === systemId);
     if (!system) return;
-    const slowestSpeed = Math.min(...fleetShips.map((f) => shipConfig[f.type].speed));
+    const slowestSpeed = Math.min(...fleetShips.map((f) => getSpecByType(f.type, specs).speed));
     const timeToAttack = getFlyTime(slowestSpeed, system.distance);
 
     if (system.race) handleModifyDiplomacy(system.race, -100);

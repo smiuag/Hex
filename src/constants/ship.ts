@@ -1,9 +1,9 @@
 import { ShipResearchRequiredData } from "../types/researchTypes";
-import { Resources } from "../types/resourceTypes";
+import { CombinedResources } from "../types/resourceTypes";
 import { ShipType } from "../types/shipType";
 import { IMAGES } from "./images";
 
-export const SHIP_COST: Record<ShipType, Partial<Resources>> = {
+export const SHIP_COST: Record<ShipType, Partial<CombinedResources>> = {
   PROBE: { METAL: 1000, CRYSTAL: 500, ENERGY: 2000 },
   LIGHTFIGHTER: { METAL: 1000, CRYSTAL: 500, ENERGY: 1000 },
   INTERCEPTOR: { METAL: 2000, CRYSTAL: 1000, ENERGY: 2500 },

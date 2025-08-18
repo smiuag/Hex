@@ -7,11 +7,11 @@ import { ShipSummaryBar } from "../../components/auxiliar/ShipSummaryBar";
 import ShipComponent from "../../components/main/ShipComponent";
 import { useGameContextSelector } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
-import { ShipType } from "../../src/types/shipType";
+import { ShipId } from "../../src/types/shipType";
 7;
 
 export default function ShipScreen() {
-  const totalShipCounts: Partial<Record<ShipType, number>> = {};
+  const totalShipCounts: Partial<Record<ShipId, number>> = {};
   const insets = useSafeAreaInsets();
   const shipBuildQueue = useGameContextSelector((ctx) => ctx.shipBuildQueue);
   const resources = useGameContextSelector((ctx) => ctx.resources);

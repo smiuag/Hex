@@ -34,12 +34,6 @@ export function gameStarted(playerConfig: PlayerConfig): boolean {
   return started?.value === "true";
 }
 
-export function gameStartingSystem(playerConfig: PlayerConfig): string {
-  const system = playerConfig.find((entry) => entry.key === "STARTING_SYSTEM");
-
-  return system?.value!;
-}
-
 export function hasHangarBuilt(playerConfig: PlayerConfig): boolean {
   return playerConfig.some((entry) => entry.key === "HAS_HANGAR" && entry.value);
 }

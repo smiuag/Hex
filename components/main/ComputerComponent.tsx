@@ -1,6 +1,7 @@
 import { questConfig } from "@/src/config/questConfig";
 import { useGameContextSelector } from "@/src/context/GameContext";
 import { QuestType } from "@/src/types/questType";
+import { getCfg } from "@/utils/generalUtils";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -35,8 +36,8 @@ export default function ComputerComponent() {
   const { t: tQuests, i18n } = useTranslation("quests");
 
   const playerName = useMemo(() => {
-    const name = playerConfig.find((c) => c.key === "PLAYER_NAME")?.value?.trim();
-    return name && name.length >= 3 ? name : "Comandante Lucas Vera";
+    const name = (getCfg(playerConfig, "PLAYER_NAME", "") ?? "").trim();
+    return name.length >= 3 ? name : "Lucas Vera";
   }, [playerConfig]);
 
   const messages = useMemo(() => {

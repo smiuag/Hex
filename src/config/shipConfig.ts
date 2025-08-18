@@ -1,4 +1,3 @@
-import { ImageSourcePropType } from "react-native";
 import {
   SHIP_BACKGROUND_IMAGE,
   SHIP_COST,
@@ -6,25 +5,9 @@ import {
   SHIP_STATS,
   SHIP_TIME,
 } from "../constants/ship";
-import { ShipResearchRequiredData } from "../types/researchTypes";
-import { Resources } from "../types/resourceTypes";
-import { ProductionFacilityType, ShipType } from "../types/shipType";
+import { BuiltinConfig } from "../types/shipType";
 
-export const shipConfig: Record<
-  ShipType,
-  {
-    baseBuildTime: number;
-    imageBackground: ImageSourcePropType;
-    baseCost: Partial<Resources>;
-    requiredResearch: ShipResearchRequiredData[];
-    orden: number;
-    productionFacility: ProductionFacilityType;
-    attack: number;
-    defense: number;
-    speed: number;
-    hp: number;
-  }
-> = {
+export const shipConfig: BuiltinConfig = {
   PROBE: {
     orden: 0,
     baseBuildTime: SHIP_TIME.PROBE,

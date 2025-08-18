@@ -4,7 +4,7 @@ import { ImageBackground, Text, TouchableOpacity, View } from "react-native";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { Process } from "../../src/types/processTypes";
 import { ResearchType } from "../../src/types/researchTypes";
-import { ShipType } from "../../src/types/shipType";
+import { ShipId } from "../../src/types/shipType";
 import { CountdownTimer } from "../auxiliar/CountdownTimer";
 import { ResourceDisplay } from "../auxiliar/ResourceDisplay";
 
@@ -12,7 +12,7 @@ type ProcessCardProps = {
   item: Process;
   onCancelBuild: (q: number, r: number) => Promise<void>;
   onCancelResearch: (type: ResearchType) => Promise<void>;
-  onCancelShip: (shipType: ShipType) => Promise<void>;
+  onCancelShip: (shipType: ShipId) => Promise<void>;
   onCancelExploreSystem: (id: string) => Promise<void>;
   onCancelAttack: (id: string) => Promise<void>;
   onCancelCollect: (id: string) => Promise<void>;

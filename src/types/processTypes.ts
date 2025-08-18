@@ -1,7 +1,7 @@
 import { ImageSourcePropType } from "react-native";
 import { ResearchType } from "./researchTypes";
 import { CombinedResources } from "./resourceTypes";
-import { ShipType } from "./shipType";
+import { ShipId } from "./shipType";
 
 export type ProcessType =
   | "BUILDING"
@@ -22,7 +22,7 @@ export class Process {
   duration: number;
   researchType?: ResearchType;
   image: ImageSourcePropType;
-  shipType?: ShipType;
+  shipType?: ShipId;
   explorationSystemId?: string;
   attackSystemId?: string;
   explorationPlanetId?: string;
@@ -39,7 +39,7 @@ export class Process {
     startedAt: number,
     duration: number,
     image: ImageSourcePropType,
-    shipType?: ShipType,
+    shipType?: ShipId,
     explorationSystemId?: string,
     attackSystemId?: string,
     explorationPlanetId?: string,

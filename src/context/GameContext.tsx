@@ -14,7 +14,15 @@ import { BuildingType } from "../../src/types/buildingTypes";
 import { Hex } from "../../src/types/hexTypes";
 import { PlayerQuest, UpdateQuestOptions } from "../../src/types/questType";
 import { CombinedResources, StoredResources } from "../../src/types/resourceTypes";
-import { Ship, ShipType } from "../../src/types/shipType";
+import {
+  CustomShipSpec,
+  CustomShipTypeId,
+  Draft,
+  Ship,
+  ShipDesignAttempt,
+  ShipId,
+  ShipSpecsCtx,
+} from "../../src/types/shipType";
 import { ConfigEntry, PlayerConfig } from "../types/configTypes";
 import { FleetData } from "../types/fleetType";
 import { Research, ResearchType } from "../types/researchTypes";
@@ -22,11 +30,14 @@ import { StarSystem, StarSystemMap } from "../types/starSystemTypes";
 
 import { useAchievements } from "@/hooks/useAchievements";
 import { useDiplomacy } from "@/hooks/useDiplomacy";
+import { useShipDesigns } from "@/hooks/useShipDesigns";
+import { useShipSpecs } from "@/hooks/useShipSpecs";
 import { tSafeNS } from "@/utils/generalUtils";
 import Toast from "react-native-toast-message";
 import { createContext, useContextSelector } from "use-context-selector";
 import { PlayerAchievement } from "../types/achievementTypes";
 import { DiplomaticEvent, EventOption } from "../types/eventTypes";
+import { StartAttemptParams, StartAttemptResult } from "../types/providerContextTypes";
 import { DiplomacyLevel } from "../types/raceType";
 
 // 🎯 Contexto único con suscripción selectiva
@@ -43,6 +54,21 @@ type ProviderContextType = {
   playerDiplomacy: DiplomacyLevel[];
   currentEvent: DiplomaticEvent;
   playerAchievements: PlayerAchievement[];
+  specs: ShipSpecsCtx;
+  active: ShipDesignAttempt;
+  history: ShipDesignAttempt[];
+  resetShipDesign: () => Promise<void>;
+  computeEffectiveChance: (
+    draft: Draft,
+    baseChance: number
+  ) => {
+    effective: number;
+    bonus: number;
+    streak: number;
+  };
+  startAttempt: (params: StartAttemptParams) => Promise<StartAttemptResult>;
+  resolveAttempt: (opts: { success: boolean; specIdIfSuccess?: CustomShipTypeId }) => Promise<void>;
+  cancelActiveAttempt: () => Promise<void>;
   getProgress: (id: string) => void;
   startStarSystemExploration: (id: string) => void;
   startCelestialBodyExploration: (systemId: string, planetId: string) => void;
@@ -54,8 +80,8 @@ type ProviderContextType = {
   handleTerraform: (q: number, r: number) => void;
   handleResearch: (type: ResearchType) => void;
   handleCancelResearch: (type: ResearchType) => void;
-  handleBuildShip: (type: ShipType, amount: number) => void;
-  handleCancelShip: (type: ShipType) => void;
+  handleBuildShip: (type: ShipId, amount: number) => void;
+  handleCancelShip: (type: ShipId) => void;
   updateQuest: (options: UpdateQuestOptions) => void;
   handleUpdateConfig: (config: ConfigEntry) => void;
   endGame: () => void;
@@ -78,14 +104,17 @@ type ProviderContextType = {
   cancelCollect: (systemId: string) => void;
   handleEventOptionChoose: (option: EventOption) => void;
   discoverNextResearch: () => void;
-  handleCreateShips: (shipsToAdd: { type: ShipType; amount: number }[]) => void;
+  handleCreateShips: (shipsToAdd: { type: ShipId; amount: number }[]) => void;
   hasDiscoverableResearch: () => boolean;
+  upsertSpec: (spec: CustomShipSpec) => void;
 };
 
 const GameContext = createContext<ProviderContextType>(null as any);
 
 export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   const tAch = useMemo(() => tSafeNS("achievements"), []);
+
+  const { specs, upsertSpec, resetSpecs } = useShipSpecs();
 
   const { universe } = useUniverse();
 
@@ -101,6 +130,15 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     });
 
   const { playerConfig, handleUpdateConfig, resetPlayerConfig } = useConfig();
+  const {
+    history,
+    active,
+    resetShipDesign,
+    computeEffectiveChance,
+    startAttempt,
+    resolveAttempt,
+    cancelActiveAttempt,
+  } = useShipDesigns(playerConfig, handleUpdateConfig);
 
   const {
     resources,
@@ -144,6 +182,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     handleCreateShips,
   } = useShip(
     playerQuests,
+    specs,
     addResources,
     subtractResources,
     enoughResources,
@@ -180,6 +219,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     shipBuildQueue,
     playerConfig,
     resources,
+    specs,
     handleDestroyShip,
     handleCreateShips,
     addResources,
@@ -216,6 +256,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   } = useStarSystem(
     playerQuests,
     universe,
+    specs,
     handleDestroyShip,
     handleCreateShips,
     subtractResources,
@@ -244,17 +285,19 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   ]);
 
   const endGame = async () => {
-    await resetPlayerEvent();
-    await resetBuild();
-    await resetPlayerConfig();
-    await resetResearch();
-    await resetQuests();
-    await resetShip();
-    await resetResources();
-    await resetStarSystem();
-    await resetFleet();
-    await resetPlayerDiplomacy();
-    await resetAchievements();
+    // await resetPlayerEvent();
+    // await resetBuild();
+    // await resetPlayerConfig();
+    // await resetResearch();
+    // await resetQuests();
+    // await resetShip();
+    // await resetResources();
+    // await resetStarSystem();
+    // await resetFleet();
+    // await resetPlayerDiplomacy();
+    // await resetAchievements();
+    await resetShipDesign();
+    await resetSpecs();
 
     // addResources({
     //   METAL: 100000000,
@@ -306,6 +349,14 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       playerDiplomacy,
       currentEvent,
       playerAchievements,
+      specs,
+      active,
+      history,
+      resetShipDesign,
+      computeEffectiveChance,
+      startAttempt,
+      resolveAttempt,
+      cancelActiveAttempt,
       getProgress,
       startStarSystemExploration,
       startCelestialBodyExploration,
@@ -343,6 +394,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       discoverNextResearch,
       handleCreateShips,
       hasDiscoverableResearch,
+      upsertSpec,
     }),
     [
       fleet,
@@ -357,6 +409,14 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       playerDiplomacy,
       currentEvent,
       playerAchievements,
+      specs,
+      active,
+      history,
+      resetShipDesign,
+      computeEffectiveChance,
+      startAttempt,
+      resolveAttempt,
+      cancelActiveAttempt,
       getProgress,
       startStarSystemExploration,
       startCelestialBodyExploration,
@@ -394,6 +454,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       discoverNextResearch,
       handleCreateShips,
       hasDiscoverableResearch,
+      upsertSpec,
     ]
   );
 

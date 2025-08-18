@@ -1,5 +1,5 @@
 import { ResearchType } from "@/src/types/researchTypes";
-import { ShipType } from "@/src/types/shipType";
+import { ShipId } from "@/src/types/shipType";
 import { gameStarted } from "@/utils/configUtils";
 import { getCfg } from "@/utils/generalUtils";
 import { useRouter } from "expo-router";
@@ -34,6 +34,7 @@ export default function MenuComponent() {
   const shipBuildQueue = useGameContextSelector((ctx) => ctx.shipBuildQueue);
   const playerConfig = useGameContextSelector((ctx) => ctx.playerConfig);
   const fleet = useGameContextSelector((ctx) => ctx.fleet);
+  const specs = useGameContextSelector((ctx) => ctx.specs);
 
   const handleCancelBuild = useGameContextSelector((ctx) => ctx.handleCancelBuild);
   const handleCancelResearch = useGameContextSelector((ctx) => ctx.handleCancelResearch);
@@ -49,8 +50,8 @@ export default function MenuComponent() {
   useEffect(() => {
     const buildingProcesses = getBuildingProcesses(hexes, tBuilding);
     const researchProcesses = getResearchProcesses(research, tResearch);
-    const shipProcesses = getShipProcesses(tShip, shipBuildQueue);
-    const fleetProcesses = getFleetProcesses(fleet);
+    const shipProcesses = getShipProcesses(tShip, shipBuildQueue, specs);
+    const fleetProcesses = getFleetProcesses(fleet, specs);
     const allProcesses = [
       ...buildingProcesses,
       ...researchProcesses,
@@ -75,7 +76,7 @@ export default function MenuComponent() {
     await cancelExploreSystem(id);
   };
 
-  const onCancelShip = async (type: ShipType) => {
+  const onCancelShip = async (type: ShipId) => {
     await handleCancelShip(type);
   };
 
