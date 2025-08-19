@@ -94,29 +94,113 @@ export default function HexTile({ hex, px, py, points, factor, fontSize, index, 
         </SvgText>
       )}
 
-      {building && building.level > 0 && (
-        <>
-          {Array.from({ length: building.level }, (_, i) => {
-            const total = building.level;
-            const radius = 2.5 * factor;
-            const spacing = 2 * radius + 2 * factor;
-            const startX = px - ((total - 1) * spacing) / 2;
-            const y = py - 60 * factor + 0.2 * 2 * 60 * factor;
+      {building &&
+        building.level > 0 &&
+        (() => {
+          // 4 puntos por arista (incluyendo extremos) => 6*4 - 6 = 18 únicos
+          const pointsPerEdge = 4;
+          const maxDots = 18;
+          const dotCount = Math.min(building.level, maxDots);
 
-            return (
-              <Circle
-                key={i}
-                cx={startX + i * spacing}
-                cy={y}
-                r={radius}
-                fill="limegreen"
-                stroke="white"
-                strokeWidth={1}
-              />
-            );
-          })}
-        </>
-      )}
+          const radius = 2.5 * factor;
+          const pad = 2 * factor; // margen respecto al borde interior
+
+          type Pt = { x: number; y: number };
+
+          // Centro geométrico del hex
+          const center = {
+            x: corners.reduce((s, p) => s + p.x, 0) / 6,
+            y: corners.reduce((s, p) => s + p.y, 0) / 6,
+          };
+
+          // Línea ax + by = c
+          const lineFromPoints = (p: Pt, q: Pt) => {
+            const a = q.y - p.y;
+            const b = p.x - q.x;
+            const c = a * p.x + b * p.y;
+            const norm = Math.hypot(a, b) || 1;
+            return { a, b, c, norm };
+          };
+
+          // Intersección de dos líneas ax + by = c
+          const intersect = (
+            L1: { a: number; b: number; c: number },
+            L2: { a: number; b: number; c: number }
+          ): Pt => {
+            const det = L1.a * L2.b - L2.a * L1.b || 1e-9;
+            return {
+              x: (L2.b * L1.c - L1.b * L2.c) / det,
+              y: (L1.a * L2.c - L2.a * L1.c) / det,
+            };
+          };
+
+          // 0) Líneas originales y distancia del centro a cada una
+          const baseLines = Array.from({ length: 6 }, (_, e) => {
+            const A = corners[e];
+            const B = corners[(e + 1) % 6];
+            return lineFromPoints(A, B);
+          });
+
+          const distToCenter = baseLines.map((L) => {
+            const signed = (L.a * center.x + L.b * center.y - L.c) / L.norm;
+            return Math.abs(signed);
+          });
+
+          // 1) Distancia hacia dentro segura y común
+          const desiredInward = 8 * factor + radius;
+          const maxInwardGlobal =
+            Math.max(0, Math.min(...distToCenter.map((d) => d - (radius + pad))) - 1e-3) || 0;
+          const inward = Math.min(desiredInward, maxInwardGlobal);
+
+          // 2) Desplaza cada línea hacia el centro (signo correcto)
+          const offsetLines = baseLines.map((L) => {
+            const sideCenter = (L.a * center.x + L.b * center.y - L.c) / L.norm;
+            const c2 = L.c + Math.sign(sideCenter) * inward * L.norm;
+            return { a: L.a, b: L.b, c: c2 };
+          });
+
+          // 3) Vértices del hexágono interior
+          const insetCorners: Pt[] = [];
+          for (let e = 0; e < 6; e++) {
+            const Lprev = offsetLines[(e + 5) % 6];
+            const Lcurr = offsetLines[e];
+            insetCorners.push(intersect(Lprev, Lcurr));
+          }
+
+          // 4) Genera 18 puntos: 4 por arista, sin duplicar vértices
+          const edgeDots: Pt[] = [];
+          for (let e = 0; e < 6; e++) {
+            const A = insetCorners[e];
+            const B = insetCorners[(e + 1) % 6];
+            const vx = B.x - A.x;
+            const vy = B.y - A.y;
+
+            for (let j = 0; j < pointsPerEdge; j++) {
+              // Evitar duplicados en vértices
+              if (e > 0 && j === 0) continue;
+              if (e === 5 && j === pointsPerEdge - 1) continue;
+
+              const t = j / (pointsPerEdge - 1); // 0..1
+              edgeDots.push({ x: A.x + vx * t, y: A.y + vy * t });
+            }
+          }
+
+          return (
+            <>
+              {edgeDots.slice(0, dotCount).map((p, i) => (
+                <Circle
+                  key={`lvl-dot-${i}`}
+                  cx={p.x}
+                  cy={p.y}
+                  r={radius}
+                  fill="limegreen"
+                  stroke="white"
+                  strokeWidth={1}
+                />
+              ))}
+            </>
+          );
+        })()}
 
       {!building && !construction && terrain == "WATER" && hex.isTerraformed && (
         <SvgImage
