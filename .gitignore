@@ -58,3 +58,16 @@ ios/Pods/        # Si tu equipo versiona Pods, quita esta línea.
 # --- IDE ---
 .idea/
 .vscode/
+
+# --- Android (robusto) ---
+.gradle/
+android/**/.gradle/
+android/**/.cxx/
+android/**/build/
+android/**/intermediates/
+android/**/outputs/
+android/**/generated/
+android/**/obj/
+android/**/tmp/
+# Artefactos comunes (por si acaso)
+android/**/cmake-build-*/
