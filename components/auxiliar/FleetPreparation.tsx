@@ -1,7 +1,7 @@
+import { raceConfig } from "@/src/config/raceConfig";
 import { IMAGES } from "@/src/constants/images";
 import { useGameContextSelector } from "@/src/context/GameContext";
 import { commonStyles } from "@/src/styles/commonStyles";
-import { raceConfig } from "@/src/types/raceType";
 import { Ship } from "@/src/types/shipType";
 import { getSpecByType } from "@/utils/shipUtils";
 import { getSystemImage } from "@/utils/starSystemUtils";

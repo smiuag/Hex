@@ -1,9 +1,9 @@
 import { buildingConfig } from "@/src/config/buildingConfig";
+import { raceConfig } from "@/src/config/raceConfig";
 import { SCAN_DURATION } from "@/src/constants/general";
 import { IMAGES } from "@/src/constants/images";
 import rawData from "@/src/data/names.json";
 import { commonStyles } from "@/src/styles/commonStyles";
-import { raceConfig } from "@/src/types/raceType";
 import { StarSystemDetected, UniverseNameMap } from "@/src/types/starSystemTypes";
 import { getBuildTime } from "@/utils/buildingUtils";
 import { getCfg } from "@/utils/generalUtils";

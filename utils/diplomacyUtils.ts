@@ -1,21 +1,29 @@
+import { raceConfig } from "@/src/config/raceConfig";
 import { DiplomaticEvent } from "@/src/types/eventTypes";
-import { DiplomacyLevel, RaceType } from "@/src/types/raceType";
-
-const RACES: RaceType[] = ["RACE1", "RACE2", "RACE3", "RACE4", "RACE5"];
+import { DiplomacyLevel, RACES, RaceType } from "@/src/types/raceType";
 
 export const buildDefault = (): DiplomacyLevel[] =>
-  RACES.map((race) => ({ race, diplomacyLevel: 500 }));
+  RACES.map((race) => ({ race, diplomacyLevel: 500, discovered: raceConfig[race].starting }));
 
 export const normalizeToAllRaces = (list: DiplomacyLevel[]): DiplomacyLevel[] => {
   const byRace = new Map<RaceType, DiplomacyLevel>(list.map((e) => [e.race, e]));
 
-  RACES.forEach((race) => {
-    if (!byRace.has(race)) {
-      byRace.set(race, { race, diplomacyLevel: 500 });
-    }
-  });
+  return RACES.map((race) => {
+    const existing = byRace.get(race);
 
-  return RACES.map((race) => byRace.get(race)!);
+    if (!existing) {
+      return {
+        race,
+        diplomacyLevel: 500,
+        discovered: raceConfig[race].starting,
+      };
+    }
+
+    return {
+      ...existing,
+      discovered: existing.discovered ?? raceConfig[race].starting,
+    };
+  });
 };
 
 export const isExpired = (event: DiplomaticEvent): boolean => {

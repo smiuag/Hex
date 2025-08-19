@@ -1,7 +1,7 @@
+import { raceConfig } from "@/src/config/raceConfig";
 import { IMAGES } from "@/src/constants/images";
 import { commonStyles } from "@/src/styles/commonStyles";
 import { DiplomaticEvent, EventOption } from "@/src/types/eventTypes";
-import { raceConfig } from "@/src/types/raceType";
 import { Feather } from "@expo/vector-icons";
 import React from "react";
 import { useTranslation } from "react-i18next";

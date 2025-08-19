@@ -15,7 +15,7 @@ import {
 import { AchievementEvent } from "@/src/types/achievementTypes";
 import { FleetData, MovementType } from "@/src/types/fleetType";
 import { PlayerQuest, UpdateQuestOptions } from "@/src/types/questType";
-import { RaceType } from "@/src/types/raceType";
+import { DiplomacyLevel, RaceType } from "@/src/types/raceType";
 import { CombinedResources } from "@/src/types/resourceTypes";
 import { Ship, ShipId, ShipSpecsCtx } from "@/src/types/shipType";
 import { StarSystem, StarSystemMap } from "@/src/types/starSystemTypes";
@@ -30,6 +30,8 @@ export const useStarSystem = (
   playerQuests: PlayerQuest[],
   universe: StarSystemMap,
   specs: ShipSpecsCtx,
+  playerDiplomacy: DiplomacyLevel[],
+  checkNewRace: (race: RaceType) => void,
   handleDestroyShip: (type: ShipId, amount: number) => void,
   handleCreateShips: (shipsToAdd: { type: ShipId; amount: number }[]) => void,
   subtractResources: (modifications: Partial<CombinedResources>) => void,
@@ -426,6 +428,10 @@ export const useStarSystem = (
       await updateQuest({ type: "EXPLORE_SYSTEM", completed: true });
 
     onAchievementEvent({ type: "increment", key: "SYSTEMS_EXPLORED", amount: 1 });
+
+    if (system.race) {
+      checkNewRace(system.race);
+    }
   };
 
   const starPortBuild = async (id: string) => {
@@ -772,7 +778,7 @@ export const useStarSystem = (
   const scanStarSystem = async (currentSystemId: string, id: string) => {
     const starSystem = universe[id];
     const generated: StarSystem = {
-      ...generateSystem(currentSystemId, starSystem),
+      ...generateSystem(currentSystemId, starSystem, playerDiplomacy),
       scanStartedAt: Date.now(),
     };
 

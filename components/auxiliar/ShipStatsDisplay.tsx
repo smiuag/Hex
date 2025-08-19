@@ -30,7 +30,7 @@ export const ShipStatsDisplay = ({
         return (
           <View key={key} style={{ flexDirection: "row", alignItems: "center" }}>
             <Text style={[styles.item, { fontSize, color: fontColor }]}>{emoji}</Text>
-            <View style={{ marginLeft: 2 }}>
+            <View style={[showBackground && commonStyles.minWidth25, { marginLeft: 2 }]}>
               <Text style={commonStyles.whiteText}>{value}</Text>
             </View>
           </View>

@@ -1,5 +1,6 @@
+import { raceConfig } from "@/src/config/raceConfig";
 import { IMAGES } from "@/src/constants/images";
-import { DiplomacyLevel, raceConfig } from "@/src/types/raceType";
+import { DiplomacyLevel } from "@/src/types/raceType";
 import React, { memo } from "react";
 import { FlatList, Image, ImageBackground, StyleSheet, Text, View } from "react-native";
 
@@ -63,7 +64,7 @@ function DiplomacySummary({ data }: Props) {
         {/* opcional: oscurecer un poco para que el texto se lea */}
         <View style={styles.overlay}>
           <FlatList
-            data={data}
+            data={data.filter((d) => d.discovered)}
             keyExtractor={(it) => it.race}
             renderItem={({ item }) => <ItemRow item={item} />}
             ItemSeparatorComponent={() => <View style={styles.separator} />}

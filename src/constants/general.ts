@@ -1,6 +1,6 @@
 import { Resources } from "../types/resourceTypes";
 
-export const GENERAL_FACTOR = 1; // 1- NORMAL, 10-ACELERADO PARA PRUEBAS
+export const GENERAL_FACTOR = 100000; // 1- NORMAL, 10-ACELERADO PARA PRUEBAS
 
 export const PRODUCTION_INCREMENT = 1.3;
 export const BUILD_COST_INCREMENT = 2;

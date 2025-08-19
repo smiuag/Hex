@@ -217,6 +217,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   const {
     playerDiplomacy,
     currentEvent,
+    checkNewRace,
     resetPlayerEvent,
     resetPlayerDiplomacy,
     handleEventOptionChoose,
@@ -264,6 +265,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     playerQuests,
     universe,
     specs,
+    playerDiplomacy,
+    checkNewRace,
     handleDestroyShip,
     handleCreateShips,
     subtractResources,
@@ -293,18 +296,18 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
   const endGame = async () => {
     await resetPlayerEvent();
-    await resetBuild();
-    await resetPlayerConfig();
-    await resetResearch();
-    await resetQuests();
-    await resetShip();
-    await resetResources();
-    await resetStarSystem();
-    await resetFleet();
-    await resetPlayerDiplomacy();
-    await resetAchievements();
-    await resetShipDesign();
-    await resetSpecs();
+    // await resetBuild();
+    // await resetPlayerConfig();
+    // await resetResearch();
+    // await resetQuests();
+    // await resetShip();
+    // await resetResources();
+    // await resetStarSystem();
+    // await resetFleet();
+    // await resetPlayerDiplomacy();
+    // await resetAchievements();
+    // await resetShipDesign();
+    // await resetSpecs();
 
     // addResources({
     //   METAL: 100000000,

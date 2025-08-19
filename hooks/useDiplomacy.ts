@@ -1,3 +1,4 @@
+import { raceConfig } from "@/src/config/raceConfig";
 import {
   deleteCurrentEvent,
   deleteDiplomacy,
@@ -237,7 +238,12 @@ export const useDiplomacy = (
         }
         return entry;
       });
-      return found ? updated : [...updated, { race, diplomacyLevel: 500 + change }];
+      return found
+        ? updated
+        : [
+            ...updated,
+            { race, diplomacyLevel: 500 + change, discovered: raceConfig[race].starting },
+          ];
     });
 
     const allBelow300 =
@@ -306,6 +312,19 @@ export const useDiplomacy = (
     }
   };
 
+  const checkNewRace = (race: RaceType) => {
+    if (!playerDiplomacy.find((pd) => pd.race == race && pd.discovered)) {
+      modifyDiplomacy((prev) => {
+        const exists = prev.some((d) => d.race === race);
+        if (exists) {
+          return prev.map((d) => (d.race === race ? { ...d, discovered: true } : d));
+        }
+        return [...prev, { race, diplomacyLevel: 500, discovered: true }];
+      });
+      Alert.alert("Nueva raza contactada!", `Visita la embajada para más información`);
+    }
+  };
+
   const resetPlayerDiplomacy = async () => {
     await deleteDiplomacy();
     const def = buildDefault();
@@ -328,6 +347,7 @@ export const useDiplomacy = (
   return {
     playerDiplomacy,
     currentEvent,
+    checkNewRace,
     handleModifyDiplomacy,
     loadPlayerDiplomacy,
     resetPlayerDiplomacy,

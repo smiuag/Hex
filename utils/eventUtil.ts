@@ -1,5 +1,6 @@
 import { resourceEmojis } from "@/src/config/emojisConfig";
 import { eventConfig } from "@/src/config/eventConfig";
+import { raceConfig } from "@/src/config/raceConfig";
 import {
   DIPLOMACY_CHANGE_LEVEL,
   DIPLOMACY_CHANGE_OPPOSITE,
@@ -16,7 +17,7 @@ import {
   PositiveChangeLevel,
   Trade,
 } from "@/src/types/eventTypes";
-import { ALL_RACES, DiplomacyLevel, raceConfig, RaceType } from "@/src/types/raceType";
+import { ALL_RACES, DiplomacyLevel, RaceType } from "@/src/types/raceType";
 import { CombinedResources, CombinedResourcesType } from "@/src/types/resourceTypes";
 import { Ship, ShipData } from "@/src/types/shipType";
 import { formatAmount } from "./generalUtils";
@@ -296,8 +297,14 @@ function generateInstantAttackText(
 }
 
 export const getRandomRace = (): RaceType => {
-  const index = Math.floor(Math.random() * ALL_RACES.length);
-  return ALL_RACES[index];
+  const i = Math.floor(Math.random() * ALL_RACES.length);
+  return ALL_RACES[i];
+};
+
+export const getRandomDiscoveredRace = (playerDiplomacy: DiplomacyLevel[]): RaceType => {
+  const discovered = playerDiplomacy.filter((d) => d.discovered === true);
+  const i = Math.floor(Math.random() * discovered.length);
+  return discovered[i]!.race;
 };
 
 const getRandomEventByHostility = (hostile: boolean): EventType => {
@@ -615,7 +622,7 @@ export function getRandomEvent(
   shipBuildQueue: Ship[],
   playerDiplomacy: DiplomacyLevel[]
 ): DiplomaticEvent {
-  const race = getRandomRace() as RaceType;
+  const race = getRandomDiscoveredRace(playerDiplomacy);
   const isHostile = playerDiplomacy.some((pd) => pd.race === race && pd.diplomacyLevel < 500);
   const type = getRandomEventByHostility(isHostile);
 

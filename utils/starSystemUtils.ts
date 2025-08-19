@@ -1,5 +1,6 @@
 import { IMAGES } from "@/src/constants/images";
 import { celestialResourceChances, starSystemConfig } from "@/src/constants/starSystem";
+import { DiplomacyLevel } from "@/src/types/raceType";
 import { CombinedResources, ResourceType, SpecialResourceType } from "@/src/types/resourceTypes";
 import { ALL_SHIP_TYPES, ShipData } from "@/src/types/shipType";
 import {
@@ -155,7 +156,11 @@ export function getDistance(currentSystemId: string, targetSystemId: string): nu
   return getLogBiasedRandom(3500, 35000);
 }
 
-export const generateSystem = (currentSystemId: string, system: StarSystemDetected): StarSystem => {
+export const generateSystem = (
+  currentSystemId: string,
+  system: StarSystemDetected,
+  playerDiplomacy: DiplomacyLevel[]
+): StarSystem => {
   const type = system.type;
 
   const config = starSystemConfig[type];

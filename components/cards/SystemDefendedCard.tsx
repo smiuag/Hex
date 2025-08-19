@@ -1,6 +1,6 @@
+import { raceConfig } from "@/src/config/raceConfig";
 import { IMAGES } from "@/src/constants/images";
 import { useGameContextSelector } from "@/src/context/GameContext";
-import { raceConfig } from "@/src/types/raceType";
 import { ShipType } from "@/src/types/shipType";
 import { getSpecByType, isCustomType } from "@/utils/shipUtils";
 import { getSystemImage } from "@/utils/starSystemUtils";
