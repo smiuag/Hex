@@ -171,6 +171,7 @@ export type DiplomaticEvent = {
   title: string;
   description: string;
   mainTrade?: Trade;
+  optionChosed?: EventOptionsType;
 };
 
 export const makeDefaultEvent = (): DiplomaticEvent => ({

@@ -11,20 +11,6 @@ export type ScaleType = {
   [key in ScaleSize]: ScaleValues;
 };
 
-// export type ConfigType =
-//   | "MAX_CREATION_STATS"
-//   | "MAP_SIZE"
-//   | "GAME_STARTED"
-//   | "STARTING_SYSTEM"
-//   | "HAS_ANTENNA"
-//   | "HAS_HANGAR"
-//   | "HAS_EMBASSY"
-//   | "ALIEN_STRUCTURE_FOUND"
-//   | "RACE"
-//   | "PLANET_NAME"
-//   | "PLAYER_NAME"
-//   | "PLAYER_LANGUAGE";
-
 type MaxCreationStats = { attack: number; defense: number; speed: number; hp: number };
 
 export type ConfigValueByKey = {

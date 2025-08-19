@@ -4,6 +4,7 @@ import { DiplomaticEvent, EventOption } from "@/src/types/eventTypes";
 import { raceConfig } from "@/src/types/raceType";
 import { Feather } from "@expo/vector-icons";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Image, ImageBackground, ScrollView, StyleSheet, Text, View } from "react-native";
 import OptionCard from "./OptionCard";
 
@@ -13,6 +14,7 @@ type Props = {
 };
 
 export default function EventCard({ diplomaticEvent, onChoose }: Props) {
+  const { t } = useTranslation();
   const config = raceConfig[diplomaticEvent.races];
 
   return (
@@ -33,11 +35,22 @@ export default function EventCard({ diplomaticEvent, onChoose }: Props) {
             </View>
           </View>
           {diplomaticEvent.completed ? (
-            <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
-              <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-                <Feather name="check-circle" size={64} style={{ opacity: 0.25, color: "#fff" }} />
+            <>
+              {/* Texto debajo del título */}
+              <View style={{ paddingHorizontal: 5, paddingTop: 8 }}>
+                <Text style={commonStyles.whiteText}>{diplomaticEvent.description}</Text>
+                <Text style={commonStyles.whiteText}>
+                  Opción elegida: {t(`${diplomaticEvent.optionChosed}`)}
+                </Text>
               </View>
-            </View>
+
+              {/* Marca centrada en medio */}
+              <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
+                <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+                  <Feather name="check-circle" size={64} style={{ opacity: 0.25, color: "#fff" }} />
+                </View>
+              </View>
+            </>
           ) : diplomaticEvent.options?.length ? (
             <>
               <View style={{ padding: 5 }}>

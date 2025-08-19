@@ -12,21 +12,14 @@ import {
 
 import { CountdownTimer } from "@/components/auxiliar/CountdownTimer";
 import { resourceEmojis } from "@/src/config/emojisConfig";
-import { DESIGN_DURATION_MS } from "@/src/constants/general";
 import { useGameContextSelector } from "@/src/context/GameContext";
 import { commonStyles } from "@/src/styles/commonStyles";
-import { type CombinedResources } from "@/src/types/resourceTypes";
-import type {
-  CustomShipSpec,
-  CustomShipTypeId,
-  Draft,
-  PrevMax,
-  ShipImageKey,
-} from "@/src/types/shipType";
-import { defaultCreationStats, SHIP_IMAGES, TUNING } from "@/src/types/shipType";
+import type { CustomShipTypeId, Draft, ShipImageKey, ShipStats } from "@/src/types/shipType";
+import { defaultCreationStats, TUNING } from "@/src/types/shipType";
 import { formatDuration } from "@/utils/generalUtils";
 import {
   computeAttemptCost,
+  computeAttemptTime,
   computeCaps,
   computeDraftHash,
   computeSuccessChance,
@@ -46,16 +39,17 @@ export default function CustomShipDesigner() {
 
   const active = useGameContextSelector((ctx) => ctx.active);
   const specs = useGameContextSelector((ctx) => ctx.specs);
+  const history = useGameContextSelector((ctx) => ctx.history);
   const computeEffectiveChance = useGameContextSelector((ctx) => ctx.computeEffectiveChance);
   const resolveAttempt = useGameContextSelector((ctx) => ctx.resolveAttempt);
   const startAttempt = useGameContextSelector((ctx) => ctx.startAttempt);
   const upsertSpec = useGameContextSelector((ctx) => ctx.upsertSpec);
   const cancelActiveAttempt = useGameContextSelector((ctx) => ctx.cancelActiveAttempt);
-  const [finished, setFinished] = useState<boolean>(false);
-  const history = useGameContextSelector((ctx) => ctx.history);
 
-  const prevMax: PrevMax =
-    (playerConfig.find((cf) => cf.key === "MAX_CREATION_STATS")?.value as PrevMax) ??
+  const [finished, setFinished] = useState(false);
+
+  const prevMax: ShipStats =
+    (playerConfig.find((cf) => cf.key === "MAX_CREATION_STATS")?.value as ShipStats) ??
     defaultCreationStats;
 
   const caps = useMemo(() => computeCaps(prevMax, TUNING.maxMultiplier), [prevMax]);
@@ -72,7 +66,9 @@ export default function CustomShipDesigner() {
   });
 
   const inProgress = active?.status === "IN_PROGRESS";
+  const locked = !!inProgress; // bloquear edición cuando hay intento en curso
 
+  // Al no estar en curso, seed con el último intento (o valores por defecto)
   useEffect(() => {
     if (inProgress) return;
 
@@ -102,10 +98,15 @@ export default function CustomShipDesigner() {
     }
   }, [inProgress, history, prevMax, caps, finished]);
 
-  const normalized = useMemo(() => normalizeDraft(draft, caps), [draft, caps]);
-  const attemptCost = useMemo(() => computeAttemptCost(normalized, TUNING), [normalized]);
+  // Vista/calculadora: si está en curso, usamos SIEMPRE el draft del intento activo
+  const draftView = useMemo(() => {
+    return inProgress && active ? active.draft : draft;
+  }, [inProgress, active, draft]);
 
-  // prob base (por atributos) y prob efectiva (base + bonus por racha desde el hook)
+  const normalized = useMemo(() => normalizeDraft(draftView, caps), [draftView, caps]);
+  const attemptCost = useMemo(() => computeAttemptCost(normalized, TUNING), [normalized]);
+  const attemptTime = useMemo(() => computeAttemptTime(normalized), [normalized]);
+
   const baseChance = useMemo(
     () => computeSuccessChance(normalized, prevMax, caps, TUNING),
     [normalized, prevMax, caps]
@@ -125,15 +126,15 @@ export default function CustomShipDesigner() {
 
   const canAfford = enoughResources(attemptCost);
 
-  // ✅ validación del nombre (obligatorio + mínimo 3)
-  const nameTrimmed = draft.name.trim();
-  const nameValid = nameTrimmed.length >= 3;
+  const nameTrimmed = draftView.name.trim();
+  const nameValid = nameTrimmed.length >= 3 && nameTrimmed.length < 21;
 
-  // estado derivado del intento activo
+  // estado intento activo
   const activeSameDraft = active?.draftHash === computeDraftHash(normalized);
-  const endsAt = inProgress ? active!.startedAt + DESIGN_DURATION_MS : 0;
+  const endsAt = inProgress ? active!.startedAt + attemptTime : 0;
   const readyToResolve = inProgress ? Date.now() >= endsAt : false;
 
+  // si entras con intento en curso y el editor no coincide, sincroniza una vez
   useEffect(() => {
     if (active?.status === "IN_PROGRESS" && !activeSameDraft) {
       setDraft(active.draft);
@@ -143,10 +144,9 @@ export default function CustomShipDesigner() {
   // iniciar intento
   const onStart = useCallback(async () => {
     if (!nameValid) {
-      Alert.alert("Nombre requerido", "El nombre debe tener al menos 3 caracteres.");
+      Alert.alert("Nombre requerido", "El nombre debe tener entre 3 y 20 caracteres.");
       return;
     }
-
     if (!enoughResources(attemptCost)) {
       Alert.alert(
         "Recursos insuficientes",
@@ -154,9 +154,7 @@ export default function CustomShipDesigner() {
       );
       return;
     }
-
     setFinished(false);
-
     await startAttempt({
       draft: normalized,
       baseSuccessChance: baseChance,
@@ -164,50 +162,25 @@ export default function CustomShipDesigner() {
     });
   }, [nameValid, attemptCost, baseChance, normalized, enoughResources, startAttempt]);
 
-  // resolver intento (al terminar el tiempo)
+  // resolver intento (usa el intento activo)
   const onResolve = useCallback(async () => {
     if (!active || active.status !== "IN_PROGRESS") return;
 
     const effective = Math.min(1, (active.baseSuccessChance ?? 0) + (active.bonusSuccess ?? 0));
-
     const ok = Math.random() < effective;
 
     let specId: CustomShipTypeId | undefined;
 
     if (ok) {
-      const selectedImg = draft.imageKey
-        ? SHIP_IMAGES[draft.imageKey]
-        : SHIP_IMAGES["DEFAULT_SHIP_1"];
-
       const id: CustomShipTypeId = `custom:${
         typeof crypto !== "undefined" && "randomUUID" in crypto
           ? crypto.randomUUID()
           : Date.now().toString(36)
       }`;
 
-      const spec: CustomShipSpec = {
-        kind: "custom",
-        id,
-        name: normalized.name, // ya es válido (>=3)
-        attackTech: normalized.attackTech,
-        defenseTech: normalized.defenseTech,
-        attack: normalized.attack,
-        defense: normalized.defense,
-        speed: normalized.speed,
-        hp: normalized.hp,
-        baseBuildTime: 1000 * 60 * 60 * 24,
-        imageBackground: selectedImg,
-        baseCost: computeAttemptCost(
-          { ...normalized },
-          { ...TUNING, attemptCostScale: 1 }
-        ) as Partial<CombinedResources>,
-        productionFacility: "HANGAR",
-        createdAt: Date.now(),
-      };
-
-      upsertSpec(spec);
       specId = id;
-      Alert.alert("¡Diseño creado!", `Se ha añadido "${spec.name}" a tus planos.`);
+
+      Alert.alert("¡Diseño creado!", `Se ha añadido "${normalized.name}" a tus planos.`);
       setDraft((d) => ({ ...d, name: "" }));
     } else {
       Alert.alert(
@@ -217,15 +190,26 @@ export default function CustomShipDesigner() {
     }
 
     await resolveAttempt({ success: ok, specIdIfSuccess: specId });
-  }, [active, draft.imageKey, normalized, upsertSpec, resolveAttempt]);
+  }, [active, normalized, upsertSpec, resolveAttempt]);
 
-  const onComplete = () => {
-    setFinished(true);
-  };
+  const onComplete = () => setFinished(true);
 
   const onCancel = useCallback(async () => {
     if (!inProgress) return;
-    await cancelActiveAttempt();
+
+    Alert.alert(
+      "Cancelación",
+      "¿Estás seguro de que quieres cancelar el progreso? Perderás los recursos invertidos",
+      [
+        { text: t("cancel"), style: "cancel" },
+        {
+          text: t("confirm"),
+          onPress: async () => {
+            await cancelActiveAttempt();
+          },
+        },
+      ]
+    );
   }, [inProgress, cancelActiveAttempt]);
 
   return (
@@ -242,30 +226,29 @@ export default function CustomShipDesigner() {
         {/* ── Card 1: Selección ── */}
         <View style={styles.card}>
           <TextInput
-            value={draft.name}
-            onChangeText={(name) => setDraft((d) => ({ ...d, name }))}
+            value={draftView.name}
+            onChangeText={locked ? undefined : (name) => setDraft((d) => ({ ...d, name }))}
             placeholder="Nombre de la nave…"
-            style={[
-              styles.input,
-              !nameValid && styles.inputError, // opcional: contorno en rojo si inválido
-            ]}
+            style={[styles.input, !nameValid && !locked && styles.inputError]}
             placeholderTextColor="#9aa0a6"
             selectionColor="#fff"
+            editable={!locked}
           />
-          {!nameValid && (
+          {!nameValid && !locked && (
             <Text style={styles.textError}>El nombre es obligatorio (mín. 3 caracteres).</Text>
           )}
 
           <ImagePickerGrid
-            value={draft.imageKey}
-            onChange={(k) => setDraft((d) => ({ ...d, imageKey: k }))}
+            value={draftView.imageKey}
+            onChange={locked ? undefined : (k) => setDraft((d) => ({ ...d, imageKey: k }))}
           />
 
           <View style={styles.techRow}>
             <Segmented
               compact
-              value={draft.attackTech}
-              onChange={(v) => setDraft((d) => ({ ...d, attackTech: v }))}
+              value={draftView.attackTech}
+              disabled={locked}
+              onChange={locked ? undefined : (v) => setDraft((d) => ({ ...d, attackTech: v }))}
               options={[
                 { label: "LASER", value: "LASER" as const, emoji: resourceEmojis.KAIROX },
                 { label: "PLASMA", value: "PLASMA" as const, emoji: resourceEmojis.AETHERIUM },
@@ -273,8 +256,9 @@ export default function CustomShipDesigner() {
             />
             <Segmented
               compact
-              value={draft.defenseTech}
-              onChange={(v) => setDraft((d) => ({ ...d, defenseTech: v }))}
+              value={draftView.defenseTech}
+              disabled={locked}
+              onChange={locked ? undefined : (v) => setDraft((d) => ({ ...d, defenseTech: v }))}
               options={[
                 { label: "ARMOR", value: "ARMOR" as const, emoji: resourceEmojis.ILMENITA },
                 { label: "SHIELD", value: "SHIELD" as const, emoji: resourceEmojis.THARNIO },
@@ -284,26 +268,31 @@ export default function CustomShipDesigner() {
 
           <StatRow
             title="Ataque"
-            value={draft.attack}
+            value={draftView.attack}
             max={caps.attack}
-            onChange={setNum("attack")}
+            onChange={locked ? () => {} : setNum("attack")}
           />
           <StatRow
             title="Defensa"
-            value={draft.defense}
+            value={draftView.defense}
             max={caps.defense}
-            onChange={setNum("defense")}
+            onChange={locked ? () => {} : setNum("defense")}
           />
           <StatRow
             title="Velocidad"
-            value={draft.speed}
+            value={draftView.speed}
             max={caps.speed}
-            onChange={setNum("speed")}
+            onChange={locked ? () => {} : setNum("speed")}
             step={10}
             stepDown={10}
             longPressPlusToMax
           />
-          <StatRow title="HP" value={draft.hp} max={caps.hp} onChange={setNum("hp")} />
+          <StatRow
+            title="HP"
+            value={draftView.hp}
+            max={caps.hp}
+            onChange={locked ? () => {} : setNum("hp")}
+          />
         </View>
 
         {/* ── Card 2: Resumen + Acción ── */}
@@ -327,7 +316,7 @@ export default function CustomShipDesigner() {
                     ⏳ {t("inProgress")}:{" "}
                     <CountdownTimer
                       startedAt={active!.startedAt}
-                      duration={DESIGN_DURATION_MS}
+                      duration={attemptTime}
                       onComplete={onComplete}
                     />
                   </Text>
@@ -338,9 +327,7 @@ export default function CustomShipDesigner() {
             ) : !nameValid ? (
               <Text style={styles.textError}>⚠️ Nombre requerido (mín. 3).</Text>
             ) : canAfford ? (
-              <Text style={commonStyles.statusTextYellow}>
-                ⏳ {formatDuration(DESIGN_DURATION_MS)}
-              </Text>
+              <Text style={commonStyles.statusTextYellow}>⏳ {formatDuration(attemptTime)}</Text>
             ) : (
               <Text style={commonStyles.statusTextYellow}>⚠️ Recursos insuficientes</Text>
             )}

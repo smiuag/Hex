@@ -8,8 +8,6 @@ import {
   CustomShip,
   CustomShipTypeId,
   Draft,
-  PrevMax,
-  ResearchCaps,
   ResearchTuning,
   Ship,
   ShipData,
@@ -17,6 +15,7 @@ import {
   ShipId,
   ShipSpecBase,
   ShipSpecsCtx,
+  ShipStats,
   ShipType,
   SPEED_UNIT,
 } from "@/src/types/shipType";
@@ -160,13 +159,13 @@ export function getSpecByShip(ship: Ship, specs: ShipSpecsCtx): ShipSpecBase {
 
 export const getSpeed = (tOrShip: Ship["type"] | Ship, specs: ShipSpecsCtx) =>
   typeof tOrShip === "string"
-    ? getSpecByType(tOrShip, specs).speed
-    : getSpecByShip(tOrShip, specs).speed;
+    ? getSpecByType(tOrShip, specs).speed * GENERAL_FACTOR
+    : getSpecByShip(tOrShip, specs).speed * GENERAL_FACTOR;
 
 export const getBaseBuildTime = (tOrShip: Ship["type"] | Ship, specs: ShipSpecsCtx) =>
   typeof tOrShip === "string"
-    ? getSpecByType(tOrShip, specs).baseBuildTime
-    : getSpecByShip(tOrShip, specs).baseBuildTime;
+    ? getSpecByType(tOrShip, specs).baseBuildTime / GENERAL_FACTOR
+    : getSpecByShip(tOrShip, specs).baseBuildTime / GENERAL_FACTOR;
 
 export function addResources<T extends object>(...items: Partial<T>[]): Partial<T> {
   const out: any = {};
@@ -182,14 +181,14 @@ export function scaleResources<T extends object>(a: Partial<T>, factor: number):
 
 export const clamp = (n: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, n));
 
-export const computeCaps = (prev: PrevMax, mult: number): ResearchCaps => ({
+export const computeCaps = (prev: ShipStats, mult: number): ShipStats => ({
   attack: Math.floor(prev.attack * mult),
   defense: Math.floor(prev.defense * mult),
   speed: Math.floor(prev.speed * mult),
   hp: Math.floor(prev.hp * mult),
 });
 
-export const normalizeDraft = (d: Draft, caps: ResearchCaps): Draft => ({
+export const normalizeDraft = (d: Draft, caps: ShipStats): Draft => ({
   ...d,
   attack: clamp(d.attack, 0, caps.attack),
   defense: clamp(d.defense, 0, caps.defense),
@@ -197,7 +196,7 @@ export const normalizeDraft = (d: Draft, caps: ResearchCaps): Draft => ({
   hp: clamp(d.hp, 0, caps.hp),
 });
 
-export function difficultyRatio(d: Draft, prev: PrevMax, caps: ResearchCaps) {
+export function difficultyRatio(d: Draft, prev: ShipStats, caps: ShipStats) {
   const r = (val: number, p: number, cap: number) =>
     cap <= p ? 1 : clamp((val - p) / (cap - p), 0, 1);
   const arr = [
@@ -214,6 +213,13 @@ function geomFactor(n: number, g: number) {
   if (!isFinite(g) || g <= 0) g = 1;
   if (Math.abs(g - 1) < 1e-9) return n;
   return (Math.pow(g, n) - 1) / (g - 1);
+}
+
+export function computeAttemptTime(d: Draft): number {
+  const stats = d.attack + d.defense + d.hp / 3 + d.speed / 20;
+  const miliSeconds = stats * 1000 * 3000;
+
+  return miliSeconds;
 }
 
 export function computeAttemptCost<R extends CombinedResources>(
@@ -254,8 +260,8 @@ export function computeAttemptCost<R extends CombinedResources>(
 /** Corrige si `successRange.min > max` y aplica la dificultad. */
 export function computeSuccessChance(
   d: Draft,
-  prev: PrevMax,
-  caps: ResearchCaps,
+  prev: ShipStats,
+  caps: ShipStats,
   tuning: ResearchTuning
 ) {
   const diff = difficultyRatio(d, prev, caps);
@@ -300,7 +306,7 @@ export function getConsecutiveFailsForHash(history: ShipDesignAttempt[], hash: s
   return count;
 }
 
-export function mergeMaxCreationStats(prev: PrevMax, attempted: PrevMax): PrevMax {
+export function mergeMaxCreationStats(prev: ShipStats, attempted: ShipStats): ShipStats {
   return {
     attack: Math.max(prev.attack, attempted.attack ?? prev.attack),
     defense: Math.max(prev.defense, attempted.defense ?? prev.defense),
@@ -309,7 +315,7 @@ export function mergeMaxCreationStats(prev: PrevMax, attempted: PrevMax): PrevMa
   };
 }
 
-export function extractCreationStatsFromDraft(draft: Draft): PrevMax {
+export function extractCreationStatsFromDraft(draft: Draft): ShipStats {
   const { attack, defense, speed, hp } = (draft as any) ?? {};
   return { attack, defense, speed, hp };
 }

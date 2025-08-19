@@ -68,18 +68,12 @@ function regroupFleet(combatFleet: ReadonlyArray<CombatShip>, specs: ShipSpecsCt
 
 /* ------------------------- daño / resolución de turnos --------------------- */
 
-function calculateDamage(attacker: CombatShip, defender: CombatShip) {
-  const rawDamage = attacker.attack - defender.defense;
-  if (rawDamage > 1) return rawDamage;
-  if (rawDamage >= -2) return 1;
-  if (rawDamage >= -5) return 0.2;
-  else 0.05;
-}
-
 function calculateDamageFromAttack(attackValue: number, defender: CombatShip) {
   const raw = attackValue - defender.defense;
   if (raw > 1) return raw;
   if (raw >= -2) return 1;
+  if (raw >= -5) return 0.2;
+  if (raw >= -8) return 0.05;
   return 0;
 }
 

@@ -2,12 +2,12 @@ import { shipConfig } from "@/src/config/shipConfig";
 import { SHIP_STATS } from "@/src/constants/ship";
 import { useGameContextSelector } from "@/src/context/GameContext";
 import { commonStyles } from "@/src/styles/commonStyles";
-import type { ShipId, ShipType } from "@/src/types/shipType";
+import type { ShipId, ShipStats, ShipType } from "@/src/types/shipType";
 import { formatDuration } from "@/utils/generalUtils";
 import { getUnmetRequirements, isUnlocked } from "@/utils/shipUtils";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Animated, ImageBackground, Text, TouchableOpacity, View } from "react-native";
+import { Animated, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { CountdownTimer } from "../auxiliar/CountdownTimer";
 import { ResourceDisplay } from "../auxiliar/ResourceDisplay";
 import { ShipStatsDisplay } from "../auxiliar/ShipStatsDisplay";
@@ -83,18 +83,18 @@ export const ShipCard: React.FC<Props> = ({ item, onBuild, onCancel }) => {
   const subtitle = isCustom ? "" : tShip(`shipDescription.${item.type}`);
 
   // Stats a mostrar
-  const stats = isCustom
+  const stats: ShipStats = isCustom
     ? {
-        SPEED: item.speed ?? 0,
-        ATTACK: item.attack ?? 0,
-        DEFENSE: item.defense ?? 0,
-        HP: item.hp ?? 0,
+        speed: item.speed ?? 0,
+        attack: item.attack ?? 0,
+        defense: item.defense ?? 0,
+        hp: item.hp ?? 0,
       }
     : {
-        SPEED: SHIP_STATS[item.type as ShipType].SPEED,
-        ATTACK: SHIP_STATS[item.type as ShipType].ATTACK,
-        DEFENSE: SHIP_STATS[item.type as ShipType].DEFENSE,
-        HP: SHIP_STATS[item.type as ShipType].HP,
+        speed: SHIP_STATS[item.type as ShipType].SPEED,
+        attack: SHIP_STATS[item.type as ShipType].ATTACK,
+        defense: SHIP_STATS[item.type as ShipType].DEFENSE,
+        hp: SHIP_STATS[item.type as ShipType].HP,
       };
 
   return (
@@ -110,28 +110,21 @@ export const ShipCard: React.FC<Props> = ({ item, onBuild, onCancel }) => {
       >
         <View style={commonStyles.overlayDark}>
           <View>
-            <View style={commonStyles.headerRow}>
-              <Text style={commonStyles.titleText}>{title}</Text>
-              {item.owned > 0 && <Text style={commonStyles.whiteText}>x{item.owned}</Text>}
+            <View style={[commonStyles.headerRow, commonStyles.rowSpaceBetween]}>
+              <Text
+                style={[commonStyles.titleText, { flex: 1, minWidth: 0, marginRight: 8 }]}
+                numberOfLines={2}
+              >
+                {item.owned > 0 && <Text style={commonStyles.whiteText}>{item.owned} x </Text>}
+                {title}
+              </Text>
+              <ShipStatsDisplay stats={stats} fontSize={11} showBackground={false} />
             </View>
-            {!!subtitle && <Text style={commonStyles.subtitleText}>{subtitle}</Text>}
+            <Text style={commonStyles.smallSubtitle}>⏳ {formatDuration(item.unitTime)}</Text>
+            {/* {!!subtitle && <Text style={commonStyles.subtitleText}>{subtitle}</Text>} */}
           </View>
 
           <View>
-            <View style={commonStyles.rowSpaceBetween}>
-              <Text style={commonStyles.whiteText}>{t("cost")}</Text>
-              <View style={commonStyles.rowResources}>
-                <ResourceDisplay resources={item.cost} fontSize={13} />
-              </View>
-            </View>
-            <View style={commonStyles.rowSpaceBetween}>
-              <Text style={commonStyles.whiteText}>{t("timePerUnit")}</Text>
-              <Text style={commonStyles.whiteText}>{formatDuration(item.unitTime)}</Text>
-            </View>
-            <View style={commonStyles.rowSpaceBetween}>
-              <Text style={commonStyles.whiteText}>{t("combatStats")} </Text>
-              <ShipStatsDisplay stats={stats} fontSize={13} />
-            </View>
             <View style={commonStyles.actionBar}>
               {isAvailable && (
                 <TouchableOpacity
@@ -181,9 +174,30 @@ export const ShipCard: React.FC<Props> = ({ item, onBuild, onCancel }) => {
                 <Text style={commonStyles.buttonTextLight}>{t("Build")}</Text>
               </TouchableOpacity>
             </View>
+            <View style={commonStyles.actionBar}>
+              <Text style={commonStyles.buttonTextLight}>{t("cost")}</Text>
+              <ResourceDisplay resources={item.cost} fontSize={13} miniSyle={true} />
+            </View>
           </View>
         </View>
       </ImageBackground>
     </Animated.View>
   );
 };
+
+const styles = StyleSheet.create({
+  resourceList: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.28)",
+    borderRadius: 12,
+    paddingHorizontal: 4,
+    paddingVertical: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 3,
+    gap: 12,
+  },
+});

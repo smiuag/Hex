@@ -181,10 +181,14 @@ export type ShipSpecsCtx = {
   customById: CustomSpecMap; // recetas del jugador
 };
 
-export type PrevMax = { attack: number; defense: number; speed: number; hp: number };
-export const defaultCreationStats: PrevMax = { attack: 8, defense: 8, speed: 200, hp: 20 };
+export type ShipStats = {
+  speed: number;
+  attack: number;
+  defense: number;
+  hp: number;
+};
 
-export type ResearchCaps = PrevMax;
+export const defaultCreationStats: ShipStats = { attack: 8, defense: 8, speed: 200, hp: 20 };
 
 export type ResearchTuning<R extends CombinedResources = CombinedResources> = {
   maxMultiplier: number;

@@ -33,8 +33,6 @@ export default function LabComponent() {
     if (data.building) handleBuild(data.q, data.r, data.building.type);
   };
 
-  console.log("2342342");
-
   const onCancel = () => {
     handleCancelBuild(data.q, data.r);
   };

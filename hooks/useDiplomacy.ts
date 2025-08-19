@@ -105,7 +105,12 @@ export const useDiplomacy = (
   };
 
   const handleEventOptionChoose = async (option: EventOption) => {
-    modifyEvent((prev) => ({ ...prev, completed: true, completedTime: Date.now() }));
+    modifyEvent((prev) => ({
+      ...prev,
+      completed: true,
+      completedTime: Date.now(),
+      optionChosed: option.type,
+    }));
     option.effects.forEach((effect) => {
       handleEffectResolved(effect);
     });

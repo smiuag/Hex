@@ -2,9 +2,11 @@ import { resourceEmojis } from "@/src/config/emojisConfig";
 import { NORMAL_KEYS, type CombinedResources } from "@/src/types/resourceTypes";
 import { formatAmount } from "@/utils/generalUtils";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, View } from "react-native";
 
 export default function ResourceLines({ cost }: { cost: Partial<CombinedResources> }) {
+  const { t: tResources } = useTranslation("resources");
   const entries = Object.entries(cost);
   const normal = entries.filter(([k]) => NORMAL_KEYS.has(k));
   const special = entries.filter(([k]) => !NORMAL_KEYS.has(k));
@@ -12,10 +14,10 @@ export default function ResourceLines({ cost }: { cost: Partial<CombinedResource
   const fmtNormal = (k: string, v: number | unknown) =>
     `${resourceEmojis[k as keyof typeof resourceEmojis] ?? ""}  ${formatAmount(
       Math.round((v as number) ?? 0)
-    )} ${k}`;
+    )} ${tResources(`resourceType.${k}`)}`;
 
   const fmtSpecial = (k: string, v: number | unknown) =>
-    `${k} ${formatAmount(Math.round((v as number) ?? 0))} ${
+    `${tResources(`resourceType.${k}`)} ${formatAmount(Math.round((v as number) ?? 0))} ${
       resourceEmojis[k as keyof typeof resourceEmojis] ?? ""
     }`;
 

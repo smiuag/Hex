@@ -1,20 +1,15 @@
 import { shipStatsEmojis } from "@/src/config/emojisConfig";
 import { commonStyles } from "@/src/styles/commonStyles";
+import { ShipStats } from "@/src/types/shipType";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-
-interface ShipStats {
-  SPEED: number;
-  ATTACK: number;
-  DEFENSE: number;
-  HP: number;
-}
 
 interface Props {
   stats: Partial<ShipStats>;
   fontSize?: number;
   fontColor?: string;
   showSpeed?: boolean;
+  showBackground?: boolean;
 }
 
 export const ShipStatsDisplay = ({
@@ -22,19 +17,20 @@ export const ShipStatsDisplay = ({
   fontSize = 16,
   fontColor = "white",
   showSpeed = true,
+  showBackground = true,
 }: Props) => {
   return (
-    <View style={[styles.container]}>
+    <View style={[styles.container, showBackground && styles.backgroundCntainer]}>
       {Object.entries(stats).map(([key, value]) => {
         const emoji = shipStatsEmojis[key as keyof typeof shipStatsEmojis];
 
         if (!emoji || value == null) return null;
-        if (!showSpeed && key === "SPEED") return null;
+        if (!showSpeed && key === "speed") return null;
 
         return (
           <View key={key} style={{ flexDirection: "row", alignItems: "center" }}>
             <Text style={[styles.item, { fontSize, color: fontColor }]}>{emoji}</Text>
-            <View style={[commonStyles.minWidth25, { marginLeft: 4 }]}>
+            <View style={{ marginLeft: 2 }}>
               <Text style={commonStyles.whiteText}>{value}</Text>
             </View>
           </View>
@@ -48,22 +44,24 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.28)",
     borderRadius: 12,
     paddingHorizontal: 4,
     paddingVertical: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
     elevation: 3,
-    gap: 12,
+    gap: 5,
+    maxWidth: 150,
   },
   item: {
-    marginRight: 2,
     color: "white",
     fontWeight: "600",
     flexDirection: "row",
     alignItems: "center",
+  },
+  backgroundCntainer: {
+    backgroundColor: "rgba(255, 255, 255, 0.28)",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
 });

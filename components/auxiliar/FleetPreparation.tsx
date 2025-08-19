@@ -3,6 +3,7 @@ import { useGameContextSelector } from "@/src/context/GameContext";
 import { commonStyles } from "@/src/styles/commonStyles";
 import { raceConfig } from "@/src/types/raceType";
 import { Ship } from "@/src/types/shipType";
+import { getSpecByType } from "@/utils/shipUtils";
 import { getSystemImage } from "@/utils/starSystemUtils";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
@@ -20,7 +21,6 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
-import { shipConfig } from "../../src/config/shipConfig";
 
 type Props = {
   origin: string;
@@ -31,12 +31,11 @@ export default function FleetSelector({ origin, destination }: Props) {
   const [selected, setSelected] = useState<Record<string, number>>({});
   const [available, setAvailable] = useState<Record<string, number>>({});
 
-  console.log("sdasdas");
-
   const router = useRouter();
   const shipBuildQueue = useGameContextSelector((ctx) => ctx.shipBuildQueue);
   const starSystems = useGameContextSelector((ctx) => ctx.starSystems);
   const startAttack = useGameContextSelector((ctx) => ctx.startAttack);
+  const specs = useGameContextSelector((ctx) => ctx.specs);
   const fleets = shipBuildQueue;
   const system = starSystems.find((s) => s.id == destination);
 
@@ -147,22 +146,27 @@ export default function FleetSelector({ origin, destination }: Props) {
     amount: number,
     onPress: (id: string) => void,
     onLongPress: (id: string) => void
-  ) => (
-    <TouchableOpacity
-      style={styles.fleetItem}
-      onPress={() => onPress(item.type)}
-      onLongPress={() => onLongPress(item.type)}
-      activeOpacity={1}
-    >
-      <View style={styles.imageWrapper}>
-        <Image source={shipConfig[item.type].imageBackground} style={styles.fleetImage} />
-      </View>
-      <Text style={styles.fleetName}>{tShip(`shipName.${item.type}`)}</Text>
-      <View style={styles.quantityBadge}>
-        <Text style={styles.quantityText}>{amount}</Text>
-      </View>
-    </TouchableOpacity>
-  );
+  ) => {
+    const spec = getSpecByType(item.type, specs);
+    const image = spec.imageBackground;
+
+    return (
+      <TouchableOpacity
+        style={styles.fleetItem}
+        onPress={() => onPress(item.type)}
+        onLongPress={() => onLongPress(item.type)}
+        activeOpacity={1}
+      >
+        <View style={styles.imageWrapper}>
+          <Image source={image} style={styles.fleetImage} />
+        </View>
+        <Text style={styles.fleetName}>{tShip(`shipName.${item.type}`)}</Text>
+        <View style={styles.quantityBadge}>
+          <Text style={styles.quantityText}>{amount}</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={styles.container}>

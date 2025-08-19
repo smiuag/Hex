@@ -38,4 +38,23 @@ yarn-error.*
 
 app-example
 
+# --- React Native / Android ---
+android/.gradle/
+android/.cxx/
+android/build/
+android/app/build/
+android/local.properties
+*.apk
+*.aab
 
+# --- iOS ---
+ios/build/
+ios/DerivedData/
+ios/Pods/        # Si tu equipo versiona Pods, quita esta línea.
+
+# --- Bundles / Metro ---
+*.jsbundle
+
+# --- IDE ---
+.idea/
+.vscode/

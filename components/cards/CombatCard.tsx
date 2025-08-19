@@ -4,9 +4,10 @@ import { IMAGES } from "@/src/constants/images";
 import { useGameContextSelector } from "@/src/context/GameContext";
 import { commonStyles } from "@/src/styles/commonStyles";
 import type { CombatResult, Turn } from "@/src/types/combatResultTypes";
-import { ALL_SHIP_TYPES, type ShipData, type ShipType } from "@/src/types/shipType";
+import { ALL_SHIP_TYPES, ShipId, type ShipData, type ShipType } from "@/src/types/shipType";
 import { aggregateLosses } from "@/utils/combatUtils";
 import { formatDate, totalAmount } from "@/utils/generalUtils";
+import { getSpecByType, isCustomType } from "@/utils/shipUtils";
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ImageBackground, Text, TouchableOpacity, View } from "react-native";
@@ -39,6 +40,8 @@ export type CombatCardProps = {
 export default function CombatCard({ item, expanded, onToggle }: CombatCardProps) {
   const { t: tShip } = useTranslation("ship");
   const universe = useGameContextSelector((ctx) => ctx.universe);
+  const specs = useGameContextSelector((ctx) => ctx.specs);
+
   const { turns, playerIsAttacker, playerWins } = item;
 
   const name = universe[item.sistem].name;
@@ -113,7 +116,7 @@ export default function CombatCard({ item, expanded, onToggle }: CombatCardProps
             {turns.map((t, idx) => {
               // mapas por turno
               const toMap = (arr: ShipData[]) => {
-                const m: Record<ShipType, number> = {} as any;
+                const m: Record<ShipId, number> = {} as any;
                 arr.forEach((s) => (m[s.type] = (m[s.type] ?? 0) + s.amount));
                 return m;
               };
@@ -171,21 +174,41 @@ export default function CombatCard({ item, expanded, onToggle }: CombatCardProps
                       const enemyStart = prevEnemyMap[type] ?? 0;
                       const enemyLost = enemyLostMap[type] ?? 0;
 
+                      const spec = getSpecByType(type, specs);
+                      const displayName = isCustomType(type)
+                        ? spec.name
+                        : tShip(`shipName.${type as ShipType}`);
+
+                      const showLeft = myStart + myLost > 0;
+                      const showRight = enemyStart + enemyLost > 0;
+
                       return (
-                        <View key={`${t.turn}-${type}`} style={styles.tripleRow}>
-                          {/* Izquierda: tus números */}
+                        <View key={`${t.turn}-${type}`} style={styles.pairRow}>
+                          {/* IZQUIERDA: 3-1 + nombre */}
                           <View style={styles.sideCell}>
-                            <RenderStartLoss start={myStart} lost={myLost} />
+                            {showLeft ? (
+                              <View style={styles.leftInline}>
+                                <View style={styles.inlineGapRight}>
+                                  <RenderStartLoss start={myStart} lost={myLost} />
+                                </View>
+                                <Text style={styles.shipName}>{displayName}</Text>
+                              </View>
+                            ) : (
+                              <View />
+                            )}
                           </View>
 
-                          {/* Centro: nombre común */}
-                          <View style={styles.centerCell}>
-                            <Text style={styles.shipName}>{tShip(`shipName.${type}`)}</Text>
-                          </View>
-
-                          {/* Derecha: números del enemigo */}
-                          <View style={styles.sideCell}>
-                            <RenderStartLoss start={enemyStart} lost={enemyLost} alignRight />
+                          {/* DERECHA: nombre + 3-1 (número pegado a la derecha) */}
+                          <View style={[styles.sideCell, styles.sideRight]}>
+                            {showRight ? (
+                              <View style={styles.rightInline}>
+                                <Text style={styles.shipName}>{displayName}</Text>
+                                <View style={styles.inlineGapLeft} />
+                                <RenderStartLoss start={enemyStart} lost={enemyLost} alignRight />
+                              </View>
+                            ) : (
+                              <View />
+                            )}
                           </View>
                         </View>
                       );
@@ -288,4 +311,28 @@ const styles = {
     backgroundColor: "rgba(0,0,0,0.25)",
   },
   metaText: { color: "#E5E7EB", fontWeight: "700" as const, fontSize: 12 },
+  pairRow: {
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    paddingVertical: 3,
+  },
+
+  leftInline: {
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    justifyContent: "flex-start" as const,
+  },
+
+  rightInline: {
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    justifyContent: "flex-end" as const, // el número queda al borde derecho
+  },
+
+  sideRight: {
+    alignItems: "flex-end" as const,
+  },
+
+  inlineGapRight: { marginRight: 6 },
+  inlineGapLeft: { width: 6 },
 };

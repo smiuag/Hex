@@ -1,7 +1,8 @@
 import { IMAGES } from "@/src/constants/images";
-import { SHIP_STATS } from "@/src/constants/ship";
 import { useGameContextSelector } from "@/src/context/GameContext";
 import { raceConfig } from "@/src/types/raceType";
+import { ShipType } from "@/src/types/shipType";
+import { getSpecByType, isCustomType } from "@/utils/shipUtils";
 import { getSystemImage } from "@/utils/starSystemUtils";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -24,6 +25,7 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onCance
   const { t: tPlanets } = useTranslation("planets");
   const fleet = useGameContextSelector((ctx) => ctx.fleet);
   const universe = useGameContextSelector((ctx) => ctx.universe);
+  const specs = useGameContextSelector((ctx) => ctx.specs);
   const router = useRouter();
 
   const attackingFleet = fleet.find(
@@ -61,21 +63,25 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onCance
           </View>
           <View style={{ marginTop: 5 }}>
             {system.defense.map((ship) => {
-              const name = tShip(`shipName.${ship.type}`);
+              const spec = getSpecByType(ship.type, specs);
+              const displayName = isCustomType(ship.type)
+                ? spec.name
+                : tShip(`shipName.${ship.type as ShipType}`);
+
               return (
                 <View style={[commonStyles.rowSpaceBetween, { marginTop: 3 }]} key={ship.type}>
                   <Text
                     key={ship.type}
                     style={[commonStyles.subtitleText, { fontSize: 12, marginVertical: 1 }]}
                   >
-                    {ship.amount} {name}
+                    {ship.amount} {displayName}
                   </Text>
                   <ShipStatsDisplay
                     stats={{
-                      SPEED: SHIP_STATS[ship.type].SPEED,
-                      ATTACK: SHIP_STATS[ship.type].ATTACK,
-                      DEFENSE: SHIP_STATS[ship.type].DEFENSE,
-                      HP: SHIP_STATS[ship.type].HP,
+                      speed: spec.speed,
+                      attack: spec.attack,
+                      defense: spec.defense,
+                      hp: spec.hp,
                     }}
                     showSpeed={false}
                     fontSize={13}

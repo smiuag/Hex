@@ -7,38 +7,55 @@ export type SegmentedOption<T extends string> = {
   emoji?: string;
 };
 
+type Props<T extends string> = {
+  value: T;
+  onChange?: (v: T) => void; // opcional
+  options: readonly SegmentedOption<T>[];
+  compact?: boolean;
+  disabled?: boolean; // opcional
+};
+
 export default function Segmented<T extends string>({
   value,
   onChange,
   options,
   compact = false,
-}: {
-  value: T;
-  onChange: (v: T) => void;
-  options: readonly SegmentedOption<T>[];
-  compact?: boolean;
-}) {
+  disabled = false,
+}: Props<T>) {
+  const isDisabledAll = disabled || !onChange;
+
   return (
-    <View style={[styles.segment, compact && styles.segmentCompact]}>
+    <View
+      style={[
+        styles.segment,
+        compact && styles.segmentCompact,
+        isDisabledAll && styles.segmentDisabled,
+      ]}
+      accessibilityRole="radiogroup"
+    >
       {options.map((opt) => {
         const active = value === opt.value;
+
         return (
           <Pressable
             key={opt.value}
-            onPress={() => onChange(opt.value)}
+            onPress={() => !isDisabledAll && onChange?.(opt.value)}
+            disabled={isDisabledAll}
             style={[
               styles.segmentBtn,
               compact && styles.segmentBtnCompact,
               active && styles.segmentBtnActive,
+              isDisabledAll && styles.segmentBtnDisabled,
             ]}
             accessibilityRole="radio"
-            accessibilityState={{ selected: active }}
+            accessibilityState={{ selected: active, disabled: isDisabledAll }}
           >
             <Text
               style={[
                 styles.segmentText,
                 compact && styles.segmentTextCompact,
                 active && styles.segmentTextActive,
+                isDisabledAll && styles.segmentTextDisabled,
               ]}
               numberOfLines={1}
             >
@@ -62,6 +79,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   segmentCompact: { paddingVertical: 2 },
+  segmentDisabled: { opacity: 0.6 },
+
   segmentBtn: {
     flex: 1,
     paddingVertical: 10,
@@ -70,14 +89,17 @@ const styles = StyleSheet.create({
   },
   segmentBtnCompact: { paddingVertical: 6 },
   segmentBtnActive: {
-    backgroundColor: "rgba(70,46,120,0.55)",
+    backgroundColor: "rgba(46, 73, 120, 0.55)",
     borderWidth: 1,
-    borderColor: "#8b5cf6",
-    shadowColor: "#8b5cf6",
+    borderColor: "#5c9cf6ff",
+    shadowColor: "#5c69f6ff",
     shadowOpacity: 0.2,
     shadowRadius: 6,
   },
+  segmentBtnDisabled: {},
+
   segmentText: { color: "#cfd6ff", fontWeight: "600" },
   segmentTextCompact: { fontSize: 12 },
   segmentTextActive: { color: "#ffffff", fontWeight: "800" },
+  segmentTextDisabled: { opacity: 0.9 },
 });

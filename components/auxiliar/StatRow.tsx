@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     bottom: 0,
-    backgroundColor: "#8b5cf6",
+    backgroundColor: "#5c69f6ff",
   },
   inlineText: {
     textAlign: "center",

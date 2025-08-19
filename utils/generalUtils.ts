@@ -15,10 +15,10 @@ export const formatDuration = (timestamp: number, onlyMostSignificant?: boolean)
   const seconds = Math.floor(diff % 60);
 
   const parts = [];
-  if (days > 0) parts.push(`${days}d`);
-  if (hours > 0) parts.push(`${hours}h`);
-  if (minutes > 0) parts.push(`${minutes}m`);
-  if (seconds > 0 || parts.length === 0) parts.push(`${seconds}s`);
+  if (days > 0) parts.push(`${days} d`);
+  if (hours > 0) parts.push(`${hours} h`);
+  if (minutes > 0) parts.push(`${minutes} m`);
+  if (seconds > 0 || parts.length === 0) parts.push(`${seconds} s`);
 
   if (onlyMostSignificant) {
     return parts[0]; // Solo el más significativo

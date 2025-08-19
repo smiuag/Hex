@@ -146,53 +146,66 @@ export const useShip = (
 
     modifyQueue((prev) => {
       const updated: Ship[] = [];
+
       for (const item of prev) {
-        if (item.progress && item.progress.targetAmount > 0) {
-          const timePerUnit = item.custom
-            ? 10000000000
-            : Math.max(1, Math.floor(shipConfig[item.type].baseBuildTime / GENERAL_FACTOR));
-          const elapsed = now - item.progress.startedAt;
+        const inQueue = !!item.progress && item.progress.targetAmount > 0;
 
-          if (elapsed >= timePerUnit) {
-            changed = true;
-
-            const unitsBuilt = Math.min(
-              Math.floor(elapsed / timePerUnit),
-              item.progress.targetAmount
-            );
-
-            const newAmount = item.amount + unitsBuilt;
-            const newTargetAmount = item.progress.targetAmount - unitsBuilt;
-            const newStartedAt = item.progress.startedAt + unitsBuilt * timePerUnit;
-
-            if (newTargetAmount <= 0) {
-              updated.push(makeShip(item.type, newAmount));
-            } else {
-              updated.push({
-                ...item,
-                amount: newAmount,
-                progress: {
-                  ...item.progress!,
-                  targetAmount: newTargetAmount,
-                  startedAt: newStartedAt,
-                },
-              });
-            }
-            updated.push(item);
-          }
-        } else {
+        if (!inQueue) {
+          // Sin cola → conservar tal cual
           updated.push(item);
+          continue;
+        }
+
+        const timePerUnit = item.custom
+          ? 10000000000
+          : Math.max(1, Math.floor(shipConfig[item.type].baseBuildTime / GENERAL_FACTOR));
+
+        const elapsed = now - item.progress!.startedAt;
+
+        if (elapsed < timePerUnit) {
+          // Aún no toca construir → conservar tal cual
+          updated.push(item);
+          continue;
+        }
+
+        // Construcción lista para avanzar
+        changed = true;
+
+        const unitsBuilt = Math.min(Math.floor(elapsed / timePerUnit), item.progress!.targetAmount);
+
+        const newAmount = item.amount + unitsBuilt;
+        const newTargetAmount = item.progress!.targetAmount - unitsBuilt;
+        const newStartedAt = item.progress!.startedAt + unitsBuilt * timePerUnit;
+
+        if (newTargetAmount <= 0) {
+          // Cola terminada → deja ship “limpio”
+          updated.push(makeShip(item.type, newAmount));
+        } else {
+          // Sigue en cola
+          updated.push({
+            ...item,
+            amount: newAmount,
+            progress: {
+              ...item.progress!,
+              targetAmount: newTargetAmount,
+              startedAt: newStartedAt,
+            },
+          });
         }
       }
+
       return changed ? updated : prev;
     });
 
     if (changed) {
-      if (!playerQuests.some((pq) => pq.type == "SHIP_FIRST" && pq.completed)) {
+      if (!playerQuests.some((pq) => pq.type === "SHIP_FIRST" && pq.completed)) {
         await updateQuest({ type: "SHIP_FIRST", completed: true });
       }
 
-      if (shipRef.current.filter((q) => q.amount > 0).length == Object.keys(shipConfig).length) {
+      if (
+        shipRef.current.filter((q) => q.amount > 0 && !q.custom).length >=
+        Object.keys(shipConfig).length
+      ) {
         onAchievementEvent({ type: "trigger", key: "COLLECT_ALL_SHIPS" });
       }
 

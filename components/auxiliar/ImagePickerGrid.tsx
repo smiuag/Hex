@@ -1,49 +1,55 @@
 import { SHIP_IMAGE_KEYS, SHIP_IMAGES, ShipImageKey } from "@/src/types/shipType";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Image, Pressable, StyleSheet, View } from "react-native";
 
-export default function ImagePickerGrid({
-  value,
-  onChange,
-}: {
+type Props = {
   value?: ShipImageKey;
-  onChange: (k: ShipImageKey) => void;
-}) {
+  onChange?: (k: ShipImageKey) => void;
+  disabled?: boolean; // opcional
+  max?: number; // opcional (por defecto 10)
+};
+
+export default function ImagePickerGrid({ value, onChange, disabled = false, max = 10 }: Props) {
   const [wrapWidth, setWrapWidth] = useState(0);
   const COLS = 5;
   const GAP = 8;
+
+  const items = useMemo(() => SHIP_IMAGE_KEYS.slice(0, max), [max]);
   const size = wrapWidth > 0 ? Math.floor((wrapWidth - GAP * (COLS - 1)) / COLS) : 0;
+  const rows = Math.ceil(items.length / COLS);
 
   return (
     <View style={styles.gridWrap} onLayout={(e) => setWrapWidth(e.nativeEvent.layout.width)}>
-      {SHIP_IMAGE_KEYS.slice(0, 10).map((key, i) => {
+      {items.map((key, i) => {
         const selected = value === key;
         const isLastInRow = (i + 1) % COLS === 0;
-        const isFirstRow = i < COLS;
+        const rowIndex = Math.floor(i / COLS);
+        const isLastRow = rowIndex === rows - 1;
+
+        const isDisabled = disabled || !onChange;
 
         return (
           <Pressable
             key={key}
-            onPress={() => onChange(key)}
+            onPress={() => onChange?.(key)}
+            disabled={isDisabled}
             style={[
               styles.tile,
               {
                 width: size,
                 height: size,
                 marginRight: isLastInRow ? 0 : GAP,
-                marginBottom: isFirstRow ? GAP : 0,
+                marginBottom: isLastRow ? 0 : GAP,
               },
               selected && styles.tileSelected,
+              isDisabled && styles.tileDisabled,
             ]}
             accessibilityRole="button"
-            accessibilityState={{ selected }}
+            accessibilityState={{ selected, disabled: isDisabled }}
           >
-            {/* El box ahora ocupa todo el tile */}
             <View style={styles.box}>
-              {/* 👇 Estira la imagen para llenar el cuadrado */}
               <Image source={SHIP_IMAGES[key]} style={styles.tileImg} resizeMode="stretch" />
             </View>
-
             <View style={[styles.tileGlow, selected && styles.tileGlowOn]} />
           </Pressable>
         );
@@ -65,19 +71,21 @@ const styles = StyleSheet.create({
   },
 
   tileSelected: {
-    borderColor: "#8b5cf6",
-    shadowColor: "#8b5cf6",
+    borderColor: "#5c9cf6ff",
+    shadowColor: "#5c69f6ff",
     shadowOpacity: 0.3,
     shadowRadius: 8,
   },
 
-  // La imagen llena todo el contenedor; el "stretch" la deforma para encajar
+  tileDisabled: {
+    opacity: 0.55,
+  },
+
   tileImg: { width: "100%", height: "100%" },
 
   tileGlow: { ...StyleSheet.absoluteFillObject, backgroundColor: "transparent" },
   tileGlowOn: { backgroundColor: "rgba(139, 92, 246, 0.15)" },
 
-  // El contenedor ya no hace letterboxing: ocupa todo el tile
   box: {
     width: "100%",
     height: "100%",

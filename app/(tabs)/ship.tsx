@@ -3,7 +3,6 @@ import React from "react";
 import { SafeAreaView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ResourceBar from "../../components/auxiliar/ResourceBar";
-import { ShipSummaryBar } from "../../components/auxiliar/ShipSummaryBar";
 import ShipComponent from "../../components/main/ShipComponent";
 import { useGameContextSelector } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
@@ -26,7 +25,7 @@ export default function ShipScreen() {
 
   return (
     <SafeAreaView style={[commonStyles.safeArea, { paddingTop: insets.top }]}>
-      <ShipSummaryBar shipCounts={totalShipCounts} />
+      {/* <ShipSummaryBar shipCounts={totalShipCounts} /> */}
       <ShipComponent />
       <ResourceBar storedResources={resources} showOnlyNormal={true} />
       <ResourceBar storedResources={resources} showOnlySpecial={true} />

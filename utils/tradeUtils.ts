@@ -1,7 +1,8 @@
 import { DIPLOMACY_TRADE_VALUE, Trade } from "@/src/types/eventTypes";
 import { CombinedResources } from "@/src/types/resourceTypes";
-import { Ship, ShipData } from "@/src/types/shipType";
+import { Ship, ShipData, ShipType } from "@/src/types/shipType";
 import { Balances, PricingMap, TradeKind } from "@/src/types/tradeTypes";
+import { makeShip } from "./shipUtils";
 
 type TradeKey = keyof typeof DIPLOMACY_TRADE_VALUE;
 
@@ -324,10 +325,7 @@ export const createTradeEventEffect = (
     if (isResource(line.key)) {
       resources[line.key] = (resources[line.key] ?? 0) + line.qty;
     } else if (isShip(line.key)) {
-      ships.push({
-        type: line.key as unknown as ShipData["type"],
-        amount: line.qty,
-      });
+      ships.push(makeShip(line.key as ShipType, line.qty));
     } else if (isSpecial(line.key)) {
       specialReward = true;
     }
@@ -338,10 +336,7 @@ export const createTradeEventEffect = (
     if (isResource(line.key)) {
       resources[line.key] = (resources[line.key] ?? 0) - line.qty;
     } else if (isShip(line.key)) {
-      ships.push({
-        type: line.key as unknown as ShipData["type"],
-        amount: -line.qty,
-      });
+      ships.push(makeShip(line.key as ShipType, -line.qty));
     }
   }
 

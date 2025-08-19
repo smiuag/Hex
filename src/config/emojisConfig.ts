@@ -14,10 +14,10 @@ export const resourceEmojis: Record<CombinedResourcesType, string> = {
 };
 
 export const shipStatsEmojis: Record<string, string> = {
-  SPEED: "⏩", // Velocidad
-  ATTACK: "🎯", // Ataque
-  DEFENSE: "🛡️", // Defensa
-  HP: "❤️", // Vida
+  speed: "⏩", // Velocidad
+  attack: "🎯", // Ataque
+  defense: "🛡️", // Defensa
+  hp: "❤️", // Vida
 };
 
 export function getEmojiForResource(key: CombinedResourcesType) {

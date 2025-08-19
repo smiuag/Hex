@@ -10,17 +10,25 @@ import {
 import { ConfigEntry, PlayerConfig } from "@/src/types/configTypes";
 import { CombinedResources } from "@/src/types/resourceTypes";
 import {
+  CustomShipSpec,
   CustomShipTypeId,
   defaultCreationStats,
   Draft,
   SHIP_DESIGN_ATTEMPT_DEFAULT,
+  SHIP_IMAGES,
+  ShipData,
   ShipDesignAttempt,
+  ShipId,
+  TUNING,
 } from "@/src/types/shipType";
 import { getCfg } from "@/utils/generalUtils";
 import {
+  computeAttemptCost,
+  computeAttemptTime,
   computeDraftHash,
   extractCreationStatsFromDraft,
   getConsecutiveFailsForHash,
+  makeShip,
   mergeMaxCreationStats,
 } from "@/utils/shipUtils";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -31,7 +39,10 @@ const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
 
 export function useShipDesigns(
   playerConfig: PlayerConfig,
-  handleUpdateConfig: (config: ConfigEntry) => void
+  subtractResources: (modifications: Partial<CombinedResources>) => void,
+  handleUpdateConfig: (config: ConfigEntry) => void,
+  handleCreateShips: (shipsToAdd: { type: ShipId; amount: number }[]) => void,
+  upsertSpec: (spec: CustomShipSpec) => void
 ) {
   // Estado visible
   const [active, setActive] = useState<ShipDesignAttempt>(SHIP_DESIGN_ATTEMPT_DEFAULT);
@@ -136,6 +147,8 @@ export function useShipDesigns(
         status: "IN_PROGRESS",
       };
 
+      subtractResources(attemptCost);
+
       replaceActive(item);
       return { ok: true as const, attempt: item };
     },
@@ -161,6 +174,35 @@ export function useShipDesigns(
           key: "MAX_CREATION_STATS",
           value: nextMax,
         });
+
+        const selectedImg = finished.draft.imageKey
+          ? SHIP_IMAGES[finished.draft.imageKey]
+          : SHIP_IMAGES["DEFAULT_SHIP_1"];
+
+        const spec: CustomShipSpec = {
+          kind: "custom",
+          id: opts.specIdIfSuccess!,
+          name: finished.draft.name,
+          attackTech: finished.draft.attackTech,
+          defenseTech: finished.draft.defenseTech,
+          attack: finished.draft.attack,
+          defense: finished.draft.defense,
+          speed: finished.draft.speed,
+          hp: finished.draft.hp,
+          baseBuildTime: computeAttemptTime({ ...finished.draft }),
+          imageBackground: selectedImg,
+          baseCost: computeAttemptCost(
+            { ...finished.draft },
+            { ...TUNING, attemptCostScale: 1 }
+          ) as Partial<CombinedResources>,
+          productionFacility: "HANGAR",
+          createdAt: Date.now(),
+        };
+
+        upsertSpec(spec);
+        const shipData: ShipData[] = [];
+        shipData.push(makeShip(spec.id, 1));
+        handleCreateShips(shipData);
       }
 
       replaceActive(SHIP_DESIGN_ATTEMPT_DEFAULT);
