@@ -9,6 +9,10 @@ export const ALL_RACES = [
   "RACE8",
   "RACE9",
   "RACE10",
+  "RACE11",
+  "RACE12",
+  "RACE13",
+  "RACE14",
 ] as const;
 export type RaceType = (typeof ALL_RACES)[number];
 
@@ -23,6 +27,10 @@ export const RACES: RaceType[] = [
   "RACE8",
   "RACE9",
   "RACE10",
+  "RACE11",
+  "RACE12",
+  "RACE13",
+  "RACE14",
 ];
 
 export type DiplomacyLevel = {

@@ -11,11 +11,11 @@ type Props = {
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
 
 const buckets = [
-  { max: 200, color: "#ef4444", label: "Hostile" }, // red-500
-  { max: 400, color: "#f59e0b", label: "Tense" }, // amber-500
-  { max: 600, color: "#eab308", label: "Neutral" }, // yellow-500
-  { max: 800, color: "#06b6d4", label: "Cordial" }, // cyan-500
-  { max: 1001, color: "#16a34a", label: "Allied" }, // green-600
+  { max: 200, color: "#ef4444", label: "Hostile" },
+  { max: 400, color: "#f59e0b", label: "Tense" },
+  { max: 600, color: "#eab308", label: "Neutral" },
+  { max: 800, color: "#06b6d4", label: "Cordial" },
+  { max: 1001, color: "#16a34a", label: "Allied" },
 ];
 
 const getBucket = (score: number) => buckets.find((b) => score < b.max)!;
@@ -62,15 +62,13 @@ function DiplomacySummary({ data }: Props) {
         resizeMode="cover"
       >
         {/* opcional: oscurecer un poco para que el texto se lea */}
-        <View style={styles.overlay}>
-          <FlatList
-            data={data.filter((d) => d.discovered)}
-            keyExtractor={(it) => it.race}
-            renderItem={({ item }) => <ItemRow item={item} />}
-            ItemSeparatorComponent={() => <View style={styles.separator} />}
-            scrollEnabled={false}
-          />
-        </View>
+        <FlatList
+          data={data.filter((d) => d.discovered)}
+          keyExtractor={(it) => it.race}
+          renderItem={({ item }) => <ItemRow item={item} />}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          scrollEnabled={false}
+        />
       </ImageBackground>
     </View>
   );
@@ -89,13 +87,6 @@ const styles = StyleSheet.create({
   },
   cardBgImage: {
     borderRadius: 16, // asegura el radio en la imagen
-  },
-
-  // capa opcional para contraste; quítala si no la quieres
-  overlay: {
-    backgroundColor: "rgba(0,0,0,0.35)",
-    borderRadius: 16,
-    padding: 0, // o 12 si prefieres
   },
 
   row: { flexDirection: "row", alignItems: "center", paddingVertical: 6 },

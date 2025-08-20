@@ -551,12 +551,11 @@ export const useStarSystem = (
 
     const system = systemsRef.current.find((s) => s.id === flt.destinationSystemId);
 
-    const resources = system?.storedResources.resources
+    const { resources } = system?.storedResources.resources
       ? getAccumulatedResources(system?.storedResources)
       : ({} as any);
 
     cancelFleet(flt.id, resources as any);
-
     if (!system) return;
 
     await modifySystems((systems) =>

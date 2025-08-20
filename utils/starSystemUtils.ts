@@ -248,3 +248,43 @@ export function getSystemsFromRegion(
     (s) => s.cluster === cluster && s.galaxy === galaxy && s.region === region
   );
 }
+
+/** Ids de edificios usados en los filtros */
+export type BuildingId = "STARPORT" | "DEFENSE" | "EXTRACTION";
+
+/** Claves de recursos (p. ej. "METAL", "STONE", …) */
+export type ResourceKey = keyof CombinedResources;
+
+export function getSystemBuildings(
+  system: StarSystem,
+  opts?: { includeInProgress?: boolean }
+): string[] {
+  const includeInProgress = opts?.includeInProgress ?? true;
+  const out: BuildingId[] = [];
+
+  if (system.starPortBuilt) {
+    out.push("STARPORT");
+  }
+  if (system.defenseBuildingBuilt) {
+    out.push("DEFENSE");
+  }
+  if (system.extractionBuildingBuilt) {
+    out.push("EXTRACTION");
+  }
+
+  return out;
+}
+
+export function getSystemResources(system: StarSystem): string[] {
+  const acc = new Set<string>();
+
+  // body.production es CombinedResources: recorremos pares [clave, valor]
+  for (const [key, val] of Object.entries(system.storedResources.production) as [
+    string,
+    number
+  ][]) {
+    if (typeof val === "number" && val > 0) acc.add(key);
+  }
+
+  return Array.from(acc);
+}

@@ -3,6 +3,7 @@ import { CombinedResources, StoredResources } from "./resourceTypes";
 import { ShipData } from "./shipType";
 
 export type CelestialBodyType = "PLANET" | "ASTEROID" | "MOON" | "NEBULA_FRAGMENT";
+export type StatusKey = "EXPLORED" | "DEFENDED" | "UNEXPLORED";
 
 export type StarSystemType =
   | "BINARY"

@@ -4,6 +4,7 @@ import { useGameContextSelector } from "@/src/context/GameContext";
 import React, { useEffect, useRef, useState } from "react";
 
 import { ConfigValueByKey } from "@/src/types/configTypes";
+import { CombinedResources } from "@/src/types/resourceTypes";
 import { getCfg, normalizeLang, validateName } from "@/utils/generalUtils";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -23,6 +24,7 @@ export default function PlayerSetup() {
   const { t } = useTranslation();
   const playerConfig = useGameContextSelector((ctx) => ctx.playerConfig);
   const handleUpdateConfig = useGameContextSelector((ctx) => ctx.handleUpdateConfig);
+  const addResources = useGameContextSelector((ctx) => ctx.addResources);
   const endGame = useGameContextSelector((ctx) => ctx.endGame);
 
   // Estado local
@@ -98,6 +100,21 @@ export default function PlayerSetup() {
         },
       },
     ]);
+  };
+
+  const handleGetResources = () => {
+    const resources: CombinedResources = {
+      AETHERIUM: 1000,
+      ILMENITA: 1000,
+      KAIROX: 1000,
+      NEBULITA: 5000,
+      THARNIO: 1000,
+      CRYSTAL: 1000000,
+      METAL: 1000000,
+      STONE: 1000000,
+      ENERGY: 500000,
+    };
+    addResources(resources);
   };
 
   return (
@@ -176,6 +193,16 @@ export default function PlayerSetup() {
               style={({ pressed }) => [styles.btn, styles.btnDanger, pressed && styles.btnPressed]}
             >
               <Text style={styles.btnText}>{t("endGame")}</Text>
+            </Pressable>
+            <Pressable
+              onPress={handleGetResources}
+              style={({ pressed }) => [
+                styles.btn,
+                styles.btnCompensation,
+                pressed && styles.btnPressed,
+              ]}
+            >
+              <Text style={styles.btnText}>Compensación</Text>
             </Pressable>
 
             <Pressable
@@ -265,6 +292,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   btnPrimary: { backgroundColor: "#4b6bff" },
+  btnCompensation: { backgroundColor: "#4bff51ff" },
   btnDanger: { backgroundColor: "#ff4b4b" },
   btnDisabled: { backgroundColor: "#3a3a43" },
   btnPressed: { opacity: 0.9 },

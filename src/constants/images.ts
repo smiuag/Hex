@@ -112,6 +112,10 @@ import backgroundRegion from "../../assets/images/starSystems/backgroundRegion.p
 import defaultRace from "../../assets/images/races/default.png";
 import race1 from "../../assets/images/races/race1.png";
 import race10 from "../../assets/images/races/race10.png";
+import race11 from "../../assets/images/races/race11.png";
+import race12 from "../../assets/images/races/race12.png";
+import race13 from "../../assets/images/races/race13.png";
+import race14 from "../../assets/images/races/race14.png";
 import race2 from "../../assets/images/races/race2.png";
 import race3 from "../../assets/images/races/race3.png";
 import race4 from "../../assets/images/races/race4.png";
@@ -223,6 +227,10 @@ export const IMAGES = {
   RACE8: race8,
   RACE9: race9,
   RACE10: race10,
+  RACE11: race11,
+  RACE12: race12,
+  RACE13: race13,
+  RACE14: race14,
   RACE_DEFAULT: defaultRace,
 
   EVENT_TRADE: event_trade,

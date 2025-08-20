@@ -244,27 +244,6 @@ export const SystemExploredCard: React.FC<Props> = ({
             </>
           )}
 
-          {system.extractionBuildingBuilt && (
-            <View
-              style={[
-                commonStyles.actionBar,
-                Object.entries(system.storedResources.resources).filter(([key, value]) => value > 0) // Filtramos los recursos con valor > 0
-                  .length > 5
-                  ? { flexDirection: "column" }
-                  : { flexDirection: "row" },
-              ]}
-            >
-              <View>
-                <Text style={commonStyles.whiteText}>{t("Stored")} </Text>
-              </View>
-              <ResourceBar
-                storedResources={system.storedResources}
-                miniSyle={true}
-                showSpecial={true}
-              />
-            </View>
-          )}
-
           <View style={commonStyles.actionBar}>
             {system.collectStartedAt ? (
               <View>
@@ -298,6 +277,29 @@ export const SystemExploredCard: React.FC<Props> = ({
               </TouchableOpacity>
             )}
           </View>
+          {system.extractionBuildingBuilt &&
+            Object.entries(system.storedResources.production).filter(([key, value]) => value > 0)
+              .length > 0 && (
+              <View
+                style={[
+                  commonStyles.actionBar,
+                  Object.entries(system.storedResources.resources).filter(
+                    ([key, value]) => value > 0
+                  ).length > 5 // Filtramos los recursos con valor > 0
+                    ? { flexDirection: "column" }
+                    : { flexDirection: "row" },
+                ]}
+              >
+                <View>
+                  <Text style={commonStyles.whiteText}>{t("Stored")} </Text>
+                </View>
+                <ResourceBar
+                  storedResources={system.storedResources}
+                  miniSyle={true}
+                  showSpecial={true}
+                />
+              </View>
+            )}
         </View>
       </ImageBackground>
       <TouchableOpacity
