@@ -107,6 +107,8 @@ type ProviderContextType = {
   handleCreateShips: (shipsToAdd: { type: ShipId; amount: number }[]) => void;
   hasDiscoverableResearch: () => boolean;
   upsertSpec: (spec: CustomShipSpec) => void;
+  startFleetMovement: (originalSystem: string, destinationSystem: string, fleet: Ship[]) => void;
+  cancelMovement: (id: string) => void;
 };
 
 const GameContext = createContext<ProviderContextType>(null as any);
@@ -221,7 +223,6 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     resetPlayerEvent,
     resetPlayerDiplomacy,
     handleEventOptionChoose,
-    modifyEvent,
     handleModifyDiplomacy,
   } = useDiplomacy(
     shipBuildQueue,
@@ -261,6 +262,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     cancelScanStarSystem,
     startCollectSystem,
     cancelCollect,
+    startFleetMovement,
+    cancelMovement,
   } = useStarSystem(
     playerQuests,
     universe,
@@ -405,6 +408,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       handleCreateShips,
       hasDiscoverableResearch,
       upsertSpec,
+      startFleetMovement,
+      cancelMovement,
     }),
     [
       fleet,
@@ -465,6 +470,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       handleCreateShips,
       hasDiscoverableResearch,
       upsertSpec,
+      startFleetMovement,
+      cancelMovement,
     ]
   );
 

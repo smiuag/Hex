@@ -132,7 +132,8 @@ export const getFleetProcesses = (fleetData: FleetData[], specs: ShipSpecsCtx): 
         break;
       case "RETURN":
         type = "RETURN FLEET";
-        name = fleetShips + " nave" + (fleetShips > 1 ? "s" : "") + " volviendo a casa";
+        name =
+          fleetShips + " nave" + (fleetShips > 1 ? "s" : "") + " volviendo a su sistema de origen";
         break;
       case "ATTACK":
         type = "ATTACK FLEET";
@@ -171,6 +172,7 @@ export const getFleetProcesses = (fleetData: FleetData[], specs: ShipSpecsCtx): 
       explorationPlanetId:
         fleet.movementType == "EXPLORE CELESTIALBODY" ? fleet.destinationPlanetId : undefined,
       attackSystemId: fleet.movementType == "ATTACK" ? fleet.destinationSystemId : undefined,
+      fleetId: fleet.movementType == "MOVEMENT" ? fleet.id : undefined,
 
       image: spec.imageBackground,
     };

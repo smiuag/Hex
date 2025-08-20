@@ -121,7 +121,7 @@ export const DIPLOMACY_TRADE_VALUE = {
     COST: 5000000,
     RESTRICTED: true,
     WANTED: true,
-    CHANCE: 0.02,
+    CHANCE: 0.2,
     MAX: 1,
   },
 } as const;

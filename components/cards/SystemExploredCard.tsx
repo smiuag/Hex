@@ -1,21 +1,15 @@
-import { shipConfig } from "@/src/config/shipConfig";
-import {
-  COLLECT_COST,
-  STAR_BUILDINGS_COST,
-  STAR_BUILDINGS_DURATION,
-} from "@/src/constants/general";
-import { getFlyTime } from "@/utils/shipUtils";
 import { getSystemImage } from "@/utils/starSystemUtils";
+import { useRouter } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, ImageBackground, Text, TouchableOpacity, View } from "react-native";
-import Toast from "react-native-toast-message";
+import { ImageBackground, Text, TouchableOpacity, View } from "react-native";
 import { useGameContextSelector } from "../../src/context/GameContext";
 import { commonStyles } from "../../src/styles/commonStyles";
 import { StarSystem } from "../../src/types/starSystemTypes";
-import { CountdownTimer } from "../auxiliar/CountdownTimer";
+import { DefenseBuilding } from "../auxiliar/DefenseBuilding";
 import ExploredCelestialBody from "../auxiliar/ExploredCelestialBody";
-import ResourceBar from "../auxiliar/ResourceBar";
+import { ExtractorBuilding } from "../auxiliar/ExtractorBuilding";
+import { StarPortBuilding } from "../auxiliar/StarPortBuilding";
 
 type Props = {
   system: StarSystem;
@@ -43,60 +37,11 @@ export const SystemExploredCard: React.FC<Props> = ({
   const { t } = useTranslation("common");
   const { t: tPlanets } = useTranslation("planets");
   const universe = useGameContextSelector((ctx) => ctx.universe);
-  const shipBuildQueue = useGameContextSelector((ctx) => ctx.shipBuildQueue);
-  const enoughResources = useGameContextSelector((ctx) => ctx.enoughResources);
 
-  const freighterSpeed = shipConfig["FREIGHTER"].speed;
-  const timeToCollect = getFlyTime(freighterSpeed, system.distance);
+  const router = useRouter();
 
-  const confirmBuild = (title: string, message: string, action: () => void) => {
-    Alert.alert(title, message, [
-      { text: t("cancel"), style: "cancel" },
-      {
-        text: t("confirm"),
-        style: "destructive",
-        onPress: () => {
-          const lockedByResources = !enoughResources(STAR_BUILDINGS_COST);
-          const enoughFreighter = shipBuildQueue.find((f) => f.type == "FREIGHTER" && f.amount > 1);
-          if (enoughFreighter && !lockedByResources) {
-            action();
-          } else {
-            Toast.show({
-              type: "info",
-              text1: t("NotEnoughForConstruction"),
-              position: "top",
-              visibilityTime: 2000,
-            });
-          }
-        },
-      },
-    ]);
-  };
-
-  const handleCollect = () => {
-    Alert.alert(t("CollectAlert"), t("CollectMessage"), [
-      { text: t("cancel"), style: "cancel" },
-      {
-        text: t("confirm"),
-        style: "destructive",
-        onPress: async () => {
-          const lockedByResources = !enoughResources(COLLECT_COST);
-          const enoughFreighter = shipBuildQueue.find((f) => f.type == "FREIGHTER" && f.amount > 0);
-          if (enoughFreighter && !lockedByResources) onStartCollectSystem(system.id);
-          else
-            Toast.show({
-              type: "info", // "success" | "info" | "error"
-              text1: t("NotEnoughForCollect"),
-              position: "top",
-              visibilityTime: 2000,
-            });
-        },
-      },
-    ]);
-  };
-
-  const handleCancelCollect = () => {
-    onCancelCollectSystem(system.id);
+  const handleTravel = () => {
+    router.replace(`/(tabs)/galaxy/fleetAttack?systemId=${system.id}`);
   };
 
   const image = getSystemImage(system.type);
@@ -147,161 +92,23 @@ export const SystemExploredCard: React.FC<Props> = ({
                 {t("Instalations")}
               </Text>
 
-              {system.starPortBuilt ? (
-                <View style={[commonStyles.actionBar]}>
-                  <Text style={commonStyles.subtitleText}>{t("StarPortBuilt")}</Text>
-                </View>
-              ) : system.starPortStartedAt ? (
-                <View style={[commonStyles.actionBar]}>
-                  <Text style={commonStyles.statusTextYellow}>
-                    ⏳ {t("inProgress")}:{" "}
-                    <CountdownTimer
-                      startedAt={system.starPortStartedAt}
-                      duration={STAR_BUILDINGS_DURATION}
-                    />
-                  </Text>
-                  <Text style={commonStyles.whiteText}>{t("StarPort")}</Text>
-                </View>
-              ) : (
-                <View style={[commonStyles.actionBar]}>
-                  <Text style={commonStyles.subtitleText}>{t("StarPort")}</Text>
-                  <TouchableOpacity
-                    style={commonStyles.buttonPrimary}
-                    onPress={() =>
-                      confirmBuild(t("BuildStarPort"), t("StarPortCostMessage"), () =>
-                        onStarPortBuild(system.id)
-                      )
-                    }
-                  >
-                    <Text style={commonStyles.buttonTextLight}>{t("Build")}</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-
-              {system.defenseBuildingBuilt ? (
-                <View style={[commonStyles.actionBar]}>
-                  <Text style={commonStyles.subtitleText}>{t("DefenseSystemBuilt")}</Text>
-                </View>
-              ) : system.defenseStartedAt ? (
-                <View style={[commonStyles.actionBar]}>
-                  <Text style={commonStyles.statusTextYellow}>
-                    ⏳ {t("inProgress")}:{" "}
-                    <CountdownTimer
-                      startedAt={system.defenseStartedAt}
-                      duration={STAR_BUILDINGS_DURATION}
-                    />
-                  </Text>
-                  <Text style={commonStyles.whiteText}>{t("DefenseSystem")}</Text>
-                </View>
-              ) : (
-                <View style={[commonStyles.actionBar]}>
-                  <Text style={commonStyles.subtitleText}>{t("DefenseSystem")}</Text>
-                  <TouchableOpacity
-                    style={commonStyles.buttonPrimary}
-                    onPress={() =>
-                      confirmBuild(t("BuildDefense"), t("DefenseBuildingCostMessage"), () =>
-                        onDefenseStartBuild(system.id)
-                      )
-                    }
-                  >
-                    <Text style={commonStyles.buttonTextLight}>{t("Build")}</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-
-              {system.extractionBuildingBuilt ? (
-                <View style={[commonStyles.actionBar]}>
-                  <Text style={commonStyles.subtitleText}>{t("ExtractionSystemBuilt")}</Text>
-                </View>
-              ) : system.extractionStartedAt ? (
-                <View style={[commonStyles.actionBar]}>
-                  <Text style={commonStyles.statusTextYellow}>
-                    ⏳ {t("inProgress")}:{" "}
-                    <CountdownTimer
-                      startedAt={system.extractionStartedAt}
-                      duration={STAR_BUILDINGS_DURATION}
-                    />
-                  </Text>
-                  <Text style={commonStyles.whiteText}>{t("ExtractionSystem")}</Text>
-                </View>
-              ) : (
-                <View style={[commonStyles.actionBar]}>
-                  <Text style={commonStyles.subtitleText}>{t("ExtractionSystem")}</Text>
-                  <TouchableOpacity
-                    style={commonStyles.buttonPrimary}
-                    onPress={() =>
-                      confirmBuild(
-                        t("BuildExtractionBuilding"),
-                        t("ExtractionBuildingCostMessage"),
-                        () => onExtractionStartBuild(system.id)
-                      )
-                    }
-                  >
-                    <Text style={commonStyles.buttonTextLight}>{t("Build")}</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
+              <StarPortBuilding
+                system={system}
+                handleTravel={handleTravel}
+                onStarPortBuild={onStarPortBuild}
+              />
+              <DefenseBuilding system={system} onDefenseStartBuild={onDefenseStartBuild} />
+              <ExtractorBuilding
+                system={system}
+                onCancelCollectSystem={onCancelCollectSystem}
+                onExtractionStartBuild={onExtractionStartBuild}
+                onStartCollectSystem={onStartCollectSystem}
+              />
             </>
           )}
-
-          <View style={commonStyles.actionBar}>
-            {system.collectStartedAt ? (
-              <View>
-                <Text style={commonStyles.statusTextYellow}>
-                  ⏳ {t("inProgress")}:{" "}
-                  <CountdownTimer startedAt={system.collectStartedAt} duration={timeToCollect} />
-                </Text>
-              </View>
-            ) : (
-              <View></View>
-            )}
-
-            {system.collectStartedAt ? (
-              <TouchableOpacity
-                style={commonStyles.cancelButton}
-                onPress={() => handleCancelCollect()}
-              >
-                <Text style={commonStyles.cancelButtonText}>{t("Cancel")}</Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                style={[
-                  commonStyles.buttonPrimary,
-                  (!system.starPortBuilt || !system.extractionBuildingBuilt) &&
-                    commonStyles.buttonDisabled,
-                ]}
-                onPress={() => handleCollect()}
-                disabled={!system.starPortBuilt || !system.extractionBuildingBuilt}
-              >
-                <Text style={commonStyles.buttonTextLight}>{t("Collect")}</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-          {system.extractionBuildingBuilt &&
-            Object.entries(system.storedResources.production).filter(([key, value]) => value > 0)
-              .length > 0 && (
-              <View
-                style={[
-                  commonStyles.actionBar,
-                  Object.entries(system.storedResources.resources).filter(
-                    ([key, value]) => value > 0
-                  ).length > 5 // Filtramos los recursos con valor > 0
-                    ? { flexDirection: "column" }
-                    : { flexDirection: "row" },
-                ]}
-              >
-                <View>
-                  <Text style={commonStyles.whiteText}>{t("Stored")} </Text>
-                </View>
-                <ResourceBar
-                  storedResources={system.storedResources}
-                  miniSyle={true}
-                  showSpecial={true}
-                />
-              </View>
-            )}
         </View>
       </ImageBackground>
+      <View></View>
       <TouchableOpacity
         style={commonStyles.floatingDeleteButton}
         onPress={() => {

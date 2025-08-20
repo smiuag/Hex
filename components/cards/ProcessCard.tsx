@@ -16,6 +16,7 @@ type ProcessCardProps = {
   onCancelExploreSystem: (id: string) => Promise<void>;
   onCancelAttack: (id: string) => Promise<void>;
   onCancelCollect: (id: string) => Promise<void>;
+  onCancelMovement: (id: string) => Promise<void>;
 };
 
 export function ProcessCard({
@@ -26,6 +27,7 @@ export function ProcessCard({
   onCancelExploreSystem,
   onCancelAttack,
   onCancelCollect,
+  onCancelMovement,
 }: ProcessCardProps) {
   const { t } = useTranslation("common");
 
@@ -42,6 +44,8 @@ export function ProcessCard({
       await onCancelAttack(item.attackSystemId!);
     } else if (item.type === "COLLECT") {
       await onCancelCollect(item.collectSystemId!);
+    } else if (item.type === "MOVEMENT FLEET") {
+      await onCancelMovement(item.fleetId!);
     }
   };
 

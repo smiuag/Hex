@@ -24,7 +24,7 @@ import { formatAmount } from "./generalUtils";
 import { getRandomShipAttackFleet } from "./shipUtils";
 import { createTradeEventEffect } from "./tradeUtils";
 
-function getHostileRace(race: RaceType): RaceType {
+export function getHostileRace(race: RaceType): RaceType {
   return raceConfig[race].hostiles[Math.floor(Math.random() * raceConfig[race].hostiles.length)];
 }
 

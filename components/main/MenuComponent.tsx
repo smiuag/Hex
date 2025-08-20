@@ -43,6 +43,7 @@ export default function MenuComponent() {
   const cancelExploreSystem = useGameContextSelector((ctx) => ctx.cancelExploreSystem);
   const cancelAttack = useGameContextSelector((ctx) => ctx.cancelAttack);
   const cancelCollect = useGameContextSelector((ctx) => ctx.cancelCollect);
+  const cancelMovement = useGameContextSelector((ctx) => ctx.cancelMovement);
   const startGame = useGameContextSelector((ctx) => ctx.startGame);
 
   const router = useRouter();
@@ -86,6 +87,9 @@ export default function MenuComponent() {
 
   const onCancelCollect = async (id: string) => {
     await cancelCollect(id);
+  };
+  const onCancelMovement = async (id: string) => {
+    await cancelMovement(id);
   };
 
   const productionPerHour = Object.fromEntries(
@@ -169,6 +173,7 @@ export default function MenuComponent() {
                   onCancelExploreSystem={onCancelExploreSystem}
                   onCancelAttack={onCancelAttack}
                   onCancelCollect={onCancelCollect}
+                  onCancelMovement={onCancelMovement}
                 />
               ))}
             </View>

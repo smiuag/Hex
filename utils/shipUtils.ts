@@ -19,6 +19,7 @@ import {
   ShipType,
   SPEED_UNIT,
 } from "@/src/types/shipType";
+import { StarSystem } from "@/src/types/starSystemTypes";
 
 export const isUnlocked = (type: string, playerResearch: Research[] = []): boolean => {
   const config = shipConfig[type as ShipType];
@@ -89,14 +90,14 @@ export const getShips = (shipData: ShipData[]): Ship[] => {
   return ships;
 };
 
-export const totalShips = (ships: Array<{ type: any; amount: number }>) =>
-  ships.reduce((s, sh) => s + (sh.amount || 0), 0);
+export const totalShips = (ships: ShipData[]) => ships.reduce((s, sh) => s + (sh.amount || 0), 0);
 
 export function sumShipArray(arr: ShipData[]): Record<string, number> {
   const map: Record<string, number> = {};
   for (const s of arr) map[s.type] = (map[s.type] ?? 0) + s.amount;
   return map;
 }
+
 // Adaptador builtin → forma común
 const toSpecBase = (t: ShipType, c: BuiltinConfigEntry): ShipSpecBase => ({
   name: t, // o un pretty name si lo tienes
@@ -318,4 +319,67 @@ export function mergeMaxCreationStats(prev: ShipStats, attempted: ShipStats): Sh
 export function extractCreationStatsFromDraft(draft: Draft): ShipStats {
   const { attack, defense, speed, hp } = (draft as any) ?? {};
   return { attack, defense, speed, hp };
+}
+
+export function sumFleet(a: ShipData[] = [], b: ShipData[] = []): ShipData[] {
+  const result: ShipData[] = [];
+
+  const upsert = (s: ShipData) => {
+    const idx = result.findIndex((x) => x.type === s.type);
+    if (idx === -1) result.push(makeShip(s.type, s.amount));
+    else result[idx] = { ...result[idx], amount: result[idx].amount + (Number(s.amount) || 0) };
+  };
+
+  a.forEach(upsert);
+  b.forEach(upsert);
+
+  return result;
+}
+
+function commonPrefixParts(a: string, b: string, ignoreCase = false) {
+  const norm = (s: string) =>
+    (ignoreCase ? s.toLowerCase() : s)
+      .trim()
+      .replace(/^-+/, "") // quita guiones al inicio
+      .replace(/-+$/, ""); // quita guiones al final
+
+  const A = norm(a).split("-").filter(Boolean);
+  const B = norm(b).split("-").filter(Boolean);
+
+  let i = 0;
+  while (i < A.length && i < B.length && A[i] === B[i]) i++;
+
+  return i;
+}
+
+export function getDistance(
+  systems: StarSystem[],
+  originSystemId: string,
+  destinationSystemId: string
+): number {
+  try {
+    if (originSystemId == "PLANET") {
+      const destinationSystem = systems.find((s) => s.id === destinationSystemId);
+      return destinationSystem?.distance ?? 50000;
+    }
+    if (destinationSystemId == "PLANET") {
+      const originSystem = systems.find((s) => s.id === originSystemId);
+      return originSystem?.distance ?? 50000;
+    }
+    const coincidence = commonPrefixParts(originSystemId, destinationSystemId);
+    switch (coincidence) {
+      case 0:
+        return 25000;
+      case 1:
+        return 15000;
+      case 2:
+        return 5000;
+      case 3:
+        return 2500;
+      default:
+        return 1500;
+    }
+  } catch (ex) {
+    return 50000;
+  }
 }

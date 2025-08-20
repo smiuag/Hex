@@ -28,6 +28,7 @@ export class Process {
   explorationPlanetId?: string;
   collectSystemId?: string;
   resources?: CombinedResources;
+  fleetId?: string;
   q?: number;
   r?: number;
 
@@ -43,6 +44,7 @@ export class Process {
     explorationSystemId?: string,
     attackSystemId?: string,
     explorationPlanetId?: string,
+    fleetId?: string,
     q?: number,
     r?: number
   ) {
@@ -57,6 +59,7 @@ export class Process {
     this.explorationSystemId = explorationSystemId;
     this.attackSystemId = attackSystemId;
     this.explorationPlanetId = explorationPlanetId;
+    this.fleetId = fleetId;
     this.q = q;
     this.r = r;
   }

@@ -199,6 +199,7 @@ export const generateSystem = (
     extractionBuildingBuilt: false,
     discarded: false,
     defense: defenseShip,
+    playerShips: [],
     id: system.id,
   };
 };

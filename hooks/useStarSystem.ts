@@ -20,8 +20,9 @@ import { CombinedResources } from "@/src/types/resourceTypes";
 import { Ship, ShipId, ShipSpecsCtx } from "@/src/types/shipType";
 import { StarSystem, StarSystemMap } from "@/src/types/starSystemTypes";
 import { simulateBattle } from "@/utils/combatUtils";
+import { getHostileRace } from "@/utils/eventUtil";
 import { getAccumulatedResources, sumCombinedResources } from "@/utils/resourceUtils";
-import { getFlyTime, getSpecByType, makeShip } from "@/utils/shipUtils";
+import { getDistance, getFlyTime, getSpecByType, makeShip, sumFleet } from "@/utils/shipUtils";
 import { generateSystem } from "@/utils/starSystemUtils";
 import { useEffect, useRef, useState } from "react";
 import uuid from "react-native-uuid";
@@ -296,6 +297,12 @@ export const useStarSystem = (
         return [...fl, returningFleet];
       });
 
+      if (targetSystem.race) {
+        const randomEnemyRace = getHostileRace(targetSystem.race);
+        if (randomEnemyRace)
+          handleModifyDiplomacy(randomEnemyRace, Math.min(Math.ceil(Math.random() * 20), 5));
+      }
+
       await modifySystems((systems) =>
         systems.map((sys) =>
           sys.id === targetSystem.id
@@ -356,7 +363,14 @@ export const useStarSystem = (
           break;
 
         case "RETURN":
-          handleCreateShips(f.ships);
+          if (f.destinationSystemId == "PLANET") handleCreateShips(f.ships);
+          else handleCreateShipsInSystem(f.id);
+          destroyFleet(f.id);
+          break;
+
+        case "MOVEMENT":
+          if (f.destinationSystemId == "PLANET") handleCreateShips(f.ships);
+          else handleCreateShipsInSystem(f.id);
           destroyFleet(f.id);
           break;
 
@@ -458,7 +472,6 @@ export const useStarSystem = (
         const started = s.extractionStartedAt ?? now;
         const finishedAt = started + STAR_BUILDINGS_DURATION;
         const effectiveAt = Math.min(finishedAt, now);
-        const { resources: resAtFinish } = getAccumulatedResources(s.storedResources, effectiveAt);
 
         return {
           ...s,
@@ -466,7 +479,7 @@ export const useStarSystem = (
           extractionBuildingBuilt: true,
           storedResources: {
             ...s.storedResources,
-            resources: resAtFinish,
+            resources: {},
             production: s.storedResources.production,
             lastUpdate: effectiveAt,
           },
@@ -542,6 +555,61 @@ export const useStarSystem = (
 
     await modifySystems((systems) =>
       systems.map((s) => (s.id === id ? { ...s, defenseStartedAt: Date.now() } : s))
+    );
+  };
+
+  const handleCreateShipsInSystem = async (fleetId: string) => {
+    const flt = fleetRef.current.find((f) => f.id == fleetId);
+    if (!flt) return;
+
+    const system = systemsRef.current.find((s) => s.id === flt.destinationSystemId);
+    const { resources } = system?.storedResources.resources
+      ? getAccumulatedResources(system?.storedResources)
+      : ({} as any);
+
+    if (!system) {
+      cancelFleet(flt.id, resources as any);
+      return;
+    }
+
+    const accumulatedResources = sumCombinedResources(resources, flt.resources);
+    const accumulatedFleet = sumFleet(flt.ships, system.playerShips);
+
+    await modifySystems((systems) =>
+      systems.map((s) =>
+        s.id === system.id
+          ? {
+              ...s,
+              storedResources: {
+                lastUpdate: Date.now(),
+                production: s.storedResources.production,
+                resources: accumulatedResources,
+              },
+              playerShips: accumulatedFleet,
+            }
+          : s
+      )
+    );
+
+    await destroyFleet(fleetId);
+  };
+
+  const handleDestroyShipsInSystem = async (type: ShipId, amount: number, systemId: string) => {
+    const system = systemsRef.current.find((s) => s.id === systemId);
+    if (!system) return;
+
+    await modifySystems((systems) =>
+      systems.map((s) => {
+        if (s.id !== systemId) return s;
+
+        const updatedShips = s.playerShips
+          .map((ship) =>
+            ship.type === type ? { ...ship, amount: Math.max(0, ship.amount - amount) } : ship
+          )
+          .filter((ship) => ship.amount > 0);
+
+        return { ...s, playerShips: updatedShips };
+      })
     );
   };
 
@@ -774,6 +842,45 @@ export const useStarSystem = (
     );
   };
 
+  const startFleetMovement = async (
+    originSystemId: string,
+    destinationSystemId: string,
+    fleetShips: Ship[]
+  ) => {
+    const destinationSystem = systemsRef.current.find((s) => s.id === destinationSystemId);
+    const originSystem = systemsRef.current.find((s) => s.id === originSystemId);
+
+    if (destinationSystemId != "PLANET" && !destinationSystem) return;
+    if (originSystemId != "PLANET" && !originSystem) return;
+
+    const slowestSpeed = Math.min(...fleetShips.map((f) => getSpecByType(f.type, specs).speed));
+    const distance = getDistance(systemsRef.current, originSystemId, originSystemId);
+    const timeToTravel = getFlyTime(slowestSpeed, distance);
+
+    const fleetData: FleetData = {
+      destinationSystemId: destinationSystemId,
+      endTime: Date.now() + timeToTravel,
+      movementType: "MOVEMENT",
+      origin: originSystemId,
+      ships: fleetShips,
+      startTime: Date.now(),
+      id: uuid.v4() as string,
+      resources: {},
+    };
+
+    await newFleet(fleetData);
+
+    if (originSystemId == "PLANET") {
+      fleetData.ships.forEach((ship) => {
+        handleDestroyShip(ship.type, ship.amount);
+      });
+    } else {
+      fleetData.ships.forEach((ship) => {
+        handleDestroyShipsInSystem(ship.type, ship.amount, originSystemId);
+      });
+    }
+  };
+
   const scanStarSystem = async (currentSystemId: string, id: string) => {
     const starSystem = universe[id];
     const generated: StarSystem = {
@@ -803,6 +910,10 @@ export const useStarSystem = (
     await deleteStarSystem();
     systemsRef.current = [];
     setPlayerStarSystems([]);
+  };
+
+  const cancelMovement = async (id: string) => {
+    await cancelFleet(id);
   };
 
   // Reexponer loaders por si los necesitas externamente
@@ -836,5 +947,7 @@ export const useStarSystem = (
     cancelScanStarSystem,
     startCollectSystem,
     cancelCollect,
+    startFleetMovement,
+    cancelMovement,
   };
 };

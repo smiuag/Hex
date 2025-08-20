@@ -56,6 +56,7 @@ export type StarSystem = {
 
   distance: number;
   defense: ShipData[];
+  playerShips: ShipData[];
   id: string;
 };
 
