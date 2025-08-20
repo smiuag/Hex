@@ -3,7 +3,8 @@ import { IMAGES } from "@/src/constants/images";
 import { useGameContextSelector } from "@/src/context/GameContext";
 import { commonStyles } from "@/src/styles/commonStyles";
 import { Ship } from "@/src/types/shipType";
-import { getSpecByType } from "@/utils/shipUtils";
+import { getCfg } from "@/utils/generalUtils";
+import { getDistance, getSpecByType } from "@/utils/shipUtils";
 import { getSystemImage } from "@/utils/starSystemUtils";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
@@ -15,12 +16,14 @@ import {
   FlatList,
   Image,
   ImageBackground,
+  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
+import CustomPicker from "./CustomPicker";
 
 type Props = {
   origin: string;
@@ -39,9 +42,18 @@ export default function FleetSelector({ origin, destination }: Props) {
   const router = useRouter();
   const shipBuildQueue = useGameContextSelector((ctx) => ctx.shipBuildQueue);
   const starSystems = useGameContextSelector((ctx) => ctx.starSystems);
+  const specs = useGameContextSelector((ctx) => ctx.specs);
+  const universe = useGameContextSelector((ctx) => ctx.universe);
+  const playerConfig = useGameContextSelector((ctx) => ctx.playerConfig);
   const startAttack = useGameContextSelector((ctx) => ctx.startAttack);
   const startFleetMovement = useGameContextSelector((ctx) => ctx.startFleetMovement);
-  const specs = useGameContextSelector((ctx) => ctx.specs);
+
+  const baseName = getCfg(playerConfig, "PLANET_NAME")!;
+  const startingSystem = getCfg(playerConfig, "STARTING_SYSTEM")!;
+
+  const starSystemsWithFleet = starSystems.filter(
+    (ss) => !ss.discarded && ss.playerShips && ss.playerShips.length > 0
+  );
 
   // Helpers para localizar sistemas
   const findSystem = useCallback(
@@ -144,14 +156,14 @@ export default function FleetSelector({ origin, destination }: Props) {
             {
               text: t("confirm"),
               onPress: async () => {
-                startAttack(systemDest.id, selectedFleets);
+                startAttack(currentDestination, selectedFleets, currentOrigin);
                 router.replace("/(tabs)/galaxy");
               },
             },
           ]
         );
       } else {
-        startAttack(systemDest.id, selectedFleets);
+        startAttack(currentDestination, selectedFleets, currentOrigin);
         router.replace("/(tabs)/galaxy");
       }
     } else {
@@ -173,7 +185,6 @@ export default function FleetSelector({ origin, destination }: Props) {
         {
           text: t("confirm"),
           onPress: async () => {
-            console.log(currentOrigin, currentDestination, selectedFleets);
             startFleetMovement(currentOrigin, currentDestination, selectedFleets);
             router.replace("/(tabs)/galaxy");
           },
@@ -229,6 +240,32 @@ export default function FleetSelector({ origin, destination }: Props) {
 
   const onCancel = () => {
     router.replace("/(tabs)/galaxy");
+  };
+
+  const onLongPressOriginZone = () => {
+    // si no hay nada, no hacer trabajo
+    if (!Object.keys(available).length) return;
+    setSelected((prev) => {
+      const next = { ...prev };
+      Object.entries(available).forEach(([type, amt]) => {
+        if ((amt ?? 0) > 0) next[type] = (next[type] || 0) + (amt || 0);
+      });
+      return next;
+    });
+    setAvailable({}); // todo movido
+  };
+
+  // Long press en el área de DESTINO: quitar TODO
+  const onLongPressDestinationZone = () => {
+    if (!Object.keys(selected).length) return;
+    setAvailable((prev) => {
+      const next = { ...prev };
+      Object.entries(selected).forEach(([type, amt]) => {
+        if ((amt ?? 0) > 0) next[type] = (next[type] || 0) + (amt || 0);
+      });
+      return next;
+    });
+    setSelected({}); // todo devuelto
   };
 
   // --- SWAP handler ---
@@ -330,20 +367,44 @@ export default function FleetSelector({ origin, destination }: Props) {
     );
   };
 
+  const distanceBase = getDistance(starSystems, startingSystem, currentDestination);
+  const items = [
+    { label: `${t("From")} ${baseName} (${distanceBase} parsecs)`, value: "PLANET" },
+    ...starSystemsWithFleet
+      .map((s) => {
+        const distance = getDistance(starSystems, s.id, currentDestination);
+        const label = `${t("From")} ${universe[s.id].name} (${distance} parsecs)`;
+        return { label, value: s.id, distance };
+      })
+      .sort((a, b) => a.distance - b.distance),
+  ];
+
   return (
     <View style={styles.container}>
+      <View style={{ marginBottom: 8 }}>
+        <CustomPicker
+          selectedValue={currentOrigin}
+          items={items}
+          onValueChange={(value) => setCurrentOrigin(value)}
+        />
+      </View>
       {/* ORIGEN */}
       <ImageBackground
         source={originImage}
         style={styles.fleetBox}
         imageStyle={[styles.fleetBoxImage, styles.fleetBoxImageDim]}
       >
-        <View style={styles.box}>
+        <Pressable
+          style={[styles.box, styles.boxFill]}
+          onLongPress={onLongPressOriginZone}
+          delayLongPress={350}
+        >
           <FlatList
+            pointerEvents="box-none"
             data={originFleets}
             keyExtractor={(item) => `origin-${currentOrigin}-${item.type}`}
             numColumns={4}
-            contentContainerStyle={styles.listContainer}
+            contentContainerStyle={[styles.listContainer, styles.listFill]}
             showsHorizontalScrollIndicator={false}
             renderItem={({ item }) =>
               renderFleetItem(item, 0, available[item.type] ?? 0, onPressOrigin, onLongPressOrigin)
@@ -355,7 +416,7 @@ export default function FleetSelector({ origin, destination }: Props) {
             }
             extraData={available}
           />
-        </View>
+        </Pressable>
       </ImageBackground>
 
       {/* CONTROLES */}
@@ -413,12 +474,17 @@ export default function FleetSelector({ origin, destination }: Props) {
         style={styles.fleetBox}
         imageStyle={[styles.fleetBoxImage, styles.fleetBoxImageDim]}
       >
-        <View style={styles.box}>
+        <Pressable
+          style={[styles.box, styles.boxFill]}
+          onLongPress={onLongPressDestinationZone}
+          delayLongPress={350}
+        >
           <FlatList
+            pointerEvents="box-none"
             data={destinationCombined}
             keyExtractor={(row) => `dest-${currentDestination}-${row.type}`}
             numColumns={4}
-            contentContainerStyle={styles.listContainer}
+            contentContainerStyle={[styles.listContainer, styles.listFill]}
             showsHorizontalScrollIndicator={false}
             renderItem={({ item: row }) =>
               renderFleetItem(
@@ -436,7 +502,7 @@ export default function FleetSelector({ origin, destination }: Props) {
               </Text>
             }
           />
-        </View>
+        </Pressable>
       </ImageBackground>
     </View>
   );
@@ -504,7 +570,8 @@ const styles = StyleSheet.create({
   fleetBoxImageDim: {
     opacity: 0.7,
   },
-
+  boxFill: { flex: 1 }, // el Pressable llena la caja
+  listFill: { minHeight: "100%" },
   container: { flex: 1, backgroundColor: "#000", padding: 5 },
   arrowContainer: { alignItems: "center", flexDirection: "row" },
   arrowText: { color: "#00ffe0", fontSize: 14, paddingHorizontal: 15 },

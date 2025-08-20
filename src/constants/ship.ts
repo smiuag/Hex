@@ -91,8 +91,8 @@ export const SHIP_REQUIRED_RESEARCH: Record<ShipType, ShipResearchRequiredData[]
     { researchType: "HEXOXIDO", researchLevelRequired: 1 },
   ],
   PLANETARYDESTROYER: [
-    { researchType: "SHIPENGINEERING", researchLevelRequired: 6 },
-    { researchType: "FUELREFINEMENT", researchLevelRequired: 4 },
+    { researchType: "SHIPENGINEERING", researchLevelRequired: 5 },
+    { researchType: "FUELREFINEMENT", researchLevelRequired: 3 },
     { researchType: "PLASMA", researchLevelRequired: 3 },
     { researchType: "GRAVITY", researchLevelRequired: 2 },
     { researchType: "SHIELD", researchLevelRequired: 3 },

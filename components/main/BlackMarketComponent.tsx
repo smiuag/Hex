@@ -183,6 +183,34 @@ export default function BlackMarketComponent() {
   const discoverNextResearch = useGameContextSelector((ctx) => ctx.discoverNextResearch);
   const handleCreateShips = useGameContextSelector((ctx) => ctx.handleCreateShips);
 
+  const getForbiddenKeyFor = (itemKey: string) => {
+    const entry = pricing[itemKey];
+    if (!entry) return undefined;
+    return entry.KIND === "RESOURCE" ? entry.TYPE : undefined;
+  };
+
+  // Calcula la billetera disponible para un item concreto (excluyendo su propio recurso si aplica)
+  const walletForItem = (itemKey: string) => {
+    const forbid = getForbiddenKeyFor(itemKey);
+    return Object.keys(balances).reduce((acc, k) => {
+      if (k === forbid) return acc;
+      const wanted = pricing[k]?.WANTED ?? 0;
+      const bal = balances[k] ?? 0;
+      if (wanted > 0 && bal > 0) {
+        return acc + bal * wanted;
+      }
+      return acc;
+    }, 0);
+  };
+
+  // Máximo comprable por itemKey, usando su propia wallet
+  const maxAffordableQtyFor = (itemKey: string) => {
+    const unit = pricing[itemKey]?.OFFERED ?? 0;
+    if (unit <= 0) return 0;
+    const w = walletForItem(itemKey);
+    return Math.floor(w / unit);
+  };
+
   // Puede ser función o boolean, soportamos ambos
   const hasDiscoverableResearchFromCtx = useGameContextSelector(
     (ctx) => (ctx as any).hasDiscoverableResearch
@@ -267,13 +295,14 @@ export default function BlackMarketComponent() {
     return undefined;
   }, [selectedEntry]);
 
-  // Recursos con los que se puede pagar (del inventario), excluyendo el prohibido
   const payResourceKeys = useMemo(() => {
-    const resourceKeys = Object.keys(resources ?? {});
-    return resourceKeys.filter(
-      (k) => k !== forbiddenPayKey && (pricing[k]?.WANTED ?? 0) > 0 && (balances[k] ?? 0) > 0
-    );
-  }, [resources, balances, pricing, forbiddenPayKey]);
+    return Object.keys(balances).filter((k) => {
+      const entry = pricing[k];
+      if (!entry) return false;
+      if (k === forbiddenPayKey) return false;
+      return (entry.WANTED ?? 0) > 0 && (balances[k] ?? 0) > 0;
+    });
+  }, [balances, pricing, forbiddenPayKey]);
 
   // Billetera total en valor WANTED
   const walletValue = useMemo(
@@ -291,9 +320,9 @@ export default function BlackMarketComponent() {
   // Máximo por ítem
   const itemMaxMap = useMemo(() => {
     const m: Record<string, number> = {};
-    for (const k of itemKeys) m[k] = maxAffordableQtyBM(k);
+    for (const k of itemKeys) m[k] = maxAffordableQtyFor(k);
     return m;
-  }, [itemKeys, walletValue]);
+  }, [itemKeys, balances, pricing]);
 
   const [qty, setQty] = useState<number>(1);
   const [draftQty, setDraftQty] = useState<number>(1);

@@ -124,10 +124,15 @@ export const useStarSystem = (
   };
 
   const newFleet = async (newFleet: FleetData) => {
-    newFleet.ships.forEach((ship) => {
-      handleDestroyShip(ship.type, ship.amount);
-    });
-
+    if (newFleet.origin != "PLANET") {
+      newFleet.ships.forEach((ship) => {
+        handleDestroyShipsInSystem(ship.type, ship.amount, newFleet.origin);
+      });
+    } else {
+      newFleet.ships.forEach((ship) => {
+        handleDestroyShip(ship.type, ship.amount);
+      });
+    }
     await modifyFleet((prevFleet) => [...prevFleet, newFleet]);
   };
 
@@ -596,6 +601,7 @@ export const useStarSystem = (
 
   const handleDestroyShipsInSystem = async (type: ShipId, amount: number, systemId: string) => {
     const system = systemsRef.current.find((s) => s.id === systemId);
+
     if (!system) return;
 
     await modifySystems((systems) =>
@@ -816,7 +822,7 @@ export const useStarSystem = (
     );
   };
 
-  const startAttack = async (systemId: string, fleetShips: Ship[]) => {
+  const startAttack = async (systemId: string, fleetShips: Ship[], origin: string) => {
     const system = systemsRef.current.find((s) => s.id === systemId);
     if (!system) return;
     const slowestSpeed = Math.min(...fleetShips.map((f) => getSpecByType(f.type, specs).speed));
@@ -828,7 +834,7 @@ export const useStarSystem = (
       destinationSystemId: systemId,
       endTime: Date.now() + timeToAttack,
       movementType: "ATTACK",
-      origin: "PLANET",
+      origin: origin,
       ships: fleetShips,
       startTime: Date.now(),
       id: uuid.v4() as string,

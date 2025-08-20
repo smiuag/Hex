@@ -51,7 +51,12 @@ export const DefenseBuilding: React.FC<Props> = ({ system, onDefenseStartBuild }
         <View style={[commonStyles.actionBar]}>
           <View>
             <Text style={commonStyles.whiteText}>
-              {shipStatsEmojis["attack"] + " 10 " + shipStatsEmojis["defense"] + "30"}
+              {shipStatsEmojis["attack"] +
+                " 10 " +
+                shipStatsEmojis["defense"] +
+                " 30" +
+                shipStatsEmojis["hp"] +
+                " 100"}
             </Text>
           </View>
           <TouchableOpacity

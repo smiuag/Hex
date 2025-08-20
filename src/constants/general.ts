@@ -1,7 +1,7 @@
 import { Resources } from "../types/resourceTypes";
 
 export const RAPIDO = true;
-export const GENERAL_FACTOR = RAPIDO ? 1000 : 1; // 1- NORMAL, 10-ACELERADO PARA PRUEBAS
+export const GENERAL_FACTOR = RAPIDO ? 100 : 1;
 
 export const PRODUCTION_INCREMENT = 1.3;
 export const BUILD_COST_INCREMENT = 2;
