@@ -30,13 +30,35 @@ export const ResourceDisplay = ({
 
   const rowGapStyle = miniSyle ? { gap: 6 } : { gap: 12 };
 
-  const renderEntry = (key: string, value: number, prefix: string) => {
-    if (!isCombinedResourcesType(key) || value == null || value === 0) return null;
-    const emoji = (resourceEmojis as any)[key];
-    if (!emoji) return null;
+  const renderRowFromEntries = (entries: Array<[string, number]>, prefix: string) => {
+    const pieces = entries
+      .filter(([key, value]) => isCombinedResourcesType(key) && value && value !== 0)
+      .map(([key, value]) => {
+        const emoji = (resourceEmojis as any)[key];
+        if (!emoji) return null;
+        return `${emoji} ${formatAmount(value)}`;
+      })
+      .filter(Boolean) as string[];
+
+    if (pieces.length === 0) return null;
+
+    const concatenatedText = pieces.join(" ");
+    const len = concatenatedText.length;
+
+    // Escalado progresivo por longitud total (ajusta umbrales y factores a tu gusto)
+    let dynamicFontSize = fontSize;
+    if (len > 70) dynamicFontSize = fontSize * 0.75;
+    else if (len > 60) dynamicFontSize = fontSize * 0.8;
+    else if (len > 50) dynamicFontSize = fontSize * 0.9;
+
     return (
-      <Text key={`${prefix}-${key}`} style={[styles.item, { fontSize, color: fontColor }]}>
-        {emoji} {formatAmount(value)}
+      <Text
+        key={`row-${prefix}`}
+        style={[styles.item, { fontSize: dynamicFontSize, color: fontColor }]}
+        numberOfLines={1}
+        ellipsizeMode="tail"
+      >
+        {concatenatedText}
       </Text>
     );
   };
@@ -45,14 +67,19 @@ export const ResourceDisplay = ({
 
   // ── Solo especiales
   if (showOnlySpecial) {
-    return hasAnySpecialResource ? (
-      <View style={[styles.row, rowGapStyle]}>
-        {SPECIAL_TYPES.map((type) =>
-          // aquí mantengo el comportamiento original: muestra todos los especiales si hay alguno (>0) en total
-          renderEntry(type, resources[type] || 0, "special")
-        )}
+    if (!hasAnySpecialResource) return null;
+    const specialsOnly = SPECIAL_TYPES.map<[string, number]>((type) => [
+      type,
+      resources[type] || 0,
+    ]).filter(([, value]) => value && value !== 0);
+
+    return (
+      <View style={[styles.container]}>
+        <View style={[styles.row, rowGapStyle]}>
+          {renderRowFromEntries(specialsOnly, "special")}
+        </View>
       </View>
-    ) : null;
+    );
   }
 
   // ── Solo normales
@@ -62,11 +89,13 @@ export const ResourceDisplay = ({
       .filter(
         ([key, value]) =>
           !SPECIAL_TYPES.includes(key as SpecialResourceType) && value && value !== 0
-      );
+      ) as Array<[string, number]>;
 
     return (
-      <View style={[styles.row, rowGapStyle]}>
-        {normalEntries.map(([key, value]) => renderEntry(key, value as number, "normal"))}
+      <View style={[styles.container]}>
+        <View style={[styles.row, rowGapStyle]}>
+          {renderRowFromEntries(normalEntries, "normal")}
+        </View>
       </View>
     );
   }
@@ -74,46 +103,65 @@ export const ResourceDisplay = ({
   // ── Mostrar todos (por defecto)
   const allEntries = Object.entries(resources)
     .reverse()
-    .filter(([key, value]) => isCombinedResourcesType(key) && value && value !== 0);
+    .filter(([key, value]) => isCombinedResourcesType(key) && value && value !== 0) as Array<
+    [string, number]
+  >;
 
   const specials = allEntries.filter(([key]) => SPECIAL_TYPES.includes(key as SpecialResourceType));
   const normals = allEntries.filter(([key]) => !SPECIAL_TYPES.includes(key as SpecialResourceType));
   const totalShown = specials.length + normals.length;
 
-  // Si hay más de 5 tipos, dos filas: especiales y normales
   if (totalShown > 5 && (specials.length > 0 || normals.length > 0)) {
     return (
-      <View style={styles.stack}>
+      <View style={[styles.container]}>
         {specials.length > 0 && (
           <View style={[styles.row, rowGapStyle]}>
-            {specials.map(([key, value]) => renderEntry(key, value as number, "all-special"))}
+            {renderRowFromEntries(specials, "all-special")}
           </View>
         )}
         {normals.length > 0 && (
           <View style={[styles.row, rowGapStyle]}>
-            {normals.map(([key, value]) => renderEntry(key, value as number, "all-normal"))}
+            {renderRowFromEntries(normals, "all-normal")}
           </View>
         )}
       </View>
     );
   }
 
+  const combined = [...specials, ...normals];
+
   return (
-    <View style={[styles.row, rowGapStyle]}>
-      {[...specials, ...normals].map(([key, value]) => renderEntry(key, value as number, "all"))}
+    <View style={[styles.container]}>
+      <View style={[styles.row, rowGapStyle]}>{renderRowFromEntries(combined, "all")}</View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  // Contenedor raíz: no crece, puede encoger, no ocupa 100% por defecto y no desborda
+  container: {
+    alignSelf: "auto",
+    flexGrow: 0,
+    flexShrink: 1,
+    maxWidth: "100%",
+    overflow: "hidden",
+  },
+  // Pila vertical sin obligar a ocupar todo el ancho
   stack: {
     flexDirection: "column",
     alignItems: "flex-start",
     gap: 6,
+    // width: "100%", // ← Quitado para no invadir ancho de los hermanos
   },
+  // Fila ajustada: no fuerza ancho completo, puede encoger, sin wrap externo
   row: {
     flexDirection: "row",
     alignItems: "center",
+    flexGrow: 0,
+    flexShrink: 1,
+    // width: "100%", // ← Quitado
+    flexWrap: "nowrap",
+    overflow: "hidden",
   },
   item: {
     marginRight: 2,
