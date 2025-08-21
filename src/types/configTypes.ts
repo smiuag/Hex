@@ -11,7 +11,13 @@ export type ScaleType = {
   [key in ScaleSize]: ScaleValues;
 };
 
-type MaxCreationStats = { attack: number; defense: number; speed: number; hp: number };
+type MaxCreationStats = {
+  attack: number;
+  defense: number;
+  speed: number;
+  hp: number;
+  cargo: number;
+};
 
 export type ConfigValueByKey = {
   MAP_SIZE: "SMALL" | "MEDIUM" | "LARGE";
@@ -46,7 +52,10 @@ export const defaultPlayerConfig: PlayerConfig = [
   { key: "PLANET_NAME", value: "Colonia última esperanza" },
   { key: "PLAYER_NAME", value: "Lucas Vera" },
   { key: "PLAYER_LANGUAGE", value: "es" },
-  { key: "MAX_CREATION_STATS", value: { attack: 8, defense: 8, speed: 200, hp: 20 } },
+  {
+    key: "MAX_CREATION_STATS",
+    value: { attack: 8, defense: 8, speed: 200, hp: 20, cargo: 100000 },
+  },
 ];
 export const SCALE: ScaleType = {
   SMALL: {

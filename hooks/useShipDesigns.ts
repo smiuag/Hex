@@ -189,6 +189,7 @@ export function useShipDesigns(
           defense: finished.draft.defense,
           speed: finished.draft.speed,
           hp: finished.draft.hp,
+          cargo: finished.draft.cargo,
           baseBuildTime: computeAttemptTime({ ...finished.draft }),
           imageBackground: selectedImg,
           baseCost: computeAttemptCost(

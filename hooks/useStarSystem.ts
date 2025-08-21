@@ -17,12 +17,23 @@ import { FleetData, MovementType } from "@/src/types/fleetType";
 import { PlayerQuest, UpdateQuestOptions } from "@/src/types/questType";
 import { DiplomacyLevel, RaceType } from "@/src/types/raceType";
 import { CombinedResources } from "@/src/types/resourceTypes";
-import { Ship, ShipId, ShipSpecsCtx } from "@/src/types/shipType";
+import { Ship, ShipData, ShipId, ShipSpecsCtx } from "@/src/types/shipType";
 import { StarSystem, StarSystemMap } from "@/src/types/starSystemTypes";
 import { simulateBattle } from "@/utils/combatUtils";
 import { getHostileRace } from "@/utils/eventUtil";
-import { getAccumulatedResources, sumCombinedResources } from "@/utils/resourceUtils";
-import { getDistance, getFlyTime, getSpecByType, makeShip, sumFleet } from "@/utils/shipUtils";
+import {
+  getAccumulatedResources,
+  getCargoResources,
+  sumCombinedResources,
+} from "@/utils/resourceUtils";
+import {
+  getDistance,
+  getFlyTime,
+  getSpecByType,
+  getTotalCargo,
+  makeShip,
+  sumFleet,
+} from "@/utils/shipUtils";
 import { generateSystem } from "@/utils/starSystemUtils";
 import { useEffect, useRef, useState } from "react";
 import uuid from "react-native-uuid";
@@ -625,12 +636,21 @@ export const useStarSystem = (
 
     const system = systemsRef.current.find((s) => s.id === flt.destinationSystemId);
 
-    const { resources } = system?.storedResources.resources
-      ? getAccumulatedResources(system?.storedResources)
-      : ({} as any);
+    if (!system) {
+      cancelFleet(flt.id, {});
+      return;
+    }
 
-    cancelFleet(flt.id, resources as any);
-    if (!system) return;
+    const duration = flt.endTime - flt.startTime;
+    const arrivalTime = flt.startTime + duration;
+    const capacity = getTotalCargo(flt.ships, specs);
+    const { cargoResources, remainingResources } = getCargoResources(
+      system?.storedResources,
+      arrivalTime,
+      capacity
+    );
+
+    cancelFleet(flt.id, cargoResources);
 
     await modifySystems((systems) =>
       systems.map((s) =>
@@ -639,9 +659,9 @@ export const useStarSystem = (
               ...s,
               collectStartedAt: undefined,
               storedResources: {
-                lastUpdate: Date.now(),
+                lastUpdate: arrivalTime,
                 production: s.storedResources.production,
-                resources: {},
+                resources: remainingResources,
               },
             }
           : s
@@ -649,19 +669,20 @@ export const useStarSystem = (
     );
   };
 
-  const startCollectSystem = async (systemId: string) => {
+  const startCollectSystem = async (
+    systemId: string,
+    usedShips: ShipData[],
+    timeToCollect: number
+  ) => {
     const system = systemsRef.current.find((system) => system.id === systemId);
     if (!system) return;
-
-    const freighterSpeed = shipConfig["FREIGHTER"].speed;
-    const timeToCollect = getFlyTime(freighterSpeed, system.distance);
 
     const fleetData: FleetData = {
       destinationSystemId: systemId,
       endTime: Date.now() + timeToCollect,
       movementType: "COLLECT",
       origin: "PLANET",
-      ships: [makeShip("FREIGHTER", 1)],
+      ships: usedShips,
       startTime: Date.now(),
       id: uuid.v4() as string,
       resources: {},

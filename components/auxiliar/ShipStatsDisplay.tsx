@@ -1,6 +1,7 @@
 import { shipStatsEmojis } from "@/src/config/emojisConfig";
 import { commonStyles } from "@/src/styles/commonStyles";
 import { ShipStats } from "@/src/types/shipType";
+import { formatAmount } from "@/utils/generalUtils";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -8,7 +9,7 @@ interface Props {
   stats: Partial<ShipStats>;
   fontSize?: number;
   fontColor?: string;
-  showSpeed?: boolean;
+  showNonCombat?: boolean;
   showBackground?: boolean;
 }
 
@@ -16,7 +17,7 @@ export const ShipStatsDisplay = ({
   stats,
   fontSize = 16,
   fontColor = "white",
-  showSpeed = true,
+  showNonCombat = true,
   showBackground = true,
 }: Props) => {
   return (
@@ -25,13 +26,13 @@ export const ShipStatsDisplay = ({
         const emoji = shipStatsEmojis[key as keyof typeof shipStatsEmojis];
 
         if (!emoji || value == null) return null;
-        if (!showSpeed && key === "speed") return null;
+        if ((!showNonCombat && (key === "speed" || key === "cargo")) || value == 0) return null;
 
         return (
           <View key={key} style={{ flexDirection: "row", alignItems: "center" }}>
             <Text style={[styles.item, { fontSize, color: fontColor }]}>{emoji}</Text>
             <View style={[showBackground && commonStyles.minWidth25, { marginLeft: 2 }]}>
-              <Text style={commonStyles.whiteText}>{value}</Text>
+              <Text style={commonStyles.whiteText}>{formatAmount(value)}</Text>
             </View>
           </View>
         );

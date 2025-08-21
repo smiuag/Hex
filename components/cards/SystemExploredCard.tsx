@@ -1,3 +1,4 @@
+import { ShipData } from "@/src/types/shipType";
 import { getSystemImage } from "@/utils/starSystemUtils";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -19,7 +20,7 @@ type Props = {
   onStarPortBuild: (id: string) => void;
   onDefenseStartBuild: (id: string) => void;
   onExtractionStartBuild: (id: string) => void;
-  onStartCollectSystem: (id: string) => void;
+  onStartCollectSystem: (id: string, usedShips: ShipData[], timeToCollect: number) => void;
   onCancelCollectSystem: (id: string) => void;
 };
 

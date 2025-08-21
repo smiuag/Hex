@@ -21,6 +21,7 @@ export function FleetIncoming({ system }: Props) {
   return fleetIncoming.map((f) => {
     const totalTime = f.endTime - f.startTime;
     const totalFleet = totalShips(f.ships);
+    if (f.movementType == "COLLECT") return; //Ese sale en el extractionBuilding
     return (
       <View style={commonStyles.actionBar} key={f.id}>
         {f.movementType != "RETURN" ? (

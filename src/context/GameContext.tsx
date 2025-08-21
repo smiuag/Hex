@@ -19,6 +19,7 @@ import {
   CustomShipTypeId,
   Draft,
   Ship,
+  ShipData,
   ShipDesignAttempt,
   ShipId,
   ShipSpecsCtx,
@@ -99,7 +100,7 @@ type ProviderContextType = {
   recoverStarSystem: (id: string) => void;
   cancelScanStarSystem: (id: string) => void;
   handleDestroyBuilding: (q: number, r: number) => void;
-  startCollectSystem: (systemId: string) => void;
+  startCollectSystem: (systemId: string, usedShips: ShipData[], timeToCollect: number) => void;
   setHexAncientStructure: (hex: Hex) => void;
   cancelCollect: (systemId: string) => void;
   handleEventOptionChoose: (option: EventOption) => void;

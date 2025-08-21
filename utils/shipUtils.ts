@@ -5,6 +5,7 @@ import { CombinedResources } from "@/src/types/resourceTypes";
 import {
   BuiltinConfigEntry,
   BuiltinShip,
+  CARGO_UNIT,
   CustomShip,
   CustomShipTypeId,
   Draft,
@@ -109,8 +110,11 @@ const toSpecBase = (t: ShipType, c: BuiltinConfigEntry): ShipSpecBase => ({
   defense: c.defense,
   speed: c.speed,
   hp: c.hp,
+  cargo: c.cargo,
   requiredResearch: c.requiredResearch,
   orden: c.orden,
+  attackTech: c.attackTech,
+  defenseTech: c.defenseTech,
 });
 
 export const makeBuiltinShip = (type: ShipType, amount = 0): BuiltinShip => ({
@@ -154,20 +158,6 @@ export function getSpecByType(type: ShipId, specs: ShipSpecsCtx): ShipSpecBase {
   return toSpecBase(type, c);
 }
 
-export function getSpecByShip(ship: Ship, specs: ShipSpecsCtx): ShipSpecBase {
-  return getSpecByType(ship.type, specs);
-}
-
-export const getSpeed = (tOrShip: Ship["type"] | Ship, specs: ShipSpecsCtx) =>
-  typeof tOrShip === "string"
-    ? getSpecByType(tOrShip, specs).speed * GENERAL_FACTOR
-    : getSpecByShip(tOrShip, specs).speed * GENERAL_FACTOR;
-
-export const getBaseBuildTime = (tOrShip: Ship["type"] | Ship, specs: ShipSpecsCtx) =>
-  typeof tOrShip === "string"
-    ? getSpecByType(tOrShip, specs).baseBuildTime / GENERAL_FACTOR
-    : getSpecByShip(tOrShip, specs).baseBuildTime / GENERAL_FACTOR;
-
 export function addResources<T extends object>(...items: Partial<T>[]): Partial<T> {
   const out: any = {};
   for (const it of items) for (const k in it) out[k] = (out[k] ?? 0) + (it as any)[k];
@@ -187,14 +177,16 @@ export const computeCaps = (prev: ShipStats, mult: number): ShipStats => ({
   defense: Math.floor(prev.defense * mult),
   speed: Math.floor(prev.speed * mult),
   hp: Math.floor(prev.hp * mult),
+  cargo: Math.floor(prev.cargo * mult),
 });
 
 export const normalizeDraft = (d: Draft, caps: ShipStats): Draft => ({
   ...d,
   attack: clamp(d.attack, 0, caps.attack),
-  defense: clamp(d.defense, 0, caps.defense),
-  speed: clamp(d.speed, 0, caps.speed),
-  hp: clamp(d.hp, 0, caps.hp),
+  defense: clamp(d.defense, 1, caps.defense),
+  speed: clamp(d.speed, 50, caps.speed),
+  hp: clamp(d.hp, 1, caps.hp),
+  cargo: clamp(d.cargo, 0, caps.cargo),
 });
 
 export function difficultyRatio(d: Draft, prev: ShipStats, caps: ShipStats) {
@@ -205,6 +197,7 @@ export function difficultyRatio(d: Draft, prev: ShipStats, caps: ShipStats) {
     r(d.defense, prev.defense, caps.defense),
     r(d.speed, prev.speed, caps.speed),
     r(d.hp, prev.hp, caps.hp),
+    r(d.cargo, prev.cargo, caps.cargo),
   ];
   return arr.reduce((a, b) => a + b, 0) / arr.length;
 }
@@ -217,7 +210,7 @@ function geomFactor(n: number, g: number) {
 }
 
 export function computeAttemptTime(d: Draft): number {
-  const stats = d.attack + d.defense + d.hp / 3 + d.speed / 20;
+  const stats = d.attack + d.defense + d.hp / 3 + d.speed / 20 + d.cargo / 50000;
   const miliSeconds = stats * 1000 * 3000;
 
   return miliSeconds;
@@ -230,19 +223,21 @@ export function computeAttemptCost<R extends CombinedResources>(
   // crecimiento
   const g = Math.max(1, tuning.multiplier ?? 1);
   const gHP = Math.max(1, tuning.multiplierHP ?? g);
-  const gSpeed = Math.max(1, tuning.multiplierSpeed ?? g);
+  const gSpecial = Math.max(1, tuning.multiplierSpecial ?? g);
 
   // niveles (enteros) por stat
   const nAtk = Math.floor(d.attack);
   const nDef = Math.floor(d.defense);
   const nSpd = Math.floor(d.speed / SPEED_UNIT);
   const nHp = Math.floor(d.hp);
+  const nCar = Math.floor(d.cargo / CARGO_UNIT);
 
   // factores geométricos (progresión acumulada)
   const fAtk = geomFactor(nAtk, g);
   const fDef = geomFactor(nDef, g);
-  const fSpd = geomFactor(nSpd, gSpeed);
+  const fSpd = geomFactor(nSpd, gSpecial);
   const fHp = geomFactor(nHp, gHP);
+  const fCar = geomFactor(nCar, gSpecial);
 
   // costes base por unidad
   const attackUnit = tuning.costPerUnit.attack[d.attackTech]; // LASER/PLASMA
@@ -253,8 +248,9 @@ export function computeAttemptCost<R extends CombinedResources>(
   const defenseCost = scaleResources<R>(defenseUnit, fDef);
   const speedCost = scaleResources<R>(tuning.costPerUnit.speed, fSpd);
   const hpCost = scaleResources<R>(tuning.costPerUnit.hp, fHp);
+  const cargoCost = scaleResources<R>(tuning.costPerUnit.cargo, fCar);
 
-  const base = addResources<R>(attackCost, defenseCost, speedCost, hpCost);
+  const base = addResources<R>(attackCost, defenseCost, speedCost, hpCost, cargoCost);
   return scaleResources<R>(base, tuning.attemptCostScale);
 }
 
@@ -288,6 +284,7 @@ function designIdentity(d: Draft) {
     defense: Math.floor(d.defense),
     speedSteps: Math.floor(d.speed / SPEED_UNIT),
     hp: Math.floor(d.hp),
+    cargo: Math.floor(d.cargo / CARGO_UNIT),
   };
 }
 
@@ -313,12 +310,13 @@ export function mergeMaxCreationStats(prev: ShipStats, attempted: ShipStats): Sh
     defense: Math.max(prev.defense, attempted.defense ?? prev.defense),
     speed: Math.max(prev.speed, attempted.speed ?? prev.speed),
     hp: Math.max(prev.hp, attempted.hp ?? prev.hp),
+    cargo: Math.max(prev.cargo, attempted.cargo ?? prev.cargo),
   };
 }
 
 export function extractCreationStatsFromDraft(draft: Draft): ShipStats {
-  const { attack, defense, speed, hp } = (draft as any) ?? {};
-  return { attack, defense, speed, hp };
+  const { attack, defense, speed, hp, cargo } = (draft as any) ?? {};
+  return { attack, defense, speed, hp, cargo };
 }
 
 export function sumFleet(a: ShipData[] = [], b: ShipData[] = []): ShipData[] {
@@ -428,4 +426,16 @@ export function getDistance(
   } catch {
     return 50000;
   }
+}
+
+export function getTotalCargo(fleet: ShipData[], specs: ShipSpecsCtx): number {
+  return fleet.reduce((sum, s) => {
+    const type = (s as any).type ?? (s as any).shipType;
+    if (!type) return sum;
+
+    const amount = Math.max(0, Number((s as any).amount ?? 1)) || 0;
+    const cargoPerShip = Number(getSpecByType(type, specs)?.cargo ?? 0) || 0;
+
+    return sum + cargoPerShip * amount;
+  }, 0);
 }

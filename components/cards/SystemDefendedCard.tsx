@@ -83,7 +83,7 @@ export const SystemDefendedCard: React.FC<Props> = ({ system, onDiscard, onCance
                       defense: spec.defense,
                       hp: spec.hp,
                     }}
-                    showSpeed={false}
+                    showNonCombat={false}
                     fontSize={13}
                   />
                 </View>

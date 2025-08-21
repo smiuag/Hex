@@ -74,6 +74,7 @@ export const SHIP_IMAGES: Record<ShipImageKey, ImageSourcePropType> = {
 };
 
 export const SPEED_UNIT = 10;
+export const CARGO_UNIT = 10000;
 
 export type CustomShipTypeId = `custom:${string}`;
 
@@ -120,6 +121,8 @@ export type CombatShip = Ship & {
   maxHp: number;
   attack: number;
   defense: number;
+  attackTech: AttackTech;
+  defenseTech: DefenseTech;
 };
 
 /* ================================ Config base ============================== */
@@ -135,6 +138,9 @@ export type BuiltinConfigEntry = {
   defense: number;
   speed: number;
   hp: number;
+  cargo: number;
+  attackTech: AttackTech;
+  defenseTech: DefenseTech;
 };
 
 export type BuiltinConfig = Record<ShipType, BuiltinConfigEntry>;
@@ -159,17 +165,17 @@ export type ShipSpecBase = {
   defense: number;
   speed: number;
   hp: number;
-  /** Solo se usa en UI/ordenación; builtin lo puede traer del config o ignorarlo. */
   requiredResearch?: ShipResearchRequiredData[];
   orden?: number;
+  cargo: number;
+  attackTech: AttackTech;
+  defenseTech: DefenseTech;
 };
 
 /** Spec de nave custom creada por el jugador (receta). */
 export type CustomShipSpec = ShipSpecBase & {
   kind: "custom";
   id: CustomShipTypeId;
-  attackTech: AttackTech;
-  defenseTech: DefenseTech;
   createdAt: number;
 };
 
@@ -186,9 +192,16 @@ export type ShipStats = {
   attack: number;
   defense: number;
   hp: number;
+  cargo: number;
 };
 
-export const defaultCreationStats: ShipStats = { attack: 8, defense: 8, speed: 200, hp: 20 };
+export const defaultCreationStats: ShipStats = {
+  attack: 8,
+  defense: 8,
+  speed: 200,
+  hp: 20,
+  cargo: 100000,
+};
 
 export type ResearchTuning<R extends CombinedResources = CombinedResources> = {
   maxMultiplier: number;
@@ -198,10 +211,11 @@ export type ResearchTuning<R extends CombinedResources = CombinedResources> = {
     defense: { ARMOR: Partial<R>; SHIELD: Partial<R> };
     speed: Partial<R>;
     hp: Partial<R>;
+    cargo: Partial<R>;
   };
   multiplier: number;
   multiplierHP: number;
-  multiplierSpeed: number;
+  multiplierSpecial: number;
   attemptCostScale: number;
   difficultyWeight: number;
 };
@@ -247,10 +261,14 @@ export const TUNING: ResearchTuning = {
       STONE: 430 / GENERAL_FACTOR,
       ENERGY: 26 / GENERAL_FACTOR,
     } as Partial<CombinedResources>,
+    cargo: {
+      METAL: 105234 / GENERAL_FACTOR,
+      STONE: 105324 / GENERAL_FACTOR,
+    },
   },
   multiplier: 1.5,
   multiplierHP: 1.2,
-  multiplierSpeed: 1.1,
+  multiplierSpecial: 1.1,
 };
 
 export type Draft = {
@@ -260,6 +278,7 @@ export type Draft = {
   attack: number;
   defense: number;
   speed: number;
+  cargo: number;
   hp: number;
   imageKey?: ShipImageKey;
 };
@@ -289,6 +308,7 @@ export const SHIP_DESIGN_ATTEMPT_DEFAULT: ShipDesignAttempt = {
     defense: 0,
     speed: 0,
     hp: 0,
+    cargo: 0,
     imageKey: "DEFAULT_SHIP_1",
   } as Draft,
   draftHash: "",

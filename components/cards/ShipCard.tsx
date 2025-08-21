@@ -34,6 +34,7 @@ type CardItem = {
   defense?: number;
   speed?: number;
   hp?: number;
+  cargo?: number;
 
   // requisitos (solo built-in; puede venir del config)
   requiredResearch?: Record<string, number>;
@@ -89,12 +90,14 @@ export const ShipCard: React.FC<Props> = ({ item, onBuild, onCancel }) => {
         attack: item.attack ?? 0,
         defense: item.defense ?? 0,
         hp: item.hp ?? 0,
+        cargo: item.cargo ?? 0,
       }
     : {
         speed: SHIP_STATS[item.type as ShipType].SPEED,
         attack: SHIP_STATS[item.type as ShipType].ATTACK,
         defense: SHIP_STATS[item.type as ShipType].DEFENSE,
         hp: SHIP_STATS[item.type as ShipType].HP,
+        cargo: SHIP_STATS[item.type as ShipType].CARGO,
       };
 
   return (

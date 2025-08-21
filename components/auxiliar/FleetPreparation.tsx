@@ -498,6 +498,7 @@ export default function FleetSelector({ origin, destination }: Props) {
       </ImageBackground>
 
       {/* Controles */}
+
       <View style={{ justifyContent: "space-between", flexDirection: "row", padding: 5 }}>
         <TouchableOpacity style={commonStyles.cancelButton} onPress={onCancel}>
           <Text style={commonStyles.cancelButtonText}>{t("Cancel")}</Text>
@@ -505,6 +506,8 @@ export default function FleetSelector({ origin, destination }: Props) {
         {isAttack ? (
           <View style={styles.arrowContainer}>
             <Ionicons name="arrow-down" size={20} color="#ff6b6b" />
+            <Ionicons name="arrow-down" size={20} color="#ff6b6b" />
+            <Text style={styles.arrowText}>{t("Attack")}</Text>
             <Ionicons name="arrow-down" size={20} color="#ff6b6b" />
             <Ionicons name="arrow-down" size={20} color="#ff6b6b" />
           </View>
@@ -516,6 +519,9 @@ export default function FleetSelector({ origin, destination }: Props) {
           >
             <Ionicons name="arrow-down" size={20} color="#00ffe0" />
             <Ionicons name="arrow-up" size={20} color="#00ffe0" />
+            <Text style={styles.arrowText}>{t("Change")}</Text>
+            <Ionicons name="arrow-up" size={20} color="#00ffe0" />
+            <Ionicons name="arrow-down" size={20} color="#00ffe0" />
           </TouchableOpacity>
         )}
 
@@ -825,7 +831,8 @@ const styles = StyleSheet.create({
   },
   modalTitle: { color: "#fff", fontWeight: "800", fontSize: 15, marginLeft: 8 },
   modalBody: {
-    maxHeight: "85%", // 👈 más alto: caben al menos 3 filas en la mayoría de pantallas
+    maxHeight: "85%",
     paddingVertical: 8,
   },
+  arrowText: { color: "#00ffe0", fontSize: 14, paddingHorizontal: 15 },
 });

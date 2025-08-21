@@ -1,3 +1,4 @@
+import { formatAmount } from "@/utils/generalUtils";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -32,7 +33,7 @@ export default function StatRow({
       <View style={styles.inlineBar}>
         <View style={[styles.inlineFill, { width: `${Math.max(0, Math.min(1, ratio)) * 100}%` }]} />
         <Text style={styles.inlineText} numberOfLines={1}>
-          {title.toUpperCase()} {value}/{max}
+          {title.toUpperCase()} {formatAmount(value)}/{formatAmount(max)}
         </Text>
       </View>
 

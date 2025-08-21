@@ -6,7 +6,10 @@ import {
 } from "@/src/constants/general";
 import { useGameContextSelector } from "@/src/context/GameContext";
 import { commonStyles } from "@/src/styles/commonStyles";
+import { ShipData } from "@/src/types/shipType";
 import { StarSystem } from "@/src/types/starSystemTypes";
+import { formatAmount } from "@/utils/generalUtils";
+import { checkCargoCollect } from "@/utils/resourceUtils";
 import { getFlyTime } from "@/utils/shipUtils";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -17,7 +20,7 @@ import ResourceBar from "./ResourceBar";
 
 interface Props {
   system: StarSystem;
-  onStartCollectSystem: (id: string) => void;
+  onStartCollectSystem: (id: string, usedShips: ShipData[], timeToCollect: number) => void;
   onCancelCollectSystem: (id: string) => void;
   onExtractionStartBuild: (id: string) => void;
 }
@@ -31,6 +34,7 @@ export const ExtractorBuilding: React.FC<Props> = ({
   const { t } = useTranslation("common");
   const shipBuildQueue = useGameContextSelector((ctx) => ctx.shipBuildQueue);
   const enoughResources = useGameContextSelector((ctx) => ctx.enoughResources);
+  const specs = useGameContextSelector((ctx) => ctx.specs);
 
   const freighterSpeed = shipConfig["FREIGHTER"].speed;
   const timeToCollect = getFlyTime(freighterSpeed, system.distance);
@@ -62,25 +66,42 @@ export const ExtractorBuilding: React.FC<Props> = ({
   };
 
   const handleCollect = () => {
-    Alert.alert(t("CollectAlert"), t("CollectMessage"), [
-      { text: t("cancel"), style: "cancel" },
-      {
-        text: t("confirm"),
-        style: "destructive",
-        onPress: async () => {
-          const lockedByResources = !enoughResources(COLLECT_COST);
-          const enoughFreighter = shipBuildQueue.find((f) => f.type == "FREIGHTER" && f.amount > 0);
-          if (enoughFreighter && !lockedByResources) onStartCollectSystem(system.id);
-          else
-            Toast.show({
-              type: "info", // "success" | "info" | "error"
-              text1: t("NotEnoughForCollect"),
-              position: "top",
-              visibilityTime: 2000,
-            });
-        },
-      },
-    ]);
+    const lockedByResources = !enoughResources(COLLECT_COST);
+    console.log(lockedByResources);
+    const { anyCargo, enoughCapacity, cargoCapacity, usedShips, timeToCollect } = checkCargoCollect(
+      shipBuildQueue,
+      specs,
+      system
+    );
+
+    if (anyCargo && !lockedByResources) {
+      if (!enoughCapacity) {
+        Alert.alert(
+          "Recolección",
+          "No habrá capacidad de carga disponible para cargar con todos los recursos. ¿Quieres recolectar con la capacidad actual (" +
+            formatAmount(cargoCapacity) +
+            ")?",
+          [
+            { text: t("cancel"), style: "cancel" },
+            {
+              text: t("confirm"),
+              style: "destructive",
+              onPress: () => {
+                onStartCollectSystem(system.id, usedShips, timeToCollect);
+              },
+            },
+          ]
+        );
+      } else {
+        onStartCollectSystem(system.id, usedShips, timeToCollect);
+      }
+    } else
+      Toast.show({
+        type: "info", // "success" | "info" | "error"
+        text1: t("NotEnoughForCollect"),
+        position: "top",
+        visibilityTime: 2000,
+      });
   };
 
   const handleCancelCollect = () => {

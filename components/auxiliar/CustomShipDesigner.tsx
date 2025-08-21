@@ -16,7 +16,7 @@ import { useGameContextSelector } from "@/src/context/GameContext";
 import { commonStyles } from "@/src/styles/commonStyles";
 import type { CustomShipTypeId, Draft, ShipImageKey, ShipStats } from "@/src/types/shipType";
 import { defaultCreationStats, TUNING } from "@/src/types/shipType";
-import { formatDuration } from "@/utils/generalUtils";
+import { DeepPartial, formatDuration, withDefaults } from "@/utils/generalUtils";
 import {
   computeAttemptCost,
   computeAttemptTime,
@@ -48,9 +48,16 @@ export default function CustomShipDesigner() {
 
   const [finished, setFinished] = useState(false);
 
-  const prevMax: ShipStats =
-    (playerConfig.find((cf) => cf.key === "MAX_CREATION_STATS")?.value as ShipStats) ??
-    defaultCreationStats;
+  const saved = useMemo(() => {
+    return playerConfig.find((cf) => cf.key === "MAX_CREATION_STATS")?.value as
+      | DeepPartial<ShipStats>
+      | undefined;
+  }, [playerConfig]);
+
+  const prevMax = useMemo(
+    () => withDefaults(defaultCreationStats, saved),
+    [saved] // asumiendo defaultCreationStats es un import constante
+  );
 
   const caps = useMemo(() => computeCaps(prevMax, TUNING.maxMultiplier), [prevMax]);
 
@@ -62,6 +69,7 @@ export default function CustomShipDesigner() {
     defense: prevMax.defense,
     speed: prevMax.speed,
     hp: prevMax.hp,
+    cargo: prevMax.cargo,
     imageKey: "DEFAULT_SHIP_1" as ShipImageKey,
   });
 
@@ -73,29 +81,33 @@ export default function CustomShipDesigner() {
     if (inProgress) return;
 
     const last = history?.length ? history[history.length - 1] : undefined;
-    if (last) {
-      const seeded = { ...last.draft };
-      if (last.status === "SUCCEEDED") {
-        seeded.name = "";
-      }
-      setDraft(() => normalizeDraft(seeded, caps));
-    } else {
-      setDraft(() =>
-        normalizeDraft(
-          {
-            name: "",
-            attackTech: "LASER",
-            defenseTech: "ARMOR",
-            attack: prevMax.attack,
-            defense: prevMax.defense,
-            speed: prevMax.speed,
-            hp: prevMax.hp,
-            imageKey: "DEFAULT_SHIP_1",
-          },
-          caps
-        )
-      );
-    }
+
+    // base: SIEMPRE parte de prevMax para las stats
+    const base = {
+      name: "",
+      attackTech: "LASER" as const,
+      defenseTech: "ARMOR" as const,
+      attack: prevMax.attack,
+      defense: prevMax.defense,
+      speed: prevMax.speed,
+      hp: prevMax.hp,
+      cargo: prevMax.cargo ?? defaultCreationStats.cargo,
+      imageKey: "DEFAULT_SHIP_1" as const,
+    };
+
+    // si hay último intento, solo heredamos campos “cosméticos”
+    // (nombre solo si no fue success, tecnologías e imagen)
+    const seeded = last
+      ? {
+          ...base,
+          name: last.status === "SUCCEEDED" ? "" : last.draft.name ?? base.name,
+          attackTech: (last.draft.attackTech ?? base.attackTech) as typeof base.attackTech,
+          defenseTech: (last.draft.defenseTech ?? base.defenseTech) as typeof base.defenseTech,
+          imageKey: (last.draft.imageKey ?? base.imageKey) as typeof base.imageKey,
+        }
+      : base;
+
+    setDraft(() => normalizeDraft(seeded, caps));
   }, [inProgress, history, prevMax, caps, finished]);
 
   // Vista/calculadora: si está en curso, usamos SIEMPRE el draft del intento activo
@@ -121,8 +133,9 @@ export default function CustomShipDesigner() {
     [computeEffectiveChance, normalized, baseChance]
   );
 
-  const setNum = (k: keyof Pick<Draft, "attack" | "defense" | "speed" | "hp">) => (n: number) =>
-    setDraft((d) => ({ ...d, [k]: n }));
+  const setNum =
+    (k: keyof Pick<Draft, "attack" | "defense" | "speed" | "hp" | "cargo">) => (n: number) =>
+      setDraft((d) => ({ ...d, [k]: n }));
 
   const canAfford = enoughResources(attemptCost);
 
@@ -292,6 +305,14 @@ export default function CustomShipDesigner() {
             value={draftView.hp}
             max={caps.hp}
             onChange={locked ? () => {} : setNum("hp")}
+          />
+          <StatRow
+            title="CARGO"
+            step={10000}
+            stepDown={10000}
+            value={draftView.cargo}
+            max={caps.cargo}
+            onChange={locked ? () => {} : setNum("cargo")}
           />
         </View>
 

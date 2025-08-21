@@ -18,6 +18,7 @@ export const shipStatsEmojis: Record<string, string> = {
   attack: "🎯", // Ataque
   defense: "🛡️", // Defensa
   hp: "❤️", // Vida
+  cargo: "📦", // Carga
 };
 
 export function getEmojiForResource(key: CombinedResourcesType) {

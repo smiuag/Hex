@@ -102,6 +102,7 @@ export default function StarSystemComponent() {
 
   const statusOptions = useMemo(
     () => [
+      { id: "ARMED", label: "Con naves", emoji: "🚀" },
       { id: "EXPLORED", label: "Explorados", emoji: "🔭" },
       { id: "DEFENDED", label: "Defendidos", emoji: "🛡️" },
       { id: "UNEXPLORED", label: "Sin explorar", emoji: "🌑" },
@@ -134,12 +135,20 @@ export default function StarSystemComponent() {
       const sysBuildings = getSystemBuildings(sys);
       const bldOk = matchWithMode(bldMode, bldSel, sysBuildings);
 
-      // Estado (como "Alguno"; si vacío => sin filtro)
-      const sysStatus: StatusKey[] = sys.explored
+      // --- NUEVO: ¿Tiene naves del jugador en el sistema?
+      const isArmed =
+        Array.isArray((sys as any).playerShips) && (sys as any).playerShips.length > 0;
+
+      // Estado (siempre "Alguno"; si vacío => sin filtro)
+      const baseStatus: StatusKey[] = sys.explored
         ? sys.conquered
           ? ["EXPLORED"]
           : ["EXPLORED", "DEFENDED"]
         : ["UNEXPLORED"];
+
+      // --- NUEVO: añade "ARMED" si corresponde
+      const sysStatus: StatusKey[] = isArmed ? [...baseStatus, "ARMED"] : baseStatus;
+
       const statusOk = statusSel.size === 0 ? true : sysStatus.some((s) => statusSel.has(s));
 
       return raceOk && resOk && bldOk && statusOk;

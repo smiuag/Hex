@@ -33,6 +33,7 @@ export default function ShipComponent() {
         defense?: number;
         speed?: number;
         hp?: number;
+        cargo?: number;
         isCustom?: boolean;
         createdAt?: number; // 👈
       }
@@ -62,6 +63,7 @@ export default function ShipComponent() {
         defense: cfg.defense,
         speed: cfg.speed,
         hp: cfg.hp,
+        cargo: cfg.cargo,
         orden: cfg.orden,
         createdAt: cfg.createdAt, // 👈
         show: cfg.productionFacility === "HANGAR" || hasSpaceStation,
@@ -95,6 +97,7 @@ export default function ShipComponent() {
         defense: spec.defense,
         speed: spec.speed,
         hp: spec.hp,
+        cargo: spec.cargo,
         createdAt: spec.createdAt, // 👈
       })
     );

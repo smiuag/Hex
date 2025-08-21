@@ -104,3 +104,67 @@ export function formatDate(ts: number) {
 export function totalAmount(list: ReadonlyArray<{ amount: number }>) {
   return list.reduce((acc, s) => acc + s.amount, 0);
 }
+
+/**
+ * Devuelve un clon de `defaults` rellenado con los valores de `partial` cuando existan,
+ * y manteniendo los defaults para cualquier propiedad ausente. Respeta el orden del par.
+ */
+// types/utils/withDefaults.ts
+
+// DeepPartial tipado para poder pasar objetos "incompletos"
+export type DeepPartial<T> = {
+  [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
+};
+
+const isObject = (v: any): v is Record<string, unknown> => v !== null && typeof v === "object";
+
+/** Deep copy sencillo sin structuredClone (compatible con RN/Hermes) */
+function deepCopy<T>(v: T): T {
+  if (!isObject(v)) return v;
+  if (Array.isArray(v)) return v.map(deepCopy) as any;
+  const out: any = {};
+  for (const k of Object.keys(v as any)) out[k] = deepCopy((v as any)[k]);
+  return out;
+}
+
+/**
+ * Rellena `partial` con los valores por defecto de `defaults`.
+ * - No sobreescribe lo existente en `partial`.
+ * - Añade lo que falte (merge profundo).
+ * - Conserva claves extra que vengan en `partial`.
+ */
+export function withDefaults<T>(defaults: T, partial?: DeepPartial<T>): T {
+  if (partial == null) return deepCopy(defaults);
+
+  // Arrays: si partial trae array, úsalo; si no, copia el default
+  if (Array.isArray(defaults)) {
+    return (Array.isArray(partial) ? (partial as unknown as T) : deepCopy(defaults)) as T;
+  }
+
+  // Objetos
+  if (isObject(defaults)) {
+    const out: any = {};
+    // 1) recorre claves de defaults y rellena con partial si existe; si no, usa default
+    for (const key of Object.keys(defaults as any)) {
+      const defVal = (defaults as any)[key];
+      const parVal = (partial as any)[key];
+
+      if (parVal === undefined) {
+        out[key] = isObject(defVal) ? withDefaults(defVal, undefined) : deepCopy(defVal);
+      } else {
+        out[key] =
+          isObject(defVal) && !Array.isArray(defVal)
+            ? withDefaults(defVal, parVal as any)
+            : (parVal as any);
+      }
+    }
+    // 2) conserva claves extra que estén en partial pero no en defaults (si las quieres mantener)
+    for (const key of Object.keys(partial as object)) {
+      if (!(key in out)) out[key] = (partial as any)[key];
+    }
+    return out as T;
+  }
+
+  // Primitivos
+  return (partial ?? defaults) as T;
+}

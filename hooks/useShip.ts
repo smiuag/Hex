@@ -87,7 +87,7 @@ export const useShip = (
         const { next, changed } = mapWithChange(prev, (r) =>
           r.type === type
             ? {
-                ...r, // ← no tocar 'custom'
+                ...r,
                 progress: {
                   startedAt: r.progress?.startedAt ?? now,
                   targetAmount: (r.progress?.targetAmount ?? 0) + amount,
