@@ -352,34 +352,80 @@ function commonPrefixParts(a: string, b: string, ignoreCase = false) {
   return i;
 }
 
+// Puedes ajustar estos rangos por bucket (coincidencias = 0..3, y >=4 como "default")
+const DISTANCE_RANGES: Record<number, { min: number; max: number; step: number }> = {
+  0: { min: 34000, max: 500000, step: 1 },
+  1: { min: 3000, max: 35000, step: 1 },
+  2: { min: 1500, max: 13000, step: 1 },
+  3: { min: 300, max: 3500, step: 1 },
+  4: { min: 0, max: 0, step: 1 },
+};
+
+// Hash estable FNV-1a 32 bits → [0, 1)
+function fnv1a32ToUnit(str: string): number {
+  let hash = 0x811c9dc5; // offset basis
+  for (let i = 0; i < str.length; i++) {
+    hash ^= str.charCodeAt(i) & 0xff;
+    // multiply by FNV prime 16777619 with 32-bit overflow
+    hash = Math.imul(hash, 0x01000193) >>> 0;
+  }
+  // normaliza a [0,1)
+  return hash / 0xffffffff;
+}
+
+// Hash simétrico para el par (A,B) => igual que (B,A)
+function pairUnit(a: string, b: string): number {
+  const [x, y] = a < b ? [a, b] : [b, a];
+  return fnv1a32ToUnit(`${x}|${y}`);
+}
+
+// Devuelve el rango para el número de coincidencias (clamp a 0..4)
+function getRangeForCoincidence(coincidence: number) {
+  const key = coincidence <= 3 ? coincidence : 4;
+  return DISTANCE_RANGES[key];
+}
+
+// (opcional) si los ids son exactamente iguales, puedes devolver 0.
+function isSameSystem(a: string, b: string) {
+  return a === b;
+}
+
+// Tu función actualizada
 export function getDistance(
   systems: StarSystem[],
   originSystemId: string,
   destinationSystemId: string
 ): number {
   try {
-    if (originSystemId == "PLANET") {
+    // Casos especiales PLANET (sin cambios)
+    if (originSystemId === "PLANET") {
       const destinationSystem = systems.find((s) => s.id === destinationSystemId);
       return destinationSystem?.distance ?? 50000;
     }
-    if (destinationSystemId == "PLANET") {
+    if (destinationSystemId === "PLANET") {
       const originSystem = systems.find((s) => s.id === originSystemId);
       return originSystem?.distance ?? 50000;
     }
+
+    // (opcional) mismo sistema => 0
+    if (isSameSystem(originSystemId, destinationSystemId)) return 0;
+
     const coincidence = commonPrefixParts(originSystemId, destinationSystemId);
-    switch (coincidence) {
-      case 0:
-        return 25000;
-      case 1:
-        return 15000;
-      case 2:
-        return 5000;
-      case 3:
-        return 2500;
-      default:
-        return 1500;
-    }
-  } catch (ex) {
+    const { min, max, step } = getRangeForCoincidence(coincidence);
+
+    // Valor determinista en [0,1) a partir del par de IDs (simétrico)
+    const u = pairUnit(originSystemId, destinationSystemId);
+
+    // Interpolación dentro del rango + cuantización al "step" deseado
+    const raw = min + u * (max - min);
+    let dist = Math.round(raw / step) * step;
+
+    // clamp defensivo por si el redondeo se pasa por 1 unidad
+    if (dist < min) dist = min;
+    if (dist > max) dist = max;
+
+    return dist;
+  } catch {
     return 50000;
   }
 }

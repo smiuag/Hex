@@ -153,7 +153,11 @@ export function getDistance(currentSystemId: string, targetSystemId: string): nu
     return getLogBiasedRandom(2000, 10000);
   }
 
-  return getLogBiasedRandom(3500, 35000);
+  if (current.cluster === target.cluster) {
+    return getLogBiasedRandom(3500, 35000);
+  }
+
+  return getLogBiasedRandom(35000, 300000);
 }
 
 export const generateSystem = (
