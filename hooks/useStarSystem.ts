@@ -860,9 +860,10 @@ export const useStarSystem = (
     if (originSystemId != "PLANET" && !originSystem) return;
 
     const slowestSpeed = Math.min(...fleetShips.map((f) => getSpecByType(f.type, specs).speed));
-    const distance = getDistance(systemsRef.current, originSystemId, originSystemId);
+    const distance = getDistance(systemsRef.current, originSystemId, destinationSystemId);
     const timeToTravel = getFlyTime(slowestSpeed, distance);
 
+    console.log(originSystemId, destinationSystemId, distance);
     const fleetData: FleetData = {
       destinationSystemId: destinationSystemId,
       endTime: Date.now() + timeToTravel,

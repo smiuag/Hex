@@ -1,6 +1,6 @@
 import { Resources } from "../types/resourceTypes";
 
-export const RAPIDO = true;
+export const RAPIDO = false;
 export const GENERAL_FACTOR = RAPIDO ? 100 : 1;
 
 export const PRODUCTION_INCREMENT = 1.3;

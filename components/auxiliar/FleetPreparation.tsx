@@ -91,13 +91,24 @@ export default function FleetSelector({ origin, destination }: Props) {
     [shipBuildQueue, findSystem]
   );
 
-  // Sistema destino actual (para imagen y si es ataque)
-  const systemDest = findSystem(currentDestination);
+  const systemOrigin: ReturnType<typeof findSystem> = React.useMemo(
+    () => findSystem(currentOrigin),
+    [currentOrigin, findSystem]
+  );
+  const systemDest = useMemo(
+    () => (currentDestination === "PLANET" ? undefined : findSystem(currentDestination)),
+    [currentDestination, findSystem]
+  );
   const isAttack = currentDestination != "PLANET" && !!systemDest?.race;
 
   // Imágenes
   const originImage =
-    currentOrigin === "PLANET" ? IMAGES.BACKGROUND_MENU_IMAGE : IMAGES.BACKGROUND_MENU_IMAGE;
+    currentOrigin === "PLANET"
+      ? IMAGES.BACKGROUND_MENU_IMAGE
+      : systemOrigin
+      ? getSystemImage(systemOrigin.type)
+      : IMAGES.BACKGROUND_MENU_IMAGE;
+
   const destinationImage = !systemDest
     ? IMAGES.BACKGROUND_MENU_IMAGE
     : systemDest.id === "PLANET"
@@ -497,9 +508,13 @@ export default function FleetSelector({ origin, destination }: Props) {
             }
             extraData={{ existingAtDestination, selected }}
             ListEmptyComponent={
-              <Text style={{ color: "#9ca3af", textAlign: "center", marginTop: 6 }}>
-                No hay naves en el sistema
-              </Text>
+              !isAttack ? (
+                <Text style={{ color: "#9ca3af", textAlign: "center", marginTop: 6 }}>
+                  No hay naves en el sistema
+                </Text>
+              ) : (
+                <View></View>
+              )
             }
           />
         </Pressable>
