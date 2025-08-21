@@ -311,18 +311,6 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     await resetAchievements();
     await resetShipDesign();
     await resetSpecs();
-
-    // addResources({
-    //   METAL: 100000000,
-    //   STONE: 100000000,
-    //   CRYSTAL: 100000000,
-    //   AETHERIUM: 100000000,
-    //   ENERGY: 100000000,
-    //   ILMENITA: 100000000,
-    //   KAIROX: 100000000,
-    //   NEBULITA: 100000000,
-    //   THARNIO: 100000000,
-    // });
   };
 
   const startGame = async () => {

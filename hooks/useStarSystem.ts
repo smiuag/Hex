@@ -863,7 +863,6 @@ export const useStarSystem = (
     const distance = getDistance(systemsRef.current, originSystemId, destinationSystemId);
     const timeToTravel = getFlyTime(slowestSpeed, distance);
 
-    console.log(originSystemId, destinationSystemId, distance);
     const fleetData: FleetData = {
       destinationSystemId: destinationSystemId,
       endTime: Date.now() + timeToTravel,

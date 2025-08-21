@@ -16,6 +16,8 @@ import {
   FlatList,
   Image,
   ImageBackground,
+  Modal,
+  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -30,13 +32,16 @@ type Props = {
 };
 
 export default function FleetSelector({ origin, destination }: Props) {
-  // --- NUEVO: origen/destino controlados localmente para poder hacer swap ---
+  // --- Origen/destino locales para poder hacer swap ---
   const [currentOrigin, setCurrentOrigin] = useState(origin);
   const [currentDestination, setCurrentDestination] = useState(destination);
 
   const [selected, setSelected] = useState<Record<string, number>>({});
   const [available, setAvailable] = useState<Record<string, number>>({});
   const [existingAtDestination, setExistingAtDestination] = useState<Record<string, number>>({});
+
+  // Modal defensas
+  const [showDefenseModal, setShowDefenseModal] = useState(false);
 
   const router = useRouter();
   const shipBuildQueue = useGameContextSelector((ctx) => ctx.shipBuildQueue);
@@ -60,14 +65,10 @@ export default function FleetSelector({ origin, destination }: Props) {
     [starSystems]
   );
 
-  // --- De dónde salen las naves del ORIGEN ---
+  // --- Naves del ORIGEN ---
   const getOriginShips = useCallback(
     (originId: string): Ship[] => {
-      if (originId === "PLANET") {
-        // Igual que tu implementación original: el origen PLANET usa la cola/stock del jugador
-        return shipBuildQueue;
-      }
-      // Si el origen es un sistema, tomamos sus naves del jugador (ajusta la propiedad si tu modelo es distinto)
+      if (originId === "PLANET") return shipBuildQueue;
       const sys = findSystem(originId);
       const arr = (sys as any)?.playerShips || [];
       return Array.isArray(arr) ? arr : [];
@@ -75,19 +76,26 @@ export default function FleetSelector({ origin, destination }: Props) {
     [shipBuildQueue, findSystem]
   );
 
-  // --- De dónde salen las naves EXISTENTES en el DESTINO ---
+  // --- Naves existentes en DESTINO (para movimiento) ---
   const getDestinationShips = useCallback(
     (destId: string): Ship[] => {
-      if (destId === "PLANET") {
-        // Igual que tu implementación original: el origen PLANET usa la cola/stock del jugador
-        return shipBuildQueue;
-      }
-      // Si el origen es un sistema, tomamos sus naves del jugador (ajusta la propiedad si tu modelo es distinto)
+      if (destId === "PLANET") return shipBuildQueue;
       const sys = findSystem(destId);
       const arr = (sys as any)?.playerShips || [];
       return Array.isArray(arr) ? arr : [];
     },
     [shipBuildQueue, findSystem]
+  );
+
+  // --- Defensas del sistema (solo ataque) ---
+  const getDefenseShips = useCallback(
+    (destId: string): Ship[] => {
+      if (destId === "PLANET") return [];
+      const sys = findSystem(destId);
+      const arr = (sys as any)?.defense ?? (sys as any)?.defensa ?? [];
+      return Array.isArray(arr) ? arr : [];
+    },
+    [findSystem]
   );
 
   const systemOrigin: ReturnType<typeof findSystem> = React.useMemo(
@@ -101,7 +109,7 @@ export default function FleetSelector({ origin, destination }: Props) {
 
   const destinationName =
     currentDestination === "PLANET" ? baseName : systemDest ? universe[systemDest.id].name : "";
-  const isAttack = currentDestination != "PLANET" && !!systemDest?.race;
+  const isAttack = currentDestination !== "PLANET" && !!systemDest?.race;
 
   // Imágenes
   const originImage =
@@ -131,7 +139,7 @@ export default function FleetSelector({ origin, destination }: Props) {
       const originShips = getOriginShips(originId);
       const initialAvailable = originShips.reduce((acc, f) => {
         const amt = Number(f.amount) || 0;
-        if (amt > 0) acc[f.type] = (acc[f.type] || 0) + amt; // 👈 solo >0
+        if (amt > 0) acc[f.type] = (acc[f.type] || 0) + amt;
         return acc;
       }, {} as Record<string, number>);
       setAvailable(initialAvailable);
@@ -139,7 +147,7 @@ export default function FleetSelector({ origin, destination }: Props) {
       const destShips = getDestinationShips(destId);
       const initialExisting = destShips.reduce((acc, f) => {
         const amt = Number(f.amount) || 0;
-        if (amt > 0) acc[f.type] = (acc[f.type] || 0) + amt; // 👈 solo >0
+        if (amt > 0) acc[f.type] = (acc[f.type] || 0) + amt;
         return acc;
       }, {} as Record<string, number>);
       setExistingAtDestination(initialExisting);
@@ -147,7 +155,6 @@ export default function FleetSelector({ origin, destination }: Props) {
     [getOriginShips, getDestinationShips]
   );
 
-  // Cargar al enfocar y cada vez que cambien ids actuales
   useFocusEffect(
     React.useCallback(() => {
       reloadSides(currentOrigin, currentDestination);
@@ -194,7 +201,7 @@ export default function FleetSelector({ origin, destination }: Props) {
 
   const moveFleet = (selectedFleets: Ship[]) => {
     if (selectedFleets.length > 0) {
-      if (currentDestination != "PLANET" && !systemDest) return;
+      if (currentDestination !== "PLANET" && !systemDest) return;
 
       Alert.alert("Movimiento", "¿Estás seguro de que quieres enviar las flotas a este sistema? ", [
         { text: t("cancel"), style: "cancel" },
@@ -259,7 +266,6 @@ export default function FleetSelector({ origin, destination }: Props) {
   };
 
   const onLongPressOriginZone = () => {
-    // si no hay nada, no hacer trabajo
     if (!Object.keys(available).length) return;
     setSelected((prev) => {
       const next = { ...prev };
@@ -268,10 +274,9 @@ export default function FleetSelector({ origin, destination }: Props) {
       });
       return next;
     });
-    setAvailable({}); // todo movido
+    setAvailable({});
   };
 
-  // Long press en el área de DESTINO: quitar TODO
   const onLongPressDestinationZone = () => {
     if (!Object.keys(selected).length) return;
     setAvailable((prev) => {
@@ -281,45 +286,46 @@ export default function FleetSelector({ origin, destination }: Props) {
       });
       return next;
     });
-    setSelected({}); // todo devuelto
+    setSelected({});
   };
 
-  // --- SWAP handler ---
+  // --- SWAP ---
   const onSwap = () => {
     const newOrigin = currentDestination;
     const newDestination = currentOrigin;
     setCurrentOrigin(newOrigin);
     setCurrentDestination(newDestination);
-    // recalcula inmediatamente con los nuevos ids
     reloadSides(newOrigin, newDestination);
   };
 
-  // Lista de naves presentes en ORIGEN (para pintar arriba)
+  // Lista de naves presentes en ORIGEN
   const originShipsList = useMemo(
     () => getOriginShips(currentOrigin),
     [getOriginShips, currentOrigin]
   );
 
-  // Data para el ORIGEN (solo se muestran las que tienen disponible > 0)
+  // ORIGEN (solo disponibles > 0)
   const originFleets = originShipsList.filter((f) => (available[f.type] ?? 0) > 0);
 
-  // Mapa de templates para imágenes/nombres (usa origen + destino por si hay tipos solo en destino)
+  // Template por tipo (incluye defensas para tener imágenes/nombres)
   const typeToShipTemplate: Record<string, Ship> = useMemo(() => {
     const map: Record<string, Ship> = {};
-    [...originShipsList, ...getDestinationShips(currentDestination)].forEach(
-      (f) => (map[f.type] = f)
-    );
+    [
+      ...originShipsList,
+      ...getDestinationShips(currentDestination),
+      ...getDefenseShips(currentDestination),
+    ].forEach((f) => (map[f.type] = f));
     return map;
-  }, [originShipsList, getDestinationShips, currentDestination]);
+  }, [originShipsList, getDestinationShips, getDefenseShips, currentDestination]);
 
-  // Conjunto de tipos presentes en destino (existentes o añadidos)
+  // MOVIMIENTO: conjunto tipos en destino
   const destinationTypes = useMemo(() => {
     const set = new Set<string>(Object.keys(existingAtDestination));
     Object.keys(selected).forEach((k) => set.add(k));
     return Array.from(set);
   }, [existingAtDestination, selected]);
 
-  // Combinar destino: base + añadidas
+  // MOVIMIENTO: combinado base+añadidas
   type DestRow = { type: string; base: number; added: number; ship: Ship };
   const destinationCombined: DestRow[] = useMemo(() => {
     return destinationTypes.map((type) => ({
@@ -330,25 +336,61 @@ export default function FleetSelector({ origin, destination }: Props) {
     }));
   }, [destinationTypes, existingAtDestination, selected, typeToShipTemplate]);
 
-  // Render item (mismas reglas visuales que ya tenías)
+  // ATAQUE: defensas agregadas y atacantes (solo seleccionadas)
+  const defenseMap: Record<string, number> = useMemo(() => {
+    const acc: Record<string, number> = {};
+    if (!isAttack) return acc;
+    const defenseShipsList = getDefenseShips(currentDestination);
+    defenseShipsList.forEach((f) => {
+      const amt = Number(f.amount) || 0;
+      if (amt > 0) acc[f.type] = (acc[f.type] || 0) + amt;
+    });
+    return acc;
+  }, [isAttack, getDefenseShips, currentDestination]);
+
+  const defenseCombined: DestRow[] = useMemo(() => {
+    return Object.keys(defenseMap).map((type) => ({
+      type,
+      base: defenseMap[type] ?? 0,
+      added: 0,
+      ship: typeToShipTemplate[type] ?? ({ type, amount: 0 } as Ship),
+    }));
+  }, [defenseMap, typeToShipTemplate]);
+
+  const totalDefense = useMemo(
+    () => Object.values(defenseMap).reduce((a, b) => a + b, 0),
+    [defenseMap]
+  );
+
+  const attackerCombined: DestRow[] = useMemo(() => {
+    if (!isAttack) return [];
+    return Object.keys(selected).map((type) => ({
+      type,
+      base: 0,
+      added: selected[type] ?? 0,
+      ship: typeToShipTemplate[type] ?? ({ type, amount: 0 } as Ship),
+    }));
+  }, [isAttack, selected, typeToShipTemplate]);
+
+  // --- Render items ---
   const renderFleetItem = (
     item: Ship,
     base: number,
     added: number,
     onPress: (id: string) => void,
-    onLongPress: (id: string) => void
+    onLongPress: (id: string) => void,
+    options?: { borderColor?: string; badgeColorBase?: string; badgeColorAdded?: string }
   ) => {
     const spec = getSpecByType(item.type, specs);
     const image = spec?.imageBackground ?? IMAGES.BACKGROUND_MENU_IMAGE;
 
     const onlyBase = base > 0 && added === 0; // gris + no interactivo
     const interactive = added > 0;
-
     const shipName = isCustomType(item.type) ? spec?.name : tShip(`shipName.${item.type}`);
 
     return (
       <TouchableOpacity
-        style={styles.fleetItem} // 👈 quitamos el onlyBase && { opacity: 0.55 }
+        style={styles.fleetItem}
         onPress={interactive ? () => onPress(item.type) : undefined}
         onLongPress={interactive ? () => onLongPress(item.type) : undefined}
         activeOpacity={1}
@@ -356,22 +398,35 @@ export default function FleetSelector({ origin, destination }: Props) {
         <View
           style={[
             styles.imageWrapper,
-            onlyBase ? { borderColor: "#9ca3af" } : { borderColor: "#b5fff6ff" },
+            {
+              borderColor: onlyBase
+                ? options?.borderColor || "#9ca3af"
+                : options?.borderColor || "#b5fff6ff",
+            },
           ]}
         >
           <Image source={image} style={styles.fleetImage} />
           {onlyBase && <View pointerEvents="none" style={styles.dimOverlay} />}
-          {/* 👆 oscurece la imagen, NO los badges */}
         </View>
 
         <Text style={styles.fleetName}>{shipName}</Text>
 
         {base > 0 ? (
-          <View style={[styles.quantityBadge, onlyBase && { backgroundColor: "#ffffff" }]}>
+          <View
+            style={[
+              styles.quantityBadge,
+              { backgroundColor: options?.badgeColorBase ?? "#ffffff" },
+            ]}
+          >
             <Text style={styles.quantityText}>{base}</Text>
           </View>
         ) : added > 0 ? (
-          <View style={[styles.quantityBadge, { backgroundColor: "#00ff90" }]}>
+          <View
+            style={[
+              styles.quantityBadge,
+              { backgroundColor: options?.badgeColorAdded ?? "#00ff90" },
+            ]}
+          >
             <Text style={styles.quantityText}>{added}</Text>
           </View>
         ) : null}
@@ -406,6 +461,8 @@ export default function FleetSelector({ origin, destination }: Props) {
           onValueChange={(value) => setCurrentOrigin(value)}
         />
       </View>
+
+      {/* ORIGEN */}
       <ImageBackground
         source={originImage}
         style={styles.fleetBox}
@@ -440,17 +497,16 @@ export default function FleetSelector({ origin, destination }: Props) {
         </View>
       </ImageBackground>
 
+      {/* Controles */}
       <View style={{ justifyContent: "space-between", flexDirection: "row", padding: 5 }}>
         <TouchableOpacity style={commonStyles.cancelButton} onPress={onCancel}>
           <Text style={commonStyles.cancelButtonText}>{t("Cancel")}</Text>
         </TouchableOpacity>
         {isAttack ? (
           <View style={styles.arrowContainer}>
-            <Ionicons name="arrow-down" size={20} color="#00ffe0" />
-            <Ionicons name="arrow-down" size={20} color="#00ffe0" />
-            <Text style={styles.arrowText}>{t("Attack")}</Text>
-            <Ionicons name="arrow-down" size={20} color="#00ffe0" />
-            <Ionicons name="arrow-down" size={20} color="#00ffe0" />
+            <Ionicons name="arrow-down" size={20} color="#ff6b6b" />
+            <Ionicons name="arrow-down" size={20} color="#ff6b6b" />
+            <Ionicons name="arrow-down" size={20} color="#ff6b6b" />
           </View>
         ) : (
           <TouchableOpacity
@@ -460,9 +516,6 @@ export default function FleetSelector({ origin, destination }: Props) {
           >
             <Ionicons name="arrow-down" size={20} color="#00ffe0" />
             <Ionicons name="arrow-up" size={20} color="#00ffe0" />
-            <Text style={styles.arrowText}>{t("Change")}</Text>
-            <Ionicons name="arrow-up" size={20} color="#00ffe0" />
-            <Ionicons name="arrow-down" size={20} color="#00ffe0" />
           </TouchableOpacity>
         )}
 
@@ -484,38 +537,80 @@ export default function FleetSelector({ origin, destination }: Props) {
         </TouchableOpacity>
       </View>
 
-      {/* DESTINO (lista única combinada) */}
+      {/* DESTINO */}
       <ImageBackground
         source={destinationImage}
         style={styles.fleetBox}
         imageStyle={[styles.fleetBoxImage, styles.fleetBoxImageDim]}
       >
-        <FlatList
-          data={destinationCombined}
-          keyExtractor={(row) => `dest-${currentDestination}-${row.type}`}
-          numColumns={4}
-          contentContainerStyle={[styles.listContainer, styles.listFill]}
-          showsHorizontalScrollIndicator={false}
-          renderItem={({ item: row }) =>
-            renderFleetItem(
-              row.ship,
-              row.base,
-              row.added,
-              onPressDestination,
-              onLongPressDestination
-            )
-          }
-          extraData={{ existingAtDestination, selected }}
-          ListEmptyComponent={
-            !isAttack ? (
+        {isAttack ? (
+          <>
+            {/* Botón flotante "Defensas (N)" — a la derecha y tamaño igual a 'Mover todo'/'Limpiar' */}
+            <View style={styles.floatingDefenseBtnWrapper} pointerEvents="box-none">
+              <TouchableOpacity
+                onPress={() => setShowDefenseModal(true)}
+                style={styles.floatingDefenseBtn}
+                accessibilityLabel="Ver defensas"
+              >
+                <Ionicons name="shield" size={16} color="#000" />
+                <Text style={styles.floatingDefenseBtnText}>{`Defensas (${totalDefense})`}</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Solo tus naves asignadas al ataque */}
+            <FlatList
+              data={attackerCombined}
+              keyExtractor={(row) => `atk-${currentDestination}-${row.type}`}
+              numColumns={4}
+              contentContainerStyle={[styles.listContainer, styles.listFill]}
+              showsHorizontalScrollIndicator={false}
+              renderItem={({ item: row }) =>
+                renderFleetItem(
+                  row.ship,
+                  0,
+                  row.added,
+                  onPressDestination,
+                  onLongPressDestination,
+                  {
+                    badgeColorAdded: "#00ff90",
+                  }
+                )
+              }
+              extraData={{ selected }}
+              ListEmptyComponent={
+                <Text style={{ color: "#9ca3af", textAlign: "center", marginTop: 6 }}>
+                  Añade naves para atacar
+                </Text>
+              }
+            />
+          </>
+        ) : (
+          // --- Movimiento: combinado base + añadidas ---
+          <FlatList
+            data={destinationCombined}
+            keyExtractor={(row) => `dest-${currentDestination}-${row.type}`}
+            numColumns={4}
+            contentContainerStyle={[styles.listContainer, styles.listFill]}
+            showsHorizontalScrollIndicator={false}
+            renderItem={({ item: row }) =>
+              renderFleetItem(
+                row.ship,
+                row.base,
+                row.added,
+                onPressDestination,
+                onLongPressDestination
+              )
+            }
+            extraData={{ existingAtDestination, selected }}
+            ListEmptyComponent={
               <Text style={{ color: "#9ca3af", textAlign: "center", marginTop: 6 }}>
                 No hay naves en el sistema
               </Text>
-            ) : (
-              <View></View>
-            )
-          }
-        />
+            }
+          />
+        )}
+
+        {/* Botón limpiar SOLO tus seleccionadas */}
         <View pointerEvents="box-none" style={styles.bulkActionDest}>
           <TouchableOpacity
             onPress={onLongPressDestinationZone}
@@ -527,21 +622,152 @@ export default function FleetSelector({ origin, destination }: Props) {
             <Text style={styles.bulkBtnText}>{t("ClearAll")}</Text>
           </TouchableOpacity>
         </View>
+
         <View pointerEvents="none" style={styles.destFooter}>
           <Text style={styles.destFooterText}>{destinationName}</Text>
         </View>
       </ImageBackground>
+
+      {/* MODAL: detalle de defensas (más alto, 4 columnas, con scroll) */}
+      <Modal
+        visible={showDefenseModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowDefenseModal(false)}
+      >
+        <Pressable style={styles.modalBackdrop} onPress={() => setShowDefenseModal(false)}>
+          <Pressable style={styles.modalCard} onPress={(e) => e.stopPropagation()}>
+            <View style={styles.modalHeader}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Ionicons name="shield" size={18} color="#ff6b6b" />
+                <Text style={styles.modalTitle}>{`Defensas (${totalDefense})`}</Text>
+              </View>
+              <TouchableOpacity onPress={() => setShowDefenseModal(false)}>
+                <Ionicons name="close" size={20} color="#fff" />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.modalBody}>
+              <FlatList
+                data={defenseCombined}
+                keyExtractor={(row) => `def-modal-${currentDestination}-${row.type}`}
+                numColumns={4} // 4 columnas
+                contentContainerStyle={[styles.listContainer, { paddingBottom: 12 }]}
+                renderItem={({ item: row }) =>
+                  renderFleetItem(
+                    row.ship,
+                    row.base,
+                    0,
+                    () => {},
+                    () => {},
+                    {
+                      borderColor: "#ff6b6b",
+                      badgeColorBase: "#ffffff",
+                    }
+                  )
+                }
+                ListEmptyComponent={
+                  <Text style={{ color: "#9ca3af", textAlign: "center", marginTop: 6 }}>
+                    Sin defensas detectadas
+                  </Text>
+                }
+              />
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#000", padding: 5 },
+
+  // cajas
+  fleetBox: {
+    borderRadius: 12,
+    flex: 0.5,
+    borderWidth: 2,
+    borderColor: "white",
+  },
+  fleetBoxImage: { borderRadius: 12 },
+  fleetBoxImageDim: { opacity: 0.7 },
+  listContainer: { paddingHorizontal: 4 },
+  listFill: { minHeight: "100%" },
+
+  // items
+  fleetItem: { flex: 1 / 4, marginHorizontal: 8, alignItems: "center" },
+  imageWrapper: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    overflow: "hidden",
+    marginBottom: 6,
+    borderWidth: 2,
+    borderColor: "#b5fff6ff",
+    position: "relative",
+  },
+  fleetImage: { width: "100%", height: "100%", resizeMode: "cover" },
+  dimOverlay: {
+    position: "absolute",
+    inset: 0 as any,
+    backgroundColor: "rgba(0,0,0,0.45)",
+    zIndex: 1,
+  },
+  fleetName: { color: "#ffffffff", fontWeight: "600", fontSize: 14, textAlign: "center" },
+
+  quantityBadge: {
+    position: "absolute",
+    top: 6,
+    right: 2,
+    backgroundColor: "#00ff90",
+    borderRadius: 10,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    minWidth: 20,
+    alignItems: "center",
+    zIndex: 2,
+  },
+  plusBadge: {
+    position: "absolute",
+    top: 6,
+    right: 52,
+    backgroundColor: "#00ff90",
+    borderRadius: 10,
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+    minWidth: 18,
+    alignItems: "center",
+    zIndex: 2,
+  },
+  quantityText: { color: "#000", fontWeight: "bold", fontSize: 12 },
+  plusBadgeText: { color: "#000", fontWeight: "bold", fontSize: 11 },
+
+  // bulk buttons
+  bulkActionOrigin: { position: "absolute", right: 8, bottom: 8, zIndex: 4 },
+  bulkActionDest: { position: "absolute", right: 8, bottom: 8, zIndex: 4 },
+  bulkBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6 as any,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 12,
+    backgroundColor: "#0091ffff",
+  },
+  bulkBtnDisabled: { opacity: 0.4 },
+  bulkBtnText: { color: "#000", fontWeight: "700", fontSize: 12 },
+
+  // centro
+  arrowContainer: { alignItems: "center", flexDirection: "row" },
+
+  // pie destino
   destFooter: {
     position: "absolute",
     left: 0,
     right: 0,
-    bottom: 8, // margen inferior
-    alignItems: "center", // centra horizontalmente
+    bottom: 8,
+    alignItems: "center",
     zIndex: 3,
   },
   destFooterText: {
@@ -553,125 +779,53 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 14,
   },
-  imageWrapper: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    overflow: "hidden",
-    marginBottom: 6,
-    borderWidth: 2,
-    borderColor: "#b5fff6ff",
-    position: "relative", // 👈 necesario para overlay/badges
-  },
-  fleetImage: { width: "100%", height: "100%", resizeMode: "cover" },
 
-  // Capa que oscurece SOLO la imagen cuando es "solo base"
-  dimOverlay: {
+  // botón flotante defensas (derecha, mismo tamaño que bulkBtn)
+  floatingDefenseBtnWrapper: {
     position: "absolute",
-    inset: 0 as any, // RN 0.73+; si no, usa top/left/right/bottom: 0
-    backgroundColor: "rgba(0,0,0,0.45)",
-    zIndex: 1,
-  },
-
-  // Badges por encima del overlay (opacos)
-  quantityBadge: {
-    position: "absolute",
-    top: 6,
-    right: 2, // ajusta si quieres más a la derecha (antes 14)
-    backgroundColor: "#00ff90", // verde opaco
-    borderRadius: 10,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    minWidth: 20,
-    alignItems: "center",
-    zIndex: 2, // 👈 por encima del overlay
-  },
-  plusBadge: {
-    position: "absolute",
-    top: 6,
-    right: 52, // 2 + 50; ajusta junto con quantityBadge.right
-    backgroundColor: "#00ff90", // verde opaco
-    borderRadius: 10,
-    paddingHorizontal: 5,
-    paddingVertical: 1,
-    minWidth: 18,
-    alignItems: "center",
-    zIndex: 2, // 👈 por encima del overlay
-  },
-  quantityText: { color: "#000", fontWeight: "bold", fontSize: 12 },
-  fleetBox: {
-    borderRadius: 12,
-    flex: 0.5,
-    borderWidth: 2,
-    borderColor: "white",
-    // ❌ elimina: opacity: 0.7
-  },
-  fleetBoxImage: {
-    borderRadius: 12,
-  },
-  // ✅ nueva: solo la imagen de fondo tiene opacidad
-  fleetBoxImageDim: {
-    opacity: 0.7,
-  },
-  boxFill: { flex: 1 }, // el Pressable llena la caja
-  listFill: { minHeight: "100%" },
-  container: { flex: 1, backgroundColor: "#000", padding: 5 },
-  arrowContainer: { alignItems: "center", flexDirection: "row" },
-  arrowText: { color: "#00ffe0", fontSize: 14, paddingHorizontal: 15 },
-  box: {
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 8,
-    marginBottom: 16,
-    minHeight: 120,
-  },
-  listContainer: { paddingHorizontal: 4 },
-  fleetItem: { flex: 1 / 4, marginHorizontal: 8, alignItems: "center" },
-  fleetName: { color: "#ffffffff", fontWeight: "600", fontSize: 14, textAlign: "center" },
-
-  plusBadgeText: { color: "#000", fontWeight: "bold", fontSize: 11 },
-  titleOverlay: {
-    position: "absolute",
-    top: 8,
+    bottom: 8,
     left: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 10,
-    backgroundColor: "rgba(0,0,0,0.55)",
-    zIndex: 3,
+    zIndex: 5,
+    alignItems: "flex-end",
   },
-  titleOverlayText: {
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: 14,
-  },
-  bulkActionOrigin: {
-    position: "absolute",
-    right: 8,
-    bottom: 8,
-    zIndex: 4,
-  },
-  bulkActionDest: {
-    position: "absolute",
-    right: 8,
-    bottom: 8,
-    zIndex: 4,
-  },
-  bulkBtn: {
+  floatingDefenseBtn: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6 as any,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 12,
-    backgroundColor: "#00ff90",
+    paddingHorizontal: 10, // igual que bulkBtn
+    paddingVertical: 6, // igual que bulkBtn
+    borderRadius: 12, // igual que bulkBtn
+    backgroundColor: "#ffd166",
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.2)",
   },
-  bulkBtnDisabled: {
-    opacity: 0.4,
+  floatingDefenseBtnText: { color: "#000", fontWeight: "700", fontSize: 12 }, // igual que bulkBtnText
+
+  // modal defensas (más alto para 3 filas, con scroll si hay 4+)
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    justifyContent: "flex-end", // desde abajo, estilo hoja
   },
-  bulkBtnText: {
-    color: "#000",
-    fontWeight: "700",
-    fontSize: 12,
+  modalCard: {
+    width: "100%",
+    backgroundColor: "#101214",
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    overflow: "hidden",
+  },
+  modalHeader: {
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255,255,255,0.08)",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  modalTitle: { color: "#fff", fontWeight: "800", fontSize: 15, marginLeft: 8 },
+  modalBody: {
+    maxHeight: "85%", // 👈 más alto: caben al menos 3 filas en la mayoría de pantallas
+    paddingVertical: 8,
   },
 });
