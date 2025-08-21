@@ -101,12 +101,18 @@ const Slider: React.FC<{
   return (
     <View style={styles.sliderContainer}>
       <View ref={trackRef} style={styles.sliderTrack} {...pan.panHandlers}>
-        <View pointerEvents="none" style={[styles.sliderFill, { width: `${fillPct * 100}%` }]}>
-          <Text style={styles.sliderFillText}>
+        {/* Barra de progreso */}
+        <View pointerEvents="none" style={[styles.sliderFill, { width: `${fillPct * 100}%` }]} />
+
+        {/* Thumb */}
+        <View pointerEvents="none" style={[styles.sliderThumb, { left: `${fillPct * 100}%` }]} />
+
+        {/* ⬇️ Overlay centrado con el valor (siempre visible) */}
+        <View pointerEvents="none" style={styles.sliderValueOverlay}>
+          <Text style={styles.sliderValueText}>
             {formatAmount(Math.max(min, Math.min(value, max)))}
           </Text>
         </View>
-        <View pointerEvents="none" style={[styles.sliderThumb, { left: `${fillPct * 100}%` }]} />
       </View>
     </View>
   );
@@ -207,8 +213,14 @@ export default function BlackMarketComponent() {
   const maxAffordableQtyFor = (itemKey: string) => {
     const unit = pricing[itemKey]?.OFFERED ?? 0;
     if (unit <= 0) return 0;
+
     const w = walletForItem(itemKey);
-    return Math.floor(w / unit);
+    const canBuy = Math.floor(w / unit);
+
+    if (pricing[itemKey]?.KIND === "SPECIAL") {
+      return Math.min(1, canBuy);
+    }
+    return canBuy;
   };
 
   // Puede ser función o boolean, soportamos ambos
@@ -348,7 +360,7 @@ export default function BlackMarketComponent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [maxQty, selectedItemKey]);
 
-  const requiredValue = Math.max(0, Math.floor(unitPrice * (qty || 0)));
+  const requiredValue = Math.max(0, Math.floor(unitPrice * (draftQty || 0)));
 
   // Pago manual
   const [manualMix, setManualMix] = useState<Record<string, number>>({});
@@ -383,27 +395,30 @@ export default function BlackMarketComponent() {
   );
 
   const ok = contributedValue >= requiredValue;
-  const canConfirm = !!selectedItemKey && (qty || 0) > 0 && ok && maxQty > 0;
+  const canConfirm = !!selectedItemKey && (draftQty || 0) > 0 && ok && maxQty > 0;
 
   const handleConfirm = () => {
     if (!selectedItemKey) return;
-    if ((qty || 0) <= 0) return;
 
     const entry = pricing[selectedItemKey];
     if (!entry) return;
 
-    if (contributedValue < requiredValue) return;
+    // Usa la cantidad que el usuario ve ahora mismo
+    const effectiveQty = Math.max(1, Math.min(draftQty || 0, maxQty));
+    if (effectiveQty <= 0) return;
 
-    // 1) Cobrar SIEMPRE (con fallback)
+    const required = Math.floor(unitPrice * effectiveQty);
+    if (contributedValue < required) return;
+
+    // 1) Cobrar (igual que antes)
     const payment: Record<string, number> = {};
     for (const [k, v] of Object.entries(manualMix)) {
       const safe = Math.max(0, Math.min(Math.floor(v || 0), balances[k] ?? 0));
       if (safe > 0) payment[k] = safe;
     }
     if (Object.keys(payment).length > 0) {
-      if (subtractResources) {
-        subtractResources(payment);
-      } else if (addResources) {
+      if (subtractResources) subtractResources(payment);
+      else if (addResources) {
         const negative = Object.fromEntries(
           Object.entries(payment).map(([k, v]) => [k, -Math.abs(v)])
         );
@@ -411,24 +426,21 @@ export default function BlackMarketComponent() {
       }
     }
 
-    // 2) Entregar
+    // 2) Entregar usando effectiveQty
     try {
       switch (entry.KIND) {
         case "RESOURCE": {
-          const amountPerUnit = (entry as any).AMOUNT ?? 1; // packs por unidad si aplica
-          const mods: Record<string, number> = { [entry.TYPE]: amountPerUnit * (qty || 0) };
-          addResources(mods);
+          const amountPerUnit = (entry as any).AMOUNT ?? 1;
+          addResources({ [entry.TYPE]: amountPerUnit * effectiveQty });
           break;
         }
         case "SHIP": {
-          const ships: ShipData[] = [makeShip(entry.TYPE as ShipType, qty)];
+          const ships: ShipData[] = [makeShip(entry.TYPE as ShipType, effectiveQty)];
           handleCreateShips(ships);
           break;
         }
         case "SPECIAL": {
-          for (let i = 0; i < (qty || 1); i++) {
-            discoverNextResearch();
-          }
+          for (let i = 0; i < effectiveQty; i++) discoverNextResearch();
           break;
         }
         default:
@@ -582,6 +594,40 @@ export default function BlackMarketComponent() {
 
 /* ======================= Estilos ======================= */
 const styles = StyleSheet.create({
+  sliderTrack: {
+    height: 36,
+    backgroundColor: "rgba(179, 200, 235, 0.49)",
+    borderRadius: 999,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "rgba(43, 58, 79, 0.60)",
+    position: "relative", // ⬅️ importante para el overlay absoluto
+  },
+  sliderFill: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: "#4270a8c2",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  // Eliminado sliderFillText, ya no se usa dentro del fill
+  // sliderFillText: {...}
+
+  sliderValueOverlay: {
+    ...StyleSheet.absoluteFillObject, // { top:0, right:0, bottom:0, left:0 }
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  sliderValueText: {
+    color: "#0b0e12",
+    fontSize: 14,
+    fontWeight: "700",
+    textShadowColor: "rgba(0,0,0,0.25)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 1.5,
+  },
   screen: {
     flex: 1,
     padding: 14,
@@ -690,23 +736,6 @@ const styles = StyleSheet.create({
   stepperBtnText: { color: "#e5e7eb", fontSize: 14, fontWeight: "700" },
 
   sliderContainer: { paddingVertical: 0, justifyContent: "center" },
-  sliderTrack: {
-    height: 36,
-    backgroundColor: "rgba(179, 200, 235, 0.49)",
-    borderRadius: 999,
-    overflow: "hidden",
-    borderWidth: 1,
-    borderColor: "rgba(43, 58, 79, 0.60)",
-  },
-  sliderFill: {
-    position: "absolute",
-    left: 0,
-    top: 0,
-    bottom: 0,
-    backgroundColor: "#4270a8c2",
-    justifyContent: "center",
-    alignItems: "center",
-  },
   sliderFillText: { color: "#0b0e12", fontSize: 14, fontWeight: "700", paddingHorizontal: 8 },
   sliderThumb: {
     position: "absolute",
