@@ -4,7 +4,7 @@ import { useGameContextSelector } from "@/src/context/GameContext";
 import { commonStyles } from "@/src/styles/commonStyles";
 import { Ship } from "@/src/types/shipType";
 import { getCfg } from "@/utils/generalUtils";
-import { getDistance, getSpecByType } from "@/utils/shipUtils";
+import { getDistance, getSpecByType, isCustomType } from "@/utils/shipUtils";
 import { getSystemImage } from "@/utils/starSystemUtils";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
@@ -16,7 +16,6 @@ import {
   FlatList,
   Image,
   ImageBackground,
-  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -99,6 +98,9 @@ export default function FleetSelector({ origin, destination }: Props) {
     () => (currentDestination === "PLANET" ? undefined : findSystem(currentDestination)),
     [currentDestination, findSystem]
   );
+
+  const destinationName =
+    currentDestination === "PLANET" ? baseName : systemDest ? universe[systemDest.id].name : "";
   const isAttack = currentDestination != "PLANET" && !!systemDest?.race;
 
   // Imágenes
@@ -114,6 +116,9 @@ export default function FleetSelector({ origin, destination }: Props) {
     : systemDest.id === "PLANET"
     ? IMAGES.BACKGROUND_MENU_IMAGE
     : getSystemImage(systemDest.type);
+
+  const hasAvailable = useMemo(() => Object.values(available).some((v) => v > 0), [available]);
+  const hasSelectedAll = useMemo(() => Object.values(selected).some((v) => v > 0), [selected]);
 
   const { t } = useTranslation("common");
   const { t: tShip } = useTranslation("ship");
@@ -339,6 +344,8 @@ export default function FleetSelector({ origin, destination }: Props) {
     const onlyBase = base > 0 && added === 0; // gris + no interactivo
     const interactive = added > 0;
 
+    const shipName = isCustomType(item.type) ? spec?.name : tShip(`shipName.${item.type}`);
+
     return (
       <TouchableOpacity
         style={styles.fleetItem} // 👈 quitamos el onlyBase && { opacity: 0.55 }
@@ -357,7 +364,7 @@ export default function FleetSelector({ origin, destination }: Props) {
           {/* 👆 oscurece la imagen, NO los badges */}
         </View>
 
-        <Text style={styles.fleetName}>{tShip(`shipName.${item.type}`)}</Text>
+        <Text style={styles.fleetName}>{shipName}</Text>
 
         {base > 0 ? (
           <View style={[styles.quantityBadge, onlyBase && { backgroundColor: "#ffffff" }]}>
@@ -399,45 +406,44 @@ export default function FleetSelector({ origin, destination }: Props) {
           onValueChange={(value) => setCurrentOrigin(value)}
         />
       </View>
-      {/* ORIGEN */}
       <ImageBackground
         source={originImage}
         style={styles.fleetBox}
         imageStyle={[styles.fleetBoxImage, styles.fleetBoxImageDim]}
       >
-        <Pressable
-          style={[styles.box, styles.boxFill]}
-          onLongPress={onLongPressOriginZone}
-          delayLongPress={350}
-        >
-          <FlatList
-            pointerEvents="box-none"
-            data={originFleets}
-            keyExtractor={(item) => `origin-${currentOrigin}-${item.type}`}
-            numColumns={4}
-            contentContainerStyle={[styles.listContainer, styles.listFill]}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) =>
-              renderFleetItem(item, 0, available[item.type] ?? 0, onPressOrigin, onLongPressOrigin)
-            }
-            ListEmptyComponent={
-              <Text style={{ color: "#9ca3af", textAlign: "center", marginTop: 6 }}>
-                No hay naves en el sistema
-              </Text>
-            }
-            extraData={available}
-          />
-        </Pressable>
+        <FlatList
+          data={originFleets}
+          keyExtractor={(item) => `origin-${currentOrigin}-${item.type}`}
+          numColumns={4}
+          contentContainerStyle={[styles.listContainer, styles.listFill]}
+          showsHorizontalScrollIndicator={false}
+          renderItem={({ item }) =>
+            renderFleetItem(item, 0, available[item.type] ?? 0, onPressOrigin, onLongPressOrigin)
+          }
+          ListEmptyComponent={
+            <Text style={{ color: "#9ca3af", textAlign: "center", marginTop: 6 }}>
+              No hay naves en el sistema
+            </Text>
+          }
+          extraData={available}
+        />
+        <View pointerEvents="box-none" style={styles.bulkActionOrigin}>
+          <TouchableOpacity
+            onPress={onLongPressOriginZone}
+            disabled={!hasAvailable}
+            style={[styles.bulkBtn, !hasAvailable && styles.bulkBtnDisabled]}
+            accessibilityLabel={t("MoveAll")}
+          >
+            <Ionicons name="arrow-down-circle" size={16} color="#000" />
+            <Text style={styles.bulkBtnText}>{t("MoveAll")}</Text>
+          </TouchableOpacity>
+        </View>
       </ImageBackground>
 
-      {/* CONTROLES */}
       <View style={{ justifyContent: "space-between", flexDirection: "row", padding: 5 }}>
         <TouchableOpacity style={commonStyles.cancelButton} onPress={onCancel}>
           <Text style={commonStyles.cancelButtonText}>{t("Cancel")}</Text>
         </TouchableOpacity>
-
-        {/* --- BOTÓN SWAP --- */}
-
         {isAttack ? (
           <View style={styles.arrowContainer}>
             <Ionicons name="arrow-down" size={20} color="#00ffe0" />
@@ -463,7 +469,6 @@ export default function FleetSelector({ origin, destination }: Props) {
         <TouchableOpacity
           style={commonStyles.buttonPrimary}
           onPress={() => {
-            // Construimos las seleccionadas a partir de las del ORIGEN actual
             const originShips = getOriginShips(currentOrigin);
             const selectedFleets = originShips
               .filter((f) => (selected[f.type] ?? 0) > 0)
@@ -485,46 +490,69 @@ export default function FleetSelector({ origin, destination }: Props) {
         style={styles.fleetBox}
         imageStyle={[styles.fleetBoxImage, styles.fleetBoxImageDim]}
       >
-        <Pressable
-          style={[styles.box, styles.boxFill]}
-          onLongPress={onLongPressDestinationZone}
-          delayLongPress={350}
-        >
-          <FlatList
-            pointerEvents="box-none"
-            data={destinationCombined}
-            keyExtractor={(row) => `dest-${currentDestination}-${row.type}`}
-            numColumns={4}
-            contentContainerStyle={[styles.listContainer, styles.listFill]}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({ item: row }) =>
-              renderFleetItem(
-                row.ship,
-                row.base,
-                row.added,
-                onPressDestination,
-                onLongPressDestination
-              )
-            }
-            extraData={{ existingAtDestination, selected }}
-            ListEmptyComponent={
-              !isAttack ? (
-                <Text style={{ color: "#9ca3af", textAlign: "center", marginTop: 6 }}>
-                  No hay naves en el sistema
-                </Text>
-              ) : (
-                <View></View>
-              )
-            }
-          />
-        </Pressable>
+        <FlatList
+          data={destinationCombined}
+          keyExtractor={(row) => `dest-${currentDestination}-${row.type}`}
+          numColumns={4}
+          contentContainerStyle={[styles.listContainer, styles.listFill]}
+          showsHorizontalScrollIndicator={false}
+          renderItem={({ item: row }) =>
+            renderFleetItem(
+              row.ship,
+              row.base,
+              row.added,
+              onPressDestination,
+              onLongPressDestination
+            )
+          }
+          extraData={{ existingAtDestination, selected }}
+          ListEmptyComponent={
+            !isAttack ? (
+              <Text style={{ color: "#9ca3af", textAlign: "center", marginTop: 6 }}>
+                No hay naves en el sistema
+              </Text>
+            ) : (
+              <View></View>
+            )
+          }
+        />
+        <View pointerEvents="box-none" style={styles.bulkActionDest}>
+          <TouchableOpacity
+            onPress={onLongPressDestinationZone}
+            disabled={!hasSelectedAll}
+            style={[styles.bulkBtn, !hasSelectedAll && styles.bulkBtnDisabled]}
+            accessibilityLabel={t("ClearAll")}
+          >
+            <Ionicons name="arrow-up-circle" size={16} color="#000" />
+            <Text style={styles.bulkBtnText}>{t("ClearAll")}</Text>
+          </TouchableOpacity>
+        </View>
+        <View pointerEvents="none" style={styles.destFooter}>
+          <Text style={styles.destFooterText}>{destinationName}</Text>
+        </View>
       </ImageBackground>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  // ...
+  destFooter: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 8, // margen inferior
+    alignItems: "center", // centra horizontalmente
+    zIndex: 3,
+  },
+  destFooterText: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    backgroundColor: "rgba(0,0,0,0.55)",
+    color: "#fff",
+    fontWeight: "700",
+    fontSize: 14,
+  },
   imageWrapper: {
     width: 60,
     height: 60,
@@ -602,4 +630,48 @@ const styles = StyleSheet.create({
   fleetName: { color: "#ffffffff", fontWeight: "600", fontSize: 14, textAlign: "center" },
 
   plusBadgeText: { color: "#000", fontWeight: "bold", fontSize: 11 },
+  titleOverlay: {
+    position: "absolute",
+    top: 8,
+    left: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 10,
+    backgroundColor: "rgba(0,0,0,0.55)",
+    zIndex: 3,
+  },
+  titleOverlayText: {
+    color: "#fff",
+    fontWeight: "700",
+    fontSize: 14,
+  },
+  bulkActionOrigin: {
+    position: "absolute",
+    right: 8,
+    bottom: 8,
+    zIndex: 4,
+  },
+  bulkActionDest: {
+    position: "absolute",
+    right: 8,
+    bottom: 8,
+    zIndex: 4,
+  },
+  bulkBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6 as any,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 12,
+    backgroundColor: "#00ff90",
+  },
+  bulkBtnDisabled: {
+    opacity: 0.4,
+  },
+  bulkBtnText: {
+    color: "#000",
+    fontWeight: "700",
+    fontSize: 12,
+  },
 });

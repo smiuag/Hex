@@ -7,7 +7,7 @@ import { CombinedResources } from "@/src/types/resourceTypes";
 import { Ship, ShipId, ShipSpecsCtx } from "@/src/types/shipType";
 import { useEffect, useRef, useState } from "react";
 import Toast from "react-native-toast-message";
-import { getTotalShipCost, makeShip } from "../utils/shipUtils";
+import { getSpecByType, getTotalShipCost, makeShip } from "../utils/shipUtils";
 
 export const useShip = (
   playerQuests: PlayerQuest[],
@@ -146,7 +146,6 @@ export const useShip = (
 
     modifyQueue((prev) => {
       const updated: Ship[] = [];
-
       for (const item of prev) {
         const inQueue = !!item.progress && item.progress.targetAmount > 0;
 
@@ -156,9 +155,8 @@ export const useShip = (
           continue;
         }
 
-        const timePerUnit = item.custom
-          ? 10000000000
-          : Math.max(1, Math.floor(shipConfig[item.type].baseBuildTime / GENERAL_FACTOR));
+        const spec = getSpecByType(item.type, specs);
+        const timePerUnit = spec.baseBuildTime / GENERAL_FACTOR;
 
         const elapsed = now - item.progress!.startedAt;
 

@@ -119,5 +119,7 @@
   "Improve": "Improve",
   "Change": "Change",
   "AttackFrom": "Attack from",
-  "From": "From"
+  "From": "From",
+  "MoveAll": "All",
+  "ClearAll": "Clear"
 }
